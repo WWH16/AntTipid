@@ -117,7 +117,7 @@
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-background text-on-background h-full font-body-md antialiased overflow-hidden flex">
+<body class="bg-background text-on-background min-h-screen font-body-md antialiased flex flex-col md:flex-row md:overflow-hidden">
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- SIDE NAVIGATION (Desktop: md+)             -->
@@ -177,7 +177,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- MAIN CONTENT WRAPPER                       -->
     <!-- ═══════════════════════════════════════════ -->
-    <div class="flex-1 flex flex-col md:ml-64 min-h-screen h-full overflow-hidden">
+    <div class="flex-1 flex flex-col md:ml-64 min-h-screen w-full md:h-screen md:overflow-hidden">
 
         <!-- ─── Mobile Top Header (<md) ─── -->
         <header class="w-full top-0 sticky bg-surface/95 backdrop-blur-md z-40 md:hidden flex justify-between items-center px-margin-mobile h-14 border-b border-outline-variant/40 shrink-0">
@@ -221,7 +221,7 @@
         </header>
 
         <!-- ─── Page Content ─── -->
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 w-full md:overflow-y-auto">
             {% block content %}{% endblock %}
         </main>
     </div>

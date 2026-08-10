@@ -4,7 +4,7 @@
 {% block meta_description %}Your personal finance overview — track balances, budgets, and recent transactions.{% endblock %}
 
 {% block content %}
-<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-24 md:pb-lg">
+<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-md md:gap-lg">
 
         <!-- ═══════════════════════════════════════ -->
@@ -235,5 +235,7 @@
             </section>
         </div>
     </div>
+    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
+    <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
 {% endblock %}

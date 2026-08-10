@@ -4,7 +4,7 @@
 {% block meta_description %}Manage and track your financial history, expenses, and income.{% endblock %}
 
 {% block content %}
-<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-24 md:pb-lg">
+<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
     <div class="max-w-7xl mx-auto flex flex-col gap-md md:gap-lg">
 
         <!-- ═══════════════════════════════════════ -->
@@ -289,6 +289,8 @@
             </div>
         </div>
     </div>
+    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
+    <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
