@@ -317,15 +317,15 @@
         <div id="section-receipt-archive" class="hidden flex-col gap-md">
             
             <!-- Selection Action Bar (Shown when receipt checkboxes checked) -->
-            <div id="receipt-selection-bar" class="hidden bg-secondary-container rounded-xl p-3 flex justify-between items-center border border-tertiary-fixed-dim transition-all shadow-sm">
-                <div class="flex items-center gap-3">
-                    <input id="chk-select-all-receipts" class="rounded border-outline-variant text-primary focus:ring-primary w-5 h-5 cursor-pointer" type="checkbox"/>
-                    <span id="label-selected-receipts-count" class="font-label-md text-xs sm:text-label-md text-on-secondary-container font-semibold">2 receipts selected</span>
+            <div id="receipt-selection-bar" class="hidden bg-surface-container-lowest/95 backdrop-blur-md rounded-lg px-3 py-2 flex items-center justify-between border border-primary/20 transition-all shadow-sm">
+                <div class="flex items-center gap-2 min-w-0">
+                    <input id="chk-select-all-receipts" class="rounded border-outline-variant text-primary focus:ring-1 focus:ring-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+                    <span id="label-selected-receipts-count" class="font-label-sm text-[11px] sm:text-xs text-on-surface font-semibold truncate">2 selected</span>
                 </div>
-                <div class="flex gap-2">
-                    <button id="btn-deselect-receipts" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-lowest border border-outline-variant text-on-surface font-label-sm text-xs hover:bg-surface-container transition-colors">Deselect All</button>
-                    <button id="btn-delete-receipts" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-error text-on-error font-label-sm text-xs flex items-center gap-1 hover:bg-on-error-container transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button id="btn-deselect-receipts" class="px-2.5 py-1 rounded-md bg-surface-container-low border border-surface-variant/60 text-on-surface-variant hover:text-on-surface font-label-sm text-[11px] sm:text-xs transition-colors active:scale-95">Deselect</button>
+                    <button id="btn-delete-receipts" class="px-2.5 py-1 rounded-md bg-error/10 border border-error/20 text-error font-label-sm text-[11px] sm:text-xs flex items-center gap-1 hover:bg-error-container/60 transition-colors active:scale-95 font-semibold">
+                        <span class="material-symbols-outlined text-[14px]">delete</span>
                         Delete
                     </button>
                 </div>
@@ -335,15 +335,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md" id="receipt-cards-grid">
                 
                 <!-- Receipt Card 1 (Whole Foods Market) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
                     </div>
                     
                     <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-surface-variant/60">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-85 hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
+                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-0.5 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
                             <span class="material-symbols-outlined text-[14px]">photo_camera</span> Scan
                         </div>
                     </div>
@@ -365,23 +365,23 @@
                                 <span class="material-symbols-outlined text-[14px]">local_dining</span>
                                 Groceries
                             </span>
-                            <button aria-label="More options" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high">
-                                <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                            </button>
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high flex items-center">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </span>
                         </div>
                     </div>
                 </a>
 
                 <!-- Receipt Card 2 (Blue Bottle Coffee) -->
-                <div class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between" data-category="Dining" data-merchant="Blue Bottle Coffee">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Dining" data-merchant="Blue Bottle Coffee">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
                     </div>
                     
                     <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-surface-variant/60">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-85 hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
+                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-0.5 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
                             <span class="material-symbols-outlined text-[14px]">photo_camera</span> Scan
                         </div>
                     </div>
@@ -389,7 +389,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2">Blue Bottle Coffee</h3>
+                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱12.75</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -403,17 +403,17 @@
                                 <span class="material-symbols-outlined text-[14px]">restaurant</span>
                                 Dining
                             </span>
-                            <button aria-label="More options" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high">
-                                <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                            </button>
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high flex items-center">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Receipt Card 3 (AWS Digital Receipt) -->
-                <div class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between" data-category="Software" data-merchant="Amazon Web Services">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Software" data-merchant="Amazon Web Services">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
                     </div>
                     
                     <div class="h-44 bg-surface-container flex flex-col items-center justify-center text-on-surface-variant relative border-b border-surface-variant/60">
@@ -424,7 +424,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2">Amazon Web Services</h3>
+                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱450.00</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -438,23 +438,23 @@
                                 <span class="material-symbols-outlined text-[14px]">computer</span>
                                 Software
                             </span>
-                            <button aria-label="More options" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high">
-                                <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                            </button>
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high flex items-center">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Receipt Card 4 (Shell Gas Station) -->
-                <div class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between" data-category="Transportation" data-merchant="Shell Station">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Transportation" data-merchant="Shell Station">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
                     </div>
                     
                     <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-surface-variant/60">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-85 hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80"/>
+                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-0.5 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
                             <span class="material-symbols-outlined text-[14px]">photo_camera</span> Scan
                         </div>
                     </div>
@@ -462,7 +462,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2">Shell Station</h3>
+                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Shell Station</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱45.20</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -476,13 +476,23 @@
                                 <span class="material-symbols-outlined text-[14px]">local_gas_station</span>
                                 Transport
                             </span>
-                            <button aria-label="More options" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high">
-                                <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                            </button>
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-high flex items-center">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
 
+            </div>
+
+            <!-- Receipt Filter Empty State -->
+            <div id="empty-state-receipts" class="hidden flex-col items-center justify-center text-center py-12 px-4 bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant/60 my-2">
+                <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-3">
+                    <span class="material-symbols-outlined text-[24px]">receipt_long</span>
+                </div>
+                <h3 class="font-headline-md text-base text-on-surface font-semibold">No Receipts Found</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant mt-1 max-w-xs">No scanned receipts match your active search or category filters.</p>
+                <button id="btn-reset-receipt-filters" class="mt-4 px-4 py-1.5 rounded-full border border-surface-variant font-label-sm text-xs text-primary font-semibold hover:bg-surface-container-low transition-colors active:scale-95">Reset Filters</button>
             </div>
         </div>
 
@@ -604,7 +614,7 @@
             const selected = document.querySelectorAll('.chk-receipt-item:checked');
             if (selected.length > 0) {
                 receiptBar.classList.remove('hidden');
-                countLabel.textContent = `${selected.length} receipt${selected.length > 1 ? 's' : ''} selected`;
+                countLabel.textContent = `${selected.length} selected`;
             } else {
                 receiptBar.classList.add('hidden');
             }
@@ -728,6 +738,7 @@
             });
 
             // Receipt cards filter
+            let visibleReceipts = 0;
             document.querySelectorAll('#receipt-cards-grid .receipt-card').forEach(card => {
                 const cardCat = card.dataset.category;
                 const cardMerchant = (card.dataset.merchant || '').toLowerCase();
@@ -737,10 +748,23 @@
 
                 if (matchesCat && matchesQuery) {
                     card.classList.remove('hidden');
+                    visibleReceipts++;
                 } else {
                     card.classList.add('hidden');
                 }
             });
+
+            // Toggle Receipt Empty State
+            const receiptEmptyState = document.getElementById('empty-state-receipts');
+            if (receiptEmptyState) {
+                if (visibleReceipts === 0) {
+                    receiptEmptyState.classList.remove('hidden');
+                    receiptEmptyState.classList.add('flex');
+                } else {
+                    receiptEmptyState.classList.add('hidden');
+                    receiptEmptyState.classList.remove('flex');
+                }
+            }
 
             // Update badge
             if (badgeMobile) {
@@ -752,6 +776,18 @@
                     badgeMobile.classList.add('hidden');
                 }
             }
+        }
+
+        const resetReceiptFiltersBtn = document.getElementById('btn-reset-receipt-filters');
+        if (resetReceiptFiltersBtn) {
+            resetReceiptFiltersBtn.addEventListener('click', () => {
+                selectedType = 'all';
+                selectedCategory = 'all';
+                if (searchMobile) searchMobile.value = '';
+                if (desktopType) desktopType.value = 'all';
+                if (desktopCat) desktopCat.value = 'all';
+                applyFilters();
+            });
         }
 
         if (applyModalBtn) {
