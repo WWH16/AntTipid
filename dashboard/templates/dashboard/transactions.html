@@ -351,7 +351,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
                                 <span class="font-headline-md text-base text-primary font-bold whitespace-nowrap">₱142.50</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -389,7 +389,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱12.75</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -424,7 +424,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱450.00</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -462,7 +462,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Shell Station</h3>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Shell Station</h3>
                                 <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap">₱45.20</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -784,6 +784,29 @@
             });
         });
 
+        // Search Keyword Highlighting Helper
+        function highlightMatch(el, query) {
+            if (!el) return;
+            if (!el.dataset.originalText) {
+                el.dataset.originalText = el.textContent.trim();
+            }
+            const original = el.dataset.originalText;
+
+            if (!query) {
+                el.textContent = original;
+                return;
+            }
+
+            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+            
+            if (regex.test(original)) {
+                el.innerHTML = original.replace(regex, '<mark class="bg-primary/20 text-primary font-bold rounded px-0.5 py-0">$1</mark>');
+            } else {
+                el.textContent = original;
+            }
+        }
+
         // Filter Application Logic
         function applyFilters() {
             const query = (searchMobile ? searchMobile.value : '').toLowerCase().trim();
@@ -796,7 +819,8 @@
             document.querySelectorAll('#container-mobile-transactions .tx-item').forEach(item => {
                 const itemType = item.dataset.type;
                 const itemCat = item.dataset.category;
-                const itemName = (item.querySelector('.tx-name')?.textContent || '').toLowerCase();
+                const nameEl = item.querySelector('.tx-name');
+                const itemName = (nameEl?.dataset.originalText || nameEl?.textContent || '').toLowerCase();
 
                 const matchesType = (selectedType === 'all' || itemType === selectedType);
                 const matchesCat = (selectedCategory === 'all' || itemCat === selectedCategory);
@@ -804,8 +828,10 @@
 
                 if (matchesType && matchesCat && matchesQuery) {
                     item.classList.remove('hidden');
+                    highlightMatch(nameEl, query);
                 } else {
                     item.classList.add('hidden');
+                    highlightMatch(nameEl, '');
                 }
             });
 
@@ -813,7 +839,8 @@
             document.querySelectorAll('#tbody-desktop-transactions .tx-row').forEach(row => {
                 const rowType = row.dataset.type;
                 const rowCat = row.dataset.category;
-                const rowName = (row.querySelector('.tx-name')?.textContent || '').toLowerCase();
+                const nameEl = row.querySelector('.tx-name');
+                const rowName = (nameEl?.dataset.originalText || nameEl?.textContent || '').toLowerCase();
 
                 const matchesType = (selectedType === 'all' || rowType === selectedType);
                 const matchesCat = (selectedCategory === 'all' || rowCat === selectedCategory);
@@ -821,8 +848,10 @@
 
                 if (matchesType && matchesCat && matchesQuery) {
                     row.classList.remove('hidden');
+                    highlightMatch(nameEl, query);
                 } else {
                     row.classList.add('hidden');
+                    highlightMatch(nameEl, '');
                 }
             });
 
@@ -830,16 +859,19 @@
             let visibleReceipts = 0;
             document.querySelectorAll('#receipt-cards-grid .receipt-card').forEach(card => {
                 const cardCat = card.dataset.category;
-                const cardMerchant = (card.dataset.merchant || '').toLowerCase();
+                const titleEl = card.querySelector('.receipt-merchant-title');
+                const cardMerchant = (card.dataset.merchant || titleEl?.dataset.originalText || titleEl?.textContent || '').toLowerCase();
 
                 const matchesCat = (selectedCategory === 'all' || cardCat === selectedCategory);
                 const matchesQuery = (!query || cardMerchant.includes(query));
 
                 if (matchesCat && matchesQuery) {
                     card.classList.remove('hidden');
+                    highlightMatch(titleEl, query);
                     visibleReceipts++;
                 } else {
                     card.classList.add('hidden');
+                    highlightMatch(titleEl, '');
                 }
             });
 
