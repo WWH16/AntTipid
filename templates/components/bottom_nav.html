@@ -4,7 +4,7 @@
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'dashboard' %}data-weight="fill"{% endif %}>home</span>
         <span class="font-label-sm text-[11px] leading-tight mt-0.5">Home</span>
     </a>
-    <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+    <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="{% url 'transactions' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}data-weight="fill"{% endif %}>receipt_long</span>
         <span class="font-label-sm text-[11px] leading-tight mt-0.5">History</span>
     </a>

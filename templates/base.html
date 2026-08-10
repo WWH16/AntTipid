@@ -138,19 +138,19 @@
         <div class="flex-1 space-y-1">
             {% block sidebar_nav %}
             <a id="nav-dashboard" class="flex items-center gap-md px-md py-sm {% if active_nav == 'dashboard' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'dashboard' %}">
-                <span class="material-symbols-outlined" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>dashboard</span>
-                Dashboard
+                <span class="material-symbols-outlined" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
+                Home
             </a>
-            <a id="nav-transactions" class="flex items-center gap-md px-md py-sm {% if active_nav == 'transactions' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
-                <span class="material-symbols-outlined">receipt_long</span>
-                Transactions
+            <a id="nav-transactions" class="flex items-center gap-md px-md py-sm {% if active_nav == 'transactions' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'transactions' %}">
+                <span class="material-symbols-outlined" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
+                History
             </a>
             <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
-                <span class="material-symbols-outlined">savings</span>
-                Budgets
+                <span class="material-symbols-outlined" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
+                Budget
             </a>
             <a id="nav-reports" class="flex items-center gap-md px-md py-sm {% if active_nav == 'reports' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
-                <span class="material-symbols-outlined">query_stats</span>
+                <span class="material-symbols-outlined" {% if active_nav == 'reports' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>analytics</span>
                 Reports
             </a>
             {% endblock %}
@@ -235,7 +235,7 @@
             <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'dashboard' %}data-weight="fill"{% endif %}>home</span>
             <span class="font-label-sm text-[11px] leading-tight mt-0.5">Home</span>
         </a>
-        <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+        <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="{% url 'transactions' %}">
             <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}data-weight="fill"{% endif %}>receipt_long</span>
             <span class="font-label-sm text-[11px] leading-tight mt-0.5">History</span>
         </a>
