@@ -308,18 +308,24 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<!-- FILTER BOTTOM SHEET (Mobile Modal z-60) -->
+<!-- FILTER BOTTOM SHEET (Mobile Modal z-[70])-->
 <!-- ═══════════════════════════════════════ -->
-<div id="filter-sheet-wrapper" class="fixed inset-0 z-[60] flex items-end justify-center hidden">
-    <!-- Backdrop -->
+<div id="filter-sheet-wrapper" class="fixed inset-0 z-[70] flex items-end justify-center hidden touch-none">
+    <!-- Backdrop (Tap outside to close) -->
     <div id="filter-sheet-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out"></div>
     
     <!-- Bottom Sheet Content -->
-    <div id="filter-sheet-content" class="bg-surface w-full max-w-lg rounded-t-[24px] p-5 pb-8 pb-safe relative z-10 shadow-[0_-8px_32px_rgba(15,23,42,0.18)] border-t border-outline-variant/40 max-h-[85vh] overflow-y-auto translate-y-full transition-transform duration-300 ease-out">
-        <div class="w-12 h-1 bg-surface-variant rounded-full mx-auto mb-4"></div>
+    <div id="filter-sheet-content" class="bg-surface w-full max-w-lg rounded-t-[24px] p-5 pb-8 pb-safe relative z-10 shadow-[0_-8px_32px_rgba(15,23,42,0.2)] border-t border-outline-variant/40 max-h-[85vh] overflow-y-auto overscroll-contain translate-y-full transition-transform duration-300 ease-out touch-pan-y">
+        
+        <!-- Drag Handle Area -->
+        <div id="filter-sheet-handle" class="w-full py-1.5 -mt-2 mb-3 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none">
+            <div class="w-12 h-1.5 bg-surface-variant rounded-full"></div>
+        </div>
+
+        <!-- Header with Close Button -->
         <div class="flex justify-between items-center mb-5">
             <h3 class="font-headline-md text-lg font-bold text-on-surface">Filter Transactions</h3>
-            <button id="btn-close-filter-sheet" aria-label="Close filters" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+            <button id="btn-close-filter-sheet" aria-label="Close filters" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors active:scale-95">
                 <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
         </div>
@@ -380,6 +386,8 @@
         const filterWrapper = document.getElementById('filter-sheet-wrapper');
         const filterBackdrop = document.getElementById('filter-sheet-backdrop');
         const filterContent = document.getElementById('filter-sheet-content');
+        const dragHandle = document.getElementById('filter-sheet-handle');
+        
         const openMobileBtn = document.getElementById('btn-open-filter-mobile');
         const closeMobileBtn = document.getElementById('btn-close-filter-sheet');
         const applyModalBtn = document.getElementById('btn-apply-filters-modal');
@@ -393,27 +401,113 @@
         let selectedCategory = 'all';
         let selectedDate = 'this-month';
 
+        // Lock background scroll when modal is open
+        function lockScroll() {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        }
+
+        function unlockScroll() {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }
+
         function openModal() {
+            lockScroll();
             filterWrapper.classList.remove('hidden');
+            filterContent.style.transition = 'transform 300ms ease-out';
+            filterContent.style.transform = 'translateY(100%)';
+            
             requestAnimationFrame(() => {
                 filterBackdrop.classList.remove('opacity-0');
                 filterBackdrop.classList.add('opacity-100');
-                filterContent.classList.remove('translate-y-full');
+                filterContent.style.transform = 'translateY(0)';
             });
         }
 
         function closeModal() {
             filterBackdrop.classList.remove('opacity-100');
             filterBackdrop.classList.add('opacity-0');
-            filterContent.classList.add('translate-y-full');
+            filterContent.style.transition = 'transform 300ms ease-out';
+            filterContent.style.transform = 'translateY(100%)';
+            
             setTimeout(() => {
                 filterWrapper.classList.add('hidden');
+                unlockScroll();
             }, 300);
         }
 
+        // Close triggers: Button X & Backdrop Touch
         if (openMobileBtn) openMobileBtn.addEventListener('click', openModal);
         if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeModal);
         if (filterBackdrop) filterBackdrop.addEventListener('click', closeModal);
+
+        // Prevent background touch scrolling on backdrop
+        if (filterBackdrop) {
+            filterBackdrop.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+        }
+
+        // Drag down to dismiss gesture
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
+        function handleDragStart(e) {
+            const touch = e.touches[0];
+            startY = touch.clientY;
+            currentY = startY;
+            isDragging = true;
+            filterContent.style.transition = 'none';
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            currentY = touch.clientY;
+            const deltaY = currentY - startY;
+
+            // Only allow dragging downward when scrolled to the top of sheet content
+            if (deltaY > 0 && filterContent.scrollTop <= 0) {
+                e.preventDefault();
+                filterContent.style.transform = `translateY(${deltaY}px)`;
+            }
+        }
+
+        function handleDragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            filterContent.style.transition = 'transform 300ms ease-out';
+            const deltaY = currentY - startY;
+
+            if (deltaY > 90 && filterContent.scrollTop <= 0) {
+                // Dragged down > 90px -> dismiss sheet
+                filterContent.style.transform = 'translateY(100%)';
+                closeModal();
+            } else {
+                // Snap back to top
+                filterContent.style.transform = 'translateY(0)';
+            }
+            startY = 0;
+            currentY = 0;
+        }
+
+        if (dragHandle) {
+            dragHandle.addEventListener('touchstart', handleDragStart, { passive: true });
+            dragHandle.addEventListener('touchmove', handleDragMove, { passive: false });
+            dragHandle.addEventListener('touchend', handleDragEnd);
+        }
+
+        if (filterContent) {
+            filterContent.addEventListener('touchstart', (e) => {
+                if (filterContent.scrollTop <= 0) {
+                    handleDragStart(e);
+                }
+            }, { passive: true });
+            filterContent.addEventListener('touchmove', handleDragMove, { passive: false });
+            filterContent.addEventListener('touchend', handleDragEnd);
+        }
 
         // Type Pills inside Modal
         document.querySelectorAll('#group-type-pills .pill-type').forEach(btn => {
