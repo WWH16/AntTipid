@@ -15,3 +15,11 @@ def transactions_view(request):
         'active_nav': 'transactions',
     }
     return render(request, 'dashboard/transactions.html', context)
+
+
+def budget_view(request):
+    """Render the budget view."""
+    context = {
+        'active_nav': 'budgets',
+    }
+    return render(request, 'dashboard/budget.html', context)

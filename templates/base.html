@@ -145,7 +145,7 @@
                 <span class="material-symbols-outlined" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
                 History
             </a>
-            <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'budget' %}">
                 <span class="material-symbols-outlined" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
                 Budget
             </a>
@@ -245,7 +245,7 @@
             </div>
             <span class="font-label-sm text-[11px] leading-tight mt-0.5 text-primary font-semibold">Add</span>
         </a>
-        <a id="bnav-budget" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'budgets' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+        <a id="bnav-budget" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'budgets' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="{% url 'budget' %}">
             <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'budgets' %}data-weight="fill"{% endif %}>account_balance_wallet</span>
             <span class="font-label-sm text-[11px] leading-tight mt-0.5">Budget</span>
         </a>

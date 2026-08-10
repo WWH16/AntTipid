@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Budget - AntTipid{% endblock %}
+{% block meta_description %}Manage your monthly budget with AntTipid.{% endblock %}
+
+{% block extra_head %}
+<style>
+.progress-ring__circle {
+    transition: stroke-dashoffset 1s ease-in-out;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
+    <div class="max-w-7xl mx-auto flex flex-col gap-md md:gap-lg">
+        
+        <!-- Page Header -->
+        <header class="flex flex-col">
+            <h1 class="font-display text-2xl sm:text-3xl md:text-display font-bold text-on-background tracking-tight">Monthly Budget</h1>
+            <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant mt-0.5">November 2023</p>
+        </header>
+
+        <!-- Budget Summary Section -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+            <!-- Overall Progress Card -->
+            <div class="md:col-span-2 bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-soft flex flex-col sm:flex-row items-center gap-md">
+                <div class="relative w-40 h-40 flex-shrink-0">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <!-- Background Circle -->
+                        <circle class="text-surface-variant stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
+                        <!-- Progress Circle -->
+                        <circle class="text-primary stroke-current progress-ring__circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="62.8" cx="50" cy="50" r="40" fill="transparent" stroke-linecap="round"></circle>
+                    </svg>
+                    <!-- Center Text -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Remaining</span>
+                        <span class="font-headline-md text-headline-md font-bold text-on-surface">₱12,450</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">of ₱50,000</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-sm text-center sm:text-left flex-1">
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Budget Health</h3>
+                    <p class="font-body-md text-on-surface-variant">You've spent 75% of your budget this month. You're on track!</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats Column -->
+            <div class="flex flex-col gap-md">
+                <!-- Total Spent Card -->
+                <div class="bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-soft flex items-center gap-md">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container text-on-primary-container flex-shrink-0">
+                        <span class="material-symbols-outlined filled">trending_down</span>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant">Total Spent</p>
+                        <p class="font-headline-md text-headline-md font-bold text-on-surface">₱37,550</p>
+                    </div>
+                </div>
+                <!-- Over Budget Card -->
+                <div class="bg-error-container/20 border border-error/20 rounded-xl p-md shadow-soft flex items-center gap-md">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center bg-error text-on-error flex-shrink-0">
+                        <span class="material-symbols-outlined filled">warning</span>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-error">Over Budget</p>
+                        <p class="font-headline-md text-headline-md font-bold text-on-surface">2 Categories</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="flex flex-col gap-md mt-sm">
+            <h2 class="font-headline-md text-headline-md text-on-surface">Categories</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+                
+                <!-- Food & Dining -->
+                <div class="bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-soft flex flex-col gap-md">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-sm">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container text-on-primary-container">
+                                <span class="material-symbols-outlined filled">restaurant</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-on-surface">Food & Dining</h3>
+                                <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant mt-0.5">₱2,400 / ₱3,000</p>
+                            </div>
+                        </div>
+                        <button class="text-primary font-label-sm text-label-sm hover:underline active:opacity-70 px-2 py-1">Adjust</button>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">80%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transportation (Over Budget) -->
+                <div class="bg-surface md:bg-surface-container-lowest border border-error/30 rounded-xl p-md shadow-soft flex flex-col gap-md relative overflow-hidden">
+                    <div class="absolute inset-0 bg-error/5 pointer-events-none"></div>
+                    <div class="flex justify-between items-start relative z-10">
+                        <div class="flex items-center gap-sm">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-error-container text-on-error-container">
+                                <span class="material-symbols-outlined filled">directions_car</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-on-surface">Transportation</h3>
+                                <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant mt-0.5">₱5,200 / ₱4,000</p>
+                            </div>
+                        </div>
+                        <button class="text-error font-label-sm text-label-sm hover:underline active:opacity-70 px-2 py-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                            Adjust
+                        </button>
+                    </div>
+                    <div class="flex flex-col gap-1 relative z-10">
+                        <div class="flex justify-between items-center">
+                            <span class="font-label-sm text-label-sm text-error">130%</span>
+                            <span class="font-label-sm text-label-sm text-error">Over budget by ₱1,200</span>
+                        </div>
+                        <div class="w-full h-2 bg-error-container rounded-full overflow-hidden">
+                            <div class="h-full bg-error rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utilities -->
+                <div class="bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-soft flex flex-col gap-md">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-sm">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container text-on-primary-container">
+                                <span class="material-symbols-outlined filled">bolt</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-on-surface">Utilities</h3>
+                                <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant mt-0.5">₱4,500 / ₱5,000</p>
+                            </div>
+                        </div>
+                        <button class="text-primary font-label-sm text-label-sm hover:underline active:opacity-70 px-2 py-1">Adjust</button>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">90%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entertainment (Warning) -->
+                <div class="bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-xl p-md shadow-soft flex flex-col gap-md">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-sm">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-secondary-container text-on-secondary-container">
+                                <span class="material-symbols-outlined filled">movie</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-md text-label-md text-on-surface">Entertainment</h3>
+                                <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant mt-0.5">₱2,800 / ₱3,000</p>
+                            </div>
+                        </div>
+                        <button class="text-primary font-label-sm text-label-sm hover:underline active:opacity-70 px-2 py-1">Adjust</button>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">93%</span>
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">Nearing limit</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-secondary rounded-full" style="width: 93%"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+    </div>
+    
+    <!-- Mobile bottom spacer -->
+    <div class="h-20 md:hidden" aria-hidden="true"></div>
+</div>
+{% endblock %}
