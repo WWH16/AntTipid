@@ -3,14 +3,6 @@
 {% block title %}AntTipid — Receipt Details (Whole Foods Market){% endblock %}
 {% block meta_description %}View itemized scanned details, receipt image, subtotal, tax, and merchant metadata.{% endblock %}
 
-{% block extra_head %}
-<style>
-.receipt-zoom-container {
-    transition: transform 0.3s ease-out;
-}
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
     <div class="max-w-7xl mx-auto flex flex-col gap-md md:gap-lg">
@@ -20,7 +12,7 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="flex flex-col gap-sm">
             <div>
-                <a href="{% url 'transactions' %}" class="inline-flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs sm:text-label-md py-1">
+                <a href="{% url 'transactions' %}" class="inline-flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs sm:text-label-md py-1 active:opacity-75">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                     Back to History & Receipts
                 </a>
@@ -28,14 +20,14 @@
 
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm sm:gap-md">
                 <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2.5 flex-wrap">
                         <h1 class="font-display text-2xl sm:text-3xl md:text-display font-bold text-on-background tracking-tight">Whole Foods Market</h1>
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container/50 text-on-secondary-container font-label-sm text-xs font-semibold">
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary-container/60 text-on-secondary-container font-label-sm text-xs font-semibold border border-outline-variant/30">
                             <span class="material-symbols-outlined text-[14px]">local_dining</span>
                             Groceries
                         </span>
                     </div>
-                    <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant flex items-center gap-2">
+                    <p class="font-body-sm text-xs sm:text-body-md text-on-surface-variant flex items-center gap-2 mt-0.5">
                         <span class="material-symbols-outlined text-[14px]">calendar_today</span> Oct 24, 2023 
                         <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
                         <span class="material-symbols-outlined text-[14px]">schedule</span> 14:32 PM
@@ -44,11 +36,11 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
-                    <button id="btn-edit-receipt" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-surface-variant bg-surface md:bg-surface-container-lowest text-on-surface font-label-md text-xs sm:text-label-md flex items-center gap-1.5 hover:bg-surface-container-high transition-all shadow-sm active:scale-95">
+                    <button id="btn-edit-receipt" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-surface-variant bg-surface md:bg-surface-container-lowest text-on-surface font-label-md text-xs sm:text-label-md flex items-center gap-1.5 hover:bg-surface-container-high transition-all shadow-sm active:scale-95 focus:ring-2 focus:ring-primary/20 outline-none">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">edit</span>
                         Edit
                     </button>
-                    <button id="btn-delete-receipt" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-error/10 border border-error/20 text-error font-label-md text-xs sm:text-label-md flex items-center gap-1.5 hover:bg-error-container/60 transition-all active:scale-95">
+                    <button id="btn-delete-receipt" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-error/10 border border-error/20 text-error font-label-md text-xs sm:text-label-md flex items-center gap-1.5 hover:bg-error-container/60 transition-all active:scale-95 focus:ring-2 focus:ring-error/20 outline-none font-semibold">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
                         Delete
                     </button>
@@ -63,18 +55,15 @@
             
             <!-- LEFT COLUMN: VISUAL SCANNED RECEIPT IMAGE -->
             <div class="lg:col-span-5 flex flex-col gap-md">
-                <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-2 sm:p-3 shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all flex flex-col relative group overflow-hidden min-h-[320px] sm:min-h-[440px] lg:min-h-[560px]">
-                    <div class="flex-1 rounded-lg overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[300px]">
-                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[600px] shadow-sm rounded-lg transition-transform duration-300 cursor-pointer" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80"/>
+                <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-2.5 sm:p-3 shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all flex flex-col relative group overflow-hidden min-h-[320px] sm:min-h-[440px] lg:min-h-[560px]">
+                    <div class="flex-1 rounded-lg overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[300px] cursor-pointer" id="receipt-preview-container">
+                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[600px] opacity-95 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"></div>
                     </div>
 
                     <!-- Overlay Image Controls -->
-                    <div class="absolute bottom-4 right-4 flex gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <button id="btn-zoom-receipt" aria-label="Zoom receipt image" class="bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/40 text-on-surface p-2 rounded-full shadow-md hover:bg-surface-container-high transition-all flex items-center justify-center min-w-[44px] min-h-[44px] active:scale-95">
-                            <span class="material-symbols-outlined text-[20px]">zoom_in</span>
-                        </button>
-                        <button id="btn-view-original" class="bg-surface-container-lowest/90 backdrop-blur-md border border-outline-variant/40 text-on-surface px-3.5 py-2 rounded-full shadow-md hover:bg-surface-container-high transition-all font-label-sm text-xs flex items-center justify-center gap-1 min-h-[44px] active:scale-95">
+                    <div class="absolute bottom-4 right-4 flex gap-2 opacity-95 group-hover:opacity-100 transition-opacity">
+                        <button id="btn-view-original" class="bg-surface-container-lowest/95 backdrop-blur-md border border-outline-variant/40 text-on-surface px-3.5 py-2 rounded-full shadow-md hover:bg-surface-container-high transition-all font-label-sm text-xs flex items-center justify-center gap-1 min-h-[44px] active:scale-95">
                             <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                             View Full Scan
                         </button>
@@ -87,82 +76,82 @@
                 
                 <!-- Itemized Scanned Table Card -->
                 <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-md md:p-lg shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all flex flex-col">
-                    <div class="flex justify-between items-center mb-md">
+                    <div class="flex justify-between items-center mb-md border-b border-surface-variant/60 pb-3">
                         <h2 class="font-headline-md text-lg md:text-headline-md font-semibold text-on-surface flex items-center gap-2">
                             <span class="material-symbols-outlined text-secondary text-[22px]">receipt_long</span>
                             Scanned Items
                         </h2>
-                        <span class="font-label-sm text-xs text-on-surface-variant font-medium">5 Items Detected</span>
+                        <span class="font-label-sm text-xs text-on-surface-variant font-medium bg-surface-container-low px-2.5 py-1 rounded-full border border-surface-variant/40">5 Items Detected</span>
                     </div>
 
                     <!-- Items Table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-surface-variant/80 text-on-surface-variant">
-                                    <th class="py-2.5 px-2 font-label-md text-xs font-semibold w-3/5">Item Name</th>
-                                    <th class="py-2.5 px-2 font-label-md text-xs font-semibold w-1/5 text-right">Qty</th>
-                                    <th class="py-2.5 px-2 font-label-md text-xs font-semibold w-1/5 text-right">Price</th>
+                                <tr class="border-b border-surface-variant/80 text-on-surface-variant uppercase tracking-wider text-[11px]">
+                                    <th class="py-2.5 px-2 font-label-md font-semibold w-3/5">Item Description</th>
+                                    <th class="py-2.5 px-2 font-label-md font-semibold w-1/5 text-right">Qty</th>
+                                    <th class="py-2.5 px-2 font-label-md font-semibold w-1/5 text-right">Price</th>
                                 </tr>
                             </thead>
                             <tbody class="font-body-md text-sm text-on-surface divide-y divide-surface-variant/50">
-                                <tr class="hover:bg-surface-container-low transition-colors">
+                                <tr class="hover:bg-surface-container-low/70 transition-colors">
                                     <td class="py-3 px-2">
                                         <div class="font-medium text-on-surface">Organic Hass Avocados</div>
                                         <span class="font-label-sm text-[11px] text-on-surface-variant">2 @ ₱4.50/ea</span>
                                     </td>
-                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium">2</td>
-                                    <td class="py-3 px-2 text-right font-semibold text-on-surface">₱9.00</td>
+                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium tabular-nums">2</td>
+                                    <td class="py-3 px-2 text-right font-semibold text-on-surface tabular-nums">₱9.00</td>
                                 </tr>
-                                <tr class="hover:bg-surface-container-low transition-colors">
+                                <tr class="hover:bg-surface-container-low/70 transition-colors">
                                     <td class="py-3 px-2">
                                         <div class="font-medium text-on-surface">Almond Milk, Unsweetened</div>
                                         <span class="font-label-sm text-[11px] text-on-surface-variant">1 item</span>
                                     </td>
-                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium">1</td>
-                                    <td class="py-3 px-2 text-right font-semibold text-on-surface">₱3.99</td>
+                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium tabular-nums">1</td>
+                                    <td class="py-3 px-2 text-right font-semibold text-on-surface tabular-nums">₱3.99</td>
                                 </tr>
-                                <tr class="hover:bg-surface-container-low transition-colors">
+                                <tr class="hover:bg-surface-container-low/70 transition-colors">
                                     <td class="py-3 px-2">
                                         <div class="font-medium text-on-surface">Free Range Eggs (Dozen)</div>
                                         <span class="font-label-sm text-[11px] text-on-surface-variant">1 item</span>
                                     </td>
-                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium">1</td>
-                                    <td class="py-3 px-2 text-right font-semibold text-on-surface">₱6.49</td>
+                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium tabular-nums">1</td>
+                                    <td class="py-3 px-2 text-right font-semibold text-on-surface tabular-nums">₱6.49</td>
                                 </tr>
-                                <tr class="hover:bg-surface-container-low transition-colors">
+                                <tr class="hover:bg-surface-container-low/70 transition-colors">
                                     <td class="py-3 px-2">
                                         <div class="font-medium text-on-surface">Sourdough Loaf</div>
                                         <span class="font-label-sm text-[11px] text-on-surface-variant">1 item</span>
                                     </td>
-                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium">1</td>
-                                    <td class="py-3 px-2 text-right font-semibold text-on-surface">₱5.50</td>
+                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium tabular-nums">1</td>
+                                    <td class="py-3 px-2 text-right font-semibold text-on-surface tabular-nums">₱5.50</td>
                                 </tr>
-                                <tr class="hover:bg-surface-container-low transition-colors">
+                                <tr class="hover:bg-surface-container-low/70 transition-colors">
                                     <td class="py-3 px-2">
                                         <div class="font-medium text-on-surface">Organic Baby Spinach</div>
                                         <span class="font-label-sm text-[11px] text-on-surface-variant">1 item</span>
                                     </td>
-                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium">1</td>
-                                    <td class="py-3 px-2 text-right font-semibold text-on-surface">₱4.29</td>
+                                    <td class="py-3 px-2 text-right text-on-surface-variant font-medium tabular-nums">1</td>
+                                    <td class="py-3 px-2 text-right font-semibold text-on-surface tabular-nums">₱4.29</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Financial Summary Breakdown -->
-                    <div class="mt-md pt-md border-t-2 border-surface-variant flex flex-col gap-1.5">
+                    <div class="mt-md pt-md border-t-2 border-surface-variant flex flex-col gap-2">
                         <div class="flex justify-between items-center font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
                             <span>Subtotal</span>
-                            <span class="font-medium text-on-surface">₱29.27</span>
+                            <span class="font-medium text-on-surface tabular-nums">₱29.27</span>
                         </div>
                         <div class="flex justify-between items-center font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
                             <span>Tax (8.5%)</span>
-                            <span class="font-medium text-on-surface">₱2.63</span>
+                            <span class="font-medium text-on-surface tabular-nums">₱2.63</span>
                         </div>
                         <div class="border-t border-surface-variant/60 pt-3 mt-1 flex justify-between items-end">
                             <span class="font-headline-md text-base sm:text-headline-md font-bold text-on-surface">Total Amount</span>
-                            <span class="font-headline-lg text-xl sm:text-headline-lg text-primary font-bold tracking-tight">₱31.90</span>
+                            <span class="font-headline-lg text-xl sm:text-headline-lg text-primary font-bold tracking-tight tabular-nums">₱31.90</span>
                         </div>
                     </div>
                 </div>
@@ -170,10 +159,10 @@
                 <!-- Metadata Row (Payment Method & Notes) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
                     <!-- Payment Method -->
-                    <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all flex flex-col gap-1">
+                    <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all flex flex-col gap-1">
                         <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">Payment Method</span>
-                        <div class="flex items-center gap-2 mt-1">
-                            <div class="w-8 h-8 rounded-full bg-secondary-container/40 text-secondary flex items-center justify-center shrink-0">
+                        <div class="flex items-center gap-2.5 mt-1">
+                            <div class="w-8 h-8 rounded-full bg-secondary-container/50 text-secondary flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">credit_card</span>
                             </div>
                             <span class="font-body-md text-sm font-semibold text-on-surface">Visa ending in 1234</span>
@@ -181,7 +170,7 @@
                     </div>
 
                     <!-- Notes -->
-                    <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all flex flex-col gap-1">
+                    <div class="bg-surface md:bg-surface-container-lowest rounded-xl border border-surface-variant p-md shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md hover:border-outline-variant/80 transition-all flex flex-col gap-1">
                         <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">edit_note</span> Notes
                         </span>
@@ -203,41 +192,66 @@
 <!-- ═══════════════════════════════════════ -->
 <!-- FULL-SCREEN IMAGE MODAL VIEWER          -->
 <!-- ═══════════════════════════════════════ -->
-<div id="image-modal-wrapper" class="fixed inset-0 z-[80] bg-on-surface/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <button id="btn-close-image-modal" aria-label="Close image modal" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest transition-all z-10 shadow-md">
+<div id="image-modal-wrapper" class="fixed inset-0 z-[80] bg-on-surface/90 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-out">
+    <button id="btn-close-image-modal" aria-label="Close image modal" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest transition-all z-10 shadow-md active:scale-90">
         <span class="material-symbols-outlined text-[24px]">close</span>
     </button>
-    <img id="modal-full-img" alt="Full Receipt Scan" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=1200&q=80"/>
+    <img id="modal-full-img" alt="Full Receipt Scan" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl scale-95 transition-transform duration-300 ease-out" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=1200&q=80"/>
 </div>
 
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const imageModal = document.getElementById('image-modal-wrapper');
+        const modalImg = document.getElementById('modal-full-img');
         const zoomBtn = document.getElementById('btn-zoom-receipt');
         const viewOriginalBtn = document.getElementById('btn-view-original');
-        const previewImg = document.getElementById('receipt-preview-img');
+        const previewContainer = document.getElementById('receipt-preview-container');
         const closeImageModalBtn = document.getElementById('btn-close-image-modal');
 
         function openImageModal() {
-            if (imageModal) imageModal.classList.remove('hidden');
+            if (!imageModal) return;
             document.body.style.overflow = 'hidden';
+            imageModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                imageModal.classList.remove('opacity-0');
+                imageModal.classList.add('opacity-100');
+                if (modalImg) {
+                    modalImg.classList.remove('scale-95');
+                    modalImg.classList.add('scale-100');
+                }
+            });
         }
 
         function closeImageModal() {
-            if (imageModal) imageModal.classList.add('hidden');
-            document.body.style.overflow = '';
+            if (!imageModal) return;
+            imageModal.classList.remove('opacity-100');
+            imageModal.classList.add('opacity-0');
+            if (modalImg) {
+                modalImg.classList.remove('scale-100');
+                modalImg.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                imageModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
         }
 
         if (zoomBtn) zoomBtn.addEventListener('click', openImageModal);
         if (viewOriginalBtn) viewOriginalBtn.addEventListener('click', openImageModal);
-        if (previewImg) previewImg.addEventListener('click', openImageModal);
+        if (previewContainer) previewContainer.addEventListener('click', openImageModal);
         if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeImageModal);
         if (imageModal) {
             imageModal.addEventListener('click', (e) => {
                 if (e.target === imageModal) closeImageModal();
             });
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal && !imageModal.classList.contains('hidden')) {
+                closeImageModal();
+            }
+        });
     });
 </script>
 {% endblock %}
