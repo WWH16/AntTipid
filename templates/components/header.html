@@ -1,0 +1,32 @@
+{# Header App Bar Component (Mobile + Desktop) #}
+<header class="w-full top-0 sticky bg-surface/95 backdrop-blur-md z-40 flex justify-between items-center px-margin-mobile md:px-lg h-14 md:h-16 border-b border-outline-variant/40 shrink-0">
+    <!-- Left Logo & Branding -->
+    <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs shadow-sm">
+            AT
+        </div>
+        <span class="font-headline-lg-mobile text-xl font-bold text-primary tracking-tight">AntTipid</span>
+    </div>
+
+    <!-- Desktop Search Input (Hidden on mobile) -->
+    <div class="hidden md:block flex-1 max-w-md mx-md">
+        <div class="relative w-full">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            <input id="input-search" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-transparent hover:border-outline-variant focus:border-primary-container rounded-full text-body-sm focus:ring-2 focus:ring-primary-container/20 transition-all outline-none text-on-surface" placeholder="Search transactions, budgets..." type="text"/>
+        </div>
+    </div>
+
+    <!-- Actions (Notifications, Settings, Avatar) -->
+    <div class="flex items-center gap-1 md:gap-sm">
+        <button id="btn-notifications" aria-label="Notifications" class="w-10 h-10 flex items-center justify-center active:scale-95 transition-transform text-on-surface-variant rounded-full hover:bg-surface-container-low relative">
+            <span class="material-symbols-outlined text-[22px]">notifications</span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+        </button>
+        <button id="btn-settings" aria-label="Settings" class="w-10 h-10 flex items-center justify-center active:scale-95 transition-transform text-on-surface-variant rounded-full hover:bg-surface-container-low">
+            <span class="material-symbols-outlined text-[22px]">settings</span>
+        </button>
+        <div id="user-avatar" class="hidden md:flex w-9 h-9 rounded-full border border-surface-variant bg-secondary-container items-center justify-center cursor-pointer hover:opacity-90 transition-opacity text-on-secondary-container font-label-md text-xs font-semibold ml-1">
+            JR
+        </div>
+    </div>
+</header>

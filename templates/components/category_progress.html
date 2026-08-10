@@ -1,0 +1,16 @@
+{# Category Progress Bar Component #}
+{# Accepts: label, spent, total, percentage, icon, color_class #}
+<div class="flex items-center gap-2.5 sm:gap-3">
+    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full {{ bg_class|default:'bg-primary-container/20' }} flex items-center justify-center {{ text_class|default:'text-primary-container' }} shrink-0">
+        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">{{ icon|default:"category" }}</span>
+    </div>
+    <div class="flex-1 min-w-0">
+        <div class="flex justify-between font-label-sm text-xs sm:text-label-sm mb-1">
+            <span class="text-on-surface font-medium">{{ label }}</span>
+            <span class="text-on-surface-variant text-[11px] sm:text-xs">₱{{ spent }} / ₱{{ total }}</span>
+        </div>
+        <div class="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden">
+            <div class="h-full {{ bar_class|default:'bg-primary-container' }} rounded-full transition-all duration-500" style="width: {{ percentage }}%"></div>
+        </div>
+    </div>
+</div>

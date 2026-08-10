@@ -1,0 +1,50 @@
+{# Sidebar Navigation Component (Desktop) #}
+<nav class="bg-surface-container-low border-r border-outline-variant h-screen w-64 fixed left-0 top-0 flex-col py-lg px-md hidden md:flex z-40">
+    <!-- Logo & Title -->
+    <div class="flex items-center gap-sm mb-xl px-sm">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs">
+            AT
+        </div>
+        <div>
+            <h1 class="font-headline-md text-headline-md font-extrabold text-primary">AntTipid</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Financial Health</p>
+        </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="flex-1 space-y-1">
+        <a id="nav-dashboard" class="flex items-center gap-md px-md py-sm {% if active_nav == 'dashboard' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'dashboard' %}">
+            <span class="material-symbols-outlined" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>dashboard</span>
+            Dashboard
+        </a>
+        <a id="nav-transactions" class="flex items-center gap-md px-md py-sm {% if active_nav == 'transactions' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Transactions
+        </a>
+        <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <span class="material-symbols-outlined">savings</span>
+            Budgets
+        </a>
+        <a id="nav-reports" class="flex items-center gap-md px-md py-sm {% if active_nav == 'reports' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <span class="material-symbols-outlined">query_stats</span>
+            Reports
+        </a>
+    </div>
+
+    <!-- Add Transaction CTA -->
+    <button id="btn-add-transaction-desktop" class="w-full bg-primary text-on-primary py-sm rounded-full font-label-md text-label-md flex justify-center items-center gap-xs hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-soft mt-lg mb-lg">
+        <span class="material-symbols-outlined">add</span> Add Transaction
+    </button>
+
+    <!-- Footer Links -->
+    <div class="space-y-1 pt-md border-t border-outline-variant">
+        <a id="nav-help" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <span class="material-symbols-outlined">help</span>
+            Help
+        </a>
+        <a id="nav-signout" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+            <span class="material-symbols-outlined">logout</span>
+            Sign Out
+        </a>
+    </div>
+</nav>

@@ -1,0 +1,25 @@
+{# Bottom Navigation Bar Component (Mobile) #}
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-1.5 pb-safe bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] z-50 md:hidden">
+    <a id="bnav-home" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'dashboard' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="{% url 'dashboard' %}">
+        <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'dashboard' %}data-weight="fill"{% endif %}>home</span>
+        <span class="font-label-sm text-[11px] leading-tight mt-0.5">Home</span>
+    </a>
+    <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+        <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}data-weight="fill"{% endif %}>receipt_long</span>
+        <span class="font-label-sm text-[11px] leading-tight mt-0.5">History</span>
+    </a>
+    <a id="bnav-add" class="flex flex-col items-center justify-center w-[20%] -mt-5" href="#">
+        <div class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md active:scale-90 hover:bg-primary-container transition-all">
+            <span class="material-symbols-outlined text-[26px]">add</span>
+        </div>
+        <span class="font-label-sm text-[11px] leading-tight mt-0.5 text-primary font-semibold">Add</span>
+    </a>
+    <a id="bnav-budget" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'budgets' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+        <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'budgets' %}data-weight="fill"{% endif %}>account_balance_wallet</span>
+        <span class="font-label-sm text-[11px] leading-tight mt-0.5">Budget</span>
+    </a>
+    <a id="bnav-reports" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'reports' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="#">
+        <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'reports' %}data-weight="fill"{% endif %}>analytics</span>
+        <span class="font-label-sm text-[11px] leading-tight mt-0.5">Reports</span>
+    </a>
+</nav>

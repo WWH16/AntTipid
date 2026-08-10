@@ -1,0 +1,17 @@
+{# Hero Balance Card Component #}
+{# Accepts: title, amount, percentage, period #}
+<section id="card-balance" class="bg-gradient-to-br from-primary via-primary to-primary-container text-on-primary rounded-xl p-md sm:p-lg shadow-elevated relative overflow-hidden">
+    <div class="absolute -right-8 -top-8 w-48 sm:w-64 h-48 sm:h-64 bg-white opacity-10 rounded-full blur-2xl pointer-events-none"></div>
+    <h2 class="font-label-sm text-xs sm:text-label-sm uppercase tracking-wider opacity-90 mb-1 sm:mb-sm">
+        {{ title|default:"Current Balance" }}
+    </h2>
+    <div class="flex items-baseline justify-between gap-sm flex-wrap mt-xs">
+        <span class="font-display text-2xl sm:text-3xl md:text-display font-bold tracking-tight">
+            {{ amount|default:"₱124,500.00" }}
+        </span>
+        <span class="font-label-sm text-xs sm:text-label-md bg-white/20 px-2 py-0.5 sm:py-1 rounded-full flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] sm:text-[16px]">trending_up</span> {{ percentage|default:"+2.4%" }}
+        </span>
+    </div>
+    <p class="font-body-sm text-[11px] sm:text-body-sm opacity-80 mt-1">{{ period|default:"vs last month" }}</p>
+</section>

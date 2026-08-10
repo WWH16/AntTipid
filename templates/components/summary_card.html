@@ -1,0 +1,14 @@
+{# Summary Metric Card Component #}
+{# Accepts: label, amount, type ('income' or 'expense'), icon ('arrow_downward' or 'arrow_upward') #}
+<div class="bg-surface md:bg-surface-container-lowest p-sm sm:p-md rounded-xl border border-surface-variant shadow-soft flex items-center gap-2.5 sm:gap-md relative overflow-hidden">
+    <div class="absolute -right-4 -top-4 w-16 h-16 {% if type == 'income' %}bg-primary/5{% else %}bg-error/5{% endif %} rounded-full blur-xl pointer-events-none"></div>
+    <div class="w-9 h-9 sm:w-12 sm:h-12 bg-surface-container-low rounded-full flex items-center justify-center {% if type == 'income' %}text-primary-container{% else %}text-error{% endif %} shrink-0">
+        <span class="material-symbols-outlined text-[20px] sm:text-[24px]" style="font-variation-settings: 'FILL' 1;">
+            {{ icon|default:"arrow_downward" }}
+        </span>
+    </div>
+    <div class="min-w-0">
+        <p class="font-label-sm text-[10px] sm:text-label-sm text-on-surface-variant uppercase tracking-wider truncate">{{ label }}</p>
+        <p class="font-headline-md text-sm sm:text-lg md:text-headline-md font-bold text-on-surface truncate">{{ amount }}</p>
+    </div>
+</div>
