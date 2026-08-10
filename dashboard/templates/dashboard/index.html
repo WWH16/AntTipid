@@ -43,26 +43,26 @@
             <!-- ─── Income / Expenses Grid ─── -->
             <section class="grid grid-cols-2 gap-sm sm:gap-md">
                 <!-- Total Income -->
-                <div id="card-income" class="bg-surface md:bg-surface-container-lowest p-md sm:p-md rounded-xl border border-surface-variant shadow-soft hover:shadow-md transition-all flex items-center gap-3 sm:gap-md relative overflow-hidden group">
+                <div id="card-income" class="bg-surface md:bg-surface-container-lowest p-3.5 sm:p-md rounded-xl border border-surface-variant shadow-soft hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-md relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0 group-hover:bg-primary/20 transition-colors">
-                        <span class="material-symbols-outlined text-[20px] sm:text-[24px]">arrow_downward</span>
+                    <div class="w-8 h-8 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0 group-hover:bg-primary/20 transition-colors">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">arrow_downward</span>
                     </div>
-                    <div class="min-w-0">
+                    <div class="w-full min-w-0">
                         <p class="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Monthly Income</p>
-                        <p class="font-headline-md text-base sm:text-lg md:text-headline-md font-bold text-on-surface tabular-nums truncate">₱52,000.00</p>
+                        <p class="font-headline-md text-sm sm:text-lg md:text-headline-md font-bold text-on-surface tabular-nums tracking-tight whitespace-nowrap">₱52,000.00</p>
                     </div>
                 </div>
 
                 <!-- Total Expenses -->
-                <div id="card-expenses" class="bg-surface md:bg-surface-container-lowest p-md sm:p-md rounded-xl border border-surface-variant shadow-soft hover:shadow-md transition-all flex items-center gap-3 sm:gap-md relative overflow-hidden group">
+                <div id="card-expenses" class="bg-surface md:bg-surface-container-lowest p-3.5 sm:p-md rounded-xl border border-surface-variant shadow-soft hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-md relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-error/5 rounded-full blur-xl pointer-events-none"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-error/10 rounded-full flex items-center justify-center text-error shrink-0 group-hover:bg-error/20 transition-colors">
-                        <span class="material-symbols-outlined text-[20px] sm:text-[24px]">arrow_upward</span>
+                    <div class="w-8 h-8 sm:w-12 sm:h-12 bg-error/10 rounded-full flex items-center justify-center text-error shrink-0 group-hover:bg-error/20 transition-colors">
+                        <span class="material-symbols-outlined text-[18px] sm:text-[24px]">arrow_upward</span>
                     </div>
-                    <div class="min-w-0">
+                    <div class="w-full min-w-0">
                         <p class="font-label-sm text-[10px] sm:text-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Monthly Expenses</p>
-                        <p class="font-headline-md text-base sm:text-lg md:text-headline-md font-bold text-on-surface tabular-nums truncate">₱31,500.00</p>
+                        <p class="font-headline-md text-sm sm:text-lg md:text-headline-md font-bold text-on-surface tabular-nums tracking-tight whitespace-nowrap">₱31,500.00</p>
                     </div>
                 </div>
             </section>
