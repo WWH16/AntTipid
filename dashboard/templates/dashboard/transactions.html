@@ -695,6 +695,95 @@
         if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeModal);
         if (filterBackdrop) filterBackdrop.addEventListener('click', closeModal);
 
+        // Prevent background touch scrolling on backdrop
+        if (filterBackdrop) {
+            filterBackdrop.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+        }
+
+        // Drag down to dismiss gesture
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
+        function handleDragStart(e) {
+            const touch = e.touches[0];
+            startY = touch.clientY;
+            currentY = startY;
+            isDragging = true;
+            filterContent.style.transition = 'none';
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            currentY = touch.clientY;
+            const deltaY = currentY - startY;
+
+            // Only allow dragging downward when scrolled to the top of sheet content
+            if (deltaY > 0 && filterContent.scrollTop <= 0) {
+                e.preventDefault();
+                filterContent.style.transform = `translateY(${deltaY}px)`;
+            }
+        }
+
+        function handleDragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            filterContent.style.transition = 'transform 300ms ease-out';
+            const deltaY = currentY - startY;
+
+            if (deltaY > 90 && filterContent.scrollTop <= 0) {
+                // Dragged down > 90px -> dismiss sheet
+                filterContent.style.transform = 'translateY(100%)';
+                closeModal();
+            } else {
+                // Snap back to top
+                filterContent.style.transform = 'translateY(0)';
+            }
+            startY = 0;
+            currentY = 0;
+        }
+
+        if (dragHandle) {
+            dragHandle.addEventListener('touchstart', handleDragStart, { passive: true });
+            dragHandle.addEventListener('touchmove', handleDragMove, { passive: false });
+            dragHandle.addEventListener('touchend', handleDragEnd);
+        }
+
+        if (filterContent) {
+            filterContent.addEventListener('touchstart', (e) => {
+                if (filterContent.scrollTop <= 0) {
+                    handleDragStart(e);
+                }
+            }, { passive: true });
+            filterContent.addEventListener('touchmove', handleDragMove, { passive: false });
+            filterContent.addEventListener('touchend', handleDragEnd);
+        }
+
+        // Type Pills inside Modal
+        document.querySelectorAll('#group-type-pills .pill-type').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#group-type-pills .pill-type').forEach(b => {
+                    b.className = 'pill-type flex-1 py-2 px-3 rounded-full border border-surface-variant text-on-surface hover:bg-surface-container-low font-label-md text-xs transition-all';
+                });
+                btn.className = 'pill-type flex-1 py-2 px-3 rounded-full border border-primary bg-primary/10 text-primary font-label-md text-xs font-semibold transition-all';
+                selectedType = btn.dataset.type;
+            });
+        });
+
+        // Category Chips inside Modal
+        document.querySelectorAll('#group-category-chips .chip-cat').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#group-category-chips .chip-cat').forEach(b => {
+                    b.className = 'chip-cat px-3 py-1.5 rounded-full border border-surface-variant text-on-surface hover:bg-surface-container-low font-label-sm text-xs transition-all';
+                });
+                btn.className = 'chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary/10 text-primary font-label-sm text-xs font-semibold transition-all';
+                selectedCategory = btn.dataset.cat;
+            });
+        });
+
         // Filter Application Logic
         function applyFilters() {
             const query = (searchMobile ? searchMobile.value : '').toLowerCase().trim();
