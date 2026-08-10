@@ -204,6 +204,40 @@
     <span class="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
     <span id="toast-msg">Transaction saved successfully!</span>
 </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="modal-confirm-discard" class="fixed inset-0 z-[90] bg-on-surface/40 backdrop-blur-[2px] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-confirm-content" class="w-full max-w-sm bg-surface md:bg-surface-container-lowest rounded-2xl border border-surface-variant/80 p-lg shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-md">
+        
+        <!-- Warning Header Icon -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[22px]">warning</span>
+            </div>
+            <div>
+                <h3 class="font-headline-md text-base font-bold text-on-surface">Discard Changes?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">You have unsaved entry details.</p>
+            </div>
+        </div>
+
+        <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+            If you leave now, any details or amounts you've entered will be lost.
+        </p>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-sm pt-sm border-t border-surface-variant/60">
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-full border border-surface-variant/80 text-on-surface-variant font-label-md text-xs hover:bg-surface-container-high transition-all active:scale-95">
+                Keep Editing
+            </button>
+            <button type="button" id="btn-confirm-discard" class="px-4 py-2 rounded-full bg-error text-on-error font-label-md text-xs font-semibold hover:bg-error-container hover:text-on-error-container transition-all shadow-soft active:scale-95">
+                Discard & Leave
+            </button>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -225,6 +259,7 @@
                 const currentVal = parseFloat(inputAmount.value) || 0;
                 inputAmount.value = (currentVal + addVal).toFixed(2);
                 inputAmount.focus();
+                markDirty();
             });
         });
 
@@ -238,6 +273,7 @@
                 });
                 tab.classList.add('bg-surface', 'text-on-surface', 'shadow-xs');
                 tab.classList.remove('text-on-surface-variant');
+                markDirty();
             });
         });
 
@@ -261,7 +297,110 @@
                     activeIconBox.classList.remove('bg-surface-container');
                     activeIconBox.classList.add('bg-primary/20');
                 }
+                markDirty();
             });
+        });
+
+        // Dirty Form Detection & Unsaved Confirmation Modal
+        let isFormDirty = false;
+        let pendingTargetUrl = null;
+
+        const confirmModal = document.getElementById('modal-confirm-discard');
+        const confirmContent = document.getElementById('modal-confirm-content');
+        const btnKeepEditing = document.getElementById('btn-keep-editing');
+        const btnConfirmDiscard = document.getElementById('btn-confirm-discard');
+
+        function markDirty() {
+            isFormDirty = true;
+        }
+
+        const inputTitle = document.getElementById('input-title');
+        const inputNotes = document.getElementById('input-notes');
+
+        if (inputAmount) inputAmount.addEventListener('input', markDirty);
+        if (inputTitle) inputTitle.addEventListener('input', markDirty);
+        if (inputNotes) inputNotes.addEventListener('input', markDirty);
+        if (inputDate) inputDate.addEventListener('change', markDirty);
+
+        function openConfirmModal(targetUrl) {
+            pendingTargetUrl = targetUrl;
+            if (!confirmModal) return;
+            confirmModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                confirmModal.classList.remove('opacity-0');
+                confirmModal.classList.add('opacity-100');
+                if (confirmContent) {
+                    confirmContent.classList.remove('scale-95');
+                    confirmContent.classList.add('scale-100');
+                }
+            });
+        }
+
+        function closeConfirmModal() {
+            if (!confirmModal) return;
+            confirmModal.classList.remove('opacity-100');
+            confirmModal.classList.add('opacity-0');
+            if (confirmContent) {
+                confirmContent.classList.remove('scale-100');
+                confirmContent.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                pendingTargetUrl = null;
+            }, 200);
+        }
+
+        // Intercept navigation elements unconditionally (always pop up confirmation modal when leaving)
+        const navSelectors = [
+            '#btn-back',
+            '#btn-cancel',
+            '#btn-switch-scan',
+            '#nav-dashboard',
+            '#nav-transactions',
+            '#nav-budgets',
+            '#nav-reports',
+            '#bnav-home',
+            '#bnav-history',
+            '#bnav-budget',
+            '#bnav-reports'
+        ];
+
+        navSelectors.forEach(selector => {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const href = el.getAttribute('href') || "{% url 'transactions' %}";
+                    openConfirmModal(href);
+                });
+            }
+        });
+
+        if (btnKeepEditing) {
+            btnKeepEditing.addEventListener('click', closeConfirmModal);
+        }
+
+        if (btnConfirmDiscard) {
+            btnConfirmDiscard.addEventListener('click', () => {
+                isFormDirty = false;
+                if (pendingTargetUrl) {
+                    window.location.href = pendingTargetUrl;
+                } else {
+                    window.history.back();
+                }
+            });
+        }
+
+        if (confirmModal) {
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) closeConfirmModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && confirmModal && !confirmModal.classList.contains('hidden')) {
+                closeConfirmModal();
+            }
         });
 
         // Form Submit Simulation
@@ -270,6 +409,7 @@
         if (form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
+                isFormDirty = false; // Reset dirty state on successful save
                 if (toast) {
                     toast.classList.remove('hidden');
                     requestAnimationFrame(() => {
