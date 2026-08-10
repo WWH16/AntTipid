@@ -31,3 +31,11 @@ def reports_view(request):
         'active_nav': 'reports',
     }
     return render(request, 'dashboard/reports.html', context)
+
+
+def receipt_detail_view(request):
+    """Render the receipt details view."""
+    context = {
+        'active_nav': 'transactions',
+    }
+    return render(request, 'dashboard/receipt_detail.html', context)

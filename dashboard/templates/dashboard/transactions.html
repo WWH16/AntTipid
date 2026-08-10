@@ -335,7 +335,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md" id="receipt-cards-grid">
                 
                 <!-- Receipt Card 1 (Whole Foods Market) -->
-                <div class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between" data-category="Groceries" data-merchant="Whole Foods Market">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
                         <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary w-5 h-5 cursor-pointer shadow-sm" type="checkbox"/>
                     </div>
@@ -351,7 +351,7 @@
                     <div class="p-md flex flex-col justify-between flex-1 gap-sm">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2">Whole Foods Market</h3>
+                                <h3 class="font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
                                 <span class="font-headline-md text-base text-primary font-bold whitespace-nowrap">₱142.50</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
@@ -370,7 +370,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Receipt Card 2 (Blue Bottle Coffee) -->
                 <div class="receipt-card bg-surface md:bg-surface-container-lowest rounded-xl overflow-hidden border border-surface-variant shadow-[0_4px_12px_rgba(15,23,42,0.05)] hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between" data-category="Dining" data-merchant="Blue Bottle Coffee">
