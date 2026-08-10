@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}AntTipid — Add Manual Transaction{% endblock %}
+
+{% block meta_description %}Record a new income, expense, or transfer transaction manually in AntTipid.{% endblock %}
+
+{% block content %}
+<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
+    <div class="max-w-2xl mx-auto flex flex-col gap-md md:gap-lg">
+
+        <!-- ─── Top Header & Back Navigation ─── -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="{% url 'transactions' %}" id="btn-back" aria-label="Go back" class="w-10 h-10 rounded-full border border-surface-variant/80 bg-surface md:bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all active:scale-95 shadow-soft">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="font-display text-xl sm:text-2xl font-bold text-on-background tracking-tight">Manual Entry</h1>
+                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
+                </div>
+            </div>
+            <a href="{% url 'transactions' %}?mode=receipts" id="btn-switch-scan" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all font-label-sm text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                <span class="hidden xs:inline">Scan Receipt</span>
+            </a>
+        </div>
+
+        <!-- ─── Form Card Container ─── -->
+        <div class="bg-surface md:bg-surface-container-lowest border border-surface-variant rounded-2xl p-md sm:p-lg shadow-soft flex flex-col gap-md sm:gap-lg">
+
+            <!-- ─── Segmented Type Switcher (Expense / Income / Transfer) ─── -->
+            <div class="w-full bg-surface-container-low p-1 rounded-xl flex items-center gap-1 border border-surface-variant/50">
+                <button type="button" id="tab-type-expense" class="type-tab flex-1 py-2 rounded-lg font-label-md text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 bg-surface text-on-surface shadow-xs" data-type="expense">
+                    <span class="material-symbols-outlined text-[18px] text-error">arrow_upward</span>
+                    Expense
+                </button>
+                <button type="button" id="tab-type-income" class="type-tab flex-1 py-2 rounded-lg font-label-md text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-on-surface" data-type="income">
+                    <span class="material-symbols-outlined text-[18px] text-primary">arrow_downward</span>
+                    Income
+                </button>
+                <button type="button" id="tab-type-transfer" class="type-tab flex-1 py-2 rounded-lg font-label-md text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-on-surface" data-type="transfer">
+                    <span class="material-symbols-outlined text-[18px] text-tertiary">swap_horiz</span>
+                    Transfer
+                </button>
+            </div>
+
+            <form id="form-manual-entry" class="flex flex-col gap-md sm:gap-lg" onsubmit="return false;">
+
+                <!-- ─── Hero Amount Display Input ─── -->
+                <div class="flex flex-col items-center justify-center py-md px-sm bg-surface-container-low/40 rounded-xl border border-surface-variant/60 relative">
+                    <label for="input-amount" class="font-label-sm text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-1">Enter Amount</label>
+                    <div class="flex items-center gap-1">
+                        <span id="currency-symbol" class="font-display text-2xl sm:text-3xl font-bold text-on-surface">₱</span>
+                        <input type="number" id="input-amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-display text-3xl sm:text-4xl font-bold text-on-surface text-center focus:outline-none placeholder:text-outline-variant tabular-nums tracking-tight" required autofocus>
+                    </div>
+
+                    <!-- Quick Amount Preset Chips -->
+                    <div class="flex items-center gap-1.5 mt-3 flex-wrap justify-center">
+                        <button type="button" class="btn-preset-chip px-2.5 py-1 rounded-full bg-surface border border-surface-variant/80 hover:border-primary text-on-surface-variant hover:text-primary font-label-sm text-xs transition-all active:scale-95" data-add="100">+₱100</button>
+                        <button type="button" class="btn-preset-chip px-2.5 py-1 rounded-full bg-surface border border-surface-variant/80 hover:border-primary text-on-surface-variant hover:text-primary font-label-sm text-xs transition-all active:scale-95" data-add="500">+₱500</button>
+                        <button type="button" class="btn-preset-chip px-2.5 py-1 rounded-full bg-surface border border-surface-variant/80 hover:border-primary text-on-surface-variant hover:text-primary font-label-sm text-xs transition-all active:scale-95" data-add="1000">+₱1,000</button>
+                        <button type="button" class="btn-preset-chip px-2.5 py-1 rounded-full bg-surface border border-surface-variant/80 hover:border-primary text-on-surface-variant hover:text-primary font-label-sm text-xs transition-all active:scale-95" data-add="5000">+₱5,000</button>
+                    </div>
+                </div>
+
+                <!-- ─── Category Selection Grid ─── -->
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-md text-xs font-semibold text-on-surface uppercase tracking-wider">Select Category</label>
+                    <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
+                        <!-- Food & Dining -->
+                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-primary bg-primary/10 text-primary transition-all text-center group" data-category="Food & Dining">
+                            <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">restaurant</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Food</span>
+                        </button>
+
+                        <!-- Transportation -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Transportation">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">directions_car</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Transport</span>
+                        </button>
+
+                        <!-- Shopping -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Shopping">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Shopping</span>
+                        </button>
+
+                        <!-- Utilities -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Utilities">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">bolt</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Utilities</span>
+                        </button>
+
+                        <!-- Entertainment -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Entertainment">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">movie</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Entertainment</span>
+                        </button>
+
+                        <!-- Groceries -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Groceries">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">local_grocery_store</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Groceries</span>
+                        </button>
+
+                        <!-- Salary / Income -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Salary">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">payments</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Salary</span>
+                        </button>
+
+                        <!-- Others -->
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant bg-surface hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group" data-category="Others">
+                            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Others</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ─── Detail Fields ─── -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+
+                    <!-- Title / Merchant -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="input-title" class="font-label-sm text-xs font-semibold text-on-surface">Title / Merchant</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">label</span>
+                            <input type="text" id="input-title" placeholder="e.g. Jollibee Lunch, Grab Fare" class="w-full pl-10 pr-3 py-2 rounded-xl border border-surface-variant bg-surface-container-lowest focus:border-primary focus:outline-none font-body-sm text-xs sm:text-sm text-on-surface" required>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="input-date" class="font-label-sm text-xs font-semibold text-on-surface">Date</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">calendar_today</span>
+                            <input type="date" id="input-date" class="w-full pl-10 pr-3 py-2 rounded-xl border border-surface-variant bg-surface-container-lowest focus:border-primary focus:outline-none font-body-sm text-xs sm:text-sm text-on-surface" required>
+                        </div>
+                    </div>
+
+                    <!-- Account / Payment Method -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="select-account" class="font-label-sm text-xs font-semibold text-on-surface">Account / Wallet</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">account_balance_wallet</span>
+                            <select id="select-account" class="w-full pl-10 pr-8 py-2 rounded-xl border border-surface-variant bg-surface-container-lowest focus:border-primary focus:outline-none font-body-sm text-xs sm:text-sm text-on-surface appearance-none">
+                                <option value="Cash">Cash Wallet</option>
+                                <option value="GCash">GCash</option>
+                                <option value="Maya">Maya</option>
+                                <option value="Bank Account">BPI Bank Account</option>
+                                <option value="Credit Card">BDO Credit Card</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[20px] pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Notes / Remarks -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="input-notes" class="font-label-sm text-xs font-semibold text-on-surface">Notes (Optional)</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">notes</span>
+                            <input type="text" id="input-notes" placeholder="e.g. Shared with team, reimbursed" class="w-full pl-10 pr-3 py-2 rounded-xl border border-surface-variant bg-surface-container-lowest focus:border-primary focus:outline-none font-body-sm text-xs sm:text-sm text-on-surface">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ─── Submit / Action Buttons ─── -->
+                <div class="flex items-center justify-end gap-sm pt-md border-t border-surface-variant/60">
+                    <a href="{% url 'transactions' %}" id="btn-cancel" class="px-5 py-2.5 rounded-full border border-surface-variant/80 text-on-surface-variant font-label-md text-xs sm:text-sm hover:bg-surface-container-high transition-all active:scale-95">
+                        Cancel
+                    </a>
+                    <button type="submit" id="btn-save-transaction" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-xs sm:text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all shadow-soft active:scale-95 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px]">check</span> Save Entry
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Navigation Spacer -->
+<div class="h-20 md:hidden" aria-hidden="true"></div>
+
+<!-- ─── Toast Notification Banner ─── -->
+<div id="toast-success" class="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-[80] bg-on-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 hidden opacity-0 transition-all duration-300 font-label-sm text-xs">
+    <span class="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
+    <span id="toast-msg">Transaction saved successfully!</span>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set today's default date
+        const inputDate = document.getElementById('input-date');
+        if (inputDate && !inputDate.value) {
+            const today = new Date().toISOString().split('T')[0];
+            inputDate.value = today;
+        }
+
+        // Amount Presets
+        const inputAmount = document.getElementById('input-amount');
+        const presetChips = document.querySelectorAll('.btn-preset-chip');
+        presetChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const addVal = parseFloat(chip.dataset.add) || 0;
+                const currentVal = parseFloat(inputAmount.value) || 0;
+                inputAmount.value = (currentVal + addVal).toFixed(2);
+                inputAmount.focus();
+            });
+        });
+
+        // Segmented Type Tabs (Expense / Income / Transfer)
+        const typeTabs = document.querySelectorAll('.type-tab');
+        typeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                typeTabs.forEach(t => {
+                    t.classList.remove('bg-surface', 'text-on-surface', 'shadow-xs');
+                    t.classList.add('text-on-surface-variant');
+                });
+                tab.classList.add('bg-surface', 'text-on-surface', 'shadow-xs');
+                tab.classList.remove('text-on-surface-variant');
+            });
+        });
+
+        // Category Buttons
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => {
+                    b.classList.remove('border-primary', 'bg-primary/10', 'text-primary');
+                    b.classList.add('border-surface-variant', 'bg-surface', 'text-on-surface-variant');
+                    const iconBox = b.querySelector('.w-9');
+                    if (iconBox) {
+                        iconBox.classList.remove('bg-primary/20');
+                        iconBox.classList.add('bg-surface-container');
+                    }
+                });
+                btn.classList.add('border-primary', 'bg-primary/10', 'text-primary');
+                btn.classList.remove('border-surface-variant', 'bg-surface', 'text-on-surface-variant');
+                const activeIconBox = btn.querySelector('.w-9');
+                if (activeIconBox) {
+                    activeIconBox.classList.remove('bg-surface-container');
+                    activeIconBox.classList.add('bg-primary/20');
+                }
+            });
+        });
+
+        // Form Submit Simulation
+        const form = document.getElementById('form-manual-entry');
+        const toast = document.getElementById('toast-success');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (toast) {
+                    toast.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        toast.classList.remove('opacity-0');
+                        toast.classList.add('opacity-100');
+                    });
+                    setTimeout(() => {
+                        toast.classList.remove('opacity-100');
+                        toast.classList.add('opacity-0');
+                        setTimeout(() => {
+                            toast.classList.add('hidden');
+                            window.location.href = "{% url 'transactions' %}";
+                        }, 300);
+                    }, 1200);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

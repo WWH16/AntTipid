@@ -39,3 +39,12 @@ def receipt_detail_view(request):
         'active_nav': 'transactions',
     }
     return render(request, 'dashboard/receipt_detail.html', context)
+
+
+def add_transaction_view(request):
+    """Render the manual transaction entry screen."""
+    context = {
+        'active_nav': 'add_transaction',
+    }
+    return render(request, 'dashboard/add_transaction.html', context)
+
