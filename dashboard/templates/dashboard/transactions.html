@@ -48,6 +48,12 @@
 
         <!-- Desktop Filters (md+) -->
         <div class="hidden md:flex flex-wrap gap-sm items-center">
+            <!-- Desktop Search Bar -->
+            <div class="relative flex-1 max-w-xs min-w-[220px]">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface border border-outline-variant rounded-full text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search transactions or receipts..." type="text">
+            </div>
+
             <span class="material-symbols-outlined text-on-surface-variant mr-xs text-[20px]">filter_list</span>
             
             <!-- Filter: Type -->
@@ -649,7 +655,20 @@
         const resetModalBtn = document.getElementById('btn-reset-filters-modal');
         
         const searchMobile = document.getElementById('input-search-mobile');
+        const searchDesktopFilter = document.getElementById('input-search-desktop');
+        const searchTopHeader = document.getElementById('input-search');
         const badgeMobile = document.getElementById('badge-active-filters-mobile');
+
+        const allSearchInputs = [searchMobile, searchDesktopFilter, searchTopHeader].filter(Boolean);
+
+        function getSearchQuery() {
+            for (const input of allSearchInputs) {
+                if (input && input.value.trim() !== '') {
+                    return input.value.toLowerCase().trim();
+                }
+            }
+            return '';
+        }
 
         // State
         let selectedType = 'all';
@@ -809,7 +828,7 @@
 
         // Filter Application Logic
         function applyFilters() {
-            const query = (searchMobile ? searchMobile.value : '').toLowerCase().trim();
+            const query = getSearchQuery();
             let activeCount = 0;
             if (selectedType !== 'all') activeCount++;
             if (selectedCategory !== 'all') activeCount++;
@@ -899,12 +918,16 @@
             }
         }
 
+        function clearAllSearchInputs() {
+            allSearchInputs.forEach(input => input.value = '');
+        }
+
         const resetReceiptFiltersBtn = document.getElementById('btn-reset-receipt-filters');
         if (resetReceiptFiltersBtn) {
             resetReceiptFiltersBtn.addEventListener('click', () => {
                 selectedType = 'all';
                 selectedCategory = 'all';
-                if (searchMobile) searchMobile.value = '';
+                clearAllSearchInputs();
                 if (desktopType) desktopType.value = 'all';
                 if (desktopCat) desktopCat.value = 'all';
                 applyFilters();
@@ -928,9 +951,15 @@
             });
         }
 
-        if (searchMobile) {
-            searchMobile.addEventListener('input', applyFilters);
-        }
+        allSearchInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const val = e.target.value;
+                allSearchInputs.forEach(other => {
+                    if (other !== e.target) other.value = val;
+                });
+                applyFilters();
+            });
+        });
 
         // Desktop Dropdown Listeners
         const desktopType = document.getElementById('select-type-desktop');
