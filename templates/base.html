@@ -1,52 +1,63 @@
-{% load static %}
 <!DOCTYPE html>
-<html class="h-full" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>{% block title %}AntTipid{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}AntTipid - Personal finance tracker to manage budgets, expenses, and savings.{% endblock %}"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "surface-variant": "#e0e3e5",
-                "background": "#f7f9fb",
-                "surface-container-highest": "#e0e3e5",
-                "on-error-container": "#93000a",
-                "on-error": "#ffffff",
-                "on-secondary-container": "#586377",
-                "surface-container-high": "#e6e8ea",
-                "error": "#ba1a1a",
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AntTipid — Personal Finance & Budget Tracker{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}AntTipid is your intelligent personal finance manager — track expenses, set budgets, and archive receipt scans with ease.{% endblock %}">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config: Design Tokens -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+                "on-secondary": "#ffffff",
+                "on-primary-container": "#00422b",
+                "primary-fixed-dim": "#4edea3",
+                "tertiary": "#494bd6",
                 "secondary-container": "#d5e0f8",
                 "surface-container": "#eceef0",
-                "tertiary-fixed-dim": "#c0c1ff",
-                "primary-fixed": "#6ffbbe",
-                "on-tertiary-fixed-variant": "#2f2ebe",
-                "on-tertiary": "#ffffff",
-                "on-primary": "#ffffff",
                 "tertiary-fixed": "#e1e0ff",
-                "inverse-on-surface": "#eff1f3",
-                "tertiary": "#494bd6",
-                "primary-fixed-dim": "#4edea3",
-                "on-primary-fixed": "#002113",
-                "on-secondary-fixed-variant": "#3c475a",
-                "surface-container-low": "#f2f4f6",
-                "on-secondary": "#ffffff",
+                "error": "#ba1a1a",
+                "surface-container-high": "#e6e8ea",
                 "surface-container-lowest": "#ffffff",
-                "on-tertiary-fixed": "#07006c",
-                "error-container": "#ffdad6",
-                "secondary-fixed-dim": "#bcc7de",
-                "on-primary-container": "#00422b",
-                "secondary": "#545f73",
+                "on-error-container": "#93000a",
                 "tertiary-container": "#9699ff",
+                "on-tertiary-fixed": "#07006d",
                 "surface-tint": "#006c49",
+                "on-primary": "#ffffff",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "on-secondary-fixed-variant": "#3c475b",
                 "inverse-surface": "#2d3133",
+                "primary-fixed": "#6ffbbd",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed-variant": "#302eb9",
+                "background": "#f7f9fb",
+                "surface-container-highest": "#e0e3e5",
+                "shadow": "#000000",
+                "on-secondary-container": "#586377",
+                "secondary": "#545f73",
+                "sc-rim": "#000000",
+                "inverse-on-surface": "#eff1f3",
+                "error-container": "#ffdad6",
+                "on-primary-fixed": "#002114",
+                "on-error": "#ffffff",
+                "on-surface-variant": "#3c4a42",
+                "surface-variant": "#e0e3e5",
+                "surface-container-low": "#f2f4f6",
+                "secondary-fixed-dim": "#bcc7de",
                 "inverse-primary": "#4edea3",
                 "on-tertiary-container": "#1d17b2",
                 "secondary-fixed": "#d8e3fb",
@@ -100,77 +111,73 @@
                 "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
                 "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
                 "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+              },
+              boxShadow: {
+                "soft": "0 4px 12px rgba(15, 23, 42, 0.05)",
+                "elevated": "0 8px 24px rgba(15, 23, 42, 0.08)",
               }
-            },
-          },
+          }
         }
+      }
     </script>
-    <style>
-        .shadow-soft { box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); }
-        .shadow-elevated { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined[data-weight="fill"] {
-            font-variation-settings: 'FILL' 1;
-        }
-    </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-background text-on-background min-h-screen font-body-md antialiased flex flex-col md:flex-row md:overflow-hidden">
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:flex-row">
 
     <!-- ═══════════════════════════════════════════ -->
-    <!-- SIDE NAVIGATION (Desktop: md+)             -->
+    <!-- DESKTOP SIDEBAR NAVIGATION (md+)           -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav class="bg-surface-container-low border-r border-outline-variant h-screen w-64 fixed left-0 top-0 flex-col py-lg px-md hidden md:flex z-40">
-        <!-- Logo -->
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs">
-                AT
+    <nav class="hidden md:flex flex-col w-64 bg-surface-container-low border-r border-outline-variant h-screen fixed left-0 top-0 z-40 p-lg justify-between shrink-0">
+        <div class="space-y-lg">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-sm px-xs py-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-base shadow-sm">
+                    AT
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-headline-lg text-xl font-bold text-primary tracking-tight leading-none">AntTipid</span>
+                    <span class="font-label-sm text-[10px] text-on-surface-variant font-medium tracking-wider uppercase mt-1">Finance Tracker</span>
+                </div>
             </div>
-            <div>
-                <h1 class="font-headline-md text-headline-md font-extrabold text-primary">AntTipid</h1>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Financial Health</p>
+
+            <!-- Nav Links -->
+            <div class="space-y-sm">
+                {% block sidebar_nav %}
+                <a id="nav-dashboard" class="flex items-center gap-md px-md py-sm {% if active_nav == 'dashboard' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'dashboard' %}">
+                    <span class="material-symbols-outlined" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
+                    Home
+                </a>
+                <a id="nav-transactions" class="flex items-center gap-md px-md py-sm {% if active_nav == 'transactions' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'transactions' %}">
+                    <span class="material-symbols-outlined" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
+                    History
+                </a>
+                <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'budget' %}">
+                    <span class="material-symbols-outlined" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
+                    Budget
+                </a>
+                <a id="nav-reports" class="flex items-center gap-md px-md py-sm {% if active_nav == 'reports' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'reports' %}">
+                    <span class="material-symbols-outlined" {% if active_nav == 'reports' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>analytics</span>
+                    Reports
+                </a>
+                {% endblock %}
             </div>
-        </div>
 
-        <!-- Main Nav Links -->
-        <div class="flex-1 space-y-1">
-            {% block sidebar_nav %}
-            <a id="nav-dashboard" class="flex items-center gap-md px-md py-sm {% if active_nav == 'dashboard' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'dashboard' %}">
-                <span class="material-symbols-outlined" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
-                Home
-            </a>
-            <a id="nav-transactions" class="flex items-center gap-md px-md py-sm {% if active_nav == 'transactions' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'transactions' %}">
-                <span class="material-symbols-outlined" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
-                History
-            </a>
-            <a id="nav-budgets" class="flex items-center gap-md px-md py-sm {% if active_nav == 'budgets' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'budget' %}">
-                <span class="material-symbols-outlined" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
-                Budget
-            </a>
-            <a id="nav-reports" class="flex items-center gap-md px-md py-sm {% if active_nav == 'reports' %}bg-secondary-container text-on-secondary-container{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %} rounded-full transition-all duration-200 font-label-md text-label-md" href="{% url 'reports' %}">
-                <span class="material-symbols-outlined" {% if active_nav == 'reports' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>analytics</span>
-                Reports
-            </a>
-            {% endblock %}
-        </div>
+            <!-- Add Transaction CTA -->
+            <button id="btn-add-transaction-desktop" class="w-full bg-primary text-on-primary py-sm rounded-full font-label-md text-label-md flex justify-center items-center gap-xs hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-soft mt-lg mb-lg">
+                <span class="material-symbols-outlined">add</span> Add Transaction
+            </button>
 
-        <!-- Add Transaction CTA -->
-        <button id="btn-add-transaction-desktop" class="w-full bg-primary text-on-primary py-sm rounded-full font-label-md text-label-md flex justify-center items-center gap-xs hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-soft mt-lg mb-lg">
-            <span class="material-symbols-outlined">add</span> Add Transaction
-        </button>
-
-        <!-- Footer Links -->
-        <div class="space-y-1 pt-md border-t border-outline-variant">
-            <a id="nav-help" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
-                <span class="material-symbols-outlined">help</span>
-                Help
-            </a>
-            <a id="nav-signout" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
-                <span class="material-symbols-outlined">logout</span>
-                Sign Out
-            </a>
+            <!-- Footer Links -->
+            <div class="space-y-1 pt-md border-t border-outline-variant">
+                <a id="nav-help" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+                    <span class="material-symbols-outlined">help</span>
+                    Help
+                </a>
+                <a id="nav-signout" class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 font-label-md text-label-md" href="#">
+                    <span class="material-symbols-outlined">logout</span>
+                    Sign Out
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -233,7 +240,7 @@
             <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}data-weight="fill"{% endif %}>receipt_long</span>
             <span class="font-label-sm text-[11px] leading-tight mt-0.5">History</span>
         </a>
-        <a id="bnav-add" class="flex flex-col items-center justify-center w-[20%] -mt-5" href="#">
+        <a id="bnav-add" class="flex flex-col items-center justify-center w-[20%] -mt-5 cursor-pointer" href="#">
             <div class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md active:scale-90 hover:bg-primary-container transition-all">
                 <span class="material-symbols-outlined text-[26px]">add</span>
             </div>
@@ -249,6 +256,124 @@
         </a>
         {% endblock %}
     </nav>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ADD CHOICE MODAL (QUIETER & REFINED)        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="modal-add-choice" class="fixed inset-0 z-[70] bg-on-surface/40 backdrop-blur-[2px] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200">
+        <div id="modal-add-choice-content" class="w-full sm:max-w-lg bg-surface md:bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-surface-variant/80 p-md sm:p-lg shadow-xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-md">
+            
+            <!-- Mobile Drag Handle -->
+            <div class="w-10 h-1 bg-outline-variant/60 rounded-full mx-auto -mt-1 sm:hidden"></div>
+
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center pb-2.5 border-b border-surface-variant/50">
+                <div>
+                    <h3 class="font-headline-md text-base sm:text-lg font-semibold text-on-surface">Add New Entry</h3>
+                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Select how to log your transaction</p>
+                </div>
+                <button id="btn-close-add-choice" aria-label="Close add choice modal" class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant transition-colors active:scale-90">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+
+            <!-- Choices Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm sm:gap-md pt-0.5">
+                
+                <!-- Choice 1: Scan / Upload Receipt -->
+                <a href="{% url 'transactions' %}?mode=receipts" id="choice-scan-receipt" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
+                    <div class="flex justify-between items-start mb-2.5">
+                        <div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">AI Scan</span>
+                    </div>
+                    <div>
+                        <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
+                            Scan Receipt
+                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
+                        </h4>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Auto-scan items & totals from receipts.</p>
+                    </div>
+                </a>
+
+                <!-- Choice 2: Add Manual Transaction -->
+                <a href="{% url 'transactions' %}" id="choice-manual-entry" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
+                    <div class="flex justify-between items-start mb-2.5">
+                        <div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-secondary-container/60 group-hover:text-secondary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-semibold">Manual</span>
+                    </div>
+                    <div>
+                        <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
+                            Manual Entry
+                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
+                        </h4>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log expense or income manually.</p>
+                    </div>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addChoiceModal = document.getElementById('modal-add-choice');
+            const addChoiceContent = document.getElementById('modal-add-choice-content');
+            const closeChoiceBtn = document.getElementById('btn-close-add-choice');
+
+            const bnavAdd = document.getElementById('bnav-add');
+            const desktopAddBtn = document.getElementById('btn-add-transaction-desktop');
+
+            function openAddChoiceModal(e) {
+                if (e) e.preventDefault();
+                if (!addChoiceModal) return;
+
+                addChoiceModal.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    addChoiceModal.classList.remove('opacity-0');
+                    addChoiceModal.classList.add('opacity-100');
+                    if (addChoiceContent) {
+                        addChoiceContent.classList.remove('translate-y-full', 'sm:scale-95');
+                        addChoiceContent.classList.add('translate-y-0', 'sm:scale-100');
+                    }
+                });
+            }
+
+            function closeAddChoiceModal() {
+                if (!addChoiceModal) return;
+
+                addChoiceModal.classList.remove('opacity-100');
+                addChoiceModal.classList.add('opacity-0');
+                if (addChoiceContent) {
+                    addChoiceContent.classList.remove('translate-y-0', 'sm:scale-100');
+                    addChoiceContent.classList.add('translate-y-full', 'sm:scale-95');
+                }
+                setTimeout(() => {
+                    addChoiceModal.classList.add('hidden');
+                }, 200);
+            }
+
+            if (bnavAdd) bnavAdd.addEventListener('click', openAddChoiceModal);
+            if (desktopAddBtn) desktopAddBtn.addEventListener('click', openAddChoiceModal);
+            if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', closeAddChoiceModal);
+
+            if (addChoiceModal) {
+                addChoiceModal.addEventListener('click', (e) => {
+                    if (e.target === addChoiceModal) closeAddChoiceModal();
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && addChoiceModal && !addChoiceModal.classList.contains('hidden')) {
+                    closeAddChoiceModal();
+                }
+            });
+        });
+    </script>
 
     {% block extra_scripts %}{% endblock %}
 </body>
