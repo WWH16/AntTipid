@@ -8,6 +8,14 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
+def landing_view(request):
+    """Render the AntTipid Landing Page."""
+    context = {
+        'active_nav': 'landing',
+    }
+    return render(request, 'dashboard/landing.html', context)
+
+
 def dashboard_view(request):
     """Render the main AntTipid dashboard."""
     context = {

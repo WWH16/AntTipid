@@ -1,0 +1,711 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntTipid — A Personal Expense and Budget Tracker</title>
+    <meta name="description" content="AntTipid — A Personal Expense and Budget Tracker with OCR receipt scanning, intelligent budget planner, and detailed financial reports.">
+    <meta name="theme-color" content="#5C8F3A">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="AntTipid">
+
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AntTipid — A Personal Expense and Budget Tracker">
+    <meta property="og:description" content="Personal expense & budget tracker with AI receipt scanning. Track spending, set budgets, and gain financial clarity.">
+    <meta property="og:image" content="{% static 'images/AntTipidLogo.png' %}">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="AntTipid — A Personal Expense and Budget Tracker">
+    <meta property="twitter:description" content="Track expenses, scan receipts, manage budgets, and understand your spending with AntTipid.">
+
+    <!-- Favicon & PWA Manifest -->
+    <link rel="icon" type="image/png" href="{% static 'images/AntTipidFavicon.png' %}?v=3">
+    <link rel="apple-touch-icon" href="{% static 'images/AntTipidFavicon.png' %}?v=3">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+                "primary": "#5C8F3A",
+                "ant-green": "#5C8F3A",
+                "deep-forest": "#23452A",
+                "secondary": "#23452A",
+                "warm-cream": "#F8F5EA",
+                "soft-green": "#E7F1D9",
+                "soft-yellow": "#F3D27A",
+                "light-border": "#E5E5DD",
+                "surface-container-lowest": "#FFFFFF",
+                "surface-container-low": "#F3EFE4",
+                "expense": "#D96B4A",
+                "warning": "#E4A72C",
+                "on-surface-variant": "#586255",
+                "outline-variant": "#E5E5DD",
+            },
+            boxShadow: {
+                "soft": "0 4px 20px rgba(35, 69, 42, 0.06)",
+                "elevated": "0 10px 30px rgba(35, 69, 42, 0.12)",
+                "xs": "0 1px 3px rgba(35, 69, 42, 0.05)"
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .phone-mockup-frame {
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(35, 69, 42, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-warm-cream text-deep-forest font-sans antialiased selection:bg-soft-green selection:text-deep-forest min-h-screen flex flex-col">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 1. NAVIGATION HEADER (FIXED / STICKY)       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <header class="sticky top-0 z-50 bg-warm-cream/90 backdrop-blur-md border-b border-outline-variant/60 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <a href="{% url 'landing' %}" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-soft-green text-primary border border-primary/30 flex items-center justify-center p-1 overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                    <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-headline-lg text-lg sm:text-xl font-extrabold tracking-tight leading-none">
+                        <span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span>
+                    </span>
+                    <span class="font-label-sm text-[10px] text-on-surface-variant font-medium tracking-tight mt-0.5 hidden xs:inline">A Personal Expense and Budget Tracker</span>
+                </div>
+            </a>
+
+            <!-- Center Nav Links (Desktop) -->
+            <nav class="hidden md:flex items-center gap-8 font-label-md text-xs sm:text-sm font-bold text-deep-forest">
+                <a href="#features" class="hover:text-primary transition-colors">Features</a>
+                <a href="#how-it-works" class="hover:text-primary transition-colors">How It Works</a>
+                <a href="#ocr-scanner" class="hover:text-primary transition-colors">Receipt Scanner</a>
+                <a href="#screens" class="hover:text-primary transition-colors">Screens</a>
+                <a href="#about" class="hover:text-primary transition-colors">About</a>
+            </nav>
+
+            <!-- Right CTA Button -->
+            <div class="flex items-center gap-3">
+                <a href="{% url 'dashboard' %}" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-2 cursor-pointer">
+                    <span>Open AntTipid</span>
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button type="button" id="btn-mobile-menu" aria-label="Toggle Navigation Menu" class="md:hidden w-10 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 transition-all">
+                    <span class="material-symbols-outlined text-[22px]">menu</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Mobile Slide-Down Menu Drawer -->
+        <div id="mobile-menu-drawer" class="hidden md:hidden border-b border-outline-variant/60 bg-surface-container-lowest px-4 py-4 space-y-3">
+            <a href="#features" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Features</a>
+            <a href="#how-it-works" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">How It Works</a>
+            <a href="#ocr-scanner" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Receipt Scanner</a>
+            <a href="#screens" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Screens</a>
+            <a href="#about" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">About</a>
+        </div>
+    </header>
+
+    <main class="flex-1">
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 2. HERO SECTION                             -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section class="relative pt-8 pb-16 sm:pt-12 sm:pb-24 lg:pt-16 lg:pb-32 overflow-hidden">
+            <!-- Background Ambient Glow -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-soft-green/40 rounded-full blur-3xl pointer-events-none -z-10"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                    
+                    <!-- Left Column: Copy & CTAs -->
+                    <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+                        
+                        <!-- Eyebrow Pill -->
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-soft-green border border-primary/30 text-primary font-label-sm text-xs font-extrabold shadow-xs">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span>PERSONAL FINANCE & BUDGET TRACKER</span>
+                        </div>
+
+                        <!-- Hero Main Headline -->
+                        <h1 class="font-headline-lg text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-forest tracking-tight leading-[1.1]" style="text-wrap: balance;">
+                            A Personal Expense <br class="hidden sm:inline" /><span class="text-primary">and Budget Tracker</span>
+                        </h1>
+
+                        <!-- Supporting Subtitle -->
+                        <p class="font-body-md text-base sm:text-lg text-on-surface-variant max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
+                            Keep track of your expenses, manage your budget, and understand where your money goes — all in one simple personal finance app with AI receipt scanning.
+                        </p>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto pt-2">
+                            <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-primary text-white font-label-md text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                                <span>Start Tracking Free</span>
+                            </a>
+                            
+                            <a href="#features" class="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-soft-green/30 font-label-md text-sm font-bold transition-all shadow-xs active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px] text-primary">auto_awesome</span>
+                                <span>Explore Features</span>
+                            </a>
+                        </div>
+
+                        <!-- Micro Trust Badges -->
+                        <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-on-surface-variant font-semibold">
+                            <div class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                                <span>No Credit Card Required</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                                <span>PWA & Offline Ready</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Phone Mockup Showcase using Actual Phone Screenshot -->
+                    <div class="lg:col-span-6 relative flex items-center justify-center">
+                        <div class="relative w-full max-w-sm lg:max-w-md flex items-center justify-center">
+                            
+                            <!-- Floating Coin / Savings Accent Badge -->
+                            <div class="absolute -top-4 -left-4 sm:top-2 sm:left-2 z-30 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-3 shadow-elevated flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-warning/20 text-amber-700 flex items-center justify-center font-bold text-lg shrink-0">
+                                    ₱
+                                </div>
+                                <div>
+                                    <p class="font-label-sm text-[10px] text-on-surface-variant font-semibold uppercase">Daily Tipid</p>
+                                    <p class="font-headline-md text-xs font-extrabold text-deep-forest">+₱1,250 Savings</p>
+                                </div>
+                            </div>
+
+                            <!-- Floating OCR Badge -->
+                            <div class="absolute bottom-6 right-0 sm:right-2 z-30 bg-surface-container-lowest border border-primary/30 rounded-2xl p-3 shadow-elevated flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">document_scanner</span>
+                                </div>
+                                <div>
+                                    <p class="font-label-sm text-[10px] text-primary font-bold uppercase">OCR Receipt</p>
+                                    <p class="font-headline-md text-xs font-extrabold text-deep-forest">Scanned in 1.2s</p>
+                                </div>
+                            </div>
+
+                            <!-- Actual AntTipid Phone Screenshot Frame -->
+                            <div class="w-[280px] sm:w-[310px] bg-deep-forest rounded-[42px] p-3 shadow-2xl border-4 border-deep-forest/90 relative z-20 overflow-hidden transform lg:rotate-1 hover:rotate-0 transition-transform duration-500">
+                                <div class="rounded-[32px] overflow-hidden bg-black aspect-[9/19.5] relative border border-white/10 shadow-inner">
+                                    <img src="{% static 'images/home_dashboard.jpg' %}" alt="AntTipid Dashboard Phone Screen" class="w-full h-full object-cover object-top" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 3. TRUST / VALUE STRIP                      -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section class="border-y border-outline-variant/60 bg-surface-container-lowest/60 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
+                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <h4 class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Track Expenses</h4>
+                            <p class="font-body-sm text-[11px] text-on-surface-variant font-medium">Log income & daily spends</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
+                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">document_scanner</span>
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <h4 class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Scan Receipts</h4>
+                            <p class="font-body-sm text-[11px] text-on-surface-variant font-medium">OCR data extraction</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
+                        <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <h4 class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Manage Budgets</h4>
+                            <p class="font-body-sm text-[11px] text-on-surface-variant font-medium">Set monthly limits</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
+                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">analytics</span>
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <h4 class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Understand Spending</h4>
+                            <p class="font-body-sm text-[11px] text-on-surface-variant font-medium">Visual trends & charts</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 4. CONCEPT SECTION                         -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section id="about" class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
+                    <span class="font-label-sm text-xs text-primary uppercase font-extrabold tracking-wider bg-soft-green px-3 py-1 rounded-full border border-primary/20">Clarity First</span>
+                    <h2 class="font-headline-lg text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-forest tracking-tight">Your money, all in one view.</h2>
+                    <p class="font-body-md text-sm sm:text-base text-on-surface-variant font-medium leading-relaxed">
+                        AntTipid brings your income, expenses, receipts, and budgets together in one place so you can spend with greater awareness and stay on top of your financial goals.
+                    </p>
+
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[16px]">check</span>
+                            </div>
+                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Real-time spending breakdowns across custom categories</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[16px]">check</span>
+                            </div>
+                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">AI-powered OCR scanner that reads receipt items automatically</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[16px]">check</span>
+                            </div>
+                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest">Zero bloat — fast, clean, and optimized for phone & desktop</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Concept Phone Screen Showcase -->
+                <div class="lg:col-span-6 flex justify-center">
+                    <div class="w-[260px] sm:w-[290px] bg-deep-forest rounded-[36px] p-2.5 shadow-xl border-4 border-deep-forest/90 overflow-hidden transform hover:scale-[1.02] transition-transform">
+                        <div class="rounded-[28px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
+                            <img src="{% static 'images/transactions_screen.jpg' %}" alt="AntTipid Transactions Phone Screen" class="w-full h-full object-cover object-top" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 5. WORKFLOW OVERVIEW                        -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section id="how-it-works" class="py-16 sm:py-24 bg-surface-container-low/40 border-y border-outline-variant/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto space-y-3 mb-12">
+                    <span class="font-label-sm text-xs text-primary uppercase font-extrabold tracking-wider bg-soft-green px-3 py-1 rounded-full border border-primary/20">Simple 3-Step Process</span>
+                    <h2 class="font-headline-lg text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-forest tracking-tight">Track your spending in three simple steps.</h2>
+                    <p class="font-body-md text-sm sm:text-base text-on-surface-variant font-medium">Effortlessly manage your personal finances without complicated spreadsheets.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                    
+                    <!-- Step 1 -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-4 text-center items-center group">
+                        <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                            <span class="material-symbols-outlined text-[28px]">add_a_photo</span>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="font-label-sm text-[10px] font-extrabold text-primary uppercase tracking-widest">Step 01</span>
+                            <h3 class="font-headline-md text-lg font-bold text-deep-forest">Record</h3>
+                        </div>
+                        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                            Add an expense manually in seconds or simply upload a photo of your receipt to scan automatically.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-4 text-center items-center group">
+                        <div class="w-14 h-14 rounded-2xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                            <span class="material-symbols-outlined text-[28px]">category</span>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="font-label-sm text-[10px] font-extrabold text-amber-700 uppercase tracking-widest">Step 02</span>
+                            <h3 class="font-headline-md text-lg font-bold text-deep-forest">Organize</h3>
+                        </div>
+                        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                            Categorize transactions, tag payment accounts (GCash, Cash, BPI), and keep your budgets updated.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-4 text-center items-center group">
+                        <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                            <span class="material-symbols-outlined text-[28px]">insights</span>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="font-label-sm text-[10px] font-extrabold text-primary uppercase tracking-widest">Step 03</span>
+                            <h3 class="font-headline-md text-lg font-bold text-deep-forest">Understand</h3>
+                        </div>
+                        <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                            Review your spending analytics, track category limits, and see how your budget is being used.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 6. KEY FEATURES GRID                        -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section id="features" class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3 mb-12">
+                <span class="font-label-sm text-xs text-primary uppercase font-extrabold tracking-wider bg-soft-green px-3 py-1 rounded-full border border-primary/20">Everything You Need</span>
+                <h2 class="font-headline-lg text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-forest tracking-tight">Built for effortless money management.</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Feature 1 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">Expense Tracking</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Record, edit, delete, and organize your daily expenses with clean payment account tagging.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">photo_camera</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">OCR Receipt Scanner</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Capture a receipt and extract merchant, items, date, tax, and totals automatically with Gemini AI.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">Budget Management</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Set monthly or category budgets and monitor your spending progress with real-time alerts.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">payments</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">Income Tracking</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Keep your income records alongside your expenses for a complete net savings calculation.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">folder_zip</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">Receipt Archive</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Store and search original scanned receipt images anytime for tax or reimbursement records.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-6 shadow-xs hover:shadow-soft hover:-translate-y-1 transition-all flex flex-col gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[22px]">bar_chart</span>
+                    </div>
+                    <h3 class="font-headline-md text-base font-bold text-deep-forest">Financial Reports</h3>
+                    <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        Understand your spending through weekly breakdowns, donut charts, and category trend sparklines.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 7. OCR FEATURE HIGHLIGHT (DEEP FOREST)      -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section id="ocr-scanner" class="py-16 sm:py-24 bg-deep-forest text-white relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+                        <span class="font-label-sm text-xs uppercase font-extrabold tracking-wider bg-white/10 text-white px-3 py-1 rounded-full border border-white/20">Smart AI Extraction</span>
+                        <h2 class="font-headline-lg text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Turn receipts into expenses.</h2>
+                        <p class="font-body-md text-sm sm:text-base text-white/80 font-medium leading-relaxed">
+                            Skip repetitive typing. Capture a receipt and let AntTipid extract the available transaction details for you. Review the information, make corrections when needed, and save it as an expense.
+                        </p>
+
+                        <!-- Workflow Pipeline Badge -->
+                        <div class="flex items-center justify-center lg:justify-start gap-2 pt-2 text-xs font-bold text-white/90 overflow-x-auto pb-1">
+                            <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Receipt</span>
+                            <span>→</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Scan</span>
+                            <span>→</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">OCR</span>
+                            <span>→</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-primary text-white">Review</span>
+                            <span>→</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Expense</span>
+                        </div>
+
+                        <div class="inline-flex items-center gap-2 bg-soft-green/20 text-soft-green border border-soft-green/30 px-3.5 py-2 rounded-xl text-xs font-bold">
+                            <span class="material-symbols-outlined text-[18px]">verified</span>
+                            <span>Review before saving: You retain total control.</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Actual Phone Screenshot Mockup -->
+                    <div class="lg:col-span-6 flex justify-center">
+                        <div class="w-[260px] sm:w-[290px] bg-warm-cream rounded-[36px] p-2.5 shadow-2xl border-4 border-white/20 overflow-hidden transform hover:scale-[1.02] transition-transform">
+                            <div class="rounded-[28px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
+                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="AntTipid OCR Scanning Phone Screen" class="w-full h-full object-cover object-top" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 8. BUDGET FEATURE HIGHLIGHT                 -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Phone Screen Mockup -->
+                <div class="lg:col-span-6 flex justify-center">
+                    <div class="w-[260px] sm:w-[290px] bg-deep-forest rounded-[36px] p-2.5 shadow-xl border-4 border-deep-forest/90 overflow-hidden transform hover:scale-[1.02] transition-transform">
+                        <div class="rounded-[28px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
+                            <img src="{% static 'images/montly_budget.jpg' %}" alt="AntTipid Budget Planner Phone Screen" class="w-full h-full object-cover object-top" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Copy -->
+                <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
+                    <span class="font-label-sm text-xs text-amber-700 uppercase font-extrabold tracking-wider bg-warning/15 px-3 py-1 rounded-full border border-warning/30">Budget Control</span>
+                    <h2 class="font-headline-lg text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-forest tracking-tight">Know how much you have left.</h2>
+                    <p class="font-body-md text-sm sm:text-base text-on-surface-variant font-medium leading-relaxed">
+                        Never guess your remaining budget. Set category limits, track spending progress in real-time, and get automatic warnings when you're nearing or exceeding your goals.
+                    </p>
+                    <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 text-primary font-label-md text-sm font-bold hover:underline">
+                        <span>Configure Your Budget Planner</span>
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 9. SAMPLE SCREENS SHOWCASE                  -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section id="screens" class="py-16 sm:py-24 bg-surface-container-low/40 border-y border-outline-variant/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto space-y-3 mb-12">
+                    <span class="font-label-sm text-xs text-primary uppercase font-extrabold tracking-wider bg-soft-green px-3 py-1 rounded-full border border-primary/20">Product Preview</span>
+                    <h2 class="font-headline-lg text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-forest tracking-tight">See AntTipid in action.</h2>
+                    <p class="font-body-md text-sm sm:text-base text-on-surface-variant font-medium">Real screenshots from the AntTipid personal expense and budget tracker app.</p>
+                </div>
+
+                <!-- 5 Phone Screenshots Showcase Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+                    
+                    <!-- Screen 1: Dashboard -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group hover:-translate-y-1 transition-all">
+                        <div class="w-full rounded-2xl overflow-hidden bg-black aspect-[9/19.5] border border-outline-variant/40 mb-3">
+                            <img src="{% static 'images/home_dashboard.jpg' %}" alt="Dashboard Screen" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <h4 class="font-label-md text-xs font-bold text-deep-forest text-center">Dashboard</h4>
+                        <p class="font-body-sm text-[10px] text-on-surface-variant">Overview & Spends</p>
+                    </div>
+
+                    <!-- Screen 2: OCR Scanner -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group hover:-translate-y-1 transition-all">
+                        <div class="w-full rounded-2xl overflow-hidden bg-black aspect-[9/19.5] border border-outline-variant/40 mb-3">
+                            <img src="{% static 'images/scanning_receipt.jpg' %}" alt="OCR Scanner Screen" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <h4 class="font-label-md text-xs font-bold text-deep-forest text-center">Receipt Scanner</h4>
+                        <p class="font-body-sm text-[10px] text-on-surface-variant">AI Laser OCR</p>
+                    </div>
+
+                    <!-- Screen 3: Monthly Budget -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group hover:-translate-y-1 transition-all">
+                        <div class="w-full rounded-2xl overflow-hidden bg-black aspect-[9/19.5] border border-outline-variant/40 mb-3">
+                            <img src="{% static 'images/montly_budget.jpg' %}" alt="Monthly Budget Screen" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <h4 class="font-label-md text-xs font-bold text-deep-forest text-center">Monthly Budget</h4>
+                        <p class="font-body-sm text-[10px] text-on-surface-variant">Progress & Categories</p>
+                    </div>
+
+                    <!-- Screen 4: Financial Insights -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group hover:-translate-y-1 transition-all">
+                        <div class="w-full rounded-2xl overflow-hidden bg-black aspect-[9/19.5] border border-outline-variant/40 mb-3">
+                            <img src="{% static 'images/report_screen.jpg' %}" alt="Financial Reports Screen" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <h4 class="font-label-md text-xs font-bold text-deep-forest text-center">Financial Insights</h4>
+                        <p class="font-body-sm text-[10px] text-on-surface-variant">Charts & Trends</p>
+                    </div>
+
+                    <!-- Screen 5: Transactions History -->
+                    <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group hover:-translate-y-1 transition-all col-span-2 sm:col-span-1">
+                        <div class="w-full rounded-2xl overflow-hidden bg-black aspect-[9/19.5] border border-outline-variant/40 mb-3">
+                            <img src="{% static 'images/transactions_screen.jpg' %}" alt="Transactions Screen" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <h4 class="font-label-md text-xs font-bold text-deep-forest text-center">Transaction History</h4>
+                        <p class="font-body-sm text-[10px] text-on-surface-variant">Filters & Search</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 10. CALL-TO-ACTION SECTION                  -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section class="py-16 sm:py-24 bg-deep-forest text-white text-center relative overflow-hidden">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
+                <span class="font-label-sm text-xs uppercase font-extrabold tracking-wider bg-white/10 text-white px-3.5 py-1 rounded-full border border-white/20">Get Started Today</span>
+                <h2 class="font-headline-lg text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                    Ready to take control of your spending?
+                </h2>
+                <p class="font-body-md text-base sm:text-lg text-white/80 max-w-xl mx-auto font-medium">
+                    Start tracking your expenses, scanning receipts, and keeping your budget within reach — 100% free.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-primary text-white font-label-md text-sm font-bold hover:bg-primary/90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Open AntTipid App</span>
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 11. FOOTER                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <footer class="bg-surface-container-lowest border-t border-outline-variant/60 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-soft-green text-primary flex items-center justify-center p-0.5 overflow-hidden">
+                            <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
+                        </div>
+                        <span class="font-headline-lg text-lg font-extrabold text-deep-forest">AntTipid</span>
+                    </div>
+                    <p class="font-body-sm text-xs text-on-surface-variant font-medium">
+                        A Personal Expense and Budget Tracker.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-label-md text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Product</h4>
+                    <ul class="space-y-2 font-body-sm text-xs text-on-surface-variant font-medium">
+                        <li><a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a></li>
+                        <li><a href="{% url 'scan_receipt' %}" class="hover:text-primary transition-colors">OCR Receipt Scanner</a></li>
+                        <li><a href="{% url 'budget' %}" class="hover:text-primary transition-colors">Budget Planner</a></li>
+                        <li><a href="{% url 'reports' %}" class="hover:text-primary transition-colors">Financial Insights</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-label-md text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Information</h4>
+                    <ul class="space-y-2 font-body-sm text-xs text-on-surface-variant font-medium">
+                        <li><a href="#about" class="hover:text-primary transition-colors">About AntTipid</a></li>
+                        <li><a href="#how-it-works" class="hover:text-primary transition-colors">How It Works</a></li>
+                        <li><a href="#features" class="hover:text-primary transition-colors">Features</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-label-md text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Legal & Tech</h4>
+                    <p class="font-body-sm text-xs text-on-surface-variant font-medium leading-relaxed">
+                        PWA & Offline Enabled.<br />Built with Python, Django & Tailwind CSS.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="border-t border-outline-variant/40 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-on-surface-variant font-medium gap-3">
+                <p>© 2026 AntTipid. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <span>Privacy Policy</span>
+                    <span>•</span>
+                    <span>Terms of Service</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}').catch(() => {});
+            });
+        }
+
+        // Mobile Menu Drawer Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('btn-mobile-menu');
+            const drawer = document.getElementById('mobile-menu-drawer');
+            if (menuBtn && drawer) {
+                menuBtn.addEventListener('click', () => {
+                    drawer.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
