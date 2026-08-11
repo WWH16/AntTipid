@@ -208,6 +208,7 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
+<!-- Discard Confirmation Modal -->
 <div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-on-surface/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
     <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
         
@@ -217,17 +218,17 @@
                 <span class="material-symbols-outlined text-[20px]">drafts</span>
             </div>
             <div class="flex flex-col gap-1">
-                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard unsaved entry?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Any amounts or details entered so far will be lost.</p>
+                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard manual entry?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Entered amounts and transaction details will not be saved.</p>
             </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-surface-variant/40">
-            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error">
-                Discard
+            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-semibold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error cursor-pointer">
+                Discard Entry
             </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-medium transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-semibold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                 Keep Editing
             </button>
         </div>
