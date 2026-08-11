@@ -249,10 +249,10 @@
             </div>
 
             <!-- RIGHT COLUMN: Extracted Data Editor Form (Desktop: 8 cols) -->
-            <div class="lg:col-span-8 flex flex-col gap-4">
+            <div class="lg:col-span-8 bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-5">
                 
-                <!-- Form Fields Card (Merchant, Date & Category) -->
-                <div class="bg-surface-container-lowest p-3.5 sm:p-4 rounded-xl shadow-xs border border-surface-variant/80 flex flex-col gap-3">
+                <!-- Form Fields (Merchant Name, Date & Category) -->
+                <div class="flex flex-col gap-3">
                     
                     <!-- Merchant -->
                     <div class="group relative bg-surface-container-low/30 hover:bg-surface-container-low/60 transition-colors rounded-lg p-2.5 border border-surface-variant/60 focus-within:border-primary">
@@ -299,7 +299,7 @@
                 </div>
 
                 <!-- Line Items Section -->
-                <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-2.5 pt-2 border-t border-surface-variant/40">
                     <div class="flex justify-between items-center px-0.5">
                         <h3 class="font-headline-md text-xs sm:text-sm font-semibold text-on-surface uppercase tracking-wider">
                             Itemized Line Items
@@ -318,8 +318,8 @@
                     </button>
                 </div>
 
-                <!-- Totals & Payment Breakdown Card -->
-                <div class="bg-surface-container-lowest p-3.5 sm:p-4 rounded-xl shadow-xs border border-surface-variant/80 flex flex-col gap-3">
+                <!-- Totals & Payment Breakdown -->
+                <div class="flex flex-col gap-3 pt-2 border-t border-surface-variant/40">
                     <div class="flex justify-between items-center">
                         <span class="font-body-md text-xs text-on-surface-variant font-medium">Items Subtotal</span>
                         <span id="label-review-subtotal" class="font-body-md text-xs text-on-surface font-semibold tabular-nums">₱0.00</span>
@@ -370,37 +370,14 @@
                     </div>
                 </div>
 
-                <!-- STICKY ACTION BAR FOR LAPTOPS & BIG SCREENS (≥sm) -->
-                <div id="bar-desktop-actions" class="hidden sm:flex sticky bottom-4 z-30 items-center justify-between bg-surface/95 backdrop-blur-md p-3 px-4 rounded-2xl border border-surface-variant/80 shadow-elevated mt-2">
-                    <div class="flex items-center gap-2">
-                        <button type="button" id="btn-cancel-ocr" class="px-4 py-2.5 h-10 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 hover:bg-surface-container-low active:scale-95 transition-all shadow-xs bg-surface-container-lowest cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px] text-error">close</span>
-                            <span>Cancel & Add Manually</span>
-                        </button>
-                    </div>
-
-                    <button type="button" id="btn-save-ocr-expense" class="px-6 py-2.5 h-10 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-sm cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">check</span>
-                        <span>Save Expense</span>
-                    </button>
-                </div>
+                <!-- STICKY CARD ACTION FOOTER -->
+                {% url 'transactions' as cancel_target %}
+                {% include 'dashboard/components/form_action_bar.html' with cancel_url=cancel_target cancel_id="btn-cancel-ocr" cancel_label="Cancel" submit_id="btn-save-ocr-expense" submit_label="Save Expense" submit_type="button" %}
 
             </div>
         </div>
 
     </main>
-
-    <!-- MOBILE STICKY ACTION BAR FOR PHONES (<sm) -->
-    <div id="bar-mobile-actions" class="fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-surface-variant/80 p-3 px-4 z-50 flex sm:hidden items-center justify-between gap-3 shadow-lg pb-[max(0.875rem,env(safe-area-inset-bottom))]">
-        <button type="button" id="btn-cancel-ocr-mobile" class="flex-1 py-3 h-11 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-xl flex items-center justify-center gap-1 active:scale-95 transition-transform bg-surface-container-lowest shadow-xs cursor-pointer">
-            <span class="material-symbols-outlined text-[16px] text-error">close</span>
-            <span>Cancel</span>
-        </button>
-        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-3 h-11 bg-primary text-on-primary font-label-md text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform shadow-sm cursor-pointer">
-            <span class="material-symbols-outlined text-[18px]">check</span>
-            <span>Save Expense</span>
-        </button>
-    </div>
 
 </div>
 

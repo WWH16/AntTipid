@@ -183,15 +183,9 @@
 
                 </div>
 
-                <!-- ─── Submit / Action Buttons (Sticky Card Floating Footer) ─── -->
-                <div class="sticky bottom-0 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-t border-surface-variant/40 pt-4 pb-2 sm:pb-3 -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 px-5 sm:px-6 rounded-b-2xl flex items-center justify-end gap-2.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
-                    <a href="{% url 'transactions' %}" id="btn-cancel" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
-                        Cancel
-                    </a>
-                    <button type="submit" id="btn-save-transaction" class="inline-flex items-center justify-center px-6 py-2 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container shadow-xs active:scale-[0.98] transition-all cursor-pointer">
-                        Save Entry
-                    </button>
-                </div>
+                <!-- ─── Submit / Action Buttons (Reusable Floating Component) ─── -->
+                {% url 'transactions' as cancel_target %}
+                {% include 'dashboard/components/form_action_bar.html' with cancel_url=cancel_target cancel_label="Cancel" submit_label="Save Entry" submit_id="btn-save-transaction" %}
 
             </form>
         </div>

@@ -1,0 +1,22 @@
+{% comment %}
+Reusable Sticky Floating Action Bar Component for Forms, Reviews & Scanners
+Usage:
+  {% include 'dashboard/components/form_action_bar.html' with cancel_url=cancel_url cancel_label="Cancel" submit_label="Save Entry" submit_id="btn-save-transaction" %}
+{% endcomment %}
+
+<div class="sticky bottom-0 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-t border-surface-variant/40 pt-4 pb-2 sm:pb-3 {{ card_margin|default:'-mx-5 -mb-5 sm:-mx-6 sm:-mb-6' }} {{ card_padding|default:'px-5 sm:px-6 rounded-b-2xl' }} flex items-center justify-end gap-2.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+    {% if cancel_url %}
+    <a href="{{ cancel_url }}" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
+        {{ cancel_label|default:"Cancel" }}
+    </a>
+    {% else %}
+    <button type="button" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
+        {{ cancel_label|default:"Cancel" }}
+    </button>
+    {% endif %}
+
+    <button type="{{ submit_type|default:'submit' }}" id="{{ submit_id|default:'btn-save-transaction' }}" class="inline-flex items-center justify-center gap-1.5 px-6 py-2 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container shadow-xs active:scale-[0.98] transition-all cursor-pointer">
+        {% if icon_name %}<span class="material-symbols-outlined text-[18px]">{{ icon_name }}</span>{% endif %}
+        <span>{{ submit_label|default:"Save Entry" }}</span>
+    </button>
+</div>
