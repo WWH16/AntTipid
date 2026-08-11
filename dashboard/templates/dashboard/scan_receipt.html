@@ -44,7 +44,7 @@
 <div class="w-full min-h-screen bg-background text-on-background pb-24 md:pb-12 flex flex-col">
     
     <!-- TopAppBar Navigation -->
-    <header class="w-full sticky top-0 bg-surface/95 backdrop-blur-md flex justify-between items-center px-4 sm:px-6 h-13 md:h-14 z-40 border-b border-surface-variant/40 shrink-0">
+    <header class="w-full sticky top-0 bg-surface/95 backdrop-blur-md flex justify-between items-center px-4 sm:px-6 h-13 md:h-14 z-40 shrink-0">
         <div class="flex items-center gap-2.5">
             <a href="{% url 'transactions' %}" id="btn-back-header" class="text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center w-8 h-8 rounded-full" aria-label="Back to transactions">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -56,12 +56,6 @@
         </div>
         
         <div class="flex items-center gap-2">
-            <!-- Universal "Add Manually" shortcut in header -->
-            <a href="{% url 'add_transaction' %}" id="btn-header-manual" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:bg-surface-container-low active:scale-95 transition-all font-label-sm text-xs font-semibold flex items-center gap-1.5 shadow-xs">
-                <span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
-                <span class="hidden xs:inline">Add Manually</span>
-            </a>
-
             <button type="button" id="btn-reupload-top" class="hidden sm:flex px-3 py-1.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:bg-surface-container-low active:scale-95 transition-all font-label-sm text-xs font-semibold items-center gap-1.5 shadow-xs">
                 <span class="material-symbols-outlined text-[16px] text-primary">sync</span>
                 <span>Rescan</span>
@@ -105,53 +99,6 @@
                         <span class="material-symbols-outlined text-[18px] text-primary">auto_awesome</span>
                         <span>Try Sample Demo</span>
                     </button>
-                </div>
-            </div>
-
-            <!-- Manual Fallback Callout -->
-            <div class="flex flex-col sm:flex-row items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant/80 text-xs sm:text-sm text-on-surface-variant gap-2 shadow-xs">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-surface-container text-secondary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                    </div>
-                    <span class="font-medium text-on-surface">No receipt photo available?</span>
-                </div>
-                <a href="{% url 'add_transaction' %}" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1 active:scale-95 border border-outline-variant/50">
-                    <span>Add Transaction Manually</span>
-                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                </a>
-            </div>
-
-            <!-- Feature Pills (3-Col Grid) -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[18px]">bolt</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-label-sm text-xs font-semibold text-on-surface">Gemini AI Vision</span>
-                        <span class="font-body-sm text-[11px] text-on-surface-variant">Instant receipt OCR</span>
-                    </div>
-                </div>
-
-                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
-                    <div class="w-8 h-8 rounded-lg bg-secondary-container/60 text-secondary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[18px]">list_alt</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-label-sm text-xs font-semibold text-on-surface">Line Item Extraction</span>
-                        <span class="font-body-sm text-[11px] text-on-surface-variant">Qty & price breakdown</span>
-                    </div>
-                </div>
-
-                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
-                    <div class="w-8 h-8 rounded-lg bg-tertiary-fixed-dim/40 text-on-tertiary-fixed-variant flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[18px]">payments</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-label-sm text-xs font-semibold text-on-surface">Philippine Peso (₱)</span>
-                        <span class="font-body-sm text-[11px] text-on-surface-variant">Auto VAT & cash change</span>
-                    </div>
                 </div>
             </div>
 
@@ -472,33 +419,31 @@
     </div>
 </div>
 
-<!-- Leave / Discard Confirmation Modal -->
-<div id="modal-confirm-discard" class="fixed inset-0 z-[110] bg-on-surface/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div class="max-w-md w-full bg-surface-container-lowest rounded-2xl shadow-2xl p-5 sm:p-6 border border-surface-variant/80 flex flex-col gap-4 scale-95 transition-transform duration-200">
+<!-- Leave / Discard Confirmation Modal (Matching manual entry modal) -->
+<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[110] bg-on-surface/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
+        
+        <!-- Header -->
         <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[22px]">warning</span>
+            <div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[20px]">drafts</span>
             </div>
-            <div class="flex flex-col">
-                <h3 class="font-headline-md text-base sm:text-lg font-bold text-on-surface">Cancel Receipt Scan?</h3>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-relaxed mt-1">
-                    Choose whether to switch to manual transaction entry or discard this scan and return to history.
-                </p>
+            <div class="flex flex-col gap-1">
+                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard unsaved scan?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Any receipt details extracted so far will be lost.</p>
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t border-surface-variant/60">
-            <button type="button" id="btn-keep-editing" class="w-full sm:w-auto px-4 py-2.5 border border-outline-variant/70 text-on-surface font-label-md text-xs font-semibold rounded-xl hover:bg-surface-container-low active:scale-95 transition-all shadow-xs cursor-pointer">
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-surface-variant/40">
+            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error cursor-pointer">
+                Discard
+            </button>
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-medium transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                 Keep Scanning
             </button>
-            <button type="button" id="btn-confirm-manual" class="w-full sm:w-auto px-4 py-2.5 bg-primary text-on-primary font-label-md text-xs font-bold rounded-xl hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer">
-                <span class="material-symbols-outlined text-[16px]">edit_note</span>
-                <span>Add Manually</span>
-            </button>
-            <button type="button" id="btn-confirm-discard" class="w-full sm:w-auto px-4 py-2.5 bg-error/10 text-error hover:bg-error hover:text-on-error font-label-md text-xs font-bold rounded-xl active:scale-95 transition-all shadow-xs cursor-pointer">
-                Discard & Leave
-            </button>
         </div>
+
     </div>
 </div>
 {% endblock %}
@@ -608,11 +553,9 @@
         }
 
         if (keepEditingBtn) keepEditingBtn.addEventListener('click', hideDiscardModal);
-
-        if (confirmManualBtn) {
-            confirmManualBtn.addEventListener('click', () => {
-                sessionStorage.removeItem('active_ocr_review_data');
-                window.location.href = "{% url 'add_transaction' %}";
+        if (discardModal) {
+            discardModal.addEventListener('click', (e) => {
+                if (e.target === discardModal) hideDiscardModal();
             });
         }
 
