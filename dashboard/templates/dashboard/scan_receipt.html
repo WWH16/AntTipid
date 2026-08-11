@@ -811,6 +811,40 @@
                     saveActiveState();
                 });
             });
+
+            // Enter key navigation across line item inputs (PC & Mobile)
+            document.querySelectorAll('#container-review-items input').forEach(input => {
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const row = input.closest('.group');
+                        if (!row) return;
+
+                        if (input.classList.contains('input-item-desc')) {
+                            const qtyInput = row.querySelector('.input-item-qty');
+                            if (qtyInput) {
+                                qtyInput.focus();
+                                qtyInput.select();
+                            }
+                        } else if (input.classList.contains('input-item-qty')) {
+                            const priceInput = row.querySelector('.input-item-price');
+                            if (priceInput) {
+                                priceInput.focus();
+                                priceInput.select();
+                            }
+                        } else if (input.classList.contains('input-item-price')) {
+                            const nextRow = row.nextElementSibling;
+                            if (nextRow && nextRow.querySelector('.input-item-desc')) {
+                                const nextDesc = nextRow.querySelector('.input-item-desc');
+                                nextDesc.focus();
+                                nextDesc.select();
+                            } else if (addItemBtn) {
+                                addItemBtn.click();
+                            }
+                        }
+                    }
+                });
+            });
         }
 
         if (addItemBtn) {
