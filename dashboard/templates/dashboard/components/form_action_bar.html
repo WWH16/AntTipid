@@ -15,7 +15,7 @@ Usage:
     </button>
     {% endif %}
 
-    <button type="{{ submit_type|default:'submit' }}" id="{{ submit_id|default:'btn-save-transaction' }}" class="inline-flex items-center justify-center gap-1.5 px-6 py-2 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container shadow-xs active:scale-[0.98] transition-all cursor-pointer">
+    <button type="{{ submit_type|default:'submit' }}" id="{{ submit_id|default:'btn-save-transaction' }}" class="inline-flex items-center justify-center gap-1.5 px-6 py-2 h-10 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-semibold hover:bg-primary/90 shadow-xs active:scale-[0.98] transition-all cursor-pointer">
         {% if icon_name %}<span class="material-symbols-outlined text-[18px]">{{ icon_name }}</span>{% endif %}
         <span>{{ submit_label|default:"Save Entry" }}</span>
     </button>

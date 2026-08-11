@@ -12,15 +12,15 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="font-headline-lg text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">History & Receipts</h1>
+                <h1 class="font-headline-lg text-2xl sm:text-3xl font-bold text-deep-forest tracking-tight">History & Receipts</h1>
                 <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Track your expenses, transactions, and scanned receipt archive.</p>
             </div>
 
             <!-- View Switcher (All Activity vs Receipt Archive) -->
             <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
-                <div class="flex bg-surface-container-low rounded-xl p-1 border border-surface-variant/60 shadow-xs" id="view-mode-toggle-group">
-                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
-                    <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-on-surface font-medium transition-all flex items-center gap-1 cursor-pointer">
+                <div class="flex bg-surface-container-low rounded-xl p-1 border border-outline-variant/60 shadow-xs" id="view-mode-toggle-group">
+                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
+                    <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-medium transition-all flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">receipt</span>
                         Receipt Archive
                     </button>
@@ -96,10 +96,10 @@
                 <div class="transaction-group" data-date-group="today">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Today</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
-                        <!-- Item 1: Jollibee -->
+                        <!-- Item 1: Jollibee (Expense) -->
                         <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Dining">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                 </div>
                                 <div class="min-w-0">
@@ -107,13 +107,13 @@
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Food & Dining</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱250.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
                         </div>
 
-                        <!-- Item 2: Grab -->
+                        <!-- Item 2: Grab (Expense) -->
                         <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Transportation">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-700 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px]">directions_car</span>
                                 </div>
                                 <div class="min-w-0">
@@ -121,7 +121,7 @@
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Transportation</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱180.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
                 <div class="transaction-group" data-date-group="yesterday">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Yesterday</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
-                        <!-- Item 1: Shopee -->
+                        <!-- Item 1: Shopee (Expense) -->
                         <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Shopping">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0">
@@ -141,10 +141,10 @@
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Shopping</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱650.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
                         </div>
 
-                        <!-- Item 2 (Income) -->
+                        <!-- Item 2 (Income - Soft Green + Ant Green) -->
                         <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="income" data-category="Income">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/20 flex items-center justify-center shrink-0">
