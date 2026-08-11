@@ -367,10 +367,10 @@
 
                 <!-- Desktop Action Buttons -->
                 <div class="hidden sm:flex items-center justify-end gap-2.5 pt-1">
-                    <a href="{% url 'add_transaction' %}" class="px-5 py-2 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-lg flex items-center justify-center hover:bg-surface-container-low active:scale-95 transition-all shadow-xs">
+                    <button type="button" id="btn-cancel-ocr" class="px-5 py-2.5 h-11 border border-outline-variant/80 text-on-surface font-label-md text-xs sm:text-sm font-semibold rounded-lg flex items-center justify-center hover:bg-surface-container-low active:scale-95 transition-all shadow-xs">
                         Cancel
-                    </a>
-                    <button type="button" id="btn-save-ocr-expense" class="px-6 py-2 bg-primary text-on-primary font-label-md text-xs font-bold rounded-lg flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-sm">
+                    </button>
+                    <button type="button" id="btn-save-ocr-expense" class="px-6 py-2.5 h-11 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-lg flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-sm">
                         Save Expense
                     </button>
                 </div>
@@ -381,11 +381,11 @@
     </main>
 
     <!-- MOBILE STICKY ACTION BAR (Phone <sm) -->
-    <div id="bar-mobile-actions" class="fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-surface-variant p-2.5 px-3 z-50 flex sm:hidden items-center justify-between gap-2.5 shadow-lg">
-        <a href="{% url 'add_transaction' %}" class="flex-1 py-2 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+    <div id="bar-mobile-actions" class="fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-surface-variant/80 p-3 px-4 z-50 flex sm:hidden items-center justify-between gap-3 shadow-lg pb-[max(0.875rem,env(safe-area-inset-bottom))]">
+        <button type="button" id="btn-cancel-ocr-mobile" class="flex-1 py-3.5 h-12 border border-outline-variant/80 text-on-surface font-label-md text-xs sm:text-sm font-semibold rounded-xl flex items-center justify-center active:scale-95 transition-transform bg-surface-container-lowest shadow-xs">
             Cancel
-        </a>
-        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-2 bg-primary text-on-primary font-label-md text-xs font-bold rounded-lg flex items-center justify-center active:scale-95 transition-transform shadow-xs">
+        </button>
+        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-3.5 h-12 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center active:scale-95 transition-transform shadow-sm">
             Save Expense
         </button>
     </div>
@@ -692,6 +692,21 @@
             if (el) el.addEventListener('change', saveActiveState);
         });
 
+        const cancelBtn = document.getElementById('btn-cancel-ocr');
+        const cancelBtnMobile = document.getElementById('btn-cancel-ocr-mobile');
+
+        function handleCancelOCR() {
+            sessionStorage.removeItem('active_ocr_review_data');
+            if (ocrReviewScreen) ocrReviewScreen.classList.add('hidden');
+            if (mobileActionsBar) mobileActionsBar.classList.add('hidden');
+            if (processingCanvas) processingCanvas.classList.add('hidden');
+            if (fileInput) fileInput.value = '';
+            if (uploadZone) uploadZone.classList.remove('hidden');
+        }
+
+        if (cancelBtn) cancelBtn.addEventListener('click', handleCancelOCR);
+        if (cancelBtnMobile) cancelBtnMobile.addEventListener('click', handleCancelOCR);
+
         function handleSaveExpense() {
             const finalData = {
                 merchant: merchantInput.value,
@@ -725,26 +740,22 @@
                     row.className = "group flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:p-3 gap-2 bg-surface-container-lowest rounded-lg border border-surface-variant/80 hover:border-outline-variant/80 shadow-xs transition-all";
 
                     row.innerHTML = `
-                        <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2">
-                            <div class="flex-1 flex items-center bg-surface-container-low/40 rounded-md px-2.5 py-1 border border-surface-variant/40 focus-within:border-primary">
-                                <input type="text" class="input-item-desc w-full font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 min-h-[28px]" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item description" />
-                            </div>
-                            
-                            <div class="flex items-center justify-between sm:justify-start gap-2">
-                                <div class="flex items-center gap-1 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
-                                    <span class="text-[10px] font-semibold text-on-surface-variant/70 uppercase">Qty</span>
-                                    <input type="number" min="1" step="1" class="input-item-qty w-10 text-center font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${item.quantity}" data-idx="${idx}" />
-                                </div>
-
-                                <div class="flex items-center gap-0.5 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
-                                    <span class="text-xs text-on-surface-variant font-medium">₱</span>
-                                    <input type="number" step="0.01" min="0" class="input-item-price w-20 text-right font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${parseFloat(item.price).toFixed(2)}" data-idx="${idx}" />
-                                </div>
-                            </div>
+                        <div class="flex-1 flex items-center bg-surface-container-low/40 rounded-md px-2.5 py-1 border border-surface-variant/40 focus-within:border-primary">
+                            <input type="text" class="input-item-desc w-full font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 min-h-[28px]" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item description" />
                         </div>
+                        
+                        <div class="flex items-center justify-between sm:justify-end gap-2 pt-0.5 sm:pt-0">
+                            <div class="flex items-center gap-1 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
+                                <span class="text-[10px] font-semibold text-on-surface-variant/70 uppercase">Qty</span>
+                                <input type="number" min="1" step="1" class="input-item-qty w-10 text-center font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${item.quantity}" data-idx="${idx}" />
+                            </div>
 
-                        <div class="flex items-center justify-end gap-2.5 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-surface-variant/30">
-                            <button type="button" class="btn-delete-item text-outline-variant hover:text-error transition-colors p-1 rounded-md hover:bg-error/10 active:scale-95 shrink-0" data-idx="${idx}" title="Remove item">
+                            <div class="flex items-center gap-0.5 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
+                                <span class="text-xs text-on-surface-variant font-medium">₱</span>
+                                <input type="number" step="0.01" min="0" class="input-item-price w-20 sm:w-24 text-right font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${parseFloat(item.price).toFixed(2)}" data-idx="${idx}" />
+                            </div>
+
+                            <button type="button" class="btn-delete-item text-outline-variant hover:text-error transition-colors p-1.5 rounded-md hover:bg-error/10 active:scale-95 shrink-0 ml-0.5" data-idx="${idx}" title="Remove item">
                                 <span class="material-symbols-outlined text-[18px]">delete</span>
                             </button>
                         </div>
