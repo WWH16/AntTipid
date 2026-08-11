@@ -40,13 +40,13 @@
             <div class="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
                 <!-- Time Period Selector Pill Group -->
                 <div class="flex bg-surface-container-low rounded-full p-1 border border-outline-variant/60 shadow-xs" id="period-selector-group">
-                    <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-medium">Week</button>
+                    <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Week</button>
                     <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-primary text-white shadow-xs font-label-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Month</button>
-                    <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-medium">Year</button>
+                    <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Year</button>
                 </div>
 
                 <!-- Export Report Button -->
-                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-primary/30 bg-soft-green text-primary font-label-md text-xs font-semibold hover:bg-primary hover:text-white transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-primary/30 bg-soft-green text-primary font-label-md text-xs font-bold hover:bg-primary hover:text-white transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span class="hidden sm:inline">Export</span>
                 </button>
@@ -59,10 +59,10 @@
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
 
             <!-- Total Spending Card -->
-            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4">
+            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
                 <div class="flex justify-between items-start">
                     <span class="font-label-sm text-[10px] sm:text-[11px] text-expense uppercase tracking-wider font-bold">Total Spending</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_outward</span>
                     </div>
                 </div>
@@ -75,34 +75,34 @@
             </div>
 
             <!-- Highest Category Card (Gold Budget Accent) -->
-            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4">
+            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
                 <div class="flex justify-between items-start">
                     <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 uppercase tracking-wider font-bold">Highest Category</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">home</span>
                     </div>
                 </div>
                 <div>
                     <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight truncate">Housing & Rent</div>
-                    <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 tabular-nums">₱17,850.00 (42% of total)</p>
+                    <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 font-medium tabular-nums">₱17,850.00 (42% of total)</p>
                 </div>
             </div>
 
             <!-- Savings Rate Hero Card (Deep Forest Background) -->
-            <div class="sm:col-span-2 lg:col-span-1 bg-deep-forest text-white rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
+            <div class="sm:col-span-2 lg:col-span-1 bg-deep-forest text-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
                 <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
                 <div class="flex justify-between items-start relative z-10">
                     <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider text-white/80 font-bold">Monthly Savings Rate</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_downward</span>
                     </div>
                 </div>
                 <div class="relative z-10">
                     <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight tabular-nums text-white">28.5%</div>
-                    <p class="font-body-sm text-xs text-white/80 mt-0.5">Target goal: 30.0%</p>
+                    <p class="font-body-sm text-xs text-white/80 mt-0.5 font-medium">Target goal: 30.0%</p>
                 </div>
                 <!-- Mini Progress Bar in Ant Green -->
-                <div class="w-full bg-white/20 h-2 rounded-full relative z-10 overflow-hidden">
+                <div class="w-full bg-white/20 h-2 rounded-full relative z-10 overflow-hidden p-0.5">
                     <div id="kpi-savings-bar" class="bg-primary h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 85%"></div>
                 </div>
             </div>
@@ -229,7 +229,7 @@
             <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
                 <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
                     <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/20">November</span>
+                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/30">November</span>
                 </div>
 
                 <!-- Donut SVG Area -->
@@ -247,44 +247,44 @@
                             <circle id="donut-seg-4" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#D96B4A" stroke-dasharray="45 251" stroke-dashoffset="-204" stroke-width="16"></circle>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span id="donut-center-label" class="font-label-sm text-[9px] sm:text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Total</span>
+                            <span id="donut-center-label" class="font-label-sm text-[9px] sm:text-[10px] text-deep-forest uppercase tracking-wider font-bold">Total</span>
                             <span id="donut-center-value" class="font-headline-md text-base sm:text-lg font-extrabold text-deep-forest tabular-nums">₱42.5k</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Donut Legend Grid -->
-                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-surface-variant/40">
-                    <div id="legend-item-1" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/40">
+                    <div id="legend-item-1" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#23452A] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Housing</span>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Housing</span>
                         </div>
-                        <span id="legend-val-1" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">42%</span>
+                        <span id="legend-val-1" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">42%</span>
                     </div>
 
-                    <div id="legend-item-2" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-2" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#5C8F3A] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Food</span>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Food</span>
                         </div>
-                        <span id="legend-val-2" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">25%</span>
+                        <span id="legend-val-2" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">25%</span>
                     </div>
 
-                    <div id="legend-item-3" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-3" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#E4A72C] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Transport</span>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Transport</span>
                         </div>
-                        <span id="legend-val-3" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">15%</span>
+                        <span id="legend-val-3" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">15%</span>
                     </div>
 
-                    <div id="legend-item-4" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-4" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
                             <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#D96B4A] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Other</span>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Other</span>
                         </div>
-                        <span id="legend-val-4" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">18%</span>
+                        <span id="legend-val-4" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">18%</span>
                     </div>
                 </div>
             </div>
@@ -295,17 +295,17 @@
         <!-- BOTTOM ROW: MONTHLY TRENDS LIST         -->
         <!-- ═══════════════════════════════════════ -->
         <section class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3.5 sm:gap-4">
-            <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/40 pb-3">
                 <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
-                <span class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-medium">vs previous period</span>
+                <span class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-semibold">vs previous period</span>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
 
                 <!-- Trend Item 1 (Dining Out) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">restaurant</span>
                         </div>
                         <div class="min-w-0">
@@ -328,9 +328,9 @@
                 </div>
 
                 <!-- Trend Item 2 (Groceries) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_bag</span>
                         </div>
                         <div class="min-w-0">
@@ -353,9 +353,9 @@
                 </div>
 
                 <!-- Trend Item 3 (Transport - Gold Accent) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">directions_car</span>
                         </div>
                         <div class="min-w-0">
