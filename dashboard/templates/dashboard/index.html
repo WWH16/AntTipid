@@ -29,8 +29,8 @@
 
             <!-- ─── Financial Summary Cards Grid (Section 6) ─── -->
             <section class="grid grid-cols-1 sm:grid-cols-3 gap-sm sm:gap-md">
-                <!-- Total Income -->
-                <div id="card-income" class="bg-soft-green/60 p-4 sm:p-5 rounded-2xl border border-primary/20 shadow-xs flex flex-col justify-between gap-3 transition-all">
+                <!-- Total Income (Soft Green + Ant Green) -->
+                <div id="card-income" class="bg-soft-green/60 p-4 sm:p-5 rounded-2xl border border-primary/30 shadow-xs flex flex-col justify-between gap-3 transition-all hover:shadow-soft">
                     <div class="flex items-center justify-between">
                         <span class="font-label-sm text-[11px] text-primary uppercase tracking-[0.06em] font-bold">Total Income</span>
                         <div class="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center shrink-0">
@@ -43,8 +43,8 @@
                     </div>
                 </div>
 
-                <!-- Total Expenses -->
-                <div id="card-expenses" class="bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/20 shadow-xs flex flex-col justify-between gap-3 transition-all">
+                <!-- Total Expenses (Orange/Red Expense) -->
+                <div id="card-expenses" class="bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 transition-all hover:shadow-soft">
                     <div class="flex items-center justify-between">
                         <span class="font-label-sm text-[11px] text-expense uppercase tracking-[0.06em] font-bold">Total Expenses</span>
                         <div class="w-8 h-8 rounded-lg bg-expense/20 text-expense flex items-center justify-center shrink-0">
@@ -57,39 +57,39 @@
                     </div>
                 </div>
 
-                <!-- Remaining Budget -->
-                <div id="card-remaining" class="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 transition-all">
+                <!-- Remaining Budget (Gold Budget/Savings Color) -->
+                <div id="card-remaining" class="bg-warning/10 p-4 sm:p-5 rounded-2xl border border-warning/30 shadow-xs flex flex-col justify-between gap-3 transition-all hover:shadow-soft">
                     <div class="flex items-center justify-between">
-                        <span class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.06em] font-bold">Remaining Budget</span>
-                        <div class="w-8 h-8 rounded-lg bg-deep-forest/10 text-deep-forest flex items-center justify-center shrink-0">
+                        <span class="font-label-sm text-[11px] text-amber-700 uppercase tracking-[0.06em] font-bold">Remaining Budget</span>
+                        <div class="w-8 h-8 rounded-lg bg-warning/20 text-amber-700 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px]">savings</span>
                         </div>
                     </div>
                     <div>
                         <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱11,550.00</p>
-                        <span class="font-label-sm text-[11px] text-primary font-semibold mt-1 inline-block">58% left to spend</span>
+                        <span class="font-label-sm text-[11px] text-amber-700 font-semibold mt-1 inline-block">58% left to spend</span>
                     </div>
                 </div>
             </section>
 
-            <!-- ─── Budget Progress Card (Section 7) ─── -->
+            <!-- ─── Budget Progress Card (Section 7 - Gold Accent) ─── -->
             <section id="card-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-4">
                 <div class="flex justify-between items-center">
                     <div>
                         <h3 class="font-headline-md text-base sm:text-lg text-deep-forest font-semibold tracking-tight">Budget Progress</h3>
                         <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">₱8,450 of ₱20,000 used</p>
                     </div>
-                    <span class="font-headline-md text-xl font-extrabold text-primary bg-soft-green px-3 py-1 rounded-xl border border-primary/20 tabular-nums">42%</span>
+                    <span class="font-headline-md text-xl font-extrabold text-amber-700 bg-warning/15 px-3 py-1 rounded-xl border border-warning/30 tabular-nums">42%</span>
                 </div>
 
                 <!-- Main progress bar -->
                 <div class="space-y-1.5">
                     <div class="w-full bg-surface-container h-3 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 42%"></div>
+                        <div class="bg-warning h-full rounded-full transition-all duration-500" style="width: 42%"></div>
                     </div>
                     <div class="flex justify-between font-body-sm text-xs text-on-surface-variant font-medium">
                         <span>Status: <strong class="text-primary font-semibold">Normal (Within Budget)</strong></span>
-                        <span>Remaining: <strong class="text-deep-forest font-semibold tabular-nums">₱11,550.00</strong></span>
+                        <span>Remaining: <strong class="text-amber-700 font-bold tabular-nums">₱11,550.00</strong></span>
                     </div>
                 </div>
 
@@ -97,12 +97,12 @@
                 <div class="space-y-3.5 border-t border-surface-variant/50 pt-4">
                     <div class="flex justify-between items-center">
                         <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Spending by Category</h4>
-                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">8450.00 Total</span>
+                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium tabular-nums">₱8,450.00 Total</span>
                     </div>
                     
-                    <!-- Food -->
+                    <!-- Food (Orange/Red Expense) -->
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 rounded-lg bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px]">restaurant</span>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -111,14 +111,14 @@
                                 <span class="text-deep-forest font-bold tabular-nums">₱4,500.00 <span class="text-on-surface-variant font-normal">(53%)</span></span>
                             </div>
                             <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
-                                <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 53%"></div>
+                                <div class="h-full bg-expense rounded-full transition-all duration-500" style="width: 53%"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Transportation -->
+                    <!-- Transportation (Gold Accent) -->
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-purple-500/15 text-purple-700 border border-purple-500/30 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 rounded-lg bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px]">directions_car</span>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -127,7 +127,7 @@
                                 <span class="text-deep-forest font-bold tabular-nums">₱1,800.00 <span class="text-on-surface-variant font-normal">(21%)</span></span>
                             </div>
                             <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
-                                <div class="h-full bg-purple-600 rounded-full transition-all duration-500" style="width: 21%"></div>
+                                <div class="h-full bg-warning rounded-full transition-all duration-500" style="width: 21%"></div>
                             </div>
                         </div>
                     </div>
@@ -173,10 +173,10 @@
         <div class="lg:col-span-4 flex flex-col gap-md md:gap-lg">
 
             <!-- ─── Spending Overview Chart ─── -->
-            <section id="card-chart" class="bg-surface-container-lowest border border-surface-variant/80 rounded-2xl p-5 shadow-xs flex flex-col gap-4">
+            <section id="card-chart" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 shadow-xs flex flex-col gap-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-headline-md text-base font-semibold text-on-surface tracking-tight">Weekly Spending</h3>
-                    <select id="select-chart-period" class="bg-surface-container-low border border-outline-variant/60 rounded-xl font-label-sm text-xs text-on-surface py-1 px-2.5 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer font-medium">
+                    <h3 class="font-headline-md text-base font-semibold text-deep-forest tracking-tight">Weekly Spending</h3>
+                    <select id="select-chart-period" class="bg-surface-container-low border border-outline-variant/60 rounded-xl font-label-sm text-xs text-deep-forest py-1 px-2.5 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer font-medium">
                         <option>This Month</option>
                         <option>Last Month</option>
                     </select>
@@ -186,28 +186,28 @@
                 <div class="flex-1 flex items-end justify-between gap-3 pt-3 border-t border-surface-variant/50 h-36">
                     <div class="flex flex-col items-center gap-1.5 w-full">
                         <span class="text-[10px] text-on-surface-variant font-medium md:hidden tabular-nums">₱4k</span>
-                        <div class="w-full bg-primary/20 hover:bg-primary/40 rounded-t-lg h-[40%] transition-colors cursor-pointer relative group">
+                        <div class="w-full bg-primary/30 hover:bg-primary/50 rounded-t-lg h-[40%] transition-colors cursor-pointer relative group">
                             <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums">Week 1: ₱4,000</div>
                         </div>
                         <span class="font-label-sm text-xs text-on-surface-variant font-semibold">W1</span>
                     </div>
                     <div class="flex flex-col items-center gap-1.5 w-full">
-                        <span class="text-[10px] text-on-surface-variant font-medium md:hidden tabular-nums">₱8.5k</span>
-                        <div class="w-full bg-primary rounded-t-lg h-[85%] hover:bg-primary-container transition-colors cursor-pointer relative group">
+                        <span class="text-[10px] text-amber-700 font-bold md:hidden tabular-nums">₱8.5k</span>
+                        <div class="w-full bg-warning rounded-t-lg h-[85%] hover:bg-amber-600 transition-colors cursor-pointer relative group shadow-xs">
                             <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums">Week 2: ₱8,500</div>
                         </div>
-                        <span class="font-label-sm text-xs text-on-surface-variant font-semibold">W2</span>
+                        <span class="font-label-sm text-xs text-amber-700 font-bold">W2</span>
                     </div>
                     <div class="flex flex-col items-center gap-1.5 w-full">
                         <span class="text-[10px] text-on-surface-variant font-medium md:hidden tabular-nums">₱6k</span>
-                        <div class="w-full bg-primary/50 hover:bg-primary/70 rounded-t-lg h-[60%] transition-colors cursor-pointer relative group">
+                        <div class="w-full bg-primary/60 hover:bg-primary/80 rounded-t-lg h-[60%] transition-colors cursor-pointer relative group">
                             <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums">Week 3: ₱6,000</div>
                         </div>
                         <span class="font-label-sm text-xs text-on-surface-variant font-semibold">W3</span>
                     </div>
                     <div class="flex flex-col items-center gap-1.5 w-full">
                         <span class="text-[10px] text-on-surface-variant font-medium md:hidden tabular-nums">₱5k</span>
-                        <div class="w-full bg-primary/30 hover:bg-primary/50 rounded-t-lg h-[50%] transition-colors cursor-pointer relative group">
+                        <div class="w-full bg-primary/40 hover:bg-primary/60 rounded-t-lg h-[50%] transition-colors cursor-pointer relative group">
                             <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums">Week 4: ₱5,000</div>
                         </div>
                         <span class="font-label-sm text-xs text-on-surface-variant font-semibold">W4</span>
@@ -215,8 +215,8 @@
                 </div>
             </section>
 
-            <!-- ─── Recent Activity ─── -->
-            <section id="card-transactions" class="bg-surface-container-lowest border border-surface-variant/80 rounded-2xl shadow-xs flex-1 flex flex-col overflow-hidden">
+            <!-- ─── Recent Activity (Section 9) ─── -->
+            <section id="card-transactions" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs flex-1 flex flex-col overflow-hidden">
                 <div class="p-4 border-b border-surface-variant/50 flex justify-between items-center bg-surface-container-low/30">
                     <h3 class="font-headline-md text-base font-semibold text-deep-forest tracking-tight">Recent Transactions</h3>
                     <a id="link-view-all" class="text-primary font-label-sm text-xs hover:underline font-semibold flex items-center gap-0.5" href="{% url 'transactions' %}">
@@ -224,10 +224,10 @@
                     </a>
                 </div>
                 <div class="flex flex-col divide-y divide-surface-variant/40">
-                    <!-- Transaction: Jollibee (Spec Example) -->
+                    <!-- Transaction: Jollibee (Expense) -->
                     <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
+                            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">restaurant</span>
                             </div>
                             <div class="min-w-0">
@@ -235,13 +235,13 @@
                                 <p class="font-body-sm text-[11px] text-on-surface-variant truncate">Food · May 24, 2024</p>
                             </div>
                         </div>
-                        <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱250.00</span>
+                        <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
                     </a>
 
-                    <!-- Transaction: SM Supermarket -->
+                    <!-- Transaction: SM Supermarket (Expense) -->
                     <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
+                            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                             </div>
                             <div class="min-w-0">
@@ -249,49 +249,35 @@
                                 <p class="font-body-sm text-[11px] text-on-surface-variant truncate">Groceries · May 24, 2024</p>
                             </div>
                         </div>
-                        <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱842.00</span>
+                        <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱842.00</span>
                     </a>
 
-                    <!-- Transaction: Expense -->
+                    <!-- Transaction: Meralco Electric (Expense) -->
                     <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 group-hover:bg-surface-container-high transition-colors">
+                            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[18px]">bolt</span>
                             </div>
                             <div class="min-w-0">
-                                <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate group-hover:text-primary transition-colors">Meralco Electric</p>
+                                <p class="font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate group-hover:text-primary transition-colors">Meralco Electric</p>
                                 <p class="font-body-sm text-[11px] text-on-surface-variant truncate">Utilities · Yesterday</p>
                             </div>
                         </div>
-                        <span class="font-label-md text-xs sm:text-sm text-on-surface font-bold whitespace-nowrap ml-2 tabular-nums">-₱1,205.00</span>
+                        <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱1,205.00</span>
                     </a>
 
-                    <!-- Transaction: Income -->
+                    <!-- Transaction: Salary Deposit (Income) -->
                     <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                            <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                                 <span class="material-symbols-outlined text-[18px]">payments</span>
                             </div>
                             <div class="min-w-0">
-                                <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
+                                <p class="font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
                                 <p class="font-body-sm text-[11px] text-on-surface-variant truncate">Income · Aug 15</p>
                             </div>
                         </div>
                         <span class="font-label-md text-xs sm:text-sm text-primary font-bold whitespace-nowrap ml-2 tabular-nums">+₱35,000.00</span>
-                    </a>
-
-                    <!-- Transaction: Expense -->
-                    <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[18px]">directions_car</span>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate group-hover:text-primary transition-colors">Grab Ride</p>
-                                <p class="font-body-sm text-[11px] text-on-surface-variant truncate">Transport · Aug 14</p>
-                            </div>
-                        </div>
-                        <span class="font-label-md text-xs sm:text-sm text-on-surface font-bold whitespace-nowrap ml-2 tabular-nums">-₱285.00</span>
                     </a>
                 </div>
             </section>
