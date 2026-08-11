@@ -807,9 +807,18 @@
 
         if (addItemBtn) {
             addItemBtn.addEventListener('click', () => {
-                reviewData.items.push({ description: 'New Line Item', quantity: 1, price: 50.00 });
+                reviewData.items.push({ description: '', quantity: 1, price: 0 });
                 renderItems();
                 saveActiveState();
+
+                setTimeout(() => {
+                    const allDescInputs = itemsContainer.querySelectorAll('.input-item-desc');
+                    if (allDescInputs.length > 0) {
+                        const newDescInput = allDescInputs[allDescInputs.length - 1];
+                        newDescInput.focus();
+                        newDescInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 30);
             });
         }
 
