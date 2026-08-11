@@ -322,6 +322,23 @@
         <!-- ═══════════════════════════════════════ -->
         <div id="section-receipt-archive" class="hidden flex-col gap-md">
             
+            <!-- Receipt Archive Action Banner -->
+            <div class="bg-surface md:bg-surface-container-lowest rounded-xl p-4 border border-surface-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-md shadow-soft">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[22px]">document_scanner</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-semibold text-on-surface">Receipt OCR Scanner</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant">Upload or take a photo of any receipt to auto-extract items & totals with Gemini AI.</p>
+                    </div>
+                </div>
+                <a href="{% url 'scan_receipt' %}" class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs sm:text-label-md font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm active:scale-95 flex items-center gap-1.5 shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                    Scan New Receipt
+                </a>
+            </div>
+
             <!-- Selection Action Bar (Shown when receipt checkboxes checked) -->
             <div id="receipt-selection-bar" class="hidden bg-surface-container-lowest/95 backdrop-blur-md rounded-lg px-3 py-2 flex items-center justify-between border border-primary/20 transition-all shadow-sm">
                 <div class="flex items-center gap-2 min-w-0">

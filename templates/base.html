@@ -120,6 +120,25 @@
         }
       }
     </script>
+    <style>
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            80%, 100% { opacity: 0; transform: scale(2); }
+        }
+
+        .scanning-line {
+            animation: scan 2.2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:flex-row">
@@ -230,6 +249,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- BOTTOM NAV BAR (Mobile Only: <md)          -->
     <!-- ═══════════════════════════════════════════ -->
+    {% block mobile_nav %}
     <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-1.5 pb-safe bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] z-50 md:hidden">
         {% block bottom_nav %}
         <a id="bnav-home" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'dashboard' %}text-primary font-semibold{% else %}text-secondary opacity-80{% endif %} hover:text-primary active:scale-90 transition-all w-[20%]" href="{% url 'dashboard' %}">
@@ -256,6 +276,7 @@
         </a>
         {% endblock %}
     </nav>
+    {% endblock %}
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- ADD CHOICE MODAL (QUIETER & REFINED)        -->
@@ -281,7 +302,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm sm:gap-md pt-0.5">
                 
                 <!-- Choice 1: Scan / Upload Receipt -->
-                <a href="{% url 'transactions' %}?mode=receipts" id="choice-scan-receipt" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
+                <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
                     <div class="flex justify-between items-start mb-2.5">
                         <div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                             <span class="material-symbols-outlined text-[20px]">photo_camera</span>

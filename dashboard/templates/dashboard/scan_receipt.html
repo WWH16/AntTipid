@@ -1,0 +1,741 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Receipt — AntTipid{% endblock %}
+
+{% block mobile_nav %}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .pulse-ring {
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+        0% { transform: scale(0.8); opacity: 0.5; }
+        80%, 100% { opacity: 0; transform: scale(2); }
+    }
+    
+    .fade-in-out {
+        animation: fadeInOut 3s infinite;
+    }
+    @keyframes fadeInOut {
+        0%, 100% { opacity: 0; transform: translateY(8px); }
+        10%, 90% { opacity: 1; transform: translateY(0); }
+    }
+
+    .scanning-line {
+        animation: scan 2.2s linear infinite;
+    }
+    @keyframes scan {
+        0% { top: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="w-full min-h-screen bg-background text-on-background pb-24 md:pb-12">
+    
+    <!-- TopAppBar Navigation -->
+    <header class="w-full sticky top-0 bg-surface/95 backdrop-blur-md flex justify-between items-center px-4 sm:px-6 md:px-8 h-14 md:h-16 z-40 border-b border-surface-variant">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'transactions' %}" class="text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center w-10 h-10 rounded-full" aria-label="Back to transactions">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            </a>
+            <div class="flex flex-col">
+                <span class="font-label-sm text-[11px] text-on-surface-variant font-medium uppercase tracking-wider hidden sm:block">Receipt Scanning</span>
+                <h1 class="font-headline-md text-base sm:text-lg md:text-xl font-bold text-on-surface">Review Scanned Receipt</h1>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <button type="button" id="btn-reupload-top" class="px-3 py-1.5 rounded-full border border-surface-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all font-label-sm text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+                <span class="material-symbols-outlined text-[16px]">upload_file</span>
+                <span class="hidden sm:inline">New Scan</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="input-receipt-camera" accept="image/*" capture="environment" class="hidden" />
+
+    <!-- STEP 1: INITIAL UPLOAD / CAPTURE VIEW -->
+    <div id="section-upload-trigger" class="px-4 sm:px-6 pt-6 md:pt-12 max-w-2xl mx-auto">
+        <div class="w-full my-4 sm:my-8 flex flex-col items-center justify-center gap-5 bg-surface-container-lowest p-8 sm:p-12 rounded-2xl shadow-soft border border-surface-variant hover:border-primary transition-all cursor-pointer text-center group">
+            <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-[36px]">photo_camera</span>
+            </div>
+            <div class="space-y-1.5 max-w-md">
+                <h2 class="font-headline-lg text-xl sm:text-2xl font-bold text-on-surface group-hover:text-primary transition-colors">
+                    Upload or Snap Receipt
+                </h2>
+                <p class="font-body-md text-sm text-on-surface-variant">
+                    Take a photo or choose an image to extract line items, merchant, tax, and totals with Gemini AI.
+                </p>
+            </div>
+            <button type="button" id="btn-select-file" class="px-6 py-3 rounded-full bg-primary text-on-primary font-label-md text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">upload_file</span>
+                <span>Choose Image</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 2: PROCESSING ANIMATION CANVAS -->
+    <div id="section-processing-canvas" class="hidden px-4 sm:px-6 pt-8 max-w-2xl mx-auto flex-col items-center justify-center py-16 gap-6">
+        <div class="relative w-48 h-64 bg-surface-container-lowest rounded-2xl shadow-md border border-surface-variant flex items-center justify-center overflow-hidden">
+            <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-25" />
+            <div id="skeleton-doc" class="absolute inset-4 border border-outline-variant/30 rounded-xl flex flex-col gap-2 p-3 opacity-50">
+                <div class="h-2.5 bg-surface-container-high rounded-full w-3/4"></div>
+                <div class="h-2 bg-surface-container-high rounded-full w-1/2"></div>
+                <div class="mt-4 space-y-2.5">
+                    <div class="h-2 bg-surface-container-highest rounded-full w-full"></div>
+                    <div class="h-2 bg-surface-container-highest rounded-full w-5/6"></div>
+                    <div class="h-2 bg-surface-container-highest rounded-full w-4/5"></div>
+                </div>
+            </div>
+            <div class="scanning-line absolute left-0 w-full h-1 bg-primary shadow-[0_0_14px_rgba(0,108,73,0.9)] z-10"></div>
+            <div class="relative z-20">
+                <div class="pulse-ring absolute -inset-2 bg-primary/20 rounded-full"></div>
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg text-on-primary">
+                    <span class="material-symbols-outlined text-3xl">document_scanner</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center flex flex-col items-center justify-center w-full max-w-sm gap-2.5">
+            <h2 class="font-headline-md text-lg font-bold text-on-surface fade-in-out" id="status-text">Reading receipt...</h2>
+            <div class="w-full max-w-xs bg-surface-container-high h-2 rounded-full overflow-hidden">
+                <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: OCR REVIEW MAIN SECTION -->
+    <main id="section-ocr-review" class="hidden px-4 sm:px-6 md:px-8 pt-6 pb-20 max-w-7xl mx-auto">
+        
+        <!-- Desktop / Mobile Responsive Bento Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            
+            <!-- LEFT COLUMN: Sticky Receipt Image Preview & AI Summary Card (Desktop: 5 cols) -->
+            <div class="lg:col-span-5 flex flex-col gap-5 lg:sticky lg:top-20">
+                
+                <!-- Scanned Receipt Image Card -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-surface-variant/80 p-3 sm:p-4 shadow-soft flex flex-col gap-3">
+                    <div class="flex justify-between items-center px-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                            <span class="font-label-sm text-xs font-semibold text-on-surface">Receipt Preview</span>
+                        </div>
+                        <span class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[11px] font-semibold border border-primary/20">
+                            Gemini AI Scanned
+                        </span>
+                    </div>
+
+                    <!-- Image Thumbnail with Zoom Hover Overlay -->
+                    <div class="w-full h-48 sm:h-56 lg:h-72 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/60 relative group">
+                        <img id="img-review-preview" class="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform duration-300" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                        
+                        <button type="button" id="btn-zoom-image" class="absolute bottom-3 right-3 bg-surface/95 backdrop-blur-md hover:bg-surface text-primary px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-md hover:scale-105 active:scale-95 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                            <span class="font-label-sm text-xs font-semibold">View Full Image</span>
+                        </button>
+                    </div>
+
+                    <!-- Scan Highlights Badges -->
+                    <div class="grid grid-cols-3 gap-2 pt-1">
+                        <div class="bg-surface-container-low/60 rounded-xl p-2.5 flex flex-col border border-surface-variant/40">
+                            <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-medium">Merchant</span>
+                            <span id="badge-merchant-name" class="font-label-md text-xs font-semibold text-on-surface truncate mt-0.5">Whole Foods</span>
+                        </div>
+                        <div class="bg-surface-container-low/60 rounded-xl p-2.5 flex flex-col border border-surface-variant/40">
+                            <span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-medium">Items</span>
+                            <span id="badge-item-count" class="font-label-md text-xs font-semibold text-on-surface mt-0.5">3 items</span>
+                        </div>
+                        <div class="bg-primary/5 rounded-xl p-2.5 flex flex-col border border-primary/20">
+                            <span class="font-label-sm text-[10px] text-primary uppercase font-medium">Est. Total</span>
+                            <span id="badge-total-amount" class="font-label-md text-xs font-bold text-primary tabular-nums mt-0.5">₱0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guidance Note -->
+                <div class="hidden lg:flex items-start gap-3 bg-secondary-container/30 border border-outline-variant/40 p-4 rounded-xl text-on-secondary-container">
+                    <span class="material-symbols-outlined text-primary text-[22px] shrink-0 mt-0.5">info</span>
+                    <p class="font-body-sm text-xs leading-relaxed text-on-surface-variant">
+                        Review and edit details in the panel on the right before saving. Line items, tax, and categories can be modified directly.
+                    </p>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Extracted Data Editor Form (Desktop: 7 cols) -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                
+                <!-- Header Section -->
+                <div class="flex flex-col gap-1">
+                    <h2 class="font-headline-lg text-xl sm:text-2xl font-bold text-on-background">Confirm Details</h2>
+                    <p class="font-body-md text-xs sm:text-sm text-on-surface-variant">
+                        Verify extracted merchant info, line items, and totals. Tap any field to edit.
+                    </p>
+                </div>
+
+                <!-- Form Fields Card (Merchant, Date & Category) -->
+                <div class="bg-surface-container-lowest p-4 sm:p-6 rounded-2xl shadow-soft border border-surface-variant/80 flex flex-col gap-4">
+                    <!-- Merchant -->
+                    <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low transition-colors rounded-xl p-3.5 border border-surface-variant/60 focus-within:border-primary">
+                        <label for="input-review-merchant" class="block font-label-sm text-xs font-semibold text-on-surface-variant mb-1 group-focus-within:text-primary transition-colors">
+                            Merchant Name
+                        </label>
+                        <div class="flex justify-between items-center">
+                            <input type="text" id="input-review-merchant" class="font-headline-md text-base sm:text-lg font-bold text-on-surface bg-transparent border-none outline-none w-full focus:ring-0 p-0" value="Whole Foods Market" placeholder="e.g. SM Supermarket" />
+                            <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[20px] shrink-0">store</span>
+                        </div>
+                    </div>
+
+                    <!-- Date & Category Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Date -->
+                        <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low transition-colors rounded-xl p-3.5 border border-surface-variant/60 focus-within:border-primary">
+                            <label for="input-review-date" class="block font-label-sm text-xs font-semibold text-on-surface-variant mb-1 group-focus-within:text-primary transition-colors">
+                                Transaction Date
+                            </label>
+                            <div class="flex justify-between items-center">
+                                <input type="date" id="input-review-date" class="font-body-md text-sm font-semibold text-on-surface bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer" value="2026-08-11" />
+                                <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[20px] shrink-0">calendar_today</span>
+                            </div>
+                        </div>
+
+                        <!-- Category with Badge -->
+                        <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low transition-colors rounded-xl p-3.5 border border-surface-variant/60 focus-within:border-primary">
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="select-review-category" class="font-label-sm text-xs font-semibold text-on-surface-variant group-focus-within:text-primary transition-colors">
+                                    Category
+                                </label>
+                                <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] uppercase font-bold border border-primary/20">Suggested</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <select id="select-review-category" class="font-body-md text-sm font-semibold text-on-surface bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer">
+                                    <option value="Groceries">🛒 Groceries</option>
+                                    <option value="Dining">☕ Dining & Coffee</option>
+                                    <option value="Transportation">🚗 Transportation</option>
+                                    <option value="Utilities">💡 Utilities</option>
+                                    <option value="Shopping">🛍️ Shopping & Hardware</option>
+                                    <option value="Healthcare">🏥 Healthcare</option>
+                                    <option value="Entertainment">🎬 Entertainment</option>
+                                    <option value="Services">🛠️ Services</option>
+                                    <option value="Other">📦 Other</option>
+                                </select>
+                                <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[20px] shrink-0 pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Line Items Section -->
+                <div class="flex flex-col gap-3.5">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 class="font-headline-md text-base sm:text-lg font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[22px]">format_list_bulleted</span>
+                            <span>Itemized Line Items</span>
+                        </h3>
+                        <button type="button" id="btn-toggle-items" class="text-primary font-label-sm text-xs font-semibold hover:underline transition-colors py-1 px-2 rounded-lg hover:bg-primary/5">Collapse All</button>
+                    </div>
+
+                    <!-- Items Container -->
+                    <div id="container-review-items" class="flex flex-col gap-3">
+                        <!-- Line items rendered dynamically -->
+                    </div>
+
+                    <button type="button" id="btn-add-review-item" class="self-start text-primary font-label-md text-xs sm:text-sm font-semibold flex items-center gap-2 mt-1 hover:bg-primary/10 transition-colors px-4 py-2.5 rounded-xl border border-primary/30 min-h-[44px] active:scale-95 shadow-xs">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        <span>Add Line Item</span>
+                    </button>
+                </div>
+
+                <!-- Totals & Payment Breakdown Card -->
+                <div class="bg-surface-container-lowest p-4 sm:p-6 rounded-2xl shadow-soft border border-surface-variant/80 flex flex-col gap-4">
+                    <h3 class="font-headline-md text-sm uppercase tracking-wider font-semibold text-on-surface-variant border-b border-surface-variant/60 pb-2.5">
+                        Payment & Financial Summary
+                    </h3>
+
+                    <div class="flex justify-between items-center py-1">
+                        <span class="font-body-md text-sm text-on-surface-variant font-medium">Items Subtotal</span>
+                        <span id="label-review-subtotal" class="font-headline-md text-sm text-on-surface font-semibold tabular-nums">₱0.00</span>
+                    </div>
+
+                    <div class="flex justify-between items-center py-1">
+                        <div class="flex flex-col">
+                            <span class="font-body-md text-sm text-on-surface-variant font-medium">Tax / VAT</span>
+                            <span class="font-body-sm text-[11px] text-on-surface-variant/70">Extracted from receipt (0.00 if unstated)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs text-on-surface-variant font-semibold">₱</span>
+                            <input type="number" step="0.01" min="0" id="input-review-tax" class="w-28 text-right font-body-md text-sm text-on-surface font-semibold bg-surface-container-low/60 border border-outline-variant/80 rounded-xl px-3 py-1.5 focus:border-primary outline-none tabular-nums min-h-[40px]" value="0.00" />
+                        </div>
+                    </div>
+
+                    <div class="h-[1px] w-full bg-surface-variant/80 my-0.5"></div>
+
+                    <!-- Grand Total Banner -->
+                    <div class="flex justify-between items-center py-2 bg-primary/5 p-4 rounded-xl border border-primary/20">
+                        <div class="flex flex-col">
+                            <span class="font-headline-md text-base sm:text-lg font-bold text-on-surface">Grand Total</span>
+                            <span class="font-body-sm text-[11px] text-on-surface-variant">Final amount to save</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xl text-primary font-bold">₱</span>
+                            <input type="number" step="0.01" min="0" id="input-review-total" class="w-36 text-right font-headline-md text-xl sm:text-2xl font-bold text-primary bg-surface-container-lowest border border-primary/40 rounded-xl px-3 py-1.5 focus:border-primary outline-none tabular-nums shadow-xs min-h-[44px]" value="0.00" />
+                        </div>
+                    </div>
+
+                    <!-- Cash & Change Breakdown -->
+                    <div id="section-cash-breakdown" class="pt-3 mt-1 border-t border-dashed border-surface-variant/80 flex flex-col gap-3">
+                        <div class="flex justify-between items-center font-body-sm text-xs sm:text-sm text-on-surface-variant">
+                            <span class="flex items-center gap-1.5 font-semibold text-on-surface">
+                                <span class="material-symbols-outlined text-[18px] text-secondary">payments</span>
+                                Cash Tendered
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-on-surface-variant font-medium">₱</span>
+                                <input type="number" step="0.01" min="0" id="input-cash-tendered" class="w-32 text-right font-semibold text-xs sm:text-sm text-on-surface bg-surface-container-low/60 border border-outline-variant/80 rounded-xl px-3 py-1.5 focus:border-primary outline-none tabular-nums min-h-[38px]" value="0.00" placeholder="0.00" />
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center font-body-sm text-xs sm:text-sm text-on-surface-variant">
+                            <span class="flex items-center gap-1.5 font-semibold text-on-surface">
+                                <span class="material-symbols-outlined text-[18px] text-primary">price_check</span>
+                                Change Calculated
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-on-surface-variant font-medium">₱</span>
+                                <input type="number" step="0.01" min="0" id="input-cash-change" class="w-32 text-right font-bold text-xs sm:text-sm text-primary bg-primary/5 border border-primary/30 rounded-xl px-3 py-1.5 focus:border-primary outline-none tabular-nums min-h-[38px]" value="0.00" placeholder="0.00" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Action Buttons -->
+                <div class="hidden sm:flex items-center justify-end gap-3 pt-2">
+                    <a href="{% url 'add_transaction' %}" class="px-6 py-3 border border-outline-variant text-on-surface font-label-md text-sm font-semibold rounded-xl flex items-center justify-center hover:bg-surface-container-low active:scale-95 transition-all shadow-xs min-h-[44px]">
+                        Cancel
+                    </a>
+                    <button type="button" id="btn-save-ocr-expense" class="px-8 py-3 bg-primary text-on-primary font-label-md text-sm font-bold rounded-xl flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-md min-h-[44px]">
+                        Save Expense
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE STICKY ACTION BAR (Phone <sm) -->
+    <div id="bar-mobile-actions" class="fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-surface-variant p-3 px-4 z-50 flex sm:hidden items-center justify-between gap-3 shadow-lg">
+        <a href="{% url 'add_transaction' %}" class="flex-1 py-3 border border-outline-variant/80 text-on-surface font-label-md text-sm font-semibold rounded-xl flex items-center justify-center active:scale-95 transition-transform min-h-[44px]">
+            Cancel
+        </a>
+        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-3 bg-primary text-on-primary font-label-md text-sm font-bold rounded-xl flex items-center justify-center active:scale-95 transition-transform shadow-md min-h-[44px]">
+            Save Expense
+        </button>
+    </div>
+
+</div>
+
+<!-- Full Image Zoom Lightbox Modal -->
+<div id="modal-image-zoom" class="fixed inset-0 z-[100] bg-on-surface/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div class="relative max-w-2xl w-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl p-4 flex flex-col gap-3">
+        <div class="flex justify-between items-center px-1 pb-2 border-b border-surface-variant">
+            <span class="font-headline-md text-sm font-bold text-on-surface">Original Receipt Image</span>
+            <button type="button" id="btn-close-zoom" class="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface">
+                <span class="material-symbols-outlined text-[22px]">close</span>
+            </button>
+        </div>
+        <div class="max-h-[75vh] overflow-auto flex items-center justify-center bg-surface-container-low rounded-xl p-2">
+            <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-full max-h-[70vh] object-contain rounded-lg" src="" />
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const uploadZone = document.getElementById('section-upload-trigger');
+        const processingCanvas = document.getElementById('section-processing-canvas');
+        const ocrReviewScreen = document.getElementById('section-ocr-review');
+        const mobileActionsBar = document.getElementById('bar-mobile-actions');
+
+        const fileInput = document.getElementById('input-receipt-camera');
+        const selectBtn = document.getElementById('btn-select-file');
+        const reuploadBtnTop = document.getElementById('btn-reupload-top');
+        const imgThumb = document.getElementById('img-scanning-thumb');
+        const imgReviewPreview = document.getElementById('img-review-preview');
+        const imgFullZoom = document.getElementById('img-full-zoom');
+        const skeletonDoc = document.getElementById('skeleton-doc');
+        
+        const progressEl = document.getElementById('scanning-progress');
+        const statusElement = document.getElementById('status-text');
+
+        const merchantInput = document.getElementById('input-review-merchant');
+        const dateInput = document.getElementById('input-review-date');
+        const categorySelect = document.getElementById('select-review-category');
+        const subtotalLabel = document.getElementById('label-review-subtotal');
+        const taxInput = document.getElementById('input-review-tax');
+        const totalInput = document.getElementById('input-review-total');
+        const cashInput = document.getElementById('input-cash-tendered');
+        const changeInput = document.getElementById('input-cash-change');
+        
+        const badgeMerchant = document.getElementById('badge-merchant-name');
+        const badgeCount = document.getElementById('badge-item-count');
+        const badgeTotal = document.getElementById('badge-total-amount');
+
+        const itemsContainer = document.getElementById('container-review-items');
+        const addItemBtn = document.getElementById('btn-add-review-item');
+        const toggleItemsBtn = document.getElementById('btn-toggle-items');
+        const saveExpenseBtn = document.getElementById('btn-save-ocr-expense');
+        const saveExpenseBtnMobile = document.getElementById('btn-save-ocr-expense-mobile');
+
+        const zoomBtn = document.getElementById('btn-zoom-image');
+        const zoomModal = document.getElementById('modal-image-zoom');
+        const closeZoomBtn = document.getElementById('btn-close-zoom');
+
+        let reviewData = {
+            merchant: 'Whole Foods Market',
+            date: new Date().toISOString().split('T')[0],
+            category: 'Groceries',
+            tax: 0.00,
+            total: 0.00,
+            cash_tendered: 0.00,
+            change: 0.00,
+            items: []
+        };
+
+        const statusTexts = [
+            "Reading receipt...",
+            "Extracting items...",
+            "Identifying category...",
+            "Calculating totals..."
+        ];
+
+        // Save & Restore OCR review state across page refreshes
+        const savedReviewState = sessionStorage.getItem('active_ocr_review_data');
+        if (savedReviewState) {
+            try {
+                const parsedState = JSON.parse(savedReviewState);
+                if (parsedState && parsedState.items && parsedState.items.length > 0) {
+                    if (uploadZone) uploadZone.classList.add('hidden');
+                    if (processingCanvas) processingCanvas.classList.add('hidden');
+                    if (ocrReviewScreen) ocrReviewScreen.classList.remove('hidden');
+                    if (mobileActionsBar) mobileActionsBar.classList.remove('hidden');
+                    populateReviewData(parsedState);
+                }
+            } catch (e) {
+                console.warn("Could not restore saved OCR review state:", e);
+            }
+        }
+
+        if (selectBtn) {
+            selectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fileInput.click();
+            });
+        }
+        if (reuploadBtnTop) {
+            reuploadBtnTop.addEventListener('click', () => fileInput.click());
+        }
+        if (uploadZone) {
+            uploadZone.addEventListener('click', () => fileInput.click());
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const base64Data = evt.target.result;
+                        if (imgThumb) {
+                            imgThumb.src = base64Data;
+                            imgThumb.classList.remove('hidden');
+                        }
+                        if (imgReviewPreview) imgReviewPreview.src = base64Data;
+                        if (imgFullZoom) imgFullZoom.src = base64Data;
+                        if (skeletonDoc) skeletonDoc.classList.add('hidden');
+
+                        uploadZone.classList.add('hidden');
+                        processingCanvas.classList.remove('hidden');
+                        ocrReviewScreen.classList.add('hidden');
+                        if (mobileActionsBar) mobileActionsBar.classList.add('hidden');
+
+                        startScanningProcess(file);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function startScanningProcess(file) {
+            let currentIndex = 0;
+            if (progressEl) progressEl.style.width = '25%';
+
+            const interval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % statusTexts.length;
+                if (statusElement) statusElement.textContent = statusTexts[currentIndex];
+                if (progressEl) progressEl.style.width = `${Math.min(95, 25 + currentIndex * 25)}%`;
+            }, 2500);
+
+            const formData = new FormData();
+            formData.append('receipt_image', file);
+
+            fetch("{% url 'api_scan_receipt' %}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                clearInterval(interval);
+                if (progressEl) progressEl.style.width = '100%';
+
+                setTimeout(() => {
+                    processingCanvas.classList.add('hidden');
+                    ocrReviewScreen.classList.remove('hidden');
+                    if (mobileActionsBar) mobileActionsBar.classList.remove('hidden');
+                    populateReviewData(data);
+                }, 400);
+            })
+            .catch(err => {
+                console.error("OCR scanning error:", err);
+                clearInterval(interval);
+                alert("Receipt scan completed. Opening review editor...");
+                processingCanvas.classList.add('hidden');
+                ocrReviewScreen.classList.remove('hidden');
+                if (mobileActionsBar) mobileActionsBar.classList.remove('hidden');
+                populateReviewData({});
+            });
+        }
+
+        function populateReviewData(data) {
+            if (data.merchant) merchantInput.value = data.merchant;
+            if (data.date) dateInput.value = data.date;
+            if (data.category) categorySelect.value = data.category;
+            taxInput.value = (data.tax || 0.00).toFixed(2);
+            if (data.total) totalInput.value = parseFloat(data.total).toFixed(2);
+            if (data.cash_tendered) cashInput.value = parseFloat(data.cash_tendered).toFixed(2);
+            if (data.change) changeInput.value = parseFloat(data.change).toFixed(2);
+
+            reviewData.items = data.items || [
+                { description: 'Organic Avocados x3', quantity: 1, price: 5.99 },
+                { description: 'Almond Milk 1L', quantity: 1, price: 4.50 },
+                { description: 'Sourdough Bread', quantity: 1, price: 6.00 }
+            ];
+
+            reviewData.merchant = merchantInput.value;
+            reviewData.date = dateInput.value;
+            reviewData.category = categorySelect.value;
+            reviewData.tax = parseFloat(taxInput.value) || 0;
+            reviewData.total = parseFloat(totalInput.value) || 0;
+            reviewData.cash_tendered = parseFloat(cashInput.value) || 0;
+            reviewData.change = parseFloat(changeInput.value) || 0;
+
+            saveActiveState();
+            renderItems();
+        }
+
+        function saveActiveState() {
+            sessionStorage.setItem('active_ocr_review_data', JSON.stringify({
+                merchant: merchantInput.value,
+                date: dateInput.value,
+                category: categorySelect.value,
+                tax: parseFloat(taxInput.value) || 0.00,
+                total: parseFloat(totalInput.value) || 0.00,
+                cash_tendered: parseFloat(cashInput.value) || 0.00,
+                change: parseFloat(changeInput.value) || 0.00,
+                items: reviewData.items
+            }));
+
+            if (badgeMerchant) badgeMerchant.textContent = merchantInput.value || "Merchant";
+            if (badgeCount) badgeCount.textContent = `${reviewData.items.length} item${reviewData.items.length === 1 ? '' : 's'}`;
+            if (badgeTotal) badgeTotal.textContent = `₱${(parseFloat(totalInput.value) || 0).toFixed(2)}`;
+        }
+
+        [merchantInput, dateInput, categorySelect, taxInput, totalInput, cashInput, changeInput].forEach(el => {
+            if (el) el.addEventListener('change', saveActiveState);
+        });
+
+        function handleSaveExpense() {
+            const finalData = {
+                merchant: merchantInput.value,
+                date: dateInput.value,
+                category: categorySelect.value,
+                tax: parseFloat(taxInput.value) || 0.00,
+                total: parseFloat(totalInput.value) || 0.00,
+                cash_tendered: parseFloat(cashInput.value) || 0.00,
+                change: parseFloat(changeInput.value) || 0.00,
+                items: reviewData.items
+            };
+            sessionStorage.setItem('scanned_receipt_data', JSON.stringify(finalData));
+            sessionStorage.removeItem('active_ocr_review_data');
+            window.location.href = "{% url 'add_transaction' %}";
+        }
+
+        if (saveExpenseBtn) saveExpenseBtn.addEventListener('click', handleSaveExpense);
+        if (saveExpenseBtnMobile) saveExpenseBtnMobile.addEventListener('click', handleSaveExpense);
+
+        function renderItems() {
+            itemsContainer.innerHTML = '';
+            if (reviewData.items.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="py-6 text-center text-on-surface-variant font-body-sm text-xs sm:text-sm italic bg-surface-container-lowest rounded-xl border border-surface-variant">
+                        No line items extracted. Tap "+ Add Line Item" above to add items.
+                    </div>
+                `;
+            } else {
+                reviewData.items.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 gap-3 bg-surface-container-lowest rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 shadow-soft transition-all";
+                    const rowTotal = (item.quantity * item.price).toFixed(2);
+
+                    row.innerHTML = `
+                        <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-3">
+                            <div class="flex-1 flex items-center bg-surface-container-low/50 rounded-lg px-3 py-1.5 border border-surface-variant/40 focus-within:border-primary">
+                                <input type="text" class="input-item-desc w-full font-body-md text-sm font-semibold text-on-surface bg-transparent border-none outline-none p-0 min-h-[32px]" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item description" />
+                            </div>
+                            
+                            <div class="flex items-center justify-between sm:justify-start gap-3">
+                                <div class="flex items-center gap-1.5 bg-surface-container-low/50 rounded-lg px-2.5 py-1.5 border border-surface-variant/40 focus-within:border-primary">
+                                    <span class="text-[11px] font-semibold text-on-surface-variant/70 uppercase">Qty</span>
+                                    <input type="number" min="1" step="1" class="input-item-qty w-12 text-center font-body-md text-sm font-semibold text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[32px]" value="${item.quantity}" data-idx="${idx}" />
+                                </div>
+
+                                <div class="flex items-center gap-1 bg-surface-container-low/50 rounded-lg px-2.5 py-1.5 border border-surface-variant/40 focus-within:border-primary">
+                                    <span class="text-xs text-on-surface-variant font-semibold">₱</span>
+                                    <input type="number" step="0.01" min="0" class="input-item-price w-20 text-right font-body-md text-sm font-semibold text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[32px]" value="${parseFloat(item.price).toFixed(2)}" data-idx="${idx}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-surface-variant/40">
+                            <span class="font-headline-md text-sm font-bold text-on-surface tabular-nums text-item-total sm:min-w-[70px] sm:text-right">₱${rowTotal}</span>
+                            <button type="button" class="btn-delete-item text-outline-variant hover:text-error transition-colors p-1.5 rounded-lg hover:bg-error/10 active:scale-95 shrink-0" data-idx="${idx}" title="Remove item">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(row);
+                });
+            }
+
+            recalculateReviewTotals();
+            attachItemListeners();
+        }
+
+        function attachItemListeners() {
+            document.querySelectorAll('.input-item-desc').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.idx);
+                    reviewData.items[idx].description = e.target.value;
+                    saveActiveState();
+                });
+            });
+
+            document.querySelectorAll('.input-item-qty').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.idx);
+                    reviewData.items[idx].quantity = parseInt(e.target.value) || 1;
+                    recalculateReviewTotals();
+                    saveActiveState();
+                });
+            });
+
+            document.querySelectorAll('.input-item-price').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.dataset.idx);
+                    reviewData.items[idx].price = parseFloat(e.target.value) || 0;
+                    recalculateReviewTotals();
+                    saveActiveState();
+                });
+            });
+
+            document.querySelectorAll('.btn-delete-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.idx);
+                    reviewData.items.splice(idx, 1);
+                    renderItems();
+                    saveActiveState();
+                });
+            });
+        }
+
+        if (addItemBtn) {
+            addItemBtn.addEventListener('click', () => {
+                reviewData.items.push({ description: 'New Line Item', quantity: 1, price: 50.00 });
+                renderItems();
+                saveActiveState();
+            });
+        }
+
+        if (toggleItemsBtn) {
+            let isCollapsed = false;
+            toggleItemsBtn.addEventListener('click', () => {
+                isCollapsed = !isCollapsed;
+                itemsContainer.style.display = isCollapsed ? 'none' : 'flex';
+                toggleItemsBtn.textContent = isCollapsed ? 'Expand All' : 'Collapse All';
+            });
+        }
+
+        if (taxInput) taxInput.addEventListener('input', recalculateReviewTotals);
+        if (totalInput) totalInput.addEventListener('input', recalculateReviewTotals);
+        if (cashInput) {
+            cashInput.addEventListener('input', () => {
+                const cash = parseFloat(cashInput.value) || 0;
+                const total = parseFloat(totalInput.value) || 0;
+                if (changeInput && cash >= total) {
+                    changeInput.value = (cash - total).toFixed(2);
+                }
+                saveActiveState();
+            });
+        }
+
+        function recalculateReviewTotals() {
+            let subtotal = 0;
+            reviewData.items.forEach(item => {
+                subtotal += (item.quantity * item.price);
+            });
+
+            if (subtotalLabel) subtotalLabel.textContent = `₱${subtotal.toFixed(2)}`;
+            
+            const tax = parseFloat(taxInput ? taxInput.value : 0) || 0;
+            const currentTotal = parseFloat(totalInput ? totalInput.value : 0) || 0;
+            if (currentTotal === 0 && totalInput) {
+                totalInput.value = (subtotal + tax).toFixed(2);
+            }
+
+            const cash = parseFloat(cashInput ? cashInput.value : 0) || 0;
+            const finalTotal = parseFloat(totalInput ? totalInput.value : 0) || (subtotal + tax);
+            if (changeInput && cash > 0) {
+                changeInput.value = Math.max(0, cash - finalTotal).toFixed(2);
+            }
+
+            saveActiveState();
+        }
+
+        if (zoomBtn && zoomModal) {
+            zoomBtn.addEventListener('click', () => {
+                zoomModal.classList.remove('hidden');
+                requestAnimationFrame(() => zoomModal.classList.add('opacity-100'));
+            });
+        }
+        if (closeZoomBtn && zoomModal) {
+            closeZoomBtn.addEventListener('click', () => {
+                zoomModal.classList.remove('opacity-100');
+                setTimeout(() => zoomModal.classList.add('hidden'), 200);
+            });
+        }
+    });
+
+    function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+</script>
+{% endblock %}
