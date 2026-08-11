@@ -208,31 +208,27 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
-<div id="modal-confirm-discard" class="fixed inset-0 z-[90] bg-on-surface/40 backdrop-blur-[2px] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div id="modal-confirm-content" class="w-full max-w-sm bg-surface md:bg-surface-container-lowest rounded-2xl border border-surface-variant/80 p-lg shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-md">
+<div id="modal-confirm-discard" class="fixed inset-0 z-[90] bg-on-surface/20 backdrop-blur-sm flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-lg transform scale-95 transition-all duration-200 flex flex-col gap-4">
         
-        <!-- Warning Header Icon -->
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-[22px]">warning</span>
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[20px]">drafts</span>
             </div>
-            <div>
-                <h3 class="font-headline-md text-base font-bold text-on-surface">Discard Changes?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">You have unsaved entry details.</p>
+            <div class="flex flex-col gap-1">
+                <h3 class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard unsaved entry?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Any amounts or details entered so far will be lost.</p>
             </div>
         </div>
 
-        <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-            If you leave now, any details or amounts you've entered will be lost.
-        </p>
-
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-sm pt-sm border-t border-surface-variant/60">
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-full border border-surface-variant/80 text-on-surface-variant font-label-md text-xs hover:bg-surface-container-high transition-all active:scale-95">
-                Keep Editing
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-surface-variant/40">
+            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-medium transition-all active:scale-[0.98]">
+                Discard
             </button>
-            <button type="button" id="btn-confirm-discard" class="px-4 py-2 rounded-full bg-error text-on-error font-label-md text-xs font-semibold hover:bg-error-container hover:text-on-error-container transition-all shadow-soft active:scale-95">
-                Discard & Leave
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-medium transition-all shadow-xs active:scale-[0.98]">
+                Keep Editing
             </button>
         </div>
 
