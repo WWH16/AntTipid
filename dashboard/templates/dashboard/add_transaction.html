@@ -208,8 +208,8 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
-<div id="modal-confirm-discard" class="fixed inset-0 z-[90] bg-on-surface/20 backdrop-blur-sm flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-lg transform scale-95 transition-all duration-200 flex flex-col gap-4">
+<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-on-surface/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
         
         <!-- Header -->
         <div class="flex items-start gap-3">
@@ -217,17 +217,17 @@
                 <span class="material-symbols-outlined text-[20px]">drafts</span>
             </div>
             <div class="flex flex-col gap-1">
-                <h3 class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard unsaved entry?</h3>
+                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard unsaved entry?</h3>
                 <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Any amounts or details entered so far will be lost.</p>
             </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-surface-variant/40">
-            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-medium transition-all active:scale-[0.98]">
+            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error">
                 Discard
             </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-medium transition-all shadow-xs active:scale-[0.98]">
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-medium transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                 Keep Editing
             </button>
         </div>
@@ -244,6 +244,14 @@
         if (inputDate && !inputDate.value) {
             const today = new Date().toISOString().split('T')[0];
             inputDate.value = today;
+        }
+
+        let isFormDirty = false;
+        let pendingTargetUrl = null;
+        let lastFocusedElement = null;
+
+        function markDirty() {
+            isFormDirty = true;
         }
 
         // Amount Presets
@@ -266,9 +274,11 @@
                 typeTabs.forEach(t => {
                     t.classList.remove('bg-surface', 'text-on-surface', 'shadow-xs');
                     t.classList.add('text-on-surface-variant');
+                    t.setAttribute('aria-pressed', 'false');
                 });
                 tab.classList.add('bg-surface', 'text-on-surface', 'shadow-xs');
                 tab.classList.remove('text-on-surface-variant');
+                tab.setAttribute('aria-pressed', 'true');
                 markDirty();
             });
         });
@@ -278,16 +288,18 @@
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 categoryBtns.forEach(b => {
-                    b.classList.remove('border-primary', 'bg-primary/10', 'text-primary');
+                    b.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'active');
                     b.classList.add('border-surface-variant', 'bg-surface', 'text-on-surface-variant');
+                    b.setAttribute('aria-pressed', 'false');
                     const iconBox = b.querySelector('.w-9');
                     if (iconBox) {
                         iconBox.classList.remove('bg-primary/20');
                         iconBox.classList.add('bg-surface-container');
                     }
                 });
-                btn.classList.add('border-primary', 'bg-primary/10', 'text-primary');
+                btn.classList.add('border-primary', 'bg-primary/10', 'text-primary', 'active');
                 btn.classList.remove('border-surface-variant', 'bg-surface', 'text-on-surface-variant');
+                btn.setAttribute('aria-pressed', 'true');
                 const activeIconBox = btn.querySelector('.w-9');
                 if (activeIconBox) {
                     activeIconBox.classList.remove('bg-surface-container');
@@ -297,30 +309,34 @@
             });
         });
 
-        // Dirty Form Detection & Unsaved Confirmation Modal
-        let isFormDirty = false;
-        let pendingTargetUrl = null;
+        // Input Change Listeners for Form Fields
+        const inputTitle = document.getElementById('input-title');
+        const selectAccount = document.getElementById('select-account');
+        const inputNotes = document.getElementById('input-notes');
 
+        if (inputAmount) inputAmount.addEventListener('input', markDirty);
+        if (inputTitle) inputTitle.addEventListener('input', markDirty);
+        if (inputDate) inputDate.addEventListener('change', markDirty);
+        if (selectAccount) selectAccount.addEventListener('change', markDirty);
+        if (inputNotes) inputNotes.addEventListener('input', markDirty);
+
+        // Modal Elements
         const confirmModal = document.getElementById('modal-confirm-discard');
         const confirmContent = document.getElementById('modal-confirm-content');
         const btnKeepEditing = document.getElementById('btn-keep-editing');
         const btnConfirmDiscard = document.getElementById('btn-confirm-discard');
 
-        function markDirty() {
-            isFormDirty = true;
-        }
-
-        const inputTitle = document.getElementById('input-title');
-        const inputNotes = document.getElementById('input-notes');
-
-        if (inputAmount) inputAmount.addEventListener('input', markDirty);
-        if (inputTitle) inputTitle.addEventListener('input', markDirty);
-        if (inputNotes) inputNotes.addEventListener('input', markDirty);
-        if (inputDate) inputDate.addEventListener('change', markDirty);
-
         function openConfirmModal(targetUrl) {
             pendingTargetUrl = targetUrl;
             if (!confirmModal) return;
+
+            lastFocusedElement = document.activeElement;
+            document.body.style.overflow = 'hidden'; // Lock background scroll
+            
+            // Set main content container pointer-events & aria-hidden to prevent main screen interaction
+            const mainContainer = document.querySelector('main') || document.body;
+            mainContainer.setAttribute('aria-hidden', 'true');
+
             confirmModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 confirmModal.classList.remove('opacity-0');
@@ -329,11 +345,15 @@
                     confirmContent.classList.remove('scale-95');
                     confirmContent.classList.add('scale-100');
                 }
+                if (btnKeepEditing) {
+                    btnKeepEditing.focus();
+                }
             });
         }
 
         function closeConfirmModal() {
             if (!confirmModal) return;
+
             confirmModal.classList.remove('opacity-100');
             confirmModal.classList.add('opacity-0');
             if (confirmContent) {
@@ -342,35 +362,54 @@
             }
             setTimeout(() => {
                 confirmModal.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore background scroll
+                const mainContainer = document.querySelector('main') || document.body;
+                mainContainer.removeAttribute('aria-hidden');
+
                 pendingTargetUrl = null;
+                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                    lastFocusedElement.focus();
+                }
             }, 200);
         }
 
-        // Intercept navigation elements unconditionally (always pop up confirmation modal when leaving)
-        const navSelectors = [
-            '#btn-back',
-            '#btn-cancel',
-            '#btn-switch-scan',
-            '#nav-dashboard',
-            '#nav-transactions',
-            '#nav-budgets',
-            '#nav-reports',
-            '#bnav-home',
-            '#bnav-history',
-            '#bnav-budget',
-            '#bnav-reports'
-        ];
+        // Trap focus inside modal
+        if (confirmModal) {
+            confirmModal.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    const focusables = [btnConfirmDiscard, btnKeepEditing].filter(Boolean);
+                    if (focusables.length === 0) return;
+                    const first = focusables[0];
+                    const last = focusables[focusables.length - 1];
+                    if (e.shiftKey) {
+                        if (document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        }
+                    } else {
+                        if (document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                }
+            });
+        }
 
-        navSelectors.forEach(selector => {
-            const el = document.querySelector(selector);
-            if (el) {
-                el.addEventListener('click', (e) => {
+        // Global Link & Nav Interception when form is dirty
+        document.addEventListener('click', (e) => {
+            if (!isFormDirty) return;
+
+            const linkOrBtn = e.target.closest('a[href], button:not(#btn-save-transaction):not(#btn-keep-editing):not(#btn-confirm-discard):not(.btn-preset-chip):not(.category-btn):not(.type-tab)');
+            if (linkOrBtn) {
+                const href = linkOrBtn.getAttribute('href') || "{% url 'transactions' %}";
+                if (href && href !== '#' && !href.startsWith('javascript:')) {
                     e.preventDefault();
-                    const href = el.getAttribute('href') || "{% url 'transactions' %}";
+                    e.stopPropagation();
                     openConfirmModal(href);
-                });
+                }
             }
-        });
+        }, true);
 
         if (btnKeepEditing) {
             btnKeepEditing.addEventListener('click', closeConfirmModal);
@@ -379,6 +418,10 @@
         if (btnConfirmDiscard) {
             btnConfirmDiscard.addEventListener('click', () => {
                 isFormDirty = false;
+                document.body.style.overflow = '';
+                const mainContainer = document.querySelector('main') || document.body;
+                mainContainer.removeAttribute('aria-hidden');
+
                 if (pendingTargetUrl) {
                     window.location.href = pendingTargetUrl;
                 } else {
@@ -399,6 +442,14 @@
             }
         });
 
+        // Browser navigation warning for unsaved changes
+        window.addEventListener('beforeunload', (e) => {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
         // Form Submit Simulation
         const form = document.getElementById('form-manual-entry');
         const toast = document.getElementById('toast-success');
@@ -409,12 +460,12 @@
                 if (toast) {
                     toast.classList.remove('hidden');
                     requestAnimationFrame(() => {
-                        toast.classList.remove('opacity-0');
-                        toast.classList.add('opacity-100');
+                        toast.classList.remove('opacity-0', 'translate-y-2');
+                        toast.classList.add('opacity-100', 'translate-y-0');
                     });
                     setTimeout(() => {
-                        toast.classList.remove('opacity-100');
-                        toast.classList.add('opacity-0');
+                        toast.classList.remove('opacity-100', 'translate-y-0');
+                        toast.classList.add('opacity-0', 'translate-y-2');
                         setTimeout(() => {
                             toast.classList.add('hidden');
                             window.location.href = "{% url 'transactions' %}";
