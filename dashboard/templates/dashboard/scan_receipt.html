@@ -15,15 +15,15 @@
     }
     
     .fade-in-out {
-        animation: fadeInOut 2.5s infinite ease-in-out;
+        animation: fadeInOut 3s infinite;
     }
     @keyframes fadeInOut {
-        0%, 100% { opacity: 0.4; transform: translateY(4px); }
-        50% { opacity: 1; transform: translateY(0); }
+        0%, 100% { opacity: 0; transform: translateY(10px); }
+        10%, 90% { opacity: 1; transform: translateY(0); }
     }
 
     .scanning-line {
-        animation: scan 2.2s linear infinite;
+        animation: scan 2s linear infinite;
     }
     @keyframes scan {
         0% { top: 0; opacity: 0; }
@@ -41,10 +41,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="w-full min-h-screen bg-background text-on-background pb-20 md:pb-10">
+<div class="w-full min-h-screen bg-background text-on-background pb-24 md:pb-12 flex flex-col">
     
     <!-- TopAppBar Navigation -->
-    <header class="w-full sticky top-0 bg-surface/95 backdrop-blur-md flex justify-between items-center px-4 sm:px-6 h-12 md:h-14 z-40">
+    <header class="w-full sticky top-0 bg-surface/95 backdrop-blur-md flex justify-between items-center px-4 sm:px-6 h-13 md:h-14 z-40 border-b border-surface-variant/40 shrink-0">
         <div class="flex items-center gap-2.5">
             <a href="{% url 'transactions' %}" id="btn-back-header" class="text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 flex items-center justify-center w-8 h-8 rounded-full" aria-label="Back to transactions">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -56,6 +56,12 @@
         </div>
         
         <div class="flex items-center gap-2">
+            <!-- Universal "Add Manually" shortcut in header -->
+            <a href="{% url 'add_transaction' %}" id="btn-header-manual" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:bg-surface-container-low active:scale-95 transition-all font-label-sm text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+                <span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
+                <span class="hidden xs:inline">Add Manually</span>
+            </a>
+
             <button type="button" id="btn-reupload-top" class="hidden sm:flex px-3 py-1.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:bg-surface-container-low active:scale-95 transition-all font-label-sm text-xs font-semibold items-center gap-1.5 shadow-xs">
                 <span class="material-symbols-outlined text-[16px] text-primary">sync</span>
                 <span>Rescan</span>
@@ -69,66 +75,82 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- STEP 1: UPLOAD / CAMERA CAPTURE DROPZONE    -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="section-upload-trigger" class="px-3 sm:px-6 pt-4 sm:pt-8 md:pt-10 max-w-2xl mx-auto">
-        <div class="flex flex-col gap-4">
+    <div id="section-upload-trigger" class="px-3 sm:px-6 pt-4 sm:pt-8 md:pt-10 max-w-2xl mx-auto w-full">
+        <div class="flex flex-col gap-5">
             
             <!-- Main Upload Box -->
-            <div id="drop-zone-container" class="w-full flex flex-col items-center justify-center gap-4 bg-surface-container-lowest p-6 sm:p-10 rounded-2xl shadow-soft border-2 border-dashed border-surface-variant hover:border-primary transition-all cursor-pointer text-center group">
-                <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                    <span class="material-symbols-outlined text-[32px]">photo_camera</span>
+            <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-5 bg-surface-container-lowest p-8 sm:p-12 rounded-3xl shadow-soft border-2 border-dashed border-surface-variant/80 hover:border-primary hover:bg-primary/[0.02] transition-all cursor-pointer text-center group overflow-hidden">
+                
+                <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                    <span class="material-symbols-outlined text-[36px]">photo_camera</span>
                 </div>
-                <div class="space-y-1 max-w-md">
-                    <h2 class="font-headline-lg text-base sm:text-lg md:text-xl font-bold text-on-surface group-hover:text-primary transition-colors">
+                
+                <div class="space-y-1.5 max-w-md">
+                    <h2 class="font-headline-lg text-lg sm:text-xl md:text-2xl font-bold text-on-surface group-hover:text-primary transition-colors">
                         Snap or Drop Receipt Image
                     </h2>
-                    <p class="font-body-md text-xs text-on-surface-variant leading-relaxed">
-                        Upload a photo of your receipt to extract merchant, date, items, tax, and total automatically.
+                    <p class="font-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+                        Upload a photo of your receipt to extract merchant, date, items, tax, and total automatically with Gemini AI.
                     </p>
                 </div>
 
-                <!-- Dual Action Buttons (Adapted for Mobile Camera & Desktop Upload) -->
-                <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto pt-1">
-                    <button type="button" id="btn-select-file" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-xs font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center justify-center gap-1.5 shadow-xs min-h-[40px] active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-2">
+                    <button type="button" id="btn-select-file" class="w-full sm:w-auto px-6 py-2.5 h-11 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-[20px]">upload_file</span>
                         <span>Choose Receipt Image</span>
                     </button>
 
-                    <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-4 py-2.5 rounded-full border border-surface-variant/80 bg-surface-container-low/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all font-label-md text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[40px] active:scale-95">
-                        <span class="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
+                    <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-5 py-2.5 h-11 rounded-xl border border-outline-variant/80 bg-surface-container-low/60 text-on-surface hover:text-on-surface hover:bg-surface-container-low transition-all font-label-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-xs">
+                        <span class="material-symbols-outlined text-[18px] text-primary">auto_awesome</span>
                         <span>Try Sample Demo</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Feature Pills (Adaptive Grid) -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                <div class="bg-surface-container-lowest p-3 rounded-xl border border-surface-variant/60 flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[16px]">bolt</span>
+            <!-- Manual Fallback Callout -->
+            <div class="flex flex-col sm:flex-row items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant/80 text-xs sm:text-sm text-on-surface-variant gap-2 shadow-xs">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-surface-container text-secondary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                    </div>
+                    <span class="font-medium text-on-surface">No receipt photo available?</span>
+                </div>
+                <a href="{% url 'add_transaction' %}" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1 active:scale-95 border border-outline-variant/50">
+                    <span>Add Transaction Manually</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+
+            <!-- Feature Pills (3-Col Grid) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">bolt</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-label-sm text-[11px] font-semibold text-on-surface">Gemini AI Vision</span>
-                        <span class="font-body-sm text-[10px] text-on-surface-variant">Instant receipt OCR</span>
+                        <span class="font-label-sm text-xs font-semibold text-on-surface">Gemini AI Vision</span>
+                        <span class="font-body-sm text-[11px] text-on-surface-variant">Instant receipt OCR</span>
                     </div>
                 </div>
 
-                <div class="bg-surface-container-lowest p-3 rounded-xl border border-surface-variant/60 flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-secondary-container/60 text-secondary flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[16px]">list_alt</span>
+                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
+                    <div class="w-8 h-8 rounded-lg bg-secondary-container/60 text-secondary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">list_alt</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-label-sm text-[11px] font-semibold text-on-surface">Line Item Extraction</span>
-                        <span class="font-body-sm text-[10px] text-on-surface-variant">Qty & price breakdown</span>
+                        <span class="font-label-sm text-xs font-semibold text-on-surface">Line Item Extraction</span>
+                        <span class="font-body-sm text-[11px] text-on-surface-variant">Qty & price breakdown</span>
                     </div>
                 </div>
 
-                <div class="bg-surface-container-lowest p-3 rounded-xl border border-surface-variant/60 flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-tertiary-fixed-dim/40 text-on-tertiary-fixed-variant flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[16px]">payments</span>
+                <div class="bg-surface-container-lowest p-3.5 rounded-xl border border-surface-variant/80 hover:border-outline-variant/80 flex items-center gap-3 transition-all shadow-xs">
+                    <div class="w-8 h-8 rounded-lg bg-tertiary-fixed-dim/40 text-on-tertiary-fixed-variant flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">payments</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-label-sm text-[11px] font-semibold text-on-surface">Philippine Peso (₱)</span>
-                        <span class="font-body-sm text-[10px] text-on-surface-variant">Auto VAT & cash change</span>
+                        <span class="font-label-sm text-xs font-semibold text-on-surface">Philippine Peso (₱)</span>
+                        <span class="font-body-sm text-[11px] text-on-surface-variant">Auto VAT & cash change</span>
                     </div>
                 </div>
             </div>
@@ -139,41 +161,74 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- STEP 2: PROCESSING ANIMATION CANVAS         -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="section-processing-canvas" class="hidden px-4 sm:px-6 pt-6 max-w-xl mx-auto flex-col items-center justify-center py-12 gap-5">
-        <div class="relative w-40 h-52 bg-surface-container-lowest rounded-xl shadow-md border border-surface-variant flex items-center justify-center overflow-hidden">
-            <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-25" />
-            <div id="skeleton-doc" class="absolute inset-3 border border-outline-variant/30 rounded-lg flex flex-col gap-2 p-2.5 opacity-50">
-                <div class="h-2 bg-surface-container-high rounded-full w-3/4"></div>
-                <div class="h-1.5 bg-surface-container-high rounded-full w-1/2"></div>
-                <div class="mt-3 space-y-2">
-                    <div class="h-1.5 bg-surface-container-highest rounded-full w-full"></div>
-                    <div class="h-1.5 bg-surface-container-highest rounded-full w-5/6"></div>
-                    <div class="h-1.5 bg-surface-container-highest rounded-full w-4/5"></div>
+    <div id="section-processing-canvas" class="hidden w-full max-w-md mx-auto flex flex-col items-center justify-center p-4 sm:p-6 py-6 sm:py-10 my-auto flex-1 gap-6">
+        
+        <!-- Processing Container Card -->
+        <div class="w-full bg-surface-container-lowest rounded-3xl p-6 sm:p-8 border border-surface-variant/80 shadow-elevated flex flex-col items-center justify-center space-y-5 text-center">
+            
+            <!-- Scanning Preview Thumbnail Card -->
+            <div class="relative w-44 h-56 sm:w-48 sm:h-60 bg-surface-container rounded-2xl shadow-soft border border-surface-container-high flex items-center justify-center overflow-hidden transition-all shrink-0">
+                <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-30" />
+                
+                <!-- Simulated Receipt Lines -->
+                <div id="skeleton-doc" class="absolute inset-4 border border-outline-variant/30 rounded-lg flex flex-col gap-2 p-3 opacity-60">
+                    <div class="h-2 bg-surface-container-highest rounded w-3/4"></div>
+                    <div class="h-2 bg-surface-container-highest rounded w-1/2"></div>
+                    <div class="mt-4 space-y-2">
+                        <div class="h-1.5 bg-surface-container-high rounded w-full"></div>
+                        <div class="h-1.5 bg-surface-container-high rounded w-5/6"></div>
+                        <div class="h-1.5 bg-surface-container-high rounded w-full"></div>
+                    </div>
+                </div>
+
+                <!-- Scanning Line animation -->
+                <div class="scanning-line absolute left-0 w-full h-1 bg-primary/60 shadow-[0_0_10px_rgba(0,108,73,0.9)] z-10"></div>
+
+                <!-- Pulsing Icon -->
+                <div class="relative z-20">
+                    <div class="pulse-ring absolute inset-0 bg-primary/20 rounded-full"></div>
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,108,73,0.35)]">
+                        <span class="material-symbols-outlined text-2xl sm:text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">
+                            document_scanner
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="scanning-line absolute left-0 w-full h-1 bg-primary shadow-[0_0_12px_rgba(0,108,73,0.9)] z-10"></div>
-            <div class="relative z-20">
-                <div class="pulse-ring absolute -inset-2 bg-primary/20 rounded-full"></div>
-                <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-md text-on-primary">
-                    <span class="material-symbols-outlined text-2xl">document_scanner</span>
+
+            <!-- Dynamic Text Updates -->
+            <div class="text-center h-10 flex flex-col items-center justify-center w-full">
+                <h2 class="font-headline-md text-base sm:text-lg text-on-surface font-semibold tracking-tight fade-in-out" id="status-text">Reading receipt...</h2>
+            </div>
+
+            <!-- Progress Bar & Step Indicator -->
+            <div class="w-full space-y-1.5 max-w-xs">
+                <div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden p-0.5 border border-surface-variant/40">
+                    <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full shadow-xs"></div>
+                </div>
+                <div class="flex justify-between items-center text-xs text-on-surface-variant font-medium px-1">
+                    <span id="step-count-text">Step 1 of 4</span>
+                    <span class="font-bold text-primary tabular-nums">Processing</span>
                 </div>
             </div>
+
+            <!-- Prominent Cancel and Add Manually Button -->
+            <div class="w-full pt-2">
+                <button type="button" id="btn-cancel-processing" class="w-full h-11 min-h-[44px] flex items-center justify-center gap-2 bg-surface-container-low hover:bg-surface-container border border-outline-variant/80 rounded-xl text-on-surface transition-all shadow-xs cursor-pointer active:scale-95">
+                    <span class="material-symbols-outlined text-[18px] text-error">close</span>
+                    <span class="font-label-md text-xs sm:text-sm font-semibold">Cancel and Add Manually</span>
+                </button>
+            </div>
+
         </div>
 
-        <div class="text-center flex flex-col items-center justify-center w-full max-w-xs gap-2">
-            <h2 class="font-headline-md text-base font-semibold text-on-surface fade-in-out" id="status-text">Reading receipt...</h2>
-            <div class="w-full max-w-[200px] bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-                <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full"></div>
-            </div>
-        </div>
     </div>
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- STEP 3: OCR REVIEW RESULT SCREEN            -->
     <!-- ═══════════════════════════════════════════ -->
-    <main id="section-ocr-review" class="hidden px-3 sm:px-5 md:px-6 pt-4 pb-16 max-w-6xl mx-auto">
+    <main id="section-ocr-review" class="hidden px-3 sm:px-5 md:px-6 pt-4 pb-20 max-w-6xl mx-auto w-full">
         
-        <!-- Responsive Grid (Phone: 1-col, Tablet: 2-col stack, Laptop: 12-col bento) -->
+        <!-- Responsive Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
             
             <!-- LEFT COLUMN: Sticky Receipt Image Preview & AI Highlights (Desktop: 4 cols) -->
@@ -206,7 +261,7 @@
                     </div>
                 </div>
 
-                <!-- DESKTOP BIG SCREEN VIEW (≥lg): Scanned Receipt Image Card (No Zoom Button) -->
+                <!-- DESKTOP BIG SCREEN VIEW (≥lg): Scanned Receipt Image Card -->
                 <div class="hidden lg:flex bg-surface-container-lowest rounded-xl border border-surface-variant/80 p-3 shadow-xs flex-col gap-2.5">
                     <div class="flex justify-between items-center px-0.5">
                         <div class="flex items-center gap-1.5">
@@ -218,21 +273,24 @@
                         </span>
                     </div>
 
-                    <!-- Image Thumbnail (No Zoom Button on Big Screens) -->
-                    <div class="w-full h-48 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50 relative">
-                        <img id="img-review-preview" class="object-cover w-full h-full opacity-90" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
+                    <!-- Image Thumbnail -->
+                    <div class="w-full h-48 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/50 relative group cursor-pointer" id="btn-zoom-image">
+                        <img id="img-review-preview" class="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+                        <span class="absolute bottom-2 right-2 bg-surface/90 backdrop-blur-sm text-primary px-2 py-1 rounded text-[10px] font-semibold flex items-center gap-1 shadow-xs">
+                            <span class="material-symbols-outlined text-[14px]">zoom_in</span> Click to Enlarge
+                        </span>
                     </div>
 
                     <!-- Scan Highlights Badges -->
                     <div class="grid grid-cols-3 gap-1.5 pt-0.5">
                         <div class="bg-surface-container-low/60 rounded-lg p-2 flex flex-col border border-surface-variant/40">
                             <span class="font-label-sm text-[9px] text-on-surface-variant uppercase font-medium">Merchant</span>
-                            <span id="badge-merchant-name" class="font-label-md text-[11px] font-semibold text-on-surface truncate mt-0.5">Whole Foods</span>
+                            <span id="badge-merchant-name" class="font-label-md text-[11px] font-semibold text-on-surface truncate mt-0.5">Merchant</span>
                         </div>
                         <div class="bg-surface-container-low/60 rounded-lg p-2 flex flex-col border border-surface-variant/40">
                             <span class="font-label-sm text-[9px] text-on-surface-variant uppercase font-medium">Items</span>
-                            <span id="badge-item-count" class="font-label-md text-[11px] font-semibold text-on-surface mt-0.5">3 items</span>
+                            <span id="badge-item-count" class="font-label-md text-[11px] font-semibold text-on-surface mt-0.5">0 items</span>
                         </div>
                         <div class="bg-primary/5 rounded-lg p-2 flex flex-col border border-primary/20">
                             <span class="font-label-sm text-[9px] text-primary uppercase font-medium">Est. Total</span>
@@ -267,7 +325,7 @@
                             <input type="date" id="input-review-date" class="font-body-md text-xs sm:text-sm font-semibold text-on-surface bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer" value="2026-08-11" />
                         </div>
 
-                        <!-- Category (Clean Text Options without Emojis) -->
+                        <!-- Category -->
                         <div class="group relative bg-surface-container-low/30 hover:bg-surface-container-low/60 transition-colors rounded-lg p-2.5 border border-surface-variant/60 focus-within:border-primary">
                             <div class="flex items-center justify-between mb-0.5">
                                 <label for="select-review-category" class="font-label-sm text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant group-focus-within:text-primary transition-colors">
@@ -365,13 +423,18 @@
                     </div>
                 </div>
 
-                <!-- Desktop Action Buttons -->
-                <div class="hidden sm:flex items-center justify-end gap-2.5 pt-1">
-                    <button type="button" id="btn-cancel-ocr" class="px-5 py-2.5 h-11 border border-outline-variant/80 text-on-surface font-label-md text-xs sm:text-sm font-semibold rounded-lg flex items-center justify-center hover:bg-surface-container-low active:scale-95 transition-all shadow-xs">
-                        Cancel
-                    </button>
-                    <button type="button" id="btn-save-ocr-expense" class="px-6 py-2.5 h-11 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-lg flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-sm">
-                        Save Expense
+                <!-- STICKY ACTION BAR FOR LAPTOPS & BIG SCREENS (≥sm) -->
+                <div id="bar-desktop-actions" class="hidden sm:flex sticky bottom-4 z-30 items-center justify-between bg-surface/95 backdrop-blur-md p-3 px-4 rounded-2xl border border-surface-variant/80 shadow-elevated mt-2">
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btn-cancel-ocr" class="px-4 py-2.5 h-10 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 hover:bg-surface-container-low active:scale-95 transition-all shadow-xs bg-surface-container-lowest cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px] text-error">close</span>
+                            <span>Cancel & Add Manually</span>
+                        </button>
+                    </div>
+
+                    <button type="button" id="btn-save-ocr-expense" class="px-6 py-2.5 h-10 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all shadow-sm cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]">check</span>
+                        <span>Save Expense</span>
                     </button>
                 </div>
 
@@ -380,13 +443,15 @@
 
     </main>
 
-    <!-- MOBILE STICKY ACTION BAR (Phone <sm) -->
+    <!-- MOBILE STICKY ACTION BAR FOR PHONES (<sm) -->
     <div id="bar-mobile-actions" class="fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-md border-t border-surface-variant/80 p-3 px-4 z-50 flex sm:hidden items-center justify-between gap-3 shadow-lg pb-[max(0.875rem,env(safe-area-inset-bottom))]">
-        <button type="button" id="btn-cancel-ocr-mobile" class="flex-1 py-3.5 h-12 border border-outline-variant/80 text-on-surface font-label-md text-xs sm:text-sm font-semibold rounded-xl flex items-center justify-center active:scale-95 transition-transform bg-surface-container-lowest shadow-xs">
-            Cancel
+        <button type="button" id="btn-cancel-ocr-mobile" class="flex-1 py-3 h-11 border border-outline-variant/80 text-on-surface font-label-md text-xs font-semibold rounded-xl flex items-center justify-center gap-1 active:scale-95 transition-transform bg-surface-container-lowest shadow-xs cursor-pointer">
+            <span class="material-symbols-outlined text-[16px] text-error">close</span>
+            <span>Cancel</span>
         </button>
-        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-3.5 h-12 bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center active:scale-95 transition-transform shadow-sm">
-            Save Expense
+        <button type="button" id="btn-save-ocr-expense-mobile" class="flex-[2] py-3 h-11 bg-primary text-on-primary font-label-md text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95 transition-transform shadow-sm cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">check</span>
+            <span>Save Expense</span>
         </button>
     </div>
 
@@ -394,14 +459,14 @@
 
 <!-- Full Image Zoom Lightbox Modal -->
 <div id="modal-image-zoom" class="fixed inset-0 z-[100] bg-on-surface/80 backdrop-blur-md flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-200">
-    <div class="relative max-w-xl w-full bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl p-3 flex flex-col gap-2">
-        <div class="flex justify-between items-center px-1 pb-1.5 border-b border-surface-variant">
-            <span class="font-headline-md text-xs font-bold text-on-surface">Original Receipt Image</span>
-            <button type="button" id="btn-close-zoom" class="w-7 h-7 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+    <div class="relative max-w-xl w-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl p-4 flex flex-col gap-3">
+        <div class="flex justify-between items-center pb-2 border-b border-surface-variant">
+            <span class="font-headline-md text-sm font-bold text-on-surface">Original Receipt Image</span>
+            <button type="button" id="btn-close-zoom" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
+                <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
         </div>
-        <div class="max-h-[70vh] overflow-auto flex items-center justify-center bg-surface-container-low rounded-lg p-1.5">
+        <div class="max-h-[70vh] overflow-auto flex items-center justify-center bg-surface-container-low rounded-xl p-2">
             <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-full max-h-[65vh] object-contain rounded" src="" />
         </div>
     </div>
@@ -409,24 +474,28 @@
 
 <!-- Leave / Discard Confirmation Modal -->
 <div id="modal-confirm-discard" class="fixed inset-0 z-[110] bg-on-surface/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-    <div class="max-w-sm w-full bg-surface-container-lowest rounded-2xl shadow-2xl p-5 border border-surface-variant/80 flex flex-col gap-4 scale-95 transition-transform duration-200">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center shrink-0">
+    <div class="max-w-md w-full bg-surface-container-lowest rounded-2xl shadow-2xl p-5 sm:p-6 border border-surface-variant/80 flex flex-col gap-4 scale-95 transition-transform duration-200">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-error/10 text-error flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[22px]">warning</span>
             </div>
             <div class="flex flex-col">
-                <h3 class="font-headline-md text-sm sm:text-base font-bold text-on-surface">Discard Receipt Scan?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Any unsaved line items and extracted data will be lost.
+                <h3 class="font-headline-md text-base sm:text-lg font-bold text-on-surface">Cancel Receipt Scan?</h3>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-relaxed mt-1">
+                    Choose whether to switch to manual transaction entry or discard this scan and return to history.
                 </p>
             </div>
         </div>
 
-        <div class="flex items-center justify-end gap-2 pt-2">
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 border border-outline-variant/70 text-on-surface font-label-md text-xs font-semibold rounded-lg hover:bg-surface-container-low active:scale-95 transition-all shadow-xs">
-                Keep Editing
+        <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t border-surface-variant/60">
+            <button type="button" id="btn-keep-editing" class="w-full sm:w-auto px-4 py-2.5 border border-outline-variant/70 text-on-surface font-label-md text-xs font-semibold rounded-xl hover:bg-surface-container-low active:scale-95 transition-all shadow-xs cursor-pointer">
+                Keep Scanning
             </button>
-            <button type="button" id="btn-confirm-discard" class="px-4 py-2 bg-error text-on-error font-label-md text-xs font-bold rounded-lg hover:bg-error/90 active:scale-95 transition-all shadow-xs">
+            <button type="button" id="btn-confirm-manual" class="w-full sm:w-auto px-4 py-2.5 bg-primary text-on-primary font-label-md text-xs font-bold rounded-xl hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">edit_note</span>
+                <span>Add Manually</span>
+            </button>
+            <button type="button" id="btn-confirm-discard" class="w-full sm:w-auto px-4 py-2.5 bg-error/10 text-error hover:bg-error hover:text-on-error font-label-md text-xs font-bold rounded-xl active:scale-95 transition-all shadow-xs cursor-pointer">
                 Discard & Leave
             </button>
         </div>
@@ -492,15 +561,92 @@
         const backHeaderBtn = document.getElementById('btn-back-header');
         const discardModal = document.getElementById('modal-confirm-discard');
         const keepEditingBtn = document.getElementById('btn-keep-editing');
+        const confirmManualBtn = document.getElementById('btn-confirm-manual');
         const confirmDiscardBtn = document.getElementById('btn-confirm-discard');
-        let pendingLeaveAction = null;
+
+        const statusTexts = [
+            "Reading receipt...",
+            "Extracting items...",
+            "Identifying category...",
+            "Calculating totals..."
+        ];
 
         const scanSteps = [
-            { text: "Reading receipt image...", percent: 25 },
-            { text: "Extracting line items...", percent: 50 },
-            { text: "Identifying category...", percent: 75 },
-            { text: "Calculating totals & VAT...", percent: 95 }
+            { text: statusTexts[0], percent: 25 },
+            { text: statusTexts[1], percent: 50 },
+            { text: statusTexts[2], percent: 75 },
+            { text: statusTexts[3], percent: 95 }
         ];
+
+        // Modal triggers
+        function showDiscardModal() {
+            if (!discardModal) return;
+            discardModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                discardModal.classList.remove('opacity-0');
+                discardModal.classList.add('opacity-100');
+                const modalCard = discardModal.firstElementChild;
+                if (modalCard) {
+                    modalCard.classList.remove('scale-95');
+                    modalCard.classList.add('scale-100');
+                }
+            });
+        }
+
+        function hideDiscardModal() {
+            if (!discardModal) return;
+            discardModal.classList.remove('opacity-100');
+            discardModal.classList.add('opacity-0');
+            const modalCard = discardModal.firstElementChild;
+            if (modalCard) {
+                modalCard.classList.remove('scale-100');
+                modalCard.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                discardModal.classList.add('hidden');
+            }, 200);
+        }
+
+        if (keepEditingBtn) keepEditingBtn.addEventListener('click', hideDiscardModal);
+
+        if (confirmManualBtn) {
+            confirmManualBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('active_ocr_review_data');
+                window.location.href = "{% url 'add_transaction' %}";
+            });
+        }
+
+        if (confirmDiscardBtn) {
+            confirmDiscardBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('active_ocr_review_data');
+                window.location.href = "{% url 'transactions' %}";
+            });
+        }
+
+        // Connect cancel buttons to discard modal
+        const cancelProcessingBtn = document.getElementById('btn-cancel-processing');
+        const cancelOcrBtn = document.getElementById('btn-cancel-ocr');
+        const cancelOcrMobileBtn = document.getElementById('btn-cancel-ocr-mobile');
+
+        [cancelProcessingBtn, cancelOcrBtn, cancelOcrMobileBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showDiscardModal();
+                });
+            }
+        });
+
+        if (backHeaderBtn) {
+            backHeaderBtn.addEventListener('click', (e) => {
+                const isProcessing = processingCanvas && !processingCanvas.classList.contains('hidden');
+                const isReviewing = ocrReviewScreen && !ocrReviewScreen.classList.contains('hidden');
+                if (isProcessing || isReviewing) {
+                    e.preventDefault();
+                    showDiscardModal();
+                }
+            });
+        }
 
         if (selectBtn) selectBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
         if (reuploadBtnTop) reuploadBtnTop.addEventListener('click', () => fileInput.click());
@@ -535,22 +681,30 @@
             });
         }
 
+        const stepCountText = document.getElementById('step-count-text');
+
         function runScanningAnimation(onComplete) {
             let currentIndex = 0;
             if (statusElement) statusElement.textContent = scanSteps[0].text;
             if (progressEl) progressEl.style.width = `${scanSteps[0].percent}%`;
+            if (stepCountText) stepCountText.textContent = `Step 1 of ${scanSteps.length}`;
 
             const interval = setInterval(() => {
                 currentIndex = (currentIndex + 1) % scanSteps.length;
-                if (statusElement) statusElement.textContent = scanSteps[currentIndex].text;
-                if (progressEl) progressEl.style.width = `${scanSteps[currentIndex].percent}%`;
-            }, 550);
+                const nextStepIndex = currentIndex;
+                setTimeout(() => {
+                    if (statusElement) statusElement.textContent = scanSteps[nextStepIndex].text;
+                    if (progressEl) progressEl.style.width = `${scanSteps[nextStepIndex].percent}%`;
+                    if (stepCountText) stepCountText.textContent = `Step ${nextStepIndex + 1} of ${scanSteps.length}`;
+                }, 300);
+            }, 3000);
 
             return {
                 finish: () => {
                     clearInterval(interval);
                     if (statusElement) statusElement.textContent = "Scan complete!";
                     if (progressEl) progressEl.style.width = '100%';
+                    if (stepCountText) stepCountText.textContent = `Step 4 of 4`;
                     if (onComplete) setTimeout(onComplete, 300);
                 }
             };
@@ -584,7 +738,7 @@
                     });
                 });
 
-                setTimeout(() => anim.finish(), 2200);
+                setTimeout(() => anim.finish(), 3300);
             });
         }
 
@@ -802,7 +956,7 @@
                 });
             });
 
-            // Enter key navigation across line item inputs (PC & Mobile)
+            // Enter key navigation across line item inputs
             document.querySelectorAll('#container-review-items input').forEach(input => {
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
