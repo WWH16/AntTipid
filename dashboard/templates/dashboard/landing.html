@@ -106,7 +106,7 @@
             <div class="flex items-center gap-3">
                 <a href="{% url 'dashboard' %}" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-2 cursor-pointer">
                     <span>Open AntTipid</span>
-                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <span class="material-symbols-outlined text-[18px]">north_east</span>
                 </a>
 
                 <!-- Mobile Menu Button -->
@@ -161,7 +161,7 @@
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto pt-2">
                             <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-primary text-white font-label-md text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                                <span class="material-symbols-outlined text-[20px]">north_east</span>
                                 <span>Start Tracking Free</span>
                             </a>
                             
@@ -189,14 +189,16 @@
                     <div class="lg:col-span-6 relative flex items-center justify-center">
                         <div class="relative w-full max-w-sm lg:max-w-md flex items-center justify-center">
                             
-                            <!-- Floating Coin / Savings Accent Badge -->
+                            <!-- Floating Coin / Savings Accent Badge with Upward Arrow -->
                             <div class="absolute -top-4 -left-4 sm:top-2 sm:left-2 z-30 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-3 shadow-elevated flex items-center gap-2.5">
-                                <div class="w-9 h-9 rounded-xl bg-warning/20 text-amber-700 flex items-center justify-center font-bold text-lg shrink-0">
-                                    ₱
+                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center font-bold text-lg shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">arrow_upward</span>
                                 </div>
                                 <div>
                                     <p class="font-label-sm text-[10px] text-on-surface-variant font-semibold uppercase">Daily Tipid</p>
-                                    <p class="font-headline-md text-xs font-extrabold text-deep-forest">+₱1,250 Savings</p>
+                                    <p class="font-headline-md text-xs font-extrabold text-deep-forest flex items-center gap-1">
+                                        <span class="text-primary">+₱1,250</span> Savings
+                                    </p>
                                 </div>
                             </div>
 
@@ -688,7 +690,14 @@
         </div>
     </footer>
 
-    <!-- Service Worker Registration -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FLOATING SCROLL UP (ARROW UP) BUTTON          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <button type="button" id="btn-back-to-top" aria-label="Scroll to top" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-elevated border border-primary/30 flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-all opacity-0 pointer-events-none cursor-pointer">
+        <span class="material-symbols-outlined text-[28px]">keyboard_arrow_up</span>
+    </button>
+
+    <!-- Service Worker Registration & Interactions -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -696,13 +705,34 @@
             });
         }
 
-        // Mobile Menu Drawer Toggle
+        // Mobile Menu Drawer Toggle & Scroll Up Handler
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('btn-mobile-menu');
             const drawer = document.getElementById('mobile-menu-drawer');
             if (menuBtn && drawer) {
                 menuBtn.addEventListener('click', () => {
                     drawer.classList.toggle('hidden');
+                });
+            }
+
+            // Scroll Up (Arrow Up) Logic
+            const backToTopBtn = document.getElementById('btn-back-to-top');
+            if (backToTopBtn) {
+                const toggleBackToTop = () => {
+                    if (window.scrollY > 200) {
+                        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                        backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                        backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+                    }
+                };
+
+                window.addEventListener('scroll', toggleBackToTop, { passive: true });
+                toggleBackToTop(); // Initial check
+
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             }
         });
