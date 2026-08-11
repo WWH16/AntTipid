@@ -279,59 +279,65 @@
     {% endblock %}
 
     <!-- ═══════════════════════════════════════════ -->
-    <!-- ADD CHOICE MODAL (QUIETER & REFINED)        -->
+    <!-- ADD CHOICE MODAL (QUIETER & REFINED SHADCN)  -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="modal-add-choice" class="fixed inset-0 z-[70] bg-on-surface/40 backdrop-blur-[2px] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200">
-        <div id="modal-add-choice-content" class="w-full sm:max-w-lg bg-surface md:bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-surface-variant/80 p-md sm:p-lg shadow-xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-md">
+    <div id="modal-add-choice" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+        <!-- Backdrop -->
+        <div id="modal-add-choice-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-md opacity-0 transition-opacity duration-200"></div>
+
+        <!-- Modal Content Container -->
+        <div id="modal-add-choice-content" class="w-full sm:max-w-lg bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[85vh] overflow-y-auto overscroll-contain">
             
-            <!-- Mobile Drag Handle -->
-            <div class="w-10 h-1 bg-outline-variant/60 rounded-full mx-auto -mt-1 sm:hidden"></div>
+            <!-- Mobile Drag Handle Bar -->
+            <div id="modal-add-choice-handle" class="w-full py-1.5 -mt-2 mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none sm:hidden">
+                <div class="w-12 h-1 bg-surface-variant/80 rounded-full"></div>
+            </div>
 
             <!-- Modal Header -->
-            <div class="flex justify-between items-center pb-2.5 border-b border-surface-variant/50">
+            <div class="flex justify-between items-center pb-2.5 border-b border-surface-variant/40">
                 <div>
-                    <h3 class="font-headline-md text-base sm:text-lg font-semibold text-on-surface">Add New Entry</h3>
+                    <h3 id="modal-add-choice-title" class="font-headline-md text-base sm:text-lg font-semibold text-on-surface tracking-tight">Add New Entry</h3>
                     <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Select how to log your transaction</p>
                 </div>
-                <button id="btn-close-add-choice" aria-label="Close add choice modal" class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant transition-colors active:scale-90">
+                <button id="btn-close-add-choice" aria-label="Close add choice modal" class="w-7 h-7 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
 
             <!-- Choices Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm sm:gap-md pt-0.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 
                 <!-- Choice 1: Scan / Upload Receipt -->
-                <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
-                    <div class="flex justify-between items-start mb-2.5">
-                        <div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt" class="flex flex-col justify-between p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                             <span class="material-symbols-outlined text-[20px]">photo_camera</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">AI Scan</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold border border-primary/20">AI Scan</span>
                     </div>
                     <div>
                         <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
                             Scan Receipt
                             <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
                         </h4>
-                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Auto-scan items & totals from receipts.</p>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Auto-scan items & totals from receipts with AI.</p>
                     </div>
                 </a>
 
                 <!-- Choice 2: Add Manual Transaction -->
-                <a href="{% url 'add_transaction' %}" id="choice-manual-entry" class="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98]">
-                    <div class="flex justify-between items-start mb-2.5">
-                        <div class="w-9 h-9 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-secondary-container/60 group-hover:text-secondary transition-colors">
+                <a href="{% url 'add_transaction' %}" id="choice-manual-entry" class="flex flex-col justify-between p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-surface-container-high transition-colors">
                             <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-semibold">Manual</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-semibold border border-surface-variant/40">Manual</span>
                     </div>
                     <div>
                         <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
                             Manual Entry
                             <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
                         </h4>
-                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log expense or income manually.</p>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log expense, income, or transfer manually.</p>
                     </div>
                 </a>
 
@@ -343,6 +349,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const addChoiceModal = document.getElementById('modal-add-choice');
+            const addChoiceBackdrop = document.getElementById('modal-add-choice-backdrop');
             const addChoiceContent = document.getElementById('modal-add-choice-content');
             const closeChoiceBtn = document.getElementById('btn-close-add-choice');
 
@@ -353,13 +360,18 @@
                 if (e) e.preventDefault();
                 if (!addChoiceModal) return;
 
+                document.body.style.overflow = 'hidden';
                 addChoiceModal.classList.remove('hidden');
                 requestAnimationFrame(() => {
+                    if (addChoiceBackdrop) {
+                        addChoiceBackdrop.classList.remove('opacity-0');
+                        addChoiceBackdrop.classList.add('opacity-100');
+                    }
                     addChoiceModal.classList.remove('opacity-0');
                     addChoiceModal.classList.add('opacity-100');
                     if (addChoiceContent) {
-                        addChoiceContent.classList.remove('translate-y-full', 'sm:scale-95');
-                        addChoiceContent.classList.add('translate-y-0', 'sm:scale-100');
+                        addChoiceContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
+                        addChoiceContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
                     }
                 });
             }
@@ -367,20 +379,26 @@
             function closeAddChoiceModal() {
                 if (!addChoiceModal) return;
 
+                if (addChoiceBackdrop) {
+                    addChoiceBackdrop.classList.remove('opacity-100');
+                    addChoiceBackdrop.classList.add('opacity-0');
+                }
                 addChoiceModal.classList.remove('opacity-100');
                 addChoiceModal.classList.add('opacity-0');
                 if (addChoiceContent) {
-                    addChoiceContent.classList.remove('translate-y-0', 'sm:scale-100');
-                    addChoiceContent.classList.add('translate-y-full', 'sm:scale-95');
+                    addChoiceContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
+                    addChoiceContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
                 }
                 setTimeout(() => {
                     addChoiceModal.classList.add('hidden');
+                    document.body.style.overflow = '';
                 }, 200);
             }
 
             if (bnavAdd) bnavAdd.addEventListener('click', openAddChoiceModal);
             if (desktopAddBtn) desktopAddBtn.addEventListener('click', openAddChoiceModal);
             if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', closeAddChoiceModal);
+            if (addChoiceBackdrop) addChoiceBackdrop.addEventListener('click', closeAddChoiceModal);
 
             if (addChoiceModal) {
                 addChoiceModal.addEventListener('click', (e) => {
@@ -393,6 +411,42 @@
                     closeAddChoiceModal();
                 }
             });
+
+            // Mobile Touch Drag Down to Dismiss Gesture for Add Choice Modal
+            const choiceHandle = document.getElementById('modal-add-choice-handle');
+            let startYChoice = 0;
+            let currentYChoice = 0;
+            let isDraggingChoice = false;
+
+            if (choiceHandle) {
+                choiceHandle.addEventListener('touchstart', (e) => {
+                    startYChoice = e.touches[0].clientY;
+                    currentYChoice = startYChoice;
+                    isDraggingChoice = true;
+                    addChoiceContent.style.transition = 'none';
+                }, { passive: true });
+
+                window.addEventListener('touchmove', (e) => {
+                    if (!isDraggingChoice) return;
+                    currentYChoice = e.touches[0].clientY;
+                    const deltaY = currentYChoice - startYChoice;
+                    if (deltaY > 0) {
+                        addChoiceContent.style.transform = `translateY(${deltaY}px)`;
+                    }
+                }, { passive: true });
+
+                window.addEventListener('touchend', () => {
+                    if (!isDraggingChoice) return;
+                    isDraggingChoice = false;
+                    addChoiceContent.style.transition = '';
+                    const deltaY = currentYChoice - startYChoice;
+                    if (deltaY > 80) {
+                        closeAddChoiceModal();
+                    } else {
+                        addChoiceContent.style.transform = '';
+                    }
+                });
+            }
         });
     </script>
 
