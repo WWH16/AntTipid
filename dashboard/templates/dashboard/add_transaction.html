@@ -205,26 +205,26 @@
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
 <!-- Discard Confirmation Modal -->
-<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-on-surface/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
+<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
         
         <!-- Header -->
         <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5">
+            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[20px]">drafts</span>
             </div>
             <div class="flex flex-col gap-1">
-                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Discard manual entry?</h3>
+                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Discard manual entry?</h3>
                 <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Entered amounts and transaction details will not be saved.</p>
             </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-surface-variant/40">
-            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-error hover:bg-error/10 font-label-md text-xs font-semibold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error cursor-pointer">
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
+            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-expense hover:bg-expense/10 font-label-md text-xs font-bold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer">
                 Discard Entry
             </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-semibold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                 Keep Editing
             </button>
         </div>
