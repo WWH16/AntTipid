@@ -19,7 +19,7 @@
             <!-- View Switcher (All Activity vs Receipt Archive) -->
             <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
                 <div class="flex bg-surface-container-low rounded-xl p-1 border border-surface-variant/60 shadow-xs" id="view-mode-toggle-group">
-                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface border border-surface-variant/60 font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
+                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
                     <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-on-surface font-medium transition-all flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">receipt</span>
                         Receipt Archive
@@ -36,11 +36,11 @@
             <div class="flex gap-2">
                 <div class="relative flex-grow">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                    <input id="input-search-mobile" class="w-full pl-9 pr-3 h-10 bg-surface-container-low border border-surface-variant/80 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Search transactions or receipts..." type="text">
+                    <input id="input-search-mobile" class="w-full pl-9 pr-3 h-10 bg-surface-container-lowest border border-surface-variant/80 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs" placeholder="Search transactions or receipts..." type="text">
                 </div>
-                <button id="btn-open-filter-mobile" class="h-10 px-3 bg-surface-container-low border border-surface-variant/80 rounded-xl flex items-center gap-1.5 text-on-surface hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer">
+                <button id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-surface-variant/80 rounded-xl flex items-center gap-1.5 text-on-surface hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer font-semibold shadow-2xs">
                     <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                    <span class="font-label-sm text-xs font-medium">Filter</span>
+                    <span class="font-label-sm text-xs font-semibold">Filter</span>
                     <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-on-primary rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
                 </button>
             </div>
@@ -51,20 +51,20 @@
             <!-- Desktop Search Bar -->
             <div class="relative flex-1 max-w-xs min-w-[220px]">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border border-outline-variant/60 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search transactions or receipts..." type="text">
+                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest border border-surface-variant/80 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs" placeholder="Search transactions or receipts..." type="text">
             </div>
 
-            <span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-1">filter_list</span>
+            <span class="material-symbols-outlined text-primary text-[20px] mr-0.5">filter_list</span>
             
             <!-- Filter: Type -->
-            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-on-surface bg-surface-container-low hover:bg-surface-container-high focus:ring-2 focus:ring-primary/20 outline-none transition-colors cursor-pointer font-medium">
+            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
                 <option value="all">Type: All</option>
                 <option value="income">Type: Income</option>
                 <option value="expense">Type: Expense</option>
             </select>
 
             <!-- Filter: Category -->
-            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-on-surface bg-surface-container-low hover:bg-surface-container-high focus:ring-2 focus:ring-primary/20 outline-none transition-colors cursor-pointer font-medium">
+            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
                 <option value="all">Category: All</option>
                 <option value="Groceries">Groceries</option>
                 <option value="Dining">Dining</option>
@@ -76,7 +76,7 @@
             </select>
 
             <!-- Filter: Date Range -->
-            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-on-surface bg-surface-container-low hover:bg-surface-container-high focus:ring-2 focus:ring-primary/20 outline-none transition-colors cursor-pointer font-medium">
+            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
                 <option value="30days">Date: Last 30 Days</option>
                 <option value="this-month">Date: This Month</option>
                 <option value="all-time">Date: All Time</option>
@@ -523,7 +523,7 @@
             <div class="flex flex-col gap-1.5">
                 <label class="font-label-md text-xs text-on-surface font-semibold">Transaction Type</label>
                 <div class="grid grid-cols-3 gap-2" id="group-type-pills">
-                    <button data-type="all" class="pill-type py-2 px-3 rounded-xl border border-on-surface bg-on-surface text-inverse-on-surface font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center">All</button>
+                    <button data-type="all" class="pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center">All</button>
                     <button data-type="income" class="pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Income</button>
                     <button data-type="expense" class="pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Expense</button>
                 </div>
@@ -533,7 +533,7 @@
             <div class="flex flex-col gap-1.5">
                 <label class="font-label-md text-xs text-on-surface font-semibold">Category</label>
                 <div class="flex flex-wrap gap-1.5" id="group-category-chips">
-                    <button data-cat="all" class="chip-cat px-3 py-1.5 rounded-full border border-on-surface bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold shadow-xs transition-all cursor-pointer">All Categories</button>
+                    <button data-cat="all" class="chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-xs font-semibold shadow-xs transition-all cursor-pointer">All Categories</button>
                     <button data-cat="Groceries" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Groceries</button>
                     <button data-cat="Dining" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Food & Dining</button>
                     <button data-cat="Transportation" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Transportation</button>
@@ -547,7 +547,7 @@
             <div class="flex flex-col gap-1.5">
                 <label class="font-label-md text-xs text-on-surface font-semibold">Timeframe</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <button data-date="this-month" class="btn-date-range py-2 px-3 h-9 rounded-xl border border-on-surface bg-on-surface text-inverse-on-surface font-body-sm text-xs font-semibold transition-all text-left flex justify-between items-center cursor-pointer shadow-xs">
+                    <button data-date="this-month" class="btn-date-range py-2 px-3 h-9 rounded-xl border border-primary bg-primary text-on-primary font-body-sm text-xs font-semibold transition-all text-left flex justify-between items-center cursor-pointer shadow-xs">
                         <span>This Month</span>
                         <span class="material-symbols-outlined text-[16px]">calendar_today</span>
                     </button>
@@ -562,7 +562,7 @@
         <!-- Action Buttons -->
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-surface-variant/40 mt-1">
             <button id="btn-reset-filters-modal" class="px-3.5 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-semibold transition-all cursor-pointer">Clear</button>
-            <button id="btn-apply-filters-modal" class="px-4 py-2 rounded-xl bg-on-surface text-inverse-on-surface hover:bg-on-surface/90 font-label-md text-xs font-semibold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">Apply Filters</button>
+            <button id="btn-apply-filters-modal" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-md text-xs font-semibold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">Apply Filters</button>
         </div>
     </div>
 </div>
@@ -579,13 +579,13 @@
         function switchViewMode(mode) {
             if (mode === 'receipts') {
                 btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-on-surface font-medium transition-all flex items-center gap-1 cursor-pointer';
-                btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface border border-surface-variant/60 font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
+                btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
                 secTx.classList.add('hidden');
                 secReceipts.classList.remove('hidden');
                 secReceipts.classList.add('flex');
             } else {
                 btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-on-surface font-medium transition-all flex items-center gap-1 cursor-pointer';
-                btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface border border-surface-variant/60 font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
+                btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
                 secReceipts.classList.add('hidden');
                 secReceipts.classList.remove('flex');
                 secTx.classList.remove('hidden');
