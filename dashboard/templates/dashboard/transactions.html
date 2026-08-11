@@ -92,84 +92,70 @@
             
             <!-- MOBILE TRANSACTIONS LIST (<md) -->
             <div id="container-mobile-transactions" class="space-y-4 md:hidden">
-                <!-- Group: Today -->
+                <!-- Group: Today (Section 15 Spec Example) -->
                 <div class="transaction-group" data-date-group="today">
-                    <h2 class="font-label-sm text-[11px] text-on-surface-variant mb-2 uppercase tracking-[0.06em] font-semibold">Today, Oct 24</h2>
-                    <div class="bg-surface-container-lowest rounded-2xl border border-surface-variant/60 shadow-xs overflow-hidden">
-                        <!-- Item 1 -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Dining">
+                    <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Today</h2>
+                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
+                        <!-- Item 1: Jollibee -->
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Dining">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Sweetgreen Salad</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Jollibee</p>
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Food & Dining</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-on-surface font-semibold whitespace-nowrap ml-2 tabular-nums">-₱145.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱250.00</span>
                         </div>
 
-                        <!-- Item 2 -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Transportation">
+                        <!-- Item 2: Grab -->
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Transportation">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[18px]">local_gas_station</span>
+                                <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-700 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px]">directions_car</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Shell Gas Station</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Grab</p>
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Transportation</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-on-surface font-semibold whitespace-nowrap ml-2 tabular-nums">-₱420.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱180.00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Group: Yesterday -->
+                <!-- Group: Yesterday (Section 15 Spec Example) -->
                 <div class="transaction-group" data-date-group="yesterday">
-                    <h2 class="font-label-sm text-[11px] text-on-surface-variant mb-2 uppercase tracking-[0.06em] font-semibold">Yesterday, Oct 23</h2>
-                    <div class="bg-surface-container-lowest rounded-2xl border border-surface-variant/60 shadow-xs overflow-hidden">
-                        <!-- Item 1 (Income) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="income" data-category="Income">
+                    <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Yesterday</h2>
+                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
+                        <!-- Item 1: Shopee -->
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Shopping">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[18px]">payments</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Salary Deposit</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Income</p>
-                                </div>
-                            </div>
-                            <span class="font-label-md text-xs sm:text-sm text-primary font-bold whitespace-nowrap ml-2 tabular-nums">+₱24,500.00</span>
-                        </div>
-
-                        <!-- Item 2 -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Shopping">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Target Department Store</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Shopee</p>
                                     <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Shopping</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-on-surface font-semibold whitespace-nowrap ml-2 tabular-nums">-₱1,123.50</span>
+                            <span class="font-label-md text-xs sm:text-sm text-deep-forest font-bold whitespace-nowrap ml-2 tabular-nums">₱650.00</span>
                         </div>
 
-                        <!-- Item 3 -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Entertainment">
+                        <!-- Item 2 (Income) -->
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="income" data-category="Income">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[18px]">subscriptions</span>
+                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/20 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px]">payments</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Netflix Subscription</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Entertainment</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Salary Deposit</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Income</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-on-surface font-semibold whitespace-nowrap ml-2 tabular-nums">-₱549.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-primary font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
                         </div>
                     </div>
                 </div>

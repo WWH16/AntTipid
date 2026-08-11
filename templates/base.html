@@ -17,68 +17,45 @@
     <!-- Tailwind CSS (via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Tailwind Config: Design Tokens -->
+    <!-- Tailwind Config: Design Tokens from AntTipid_Design_System.md -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-                "on-secondary": "#ffffff",
-                "on-primary-container": "#00422b",
-                "primary-fixed-dim": "#4edea3",
-                "tertiary": "#494bd6",
-                "secondary-container": "#d5e0f8",
-                "surface-container": "#eceef0",
-                "tertiary-fixed": "#e1e0ff",
-                "error": "#ba1a1a",
-                "surface-container-high": "#e6e8ea",
-                "surface-container-lowest": "#ffffff",
-                "on-error-container": "#93000a",
-                "tertiary-container": "#9699ff",
-                "on-tertiary-fixed": "#07006d",
-                "surface-tint": "#006c49",
-                "on-primary": "#ffffff",
-                "tertiary-fixed-dim": "#c0c1ff",
-                "on-secondary-fixed-variant": "#3c475b",
-                "inverse-surface": "#2d3133",
-                "primary-fixed": "#6ffbbd",
-                "on-tertiary": "#ffffff",
-                "on-tertiary-fixed-variant": "#302eb9",
-                "background": "#f7f9fb",
-                "surface-container-highest": "#e0e3e5",
-                "shadow": "#000000",
-                "on-secondary-container": "#586377",
-                "secondary": "#545f73",
-                "sc-rim": "#000000",
-                "inverse-on-surface": "#eff1f3",
-                "error-container": "#ffdad6",
-                "on-primary-fixed": "#002114",
-                "on-error": "#ffffff",
-                "on-surface-variant": "#3c4a42",
-                "surface-variant": "#e0e3e5",
-                "surface-container-low": "#f2f4f6",
-                "secondary-fixed-dim": "#bcc7de",
-                "inverse-primary": "#4edea3",
-                "on-tertiary-container": "#1d17b2",
-                "secondary-fixed": "#d8e3fb",
-                "outline": "#6c7a71",
-                "on-primary-fixed-variant": "#005236",
-                "outline-variant": "#bbcabf",
-                "on-surface": "#191c1e",
-                "primary": "#006c49",
-                "on-background": "#191c1e",
-                "primary-container": "#10b981",
-                "surface": "#f7f9fb",
-                "surface-dim": "#d8dadc",
-                "on-surface-variant": "#3c4a42",
-                "surface-bright": "#f7f9fb",
-                "on-secondary-fixed": "#111c2d"
+                "primary": "#5C8F3A",
+                "ant-green": "#5C8F3A",
+                "deep-forest": "#23452A",
+                "soft-green": "#E7F1D9",
+                "warm-cream": "#F8F5EA",
+                "light-border": "#E5E5DD",
+                "background": "#F8F5EA",
+                "surface": "#FAF8F2",
+                "surface-container-lowest": "#FFFFFF",
+                "surface-container-low": "#F3EFE4",
+                "surface-container": "#EAE5D7",
+                "surface-container-high": "#E2DCCE",
+                "surface-container-highest": "#D8D2C2",
+                "on-surface": "#23452A",
+                "on-surface-variant": "#586255",
+                "outline-variant": "#E5E5DD",
+                "outline": "#B3BBAA",
+                "on-primary": "#FFFFFF",
+                "income": "#5C8F3A",
+                "expense": "#D96B4A",
+                "warning": "#E4A72C",
+                "safe": "#6C9B45",
+                "neutral": "#777B73",
+                "error": "#D96B4A",
               },
               borderRadius: {
-                "DEFAULT": "0.125rem",
-                "lg": "0.25rem",
-                "xl": "0.5rem",
-                "full": "0.75rem"
+                "sm": "8px",
+                "md": "10px",
+                "lg": "12px",
+                "xl": "16px",
+                "2xl": "18px",
+                "3xl": "20px",
+                "full": "9999px"
               },
               spacing: {
                 "sm": "8px",
@@ -91,30 +68,32 @@
                 "xl": "32px"
               },
               fontFamily: {
-                "headline-lg-mobile": ["Inter"],
-                "headline-lg": ["Inter"],
-                "body-md": ["Inter"],
-                "body-sm": ["Inter"],
-                "label-md": ["Inter"],
-                "body-lg": ["Inter"],
-                "label-sm": ["Inter"],
-                "headline-md": ["Inter"],
-                "display": ["Inter"]
+                "sans": ["Inter", "sans-serif"],
+                "headline-lg-mobile": ["Inter", "sans-serif"],
+                "headline-lg": ["Inter", "sans-serif"],
+                "body-md": ["Inter", "sans-serif"],
+                "body-sm": ["Inter", "sans-serif"],
+                "label-md": ["Inter", "sans-serif"],
+                "body-lg": ["Inter", "sans-serif"],
+                "label-sm": ["Inter", "sans-serif"],
+                "headline-md": ["Inter", "sans-serif"],
+                "display": ["Inter", "sans-serif"]
               },
               fontSize: {
                 "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
                 "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
                 "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
                 "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
                 "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
                 "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
                 "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
-                "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
               },
               boxShadow: {
-                "soft": "0 4px 12px rgba(15, 23, 42, 0.05)",
-                "elevated": "0 8px 24px rgba(15, 23, 42, 0.08)",
+                "soft": "0 2px 8px rgba(35, 69, 42, 0.05)",
+                "elevated": "0 6px 18px rgba(35, 69, 42, 0.08)",
+                "xs": "0 1px 3px rgba(35, 69, 42, 0.04)"
               }
           }
         }
@@ -153,16 +132,17 @@
         <div class="flex flex-col gap-6">
             <!-- Brand Logo -->
             <div class="flex items-center justify-between px-2 py-1">
-                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-xs group-hover:scale-105 transition-transform">
-                        AT
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 group">
+                    <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center font-bold text-sm shadow-xs group-hover:scale-105 transition-transform border border-primary/20">
+                        <span class="material-symbols-outlined text-[20px]">pest_control</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-headline-lg text-lg font-bold text-on-surface tracking-tight leading-none group-hover:text-primary transition-colors">AntTipid</span>
-                        <span class="font-label-sm text-[10px] text-on-surface-variant font-medium tracking-wider uppercase mt-1">Personal Finance</span>
+                        <span class="font-headline-lg text-lg font-extrabold tracking-tight leading-none">
+                            <span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span>
+                        </span>
+                        <span class="font-label-sm text-[10px] text-on-surface-variant font-medium tracking-tight mt-0.5">Tipid today, secure tomorrow.</span>
                     </div>
                 </a>
-                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[10px] font-bold border border-primary/20">v2.0</span>
             </div>
 
             <!-- Nav Links -->
