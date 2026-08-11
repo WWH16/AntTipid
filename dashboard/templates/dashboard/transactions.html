@@ -12,15 +12,15 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="font-headline-lg text-2xl sm:text-3xl font-bold text-deep-forest tracking-tight">History & Receipts</h1>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Track your expenses, transactions, and scanned receipt archive.</p>
+                <h1 class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest tracking-tight">History & Receipts</h1>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5 font-medium">Track your expenses, transactions, and scanned receipt archive.</p>
             </div>
 
             <!-- View Switcher (All Activity vs Receipt Archive) -->
             <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
                 <div class="flex bg-surface-container-low rounded-xl p-1 border border-outline-variant/60 shadow-xs" id="view-mode-toggle-group">
-                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-semibold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
-                    <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-medium transition-all flex items-center gap-1 cursor-pointer">
+                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
+                    <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-bold transition-all flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">receipt</span>
                         Receipt Archive
                     </button>
@@ -36,12 +36,12 @@
             <div class="flex gap-2">
                 <div class="relative flex-grow">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                    <input id="input-search-mobile" class="w-full pl-9 pr-3 h-10 bg-surface-container-lowest border border-surface-variant/80 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs" placeholder="Search transactions or receipts..." type="text">
+                    <input id="input-search-mobile" class="w-full pl-9 pr-3 h-10 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-xs" placeholder="Search transactions or receipts..." type="text">
                 </div>
-                <button id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-surface-variant/80 rounded-xl flex items-center gap-1.5 text-on-surface hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer font-semibold shadow-2xs">
+                <button id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer font-bold shadow-xs">
                     <span class="material-symbols-outlined text-[18px]">filter_list</span>
-                    <span class="font-label-sm text-xs font-semibold">Filter</span>
-                    <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-on-primary rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
+                    <span class="font-label-sm text-xs font-bold">Filter</span>
+                    <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-white rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
                 </button>
             </div>
         </div>
@@ -51,20 +51,20 @@
             <!-- Desktop Search Bar -->
             <div class="relative flex-1 max-w-xs min-w-[220px]">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest border border-surface-variant/80 rounded-xl text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs" placeholder="Search transactions or receipts..." type="text">
+                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs" placeholder="Search transactions or receipts..." type="text">
             </div>
 
             <span class="material-symbols-outlined text-primary text-[20px] mr-0.5">filter_list</span>
             
             <!-- Filter: Type -->
-            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
+            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Type: All</option>
                 <option value="income">Type: Income</option>
                 <option value="expense">Type: Expense</option>
             </select>
 
             <!-- Filter: Category -->
-            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
+            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Category: All</option>
                 <option value="Groceries">Groceries</option>
                 <option value="Dining">Dining</option>
@@ -76,13 +76,13 @@
             </select>
 
             <!-- Filter: Date Range -->
-            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-surface-variant/80 font-label-sm text-xs text-on-surface bg-surface-container-lowest hover:bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-semibold shadow-2xs">
+            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="30days">Date: Last 30 Days</option>
                 <option value="this-month">Date: This Month</option>
                 <option value="all-time">Date: All Time</option>
             </select>
 
-            <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-primary hover:underline font-semibold cursor-pointer">Clear Filters</button>
+            <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-primary hover:underline font-bold cursor-pointer">Clear Filters</button>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -92,67 +92,67 @@
             
             <!-- MOBILE TRANSACTIONS LIST (<md) -->
             <div id="container-mobile-transactions" class="space-y-4 md:hidden">
-                <!-- Group: Today (Section 15 Spec Example) -->
+                <!-- Group: Today -->
                 <div class="transaction-group" data-date-group="today">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Today</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
                         <!-- Item 1: Jollibee (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Dining">
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Dining">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Jollibee</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Food & Dining</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Jollibee</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Food & Dining</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
                         </div>
 
                         <!-- Item 2: Grab (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Transportation">
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Transportation">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">directions_car</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Grab</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Transportation</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Grab</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Transportation</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Group: Yesterday (Section 15 Spec Example) -->
+                <!-- Group: Yesterday -->
                 <div class="transaction-group" data-date-group="yesterday">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Yesterday</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
                         <!-- Item 1: Shopee (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Shopping">
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Shopping">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Shopee</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Shopping</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Shopee</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Shopping</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-bold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
                         </div>
 
-                        <!-- Item 2 (Income - Soft Green + Ant Green) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="income" data-category="Income">
+                        <!-- Item 2 (Income) -->
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="income" data-category="Income">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/20 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">payments</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-semibold truncate">Salary Deposit</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Income</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Income</p>
                                 </div>
                             </div>
                             <span class="font-label-md text-xs sm:text-sm text-primary font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
@@ -162,139 +162,139 @@
 
                 <!-- Group: Older -->
                 <div class="transaction-group" data-date-group="older">
-                    <h2 class="font-label-sm text-[11px] text-on-surface-variant mb-2 uppercase tracking-[0.06em] font-semibold">Oct 21</h2>
-                    <div class="bg-surface-container-lowest rounded-2xl border border-surface-variant/60 shadow-xs overflow-hidden">
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-surface-variant/40 last:border-b-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer" data-type="expense" data-category="Housing">
+                    <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Oct 21</h2>
+                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
+                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Housing">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">home</span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Downtown Apartments</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate">Housing & Rent</p>
+                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Downtown Apartments</p>
+                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Housing & Rent</p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-on-surface font-semibold whitespace-nowrap ml-2 tabular-nums">-₱12,500.00</span>
+                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱12,500.00</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- DESKTOP TRANSACTIONS TABLE (md+) -->
-            <div class="hidden md:flex flex-col bg-surface-container-lowest border border-surface-variant/60 rounded-2xl shadow-xs overflow-hidden min-h-[400px]">
+            <div class="hidden md:flex flex-col bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs overflow-hidden min-h-[400px]">
                 <div class="overflow-x-auto flex-1">
                     <table class="w-full text-left border-collapse">
-                        <thead class="bg-surface-container-low/60 border-b border-surface-variant/40 sticky top-0 z-10">
+                        <thead class="bg-surface-container-low/60 border-b border-outline-variant/40 sticky top-0 z-10">
                             <tr>
-                                <th class="py-3 px-4 font-label-sm text-xs text-on-surface-variant font-semibold whitespace-nowrap w-32">Date</th>
-                                <th class="py-3 px-4 font-label-sm text-xs text-on-surface-variant font-semibold whitespace-nowrap min-w-[200px]">Merchant / Description</th>
-                                <th class="py-3 px-4 font-label-sm text-xs text-on-surface-variant font-semibold whitespace-nowrap w-40">Category</th>
-                                <th class="py-3 px-4 font-label-sm text-xs text-on-surface-variant font-semibold whitespace-nowrap w-40">Account</th>
-                                <th class="py-3 px-4 font-label-sm text-xs text-on-surface-variant font-semibold whitespace-nowrap text-right w-36">Amount</th>
+                                <th class="py-3 px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-32">Date</th>
+                                <th class="py-3 px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap min-w-[200px]">Merchant / Description</th>
+                                <th class="py-3 px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-40">Category</th>
+                                <th class="py-3 px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-40">Account</th>
+                                <th class="py-3 px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap text-right w-36">Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-surface-variant/40">
+                        <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-outline-variant/30">
                             <!-- Row 1 (Expense) -->
-                            <tr class="tx-row hover:bg-surface-container-low/50 transition-colors cursor-pointer group" data-type="expense" data-category="Groceries">
+                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Groceries">
                                 <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 24, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                                        <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                                         </div>
-                                        <span class="font-semibold text-on-surface tx-name">SM Supermarket</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">SM Supermarket</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40 tx-cat">Groceries</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30 tx-cat">Groceries</span>
                                 </td>
                                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">BDO Savings</td>
-                                <td class="py-3.5 px-4 text-right font-semibold text-on-surface tabular-nums">-₱842.00</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱842.00</td>
                             </tr>
 
                             <!-- Row 2 (Income) -->
-                            <tr class="tx-row hover:bg-surface-container-low/50 transition-colors cursor-pointer group" data-type="income" data-category="Income">
+                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="income" data-category="Income">
                                 <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 22, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                                        <div class="w-8 h-8 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">payments</span>
                                         </div>
-                                        <span class="font-semibold text-on-surface tx-name">TechCorp Salary</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">TechCorp Salary</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-xs font-semibold tx-cat">Salary</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-xs font-bold border border-primary/30 tx-cat">Salary</span>
                                 </td>
                                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">Payroll Account</td>
-                                <td class="py-3.5 px-4 text-right font-bold text-primary tabular-nums">+₱35,000.00</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-primary tabular-nums">+₱35,000.00</td>
                             </tr>
 
                             <!-- Row 3 (Expense) -->
-                            <tr class="tx-row hover:bg-surface-container-low/50 transition-colors cursor-pointer group" data-type="expense" data-category="Utilities">
+                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Utilities">
                                 <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 21, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                                        <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">bolt</span>
                                         </div>
-                                        <span class="font-semibold text-on-surface tx-name">Meralco Electricity</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Meralco Electricity</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40 tx-cat">Utilities</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-700 font-label-sm text-xs font-bold border border-sky-500/30 tx-cat">Utilities</span>
                                 </td>
                                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">GCash Wallet</td>
-                                <td class="py-3.5 px-4 text-right font-semibold text-on-surface tabular-nums">-₱1,205.00</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱1,205.00</td>
                             </tr>
 
                             <!-- Row 4 (Expense) -->
-                            <tr class="tx-row hover:bg-surface-container-low/50 transition-colors cursor-pointer group" data-type="expense" data-category="Dining">
+                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Dining">
                                 <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 20, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                                        <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                         </div>
-                                        <span class="font-semibold text-on-surface tx-name">Manam Restaurant</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Manam Restaurant</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40 tx-cat">Dining</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30 tx-cat">Dining</span>
                                 </td>
                                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">Credit Card</td>
-                                <td class="py-3.5 px-4 text-right font-semibold text-on-surface tabular-nums">-₱1,120.00</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱1,120.00</td>
                             </tr>
 
-                            <!-- Row 5 (Expense) -->
-                            <tr class="tx-row hover:bg-surface-container-low/50 transition-colors cursor-pointer group" data-type="expense" data-category="Housing">
+                            <!-- Row 5 (Transfer - Gold Accent) -->
+                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Housing">
                                 <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 18, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                                        <div class="w-8 h-8 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
                                         </div>
-                                        <span class="font-semibold text-on-surface tx-name">Transfer to Savings</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Transfer to Savings</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40 tx-cat">Transfer</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-warning/15 text-amber-700 font-label-sm text-xs font-bold border border-warning/30 tx-cat">Transfer</span>
                                 </td>
                                 <td class="py-3.5 px-4 text-on-surface-variant font-medium">BPI Vault</td>
-                                <td class="py-3.5 px-4 text-right font-semibold text-on-surface-variant tabular-nums">-₱5,000.00</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-amber-700 tabular-nums">-₱5,000.00</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pagination Footer -->
-                <div class="border-t border-surface-variant/40 p-4 flex items-center justify-between bg-surface-container-lowest">
-                    <span class="font-body-sm text-xs text-on-surface-variant font-medium">Showing 1-5 of 142 transactions</span>
+                <div class="border-t border-outline-variant/40 p-4 flex items-center justify-between bg-surface-container-lowest">
+                    <span class="font-body-sm text-xs text-on-surface-variant font-semibold">Showing 1-5 of 142 transactions</span>
                     <div class="flex gap-2">
                         <button class="p-1.5 rounded-lg border border-outline-variant/60 text-on-surface-variant disabled:opacity-40 cursor-pointer" disabled>
                             <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                         </button>
-                        <button class="p-1.5 rounded-lg border border-outline-variant/60 text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer">
+                        <button class="p-1.5 rounded-lg border border-outline-variant/60 text-deep-forest hover:bg-soft-green/30 transition-colors cursor-pointer">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </button>
                     </div>
@@ -309,14 +309,14 @@
         <div id="section-receipt-archive" class="hidden flex-col gap-4">
             
             <!-- Receipt Archive Action Banner -->
-            <div class="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-surface-variant/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+            <div class="bg-soft-green/60 rounded-2xl p-4 sm:p-5 border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-[20px]">document_scanner</span>
                     </div>
                     <div>
-                        <h3 class="font-headline-md text-base font-semibold text-on-surface">Receipt OCR Scanner</h3>
-                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Upload or take a photo of any receipt to auto-extract items & totals with Gemini AI.</p>
+                        <h3 class="font-headline-md text-base font-bold text-deep-forest">Receipt OCR Scanner</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5 font-medium">Upload or take a photo of any receipt to auto-extract items & totals with Gemini AI.</p>
                     </div>
                 </div>
                 <a href="{% url 'scan_receipt' %}" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all shadow-xs active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer">
@@ -344,37 +344,37 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="receipt-cards-grid">
                 
                 <!-- Receipt Card 1 (Whole Foods Market) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-variant/60 shadow-xs hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
                     
-                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-surface-variant/40">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
+                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
+                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
-                            <span class="material-symbols-outlined text-[14px]">photo_camera</span> Scan
+                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                            <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
                         </div>
                     </div>
 
                     <div class="p-4 flex flex-col justify-between flex-1 gap-3">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
-                                <span class="font-headline-md text-base text-primary font-bold whitespace-nowrap tabular-nums">₱142.50</span>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
+                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱142.50</span>
                             </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
+                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
                                 <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 24, 2023 • 14:30
+                                Oct 24, 2026 • 14:30
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-surface-variant/40 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40">
+                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
                                 <span class="material-symbols-outlined text-[14px]">restaurant</span>
                                 Groceries
                             </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-high flex items-center">
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
                                 <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                             </span>
                         </div>
@@ -382,37 +382,37 @@
                 </a>
 
                 <!-- Receipt Card 2 (Blue Bottle Coffee) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-variant/60 shadow-xs hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Dining" data-merchant="Blue Bottle Coffee">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Dining" data-merchant="Blue Bottle Coffee">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
                     
-                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-surface-variant/40">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
+                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
+                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-on-surface flex items-center gap-1 border border-outline-variant/30 shadow-xs">
-                            <span class="material-symbols-outlined text-[14px]">photo_camera</span> Scan
+                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                            <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
                         </div>
                     </div>
 
                     <div class="p-4 flex flex-col justify-between flex-1 gap-3">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
-                                <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap tabular-nums">₱12.75</span>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
+                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱12.75</span>
                             </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
+                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
                                 <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 23, 2023 • 08:15
+                                Oct 23, 2026 • 08:15
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-surface-variant/40 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40">
+                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
                                 <span class="material-symbols-outlined text-[14px]">restaurant</span>
                                 Dining
                             </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-high flex items-center">
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
                                 <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                             </span>
                         </div>
@@ -420,34 +420,34 @@
                 </a>
 
                 <!-- Receipt Card 3 (AWS Digital Receipt) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-variant/60 shadow-xs hover:border-outline-variant/80 transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Software" data-merchant="Amazon Web Services">
+                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Software" data-merchant="Amazon Web Services">
                     <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <input class="chk-receipt-item rounded border-outline bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
+                        <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
                     
-                    <div class="h-44 bg-surface-container flex flex-col items-center justify-center text-on-surface-variant relative border-b border-surface-variant/40">
+                    <div class="h-44 bg-surface-container-low flex flex-col items-center justify-center text-on-surface-variant relative border-b border-outline-variant/30">
                         <span class="material-symbols-outlined text-4xl mb-1 text-primary">picture_as_pdf</span>
-                        <span class="font-label-sm text-xs font-medium">Digital Receipt (PDF)</span>
+                        <span class="font-label-sm text-xs font-bold text-deep-forest">Digital Receipt (PDF)</span>
                     </div>
 
                     <div class="p-4 flex flex-col justify-between flex-1 gap-3">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-on-surface font-semibold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
-                                <span class="font-headline-md text-base text-on-surface font-bold whitespace-nowrap tabular-nums">₱89.00</span>
+                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
+                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱89.00</span>
                             </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs">
+                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
                                 <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 20, 2023 • 19:42
+                                Oct 20, 2026 • 19:42
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-surface-variant/40 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-xs font-medium border border-surface-variant/40">
+                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-700 font-label-sm text-xs font-bold border border-sky-500/30">
                                 <span class="material-symbols-outlined text-[14px]">bolt</span>
                                 Utilities
                             </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-high flex items-center">
+                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
                                 <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                             </span>
                         </div>
