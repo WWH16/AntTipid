@@ -1,13 +1,14 @@
+{% load static %}
 {# Sidebar Navigation Component (Desktop) #}
-<nav class="bg-surface-container-low border-r border-outline-variant h-screen w-64 fixed left-0 top-0 flex-col py-lg px-md hidden md:flex z-40">
+<nav class="bg-deep-forest text-white border-r border-deep-forest/80 h-screen w-64 fixed left-0 top-0 flex-col py-lg px-md hidden md:flex z-40 shadow-lg">
     <!-- Logo & Title -->
     <div class="flex items-center gap-sm mb-xl px-sm">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs">
-            AT
+        <div class="w-9 h-9 rounded-full bg-soft-green/30 border border-white/20 flex items-center justify-center p-1 overflow-hidden shrink-0">
+            <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
         </div>
         <div>
-            <h1 class="font-headline-md text-headline-md font-extrabold text-primary">AntTipid</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Financial Health</p>
+            <h1 class="font-headline-md text-headline-md font-extrabold"><span class="text-white">Ant</span><span class="text-warm-cream">Tipid</span></h1>
+            <p class="font-label-sm text-label-sm text-white/70">Tipid today, secure tomorrow.</p>
         </div>
     </div>
 

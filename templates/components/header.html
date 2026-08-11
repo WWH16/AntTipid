@@ -1,13 +1,12 @@
+{% load static %}
 {# Header App Bar Component (Mobile + Desktop) #}
 <header class="w-full top-0 sticky bg-surface/95 backdrop-blur-md z-40 flex justify-between items-center px-margin-mobile md:px-lg h-14 md:h-16 border-b border-outline-variant/40 shrink-0">
     <!-- Left Logo & Branding -->
     <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center font-bold text-xs shadow-xs border border-primary/20">
-            <span class="material-symbols-outlined text-[20px]">pest_control</span>
+        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-soft-green/30 border border-primary/20 flex items-center justify-center p-0.5 overflow-hidden shrink-0">
+            <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
         </div>
-        <span class="font-headline-lg-mobile text-xl font-extrabold tracking-tight">
-            <span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span>
-        </span>
+        <span class="font-headline-lg-mobile text-xl font-extrabold tracking-tight"><span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span></span>
     </div>
 
     <!-- Desktop Search Input (Hidden on mobile) -->
