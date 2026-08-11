@@ -4,6 +4,8 @@
 
 {% block meta_description %}Record a new income, expense, or transfer transaction manually in AntTipid.{% endblock %}
 
+{% block mobile_nav %}{% endblock %}
+
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
     <div class="max-w-2xl mx-auto flex flex-col gap-5 sm:gap-6">
@@ -19,7 +21,7 @@
                     <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
                 </div>
             </div>
-            <a href="{% url 'transactions' %}?mode=receipts" id="btn-switch-scan" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-surface-container-low text-on-surface border border-outline-variant/60 hover:bg-surface-container-high transition-all font-label-md text-xs font-semibold cursor-pointer">
+            <a href="{% url 'transactions' %}?mode=receipts" id="btn-switch-scan" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-surface-container-low text-on-surface border border-outline-variant/60 hover:bg-surface-container-high transition-all font-label-md text-xs font-semibold cursor-pointer">
                 <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                 <span class="hidden xs:inline">Scan Receipt</span>
             </a>
@@ -68,65 +70,65 @@
                     <label class="font-label-md text-[11px] font-semibold text-on-surface-variant uppercase tracking-[0.06em]">Select Category</label>
                     <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
                         <!-- Food & Dining -->
-                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-on-surface bg-on-surface text-inverse-on-surface shadow-xs transition-all text-center group cursor-pointer" data-category="Food & Dining">
-                            <div class="w-9 h-9 rounded-xl bg-inverse-on-surface/20 flex items-center justify-center text-inverse-on-surface transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">restaurant</span>
+                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-primary bg-primary/10 text-primary shadow-xs transition-all text-center group cursor-pointer" data-category="Food & Dining" aria-pressed="true">
+                            <div class="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;">restaurant</span>
                             </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Food</span>
+                            <span class="font-label-sm text-[11px] font-semibold leading-tight truncate w-full">Food</span>
                         </button>
 
                         <!-- Transportation -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Transportation">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Transportation" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">directions_car</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">directions_car</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Transport</span>
                         </button>
 
                         <!-- Shopping -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Shopping">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Shopping" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shopping_bag</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Shopping</span>
                         </button>
 
                         <!-- Utilities -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Utilities">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Utilities" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">bolt</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">bolt</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Utilities</span>
                         </button>
 
                         <!-- Entertainment -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Entertainment">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Entertainment" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">movie</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">movie</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Entertainment</span>
                         </button>
 
                         <!-- Groceries -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Groceries">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Groceries" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">local_grocery_store</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">local_grocery_store</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Groceries</span>
                         </button>
 
                         <!-- Salary / Income -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Salary">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Salary" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">payments</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">payments</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Salary</span>
                         </button>
 
                         <!-- Others -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Others">
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Others" aria-pressed="false">
                             <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">category</span>
                             </div>
                             <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Others</span>
                         </button>
@@ -181,13 +183,13 @@
 
                 </div>
 
-                <!-- ─── Submit / Action Buttons ─── -->
-                <div class="flex items-center justify-end gap-2 pt-4 border-t border-surface-variant/40 mt-1">
-                    <a href="{% url 'transactions' %}" id="btn-cancel" class="px-4 py-2 rounded-xl border border-outline-variant/60 text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-semibold transition-all cursor-pointer">
+                <!-- ─── Submit / Action Buttons (Sticky Card Floating Footer) ─── -->
+                <div class="sticky bottom-0 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-t border-surface-variant/40 pt-4 pb-2 sm:pb-3 -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 px-5 sm:px-6 rounded-b-2xl flex items-center justify-end gap-2.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+                    <a href="{% url 'transactions' %}" id="btn-cancel" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
                         Cancel
                     </a>
-                    <button type="submit" id="btn-save-transaction" class="px-5 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-semibold hover:bg-primary-container hover:text-on-primary-container shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">check</span> Save Entry
+                    <button type="submit" id="btn-save-transaction" class="inline-flex items-center justify-center px-6 py-2 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-semibold hover:bg-primary-container hover:text-on-primary-container shadow-xs active:scale-[0.98] transition-all cursor-pointer">
+                        Save Entry
                     </button>
                 </div>
 
@@ -289,23 +291,49 @@
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 categoryBtns.forEach(b => {
-                    b.classList.remove('border-on-surface', 'bg-on-surface', 'text-inverse-on-surface', 'shadow-xs', 'active');
+                    b.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'shadow-xs', 'active', 'border-on-surface', 'bg-on-surface', 'text-inverse-on-surface');
                     b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
                     b.setAttribute('aria-pressed', 'false');
+                    
+                    const labelSpan = b.querySelector('span:last-child');
+                    if (labelSpan) {
+                        labelSpan.classList.remove('font-semibold');
+                        labelSpan.classList.add('font-medium');
+                    }
+
                     const iconBox = b.querySelector('.w-9');
                     if (iconBox) {
-                        iconBox.classList.remove('bg-inverse-on-surface/20', 'text-inverse-on-surface');
+                        iconBox.classList.remove('bg-primary/20', 'text-primary', 'bg-inverse-on-surface/20', 'text-inverse-on-surface');
                         iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
                     }
+
+                    const iconEl = b.querySelector('.material-symbols-outlined');
+                    if (iconEl) {
+                        iconEl.style.fontVariationSettings = "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24";
+                    }
                 });
-                btn.classList.add('border-on-surface', 'bg-on-surface', 'text-inverse-on-surface', 'shadow-xs', 'active');
+
+                btn.classList.add('border-primary', 'bg-primary/10', 'text-primary', 'shadow-xs', 'active');
                 btn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
                 btn.setAttribute('aria-pressed', 'true');
+
+                const labelSpan = btn.querySelector('span:last-child');
+                if (labelSpan) {
+                    labelSpan.classList.remove('font-medium');
+                    labelSpan.classList.add('font-semibold');
+                }
+
                 const activeIconBox = btn.querySelector('.w-9');
                 if (activeIconBox) {
                     activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
-                    activeIconBox.classList.add('bg-inverse-on-surface/20', 'text-inverse-on-surface');
+                    activeIconBox.classList.add('bg-primary/20', 'text-primary');
                 }
+
+                const activeIconEl = btn.querySelector('.material-symbols-outlined');
+                if (activeIconEl) {
+                    activeIconEl.style.fontVariationSettings = "'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24";
+                }
+
                 markDirty();
             });
         });
