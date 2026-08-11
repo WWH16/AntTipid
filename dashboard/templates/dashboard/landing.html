@@ -3,7 +3,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AntTipid — A Personal Expense and Budget Tracker</title>
     <meta name="description" content="AntTipid — A Personal Expense and Budget Tracker with OCR receipt scanning, intelligent budget planner, and detailed financial reports.">
     <meta name="theme-color" content="#5C8F3A">
@@ -39,6 +39,14 @@
     <script>
       tailwind.config = {
         theme: {
+          screens: {
+            'xs': '475px',
+            'sm': '640px',
+            'md': '768px',
+            'lg': '1024px',
+            'xl': '1280px',
+            '2xl': '1536px',
+          },
           extend: {
             colors: {
                 "primary": "#5C8F3A",
@@ -66,6 +74,10 @@
       }
     </script>
     <style>
+        body {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
         .phone-mockup-frame {
             border-radius: 40px;
             box-shadow: 0 25px 50px -12px rgba(35, 69, 42, 0.25);
@@ -81,12 +93,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
             
             <!-- Brand Logo -->
-            <a href="{% url 'landing' %}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-full bg-soft-green text-primary border border-primary/30 flex items-center justify-center p-1 overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+            <a href="{% url 'landing' %}" class="flex items-center gap-2.5 sm:gap-3 group">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-soft-green text-primary border border-primary/30 flex items-center justify-center p-1 overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                     <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-headline-lg text-lg sm:text-xl font-extrabold tracking-tight leading-none">
+                    <span class="font-headline-lg text-base sm:text-xl font-extrabold tracking-tight leading-none">
                         <span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span>
                     </span>
                     <span class="font-label-sm text-[10px] text-on-surface-variant font-medium tracking-tight mt-0.5 hidden xs:inline">A Personal Expense and Budget Tracker</span>
@@ -94,23 +106,23 @@
             </a>
 
             <!-- Center Nav Links (Desktop) -->
-            <nav class="hidden md:flex items-center gap-8 font-label-md text-xs sm:text-sm font-bold text-deep-forest">
-                <a href="#features" class="hover:text-primary transition-colors">Features</a>
-                <a href="#how-it-works" class="hover:text-primary transition-colors">How It Works</a>
-                <a href="#ocr-scanner" class="hover:text-primary transition-colors">Receipt Scanner</a>
-                <a href="#screens" class="hover:text-primary transition-colors">Screens</a>
-                <a href="#about" class="hover:text-primary transition-colors">About</a>
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8 font-label-md text-xs sm:text-sm font-bold text-deep-forest">
+                <a href="#features" class="hover:text-primary transition-colors py-2">Features</a>
+                <a href="#how-it-works" class="hover:text-primary transition-colors py-2">How It Works</a>
+                <a href="#ocr-scanner" class="hover:text-primary transition-colors py-2">Receipt Scanner</a>
+                <a href="#screens" class="hover:text-primary transition-colors py-2">Screens</a>
+                <a href="#about" class="hover:text-primary transition-colors py-2">About</a>
             </nav>
 
             <!-- Right CTA Button -->
-            <div class="flex items-center gap-3">
-                <a href="{% url 'dashboard' %}" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-2 cursor-pointer">
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <a href="{% url 'dashboard' %}" class="px-3.5 sm:px-5 py-2 sm:py-2.5 min-h-[44px] rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1.5 sm:gap-2 cursor-pointer">
                     <span>Open AntTipid</span>
-                    <span class="material-symbols-outlined text-[18px]">north_east</span>
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">north_east</span>
                 </a>
 
                 <!-- Mobile Menu Button -->
-                <button type="button" id="btn-mobile-menu" aria-label="Toggle Navigation Menu" class="md:hidden w-10 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 transition-all">
+                <button type="button" id="btn-mobile-menu" aria-label="Toggle Navigation Menu" class="md:hidden w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border border-outline-variant/60 bg-surface-container-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-[22px]">menu</span>
                 </button>
             </div>
@@ -118,12 +130,12 @@
         </div>
 
         <!-- Mobile Slide-Down Menu Drawer -->
-        <div id="mobile-menu-drawer" class="hidden md:hidden border-b border-outline-variant/60 bg-surface-container-lowest px-4 py-4 space-y-3">
-            <a href="#features" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Features</a>
-            <a href="#how-it-works" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">How It Works</a>
-            <a href="#ocr-scanner" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Receipt Scanner</a>
-            <a href="#screens" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">Screens</a>
-            <a href="#about" class="block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-1">About</a>
+        <div id="mobile-menu-drawer" class="hidden md:hidden border-b border-outline-variant/60 bg-surface-container-lowest px-4 py-4 space-y-2">
+            <a href="#features" class="mobile-nav-link block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-2 px-2 rounded-lg hover:bg-soft-green/20">Features</a>
+            <a href="#how-it-works" class="mobile-nav-link block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-2 px-2 rounded-lg hover:bg-soft-green/20">How It Works</a>
+            <a href="#ocr-scanner" class="mobile-nav-link block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-2 px-2 rounded-lg hover:bg-soft-green/20">Receipt Scanner</a>
+            <a href="#screens" class="mobile-nav-link block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-2 px-2 rounded-lg hover:bg-soft-green/20">Screens</a>
+            <a href="#about" class="mobile-nav-link block font-label-md text-sm font-bold text-deep-forest hover:text-primary py-2 px-2 rounded-lg hover:bg-soft-green/20">About</a>
         </div>
     </header>
 
@@ -712,6 +724,12 @@
             if (menuBtn && drawer) {
                 menuBtn.addEventListener('click', () => {
                     drawer.classList.toggle('hidden');
+                });
+                const mobileNavLinks = drawer.querySelectorAll('.mobile-nav-link');
+                mobileNavLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        drawer.classList.add('hidden');
+                    });
                 });
             }
 
