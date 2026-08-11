@@ -3,18 +3,17 @@
 {% block title %}AntTipid — Financial Insights & Reports{% endblock %}
 {% block meta_description %}Detailed financial reports, analytics, category breakdowns, and monthly spending trends.{% endblock %}
 
-{% block extra_head %}
-<style>
+{% block extra_head %}<style>
 /* Sparkline SVG styling */
 .sparkline-path {
-    stroke: #006c49;
+    stroke: #5C8F3A;
     stroke-width: 2;
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 .sparkline-path.up-error {
-    stroke: #ba1a1a;
+    stroke: #D96B4A;
 }
 .chart-bar-grow {
     transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -25,7 +24,7 @@
 </style>
 {% endblock %}
 
-{{% block content %}
+{% block content %}
 <div class="px-3 sm:px-5 md:px-6 pt-4 pb-24 md:pb-8 max-w-7xl mx-auto w-full">
     <div class="flex flex-col gap-4 sm:gap-6">
 
@@ -34,20 +33,20 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div>
-                <h1 class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Financial Insights</h1>
+                <h1 class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight">Financial Insights</h1>
                 <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Comprehensive analytics, spending trends, and category breakdowns.</p>
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
                 <!-- Time Period Selector Pill Group -->
-                <div class="flex bg-surface-container-low rounded-full p-1 border border-surface-variant/60" id="period-selector-group">
-                    <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-on-surface transition-all cursor-pointer">Week</button>
-                    <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-surface-container-lowest shadow-xs font-label-md text-[11px] sm:text-xs text-primary font-semibold transition-all cursor-pointer">Month</button>
-                    <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-on-surface transition-all cursor-pointer">Year</button>
+                <div class="flex bg-surface-container-low rounded-full p-1 border border-outline-variant/60 shadow-xs" id="period-selector-group">
+                    <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-medium">Week</button>
+                    <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-primary text-white shadow-xs font-label-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Month</button>
+                    <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-medium">Year</button>
                 </div>
 
                 <!-- Export Report Button -->
-                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container-high transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-primary/30 bg-soft-green text-primary font-label-md text-xs font-semibold hover:bg-primary hover:text-white transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span class="hidden sm:inline">Export</span>
                 </button>
@@ -60,51 +59,51 @@
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
 
             <!-- Total Spending Card -->
-            <div class="bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:border-surface-variant transition-all flex flex-col justify-between gap-3 sm:gap-4">
+            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Total Spending</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-error/10 text-error flex items-center justify-center shrink-0">
+                    <span class="font-label-sm text-[10px] sm:text-[11px] text-expense uppercase tracking-wider font-bold">Total Spending</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_outward</span>
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-total-spending" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight tabular-nums">₱42,500.00</div>
+                    <div id="kpi-total-spending" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight tabular-nums">₱42,500.00</div>
                     <p id="kpi-total-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 flex items-center gap-1">
-                        <span class="text-error font-semibold">+12%</span> from previous period
+                        <span class="text-expense font-bold">+12%</span> from previous period
                     </p>
                 </div>
             </div>
 
-            <!-- Highest Category Card -->
-            <div class="bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:border-surface-variant transition-all flex flex-col justify-between gap-3 sm:gap-4">
+            <!-- Highest Category Card (Gold Budget Accent) -->
+            <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Highest Category</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                    <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 uppercase tracking-wider font-bold">Highest Category</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">home</span>
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight truncate">Housing & Rent</div>
+                    <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight truncate">Housing & Rent</div>
                     <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 tabular-nums">₱17,850.00 (42% of total)</p>
                 </div>
             </div>
 
-            <!-- Savings Rate Hero Card -->
-            <div class="sm:col-span-2 lg:col-span-1 bg-primary text-on-primary rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
-                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
+            <!-- Savings Rate Hero Card (Deep Forest Background) -->
+            <div class="sm:col-span-2 lg:col-span-1 bg-deep-forest text-white rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
+                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
                 <div class="flex justify-between items-start relative z-10">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider opacity-90 font-semibold">Monthly Savings Rate</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/20 flex items-center justify-center text-on-primary shrink-0">
+                    <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider text-white/80 font-bold">Monthly Savings Rate</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_downward</span>
                     </div>
                 </div>
                 <div class="relative z-10">
-                    <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-bold tracking-tight tabular-nums">28.5%</div>
-                    <p class="font-body-sm text-xs opacity-80 mt-0.5">Target goal: 30.0%</p>
+                    <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight tabular-nums text-white">28.5%</div>
+                    <p class="font-body-sm text-xs text-white/80 mt-0.5">Target goal: 30.0%</p>
                 </div>
-                <!-- Mini Progress Bar -->
+                <!-- Mini Progress Bar in Ant Green -->
                 <div class="w-full bg-white/20 h-2 rounded-full relative z-10 overflow-hidden">
-                    <div id="kpi-savings-bar" class="bg-white h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 85%"></div>
+                    <div id="kpi-savings-bar" class="bg-primary h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 85%"></div>
                 </div>
             </div>
 
@@ -116,15 +115,15 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6">
 
             <!-- Income vs Expenses Bar Chart (Left 7 Cols) -->
-            <div class="lg:col-span-7 bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:border-surface-variant transition-all flex flex-col min-h-[340px] sm:min-h-[380px]">
+            <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col min-h-[340px] sm:min-h-[380px]">
                 <div class="flex justify-between items-center mb-3 sm:mb-4 border-b border-surface-variant/40 pb-3">
                     <div>
-                        <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-semibold text-on-surface">Income vs Expenses</h2>
+                        <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Income vs Expenses</h2>
                         <p id="chart-subtext" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Weekly breakdown for current month</p>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                        <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium">Live Feed</span>
+                        <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant font-semibold">Live Feed</span>
                     </div>
                 </div>
 
@@ -132,7 +131,7 @@
                 <div id="bar-chart-container" class="flex-1 flex flex-col justify-between pt-2 pb-2 min-h-[240px] sm:min-h-[260px] lg:min-h-[290px]">
                     <div class="flex-1 flex gap-2 sm:gap-4 relative min-h-[180px] sm:min-h-[200px] lg:min-h-[230px]">
                         
-                        <!-- Y-Axis Labels Column (Fixed 1:1 height alignment with grid lines) -->
+                        <!-- Y-Axis Labels Column -->
                         <div class="flex flex-col justify-between py-0 text-right shrink-0 w-10 sm:w-12 pointer-events-none font-label-sm text-[10px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums">
                             <span id="y-tick-4">₱30.0k</span>
                             <span id="y-tick-3">₱20.0k</span>
@@ -140,7 +139,7 @@
                             <span id="y-tick-1">₱0</span>
                         </div>
 
-                        <!-- Chart Grid Canvas (Holds horizontal grid lines & bars in exact same container) -->
+                        <!-- Chart Grid Canvas -->
                         <div class="flex-1 relative border-b border-surface-variant/50 flex items-end justify-around px-2 sm:px-6">
                             
                             <!-- Horizontal Dashed Grid Lines -->
@@ -154,11 +153,11 @@
                             <!-- Column 1 -->
                             <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
                                 <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-1" tabindex="0" aria-label="Expenses: ₱12,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-surface-variant/80 hover:bg-outline-variant rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 40%;">
-                                        <div id="tooltip-exp-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱12.0k</div>
+                                    <div id="bar-exp-1" tabindex="0" aria-label="Expenses: ₱12,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 40%;">
+                                        <div id="tooltip-exp-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱12.0k</div>
                                     </div>
                                     <div id="bar-inc-1" tabindex="0" aria-label="Income: ₱18,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 60%;">
-                                        <div id="tooltip-inc-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱18.0k</div>
+                                        <div id="tooltip-inc-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱18.0k</div>
                                     </div>
                                 </div>
                             </div>
@@ -166,11 +165,11 @@
                             <!-- Column 2 -->
                             <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
                                 <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-2" tabindex="0" aria-label="Expenses: ₱15,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-surface-variant/80 hover:bg-outline-variant rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 50%;">
-                                        <div id="tooltip-exp-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱15.0k</div>
+                                    <div id="bar-exp-2" tabindex="0" aria-label="Expenses: ₱15,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 50%;">
+                                        <div id="tooltip-exp-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱15.0k</div>
                                     </div>
                                     <div id="bar-inc-2" tabindex="0" aria-label="Income: ₱24,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 80%;">
-                                        <div id="tooltip-inc-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱24.0k</div>
+                                        <div id="tooltip-inc-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱24.0k</div>
                                     </div>
                                 </div>
                             </div>
@@ -178,11 +177,11 @@
                             <!-- Column 3 -->
                             <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
                                 <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-3" tabindex="0" aria-label="Expenses: ₱25,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-surface-variant/80 hover:bg-outline-variant rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 85%;">
-                                        <div id="tooltip-exp-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱25.0k</div>
+                                    <div id="bar-exp-3" tabindex="0" aria-label="Expenses: ₱25,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 85%;">
+                                        <div id="tooltip-exp-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱25.0k</div>
                                     </div>
                                     <div id="bar-inc-3" tabindex="0" aria-label="Income: ₱9,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 30%;">
-                                        <div id="tooltip-inc-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱9.0k</div>
+                                        <div id="tooltip-inc-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱9.0k</div>
                                     </div>
                                 </div>
                             </div>
@@ -190,21 +189,21 @@
                             <!-- Column 4 -->
                             <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
                                 <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-4" tabindex="0" aria-label="Expenses: ₱9,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-surface-variant/80 hover:bg-outline-variant rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 30%;">
-                                        <div id="tooltip-exp-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱9.0k</div>
+                                    <div id="bar-exp-4" tabindex="0" aria-label="Expenses: ₱9,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 30%;">
+                                        <div id="tooltip-exp-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱9.0k</div>
                                     </div>
                                     <div id="bar-inc-4" tabindex="0" aria-label="Income: ₱12,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 40%;">
-                                        <div id="tooltip-inc-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-on-surface text-inverse-on-surface font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-lg pointer-events-none transition-all">₱12.0k</div>
+                                        <div id="tooltip-inc-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱12.0k</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- X-Axis Column Labels Row (Aligned under canvas columns) -->
+                    <!-- X-Axis Column Labels Row -->
                     <div class="flex gap-2 sm:gap-4 pt-3">
                         <div class="w-10 sm:w-12 shrink-0 pointer-events-none"></div>
-                        <div class="flex-1 flex justify-around px-2 sm:px-6 font-label-sm text-xs lg:text-sm text-on-surface-variant font-semibold">
+                        <div class="flex-1 flex justify-around px-2 sm:px-6 font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">
                             <span id="label-col-1" class="w-[20%] text-center truncate">Week 1</span>
                             <span id="label-col-2" class="w-[20%] text-center truncate">Week 2</span>
                             <span id="label-col-3" class="w-[20%] text-center truncate">Week 3</span>
@@ -217,20 +216,20 @@
                 <div class="flex justify-center gap-6 lg:gap-8 mt-4 lg:mt-5">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 rounded-full bg-primary"></div>
-                        <span class="font-label-sm text-xs lg:text-sm text-on-surface-variant font-semibold">Income</span>
+                        <span class="font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">Income</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-surface-variant"></div>
-                        <span class="font-label-sm text-xs lg:text-sm text-on-surface-variant font-semibold">Expenses</span>
+                        <div class="w-3 h-3 rounded-full bg-expense"></div>
+                        <span class="font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">Expenses</span>
                     </div>
                 </div>
             </div>
 
             <!-- Spending by Category Donut Chart (Right 5 Cols) -->
-            <div class="lg:col-span-5 bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:border-surface-variant transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
+            <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
                 <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
-                    <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-semibold text-on-surface">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-medium bg-surface-container px-2 py-0.5 rounded-full border border-surface-variant/40">November</span>
+                    <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Breakdown</h2>
+                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/20">November</span>
                 </div>
 
                 <!-- Donut SVG Area -->
@@ -238,54 +237,54 @@
                     <div class="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" fill="transparent" r="40" stroke="#e0e3e5" stroke-width="16"></circle>
-                            <!-- Housing 42% -->
-                            <circle id="donut-seg-1" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#006c49" stroke-dasharray="105 251" stroke-dashoffset="0" stroke-width="16"></circle>
-                            <!-- Food 25% -->
-                            <circle id="donut-seg-2" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#10b981" stroke-dasharray="62 251" stroke-dashoffset="-105" stroke-width="16"></circle>
-                            <!-- Transport 15% -->
-                            <circle id="donut-seg-3" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#4edea3" stroke-dasharray="37 251" stroke-dashoffset="-167" stroke-width="16"></circle>
-                            <!-- Other 18% -->
-                            <circle id="donut-seg-4" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#d5e0f8" stroke-dasharray="45 251" stroke-dashoffset="-204" stroke-width="16"></circle>
+                            <!-- Housing 42% (Deep Forest) -->
+                            <circle id="donut-seg-1" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#23452A" stroke-dasharray="105 251" stroke-dashoffset="0" stroke-width="16"></circle>
+                            <!-- Food 25% (Ant Green) -->
+                            <circle id="donut-seg-2" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#5C8F3A" stroke-dasharray="62 251" stroke-dashoffset="-105" stroke-width="16"></circle>
+                            <!-- Transport 15% (Gold Budget) -->
+                            <circle id="donut-seg-3" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#E4A72C" stroke-dasharray="37 251" stroke-dashoffset="-167" stroke-width="16"></circle>
+                            <!-- Other 18% (Expense Red) -->
+                            <circle id="donut-seg-4" class="transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke="#D96B4A" stroke-dasharray="45 251" stroke-dashoffset="-204" stroke-width="16"></circle>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                             <span id="donut-center-label" class="font-label-sm text-[9px] sm:text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Total</span>
-                            <span id="donut-center-value" class="font-headline-md text-base sm:text-lg font-bold text-on-surface tabular-nums">₱42.5k</span>
+                            <span id="donut-center-value" class="font-headline-md text-base sm:text-lg font-extrabold text-deep-forest tabular-nums">₱42.5k</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Donut Legend Grid -->
                 <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-surface-variant/40">
-                    <div id="legend-item-1" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-surface-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-1" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#006c49] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-on-surface font-semibold truncate">Housing</span>
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#23452A] shrink-0"></div>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Housing</span>
                         </div>
-                        <span id="legend-val-1" class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-bold tabular-nums ml-1">42%</span>
+                        <span id="legend-val-1" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">42%</span>
                     </div>
 
-                    <div id="legend-item-2" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-surface-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-2" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#10b981] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-on-surface font-semibold truncate">Food</span>
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#5C8F3A] shrink-0"></div>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Food</span>
                         </div>
-                        <span id="legend-val-2" class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-bold tabular-nums ml-1">25%</span>
+                        <span id="legend-val-2" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">25%</span>
                     </div>
 
-                    <div id="legend-item-3" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-surface-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-3" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#4edea3] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-on-surface font-semibold truncate">Transport</span>
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#E4A72C] shrink-0"></div>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Transport</span>
                         </div>
-                        <span id="legend-val-3" class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-bold tabular-nums ml-1">15%</span>
+                        <span id="legend-val-3" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">15%</span>
                     </div>
 
-                    <div id="legend-item-4" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-surface-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
+                    <div id="legend-item-4" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-surface-container-low transition-all cursor-pointer">
                         <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#d5e0f8] shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-on-surface font-semibold truncate">Other</span>
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#D96B4A] shrink-0"></div>
+                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-semibold truncate">Other</span>
                         </div>
-                        <span id="legend-val-4" class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-bold tabular-nums ml-1">18%</span>
+                        <span id="legend-val-4" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold tabular-nums ml-1">18%</span>
                     </div>
                 </div>
             </div>
@@ -295,25 +294,25 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- BOTTOM ROW: MONTHLY TRENDS LIST         -->
         <!-- ═══════════════════════════════════════ -->
-        <section class="bg-surface-container-lowest border border-surface-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:border-surface-variant transition-all flex flex-col gap-3.5 sm:gap-4">
+        <section class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3.5 sm:gap-4">
             <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
-                <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-semibold text-on-surface">Category Trends</h2>
+                <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
                 <span class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-medium">vs previous period</span>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
 
                 <!-- Trend Item 1 (Dining Out) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-surface-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">restaurant</span>
                         </div>
                         <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Dining Out</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-error">
+                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Dining Out</p>
+                            <div class="flex items-center gap-1 mt-0.5 text-expense">
                                 <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_up</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-semibold">+14%</span>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">+14%</span>
                             </div>
                         </div>
                     </div>
@@ -324,21 +323,21 @@
                         </svg>
                     </div>
                     <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-1" class="font-label-md text-xs sm:text-sm text-on-surface font-bold tabular-nums">₱4,500.00</p>
+                        <p id="trend-val-1" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱4,500.00</p>
                     </div>
                 </div>
 
                 <!-- Trend Item 2 (Groceries) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-surface-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_bag</span>
                         </div>
                         <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Groceries</p>
+                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Groceries</p>
                             <div class="flex items-center gap-1 mt-0.5 text-primary">
                                 <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_down</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-semibold">-5%</span>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">-5%</span>
                             </div>
                         </div>
                     </div>
@@ -349,21 +348,21 @@
                         </svg>
                     </div>
                     <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-2" class="font-label-md text-xs sm:text-sm text-on-surface font-bold tabular-nums">₱3,200.00</p>
+                        <p id="trend-val-2" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱3,200.00</p>
                     </div>
                 </div>
 
-                <!-- Trend Item 3 (Transport) -->
-                <div class="flex items-center justify-between p-3 sm:p-4 border border-surface-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
+                <!-- Trend Item 3 (Transport - Gold Accent) -->
+                <div class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/40 rounded-xl hover:border-primary/30 hover:bg-surface-container-low/40 transition-all cursor-pointer">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">directions_car</span>
                         </div>
                         <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-on-surface font-semibold truncate">Transport</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-error">
+                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Transport</p>
+                            <div class="flex items-center gap-1 mt-0.5 text-expense">
                                 <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_up</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-semibold">+8%</span>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">+8%</span>
                             </div>
                         </div>
                     </div>
@@ -374,7 +373,7 @@
                         </svg>
                     </div>
                     <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-3" class="font-label-md text-xs sm:text-sm text-on-surface font-bold tabular-nums">₱1,800.00</p>
+                        <p id="trend-val-3" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱1,800.00</p>
                     </div>
                 </div>
 
@@ -415,7 +414,7 @@
             },
             month: {
                 total: '₱42,500.00',
-                totalSub: '<span class="text-error font-semibold">+12%</span> from previous period',
+                totalSub: '<span class="text-expense font-bold">+12%</span> from previous period',
                 highest: 'Housing & Rent',
                 highestSub: '₱17,850.00 (42% of total)',
                 savings: '28.5%',
@@ -435,7 +434,7 @@
             },
             year: {
                 total: '₱485,000.00',
-                totalSub: '<span class="text-primary font-semibold">-8%</span> from last year',
+                totalSub: '<span class="text-primary font-bold">-8%</span> from last year',
                 highest: 'Housing & Rent',
                 highestSub: '₱204,000.00 (42% of total)',
                 savings: '31.2%',
@@ -510,7 +509,7 @@
                 periodButtons.forEach(b => {
                     b.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-label-md text-xs lg:text-sm text-on-surface-variant hover:text-on-surface transition-all cursor-pointer';
                 });
-                btn.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-surface-container-lowest shadow-xs font-label-md text-xs lg:text-sm text-primary font-semibold transition-all cursor-pointer';
+                btn.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary text-white font-bold shadow-xs font-label-md text-xs lg:text-sm transition-all cursor-pointer';
                 updatePeriod(btn.dataset.period);
             });
         });
