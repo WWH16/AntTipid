@@ -43,6 +43,11 @@
         window.clerkInitPromise = clerk.load().then(() => {
           window.Clerk = clerk;
 
+          if (!clerk.user) {
+            window.location.href = "{% url 'landing' %}?sign_in=true";
+            return null;
+          }
+
           const userAvatar = document.getElementById('user-avatar');
           const userAvatarMobile = document.getElementById('user-avatar-mobile');
           const sidebarUserAvatar = document.getElementById('user-avatar-sidebar');

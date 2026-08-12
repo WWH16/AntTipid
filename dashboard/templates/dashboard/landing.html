@@ -112,20 +112,26 @@
 
     <!-- Clerk Authentication JS SDK (Failsafe ESM Loader) -->
     <script>
+      window.clerkAppearance = {
+        variables: { colorPrimary: "#5C8F3A" }
+      };
+
       window.openClerkSignIn = function() {
         const redirectUrl = "{% url 'dashboard' %}";
+        const options = {
+          fallbackRedirectUrl: redirectUrl,
+          signUpFallbackRedirectUrl: redirectUrl,
+          forceRedirectUrl: redirectUrl,
+          afterSignInUrl: redirectUrl,
+          afterSignUpUrl: redirectUrl,
+          appearance: window.clerkAppearance
+        };
         if (window.Clerk && window.Clerk.openSignIn) {
-          window.Clerk.openSignIn({
-            fallbackRedirectUrl: redirectUrl,
-            signUpFallbackRedirectUrl: redirectUrl
-          });
+          window.Clerk.openSignIn(options);
         } else if (window.clerkInitPromise) {
           window.clerkInitPromise.then(clerk => {
             if (clerk && clerk.openSignIn) {
-              clerk.openSignIn({
-                fallbackRedirectUrl: redirectUrl,
-                signUpFallbackRedirectUrl: redirectUrl
-              });
+              clerk.openSignIn(options);
             }
           });
         }
@@ -133,18 +139,20 @@
 
       window.openClerkSignUp = function() {
         const redirectUrl = "{% url 'dashboard' %}";
+        const options = {
+          fallbackRedirectUrl: redirectUrl,
+          signInFallbackRedirectUrl: redirectUrl,
+          forceRedirectUrl: redirectUrl,
+          afterSignInUrl: redirectUrl,
+          afterSignUpUrl: redirectUrl,
+          appearance: window.clerkAppearance
+        };
         if (window.Clerk && window.Clerk.openSignUp) {
-          window.Clerk.openSignUp({
-            fallbackRedirectUrl: redirectUrl,
-            signInFallbackRedirectUrl: redirectUrl
-          });
+          window.Clerk.openSignUp(options);
         } else if (window.clerkInitPromise) {
           window.clerkInitPromise.then(clerk => {
             if (clerk && clerk.openSignUp) {
-              clerk.openSignUp({
-                fallbackRedirectUrl: redirectUrl,
-                signInFallbackRedirectUrl: redirectUrl
-              });
+              clerk.openSignUp(options);
             }
           });
         }
@@ -156,7 +164,7 @@
 
         const ClerkClass = module.Clerk || module.default;
         const clerk = new ClerkClass(pubKey);
-        await clerk.load();
+        await clerk.load({ appearance: window.clerkAppearance });
         window.Clerk = clerk;
 
         function updateUIForAuthState(user) {
@@ -215,6 +223,9 @@
 
         clerk.addListener(({ user }) => {
           updateUIForAuthState(user);
+          if (user && window.location.pathname === '/') {
+            window.location.href = "{% url 'dashboard' %}";
+          }
         });
 
         return clerk;
