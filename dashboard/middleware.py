@@ -1,13 +1,20 @@
 import json
 import base64
+from django.shortcuts import redirect
+from django.http import JsonResponse
 
 
 class ClerkAuthenticationMiddleware:
     """
-    Middleware that reads the Clerk __session cookie or Authorization Bearer token
-    and attaches request.clerk_user_id to incoming Django requests.
-    Uses standard library base64 & json decoding (no external jwt library dependency required).
+    Middleware that enforces Clerk authentication:
+    1. Attaches request.clerk_user_id to incoming requests.
+    2. Protects inner app routes from unauthenticated direct URL access.
     """
+    EXEMPT_PATHS = [
+        '/',
+        '/admin/',
+    ]
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -26,5 +33,16 @@ class ClerkAuthenticationMiddleware:
                     request.clerk_user_id = payload.get('sub')
             except Exception:
                 pass
+
+        # Route Protection Logic
+        path = request.path
+        is_exempt = any(path == p or path.startswith('/static/') or path.startswith('/media/') or path.startswith('/admin/') for p in self.EXEMPT_PATHS)
+
+        if not is_exempt and not request.clerk_user_id:
+            # If AJAX or API request, return HTTP 401 Unauthorized
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or path.startswith('/api/'):
+                return JsonResponse({'error': 'Authentication required'}, status=401)
+            # Redirect unauthenticated guests to landing page with auto-sign-in trigger
+            return redirect('/?sign_in=true')
 
         return self.get_response(request)

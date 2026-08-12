@@ -206,6 +206,13 @@
 
         updateUIForAuthState(clerk.user);
 
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('sign_in') === 'true' && !clerk.user) {
+          setTimeout(() => {
+            openClerkSignIn();
+          }, 200);
+        }
+
         clerk.addListener(({ user }) => {
           updateUIForAuthState(user);
         });
