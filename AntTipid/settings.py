@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,11 +27,18 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'dashboard.middleware.ClerkAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'AntTipid.urls'
+
+raw_clerk_key = (os.getenv('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY') or os.getenv('CLERK_PUBLISHABLE_KEY') or 'pk_test_d2lyZWQtYmlyZC0yOS5jbGVyay5hY2NvdW50cy5kZXYk').strip()
+while raw_clerk_key.endswith('$$'):
+    raw_clerk_key = raw_clerk_key[:-1]
+CLERK_PUBLISHABLE_KEY = raw_clerk_key
+CLERK_SECRET_KEY = (os.getenv('CLERK_SECRET_KEY', '')).strip()
 
 TEMPLATES = [
     {
@@ -43,6 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dashboard.context_processors.clerk_settings',
             ],
         },
     },

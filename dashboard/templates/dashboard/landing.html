@@ -109,6 +109,104 @@
             outline-offset: 2px;
         }
     </style>
+
+    <!-- Clerk Authentication JS SDK (Failsafe ESM Loader) -->
+    <script>
+      window.openClerkSignIn = function() {
+        const redirectUrl = "{% url 'dashboard' %}";
+        if (window.Clerk && window.Clerk.openSignIn) {
+          window.Clerk.openSignIn({
+            fallbackRedirectUrl: redirectUrl,
+            signUpFallbackRedirectUrl: redirectUrl
+          });
+        } else if (window.clerkInitPromise) {
+          window.clerkInitPromise.then(clerk => {
+            if (clerk && clerk.openSignIn) {
+              clerk.openSignIn({
+                fallbackRedirectUrl: redirectUrl,
+                signUpFallbackRedirectUrl: redirectUrl
+              });
+            }
+          });
+        }
+      };
+
+      window.openClerkSignUp = function() {
+        const redirectUrl = "{% url 'dashboard' %}";
+        if (window.Clerk && window.Clerk.openSignUp) {
+          window.Clerk.openSignUp({
+            fallbackRedirectUrl: redirectUrl,
+            signInFallbackRedirectUrl: redirectUrl
+          });
+        } else if (window.clerkInitPromise) {
+          window.clerkInitPromise.then(clerk => {
+            if (clerk && clerk.openSignUp) {
+              clerk.openSignUp({
+                fallbackRedirectUrl: redirectUrl,
+                signInFallbackRedirectUrl: redirectUrl
+              });
+            }
+          });
+        }
+      };
+
+      window.clerkInitPromise = import('https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/+esm').then(async (module) => {
+        const pubKey = "{{ clerk_publishable_key }}".trim();
+        if (!pubKey || pubKey.includes('YOUR_CLERK')) return null;
+
+        const ClerkClass = module.Clerk || module.default;
+        const clerk = new ClerkClass(pubKey);
+        await clerk.load();
+        window.Clerk = clerk;
+
+        function updateUIForAuthState(user) {
+          const userButtonDiv = document.getElementById('clerk-user-button');
+          const authButtonsDiv = document.getElementById('clerk-auth-buttons');
+          const heroCtaBtn = document.getElementById('hero-cta-btn');
+          const drawerCtaBtn = document.getElementById('drawer-cta-btn');
+
+          if (user) {
+            if (userButtonDiv) clerk.mountUserButton(userButtonDiv);
+            if (authButtonsDiv) authButtonsDiv.classList.add('hidden');
+
+            if (heroCtaBtn) {
+              heroCtaBtn.innerHTML = `
+                <span class="material-symbols-outlined text-[20px]">space_dashboard</span>
+                <span>Go to Dashboard</span>
+              `;
+              heroCtaBtn.onclick = null;
+              heroCtaBtn.href = "{% url 'dashboard' %}";
+            }
+            if (drawerCtaBtn) {
+              drawerCtaBtn.href = "{% url 'dashboard' %}";
+            }
+          } else {
+            if (userButtonDiv) userButtonDiv.classList.add('hidden');
+            if (authButtonsDiv) authButtonsDiv.classList.remove('hidden');
+
+            if (heroCtaBtn) {
+              heroCtaBtn.innerHTML = `
+                <span class="material-symbols-outlined text-[20px]">north_east</span>
+                <span>Start Tracking Free</span>
+              `;
+              heroCtaBtn.removeAttribute('href');
+              heroCtaBtn.onclick = window.openClerkSignUp;
+            }
+          }
+        }
+
+        updateUIForAuthState(clerk.user);
+
+        clerk.addListener(({ user }) => {
+          updateUIForAuthState(user);
+        });
+
+        return clerk;
+      }).catch(err => {
+        console.error("Clerk ESM init error:", err);
+        return null;
+      });
+    </script>
 </head>
 <body class="bg-warm-cream text-deep-forest font-sans antialiased selection:bg-soft-green selection:text-deep-forest min-h-screen flex flex-col">
 
@@ -141,12 +239,21 @@
             </nav>
 
             <!-- Right CTA & Mobile Menu Toggle -->
-            <div class="flex items-center gap-2">
-                <a href="{% url 'dashboard' %}" class="px-3.5 sm:px-5 py-2 sm:py-2.5 min-h-[44px] rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
-                    <span class="hidden xs:inline">Open AntTipid App</span>
-                    <span class="xs:hidden">Open App</span>
-                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">north_east</span>
-                </a>
+            <div class="flex items-center gap-2 sm:gap-3">
+                
+                <!-- Clerk Auth Controls (Logged Out State) -->
+                <div id="clerk-auth-buttons" class="flex items-center gap-2">
+                    <button type="button" onclick="openClerkSignIn()" class="px-3 py-2 text-xs sm:text-sm font-bold text-deep-forest hover:text-primary transition-colors cursor-pointer">
+                        Sign In
+                    </button>
+                    <button type="button" onclick="openClerkSignUp()" class="px-3.5 sm:px-5 py-2 sm:py-2.5 min-h-[44px] rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
+                        <span>Get Started</span>
+                        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">north_east</span>
+                    </button>
+                </div>
+
+                <!-- Clerk User Button (Logged In State) -->
+                <div id="clerk-user-button" class="flex items-center justify-center"></div>
 
                 <!-- Mobile Menu Button -->
                 <button type="button" id="btn-mobile-menu" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Toggle Navigation Menu" class="md:hidden w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border border-outline-variant/80 bg-surface-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all">
@@ -164,7 +271,7 @@
             <a href="#screens" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">App Screens</a>
             <a href="#about" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">About</a>
             <div class="pt-2 border-t border-outline-variant/60">
-                <a href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center gap-2">
+                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center gap-2">
                     <span>Open Dashboard</span>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
@@ -199,7 +306,7 @@
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-1">
-                            <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-7 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-7 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                                 <span class="material-symbols-outlined text-[20px]">north_east</span>
                                 <span>Start Tracking Free</span>
                             </a>
