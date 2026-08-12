@@ -44,6 +44,7 @@
           window.Clerk = clerk;
 
           const userAvatar = document.getElementById('user-avatar');
+          const userAvatarMobile = document.getElementById('user-avatar-mobile');
           const sidebarUserAvatar = document.getElementById('user-avatar-sidebar');
           const userNameEl = document.getElementById('clerk-user-name');
           const userEmailEl = document.getElementById('clerk-user-email');
@@ -51,6 +52,7 @@
           function updateDashboardUserUI(user) {
             if (user) {
               if (userAvatar) clerk.mountUserButton(userAvatar);
+              if (userAvatarMobile) clerk.mountUserButton(userAvatarMobile);
 
               const fullName = user.fullName || user.firstName || 'User Account';
               const primaryEmail = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : '';
@@ -268,23 +270,22 @@
     <div class="flex-1 flex flex-col md:ml-64 min-h-screen w-full md:h-screen md:overflow-hidden">
 
         <!-- ─── Mobile Top Header (<md) ─── -->
-        <header class="w-full top-0 sticky bg-surface/90 backdrop-blur-md z-40 md:hidden flex justify-between items-center px-4 h-14 border-b border-surface-variant/50 shrink-0">
-            <div class="flex items-center gap-2.5">
+        <header class="w-full top-0 sticky bg-surface/90 backdrop-blur-md z-40 md:hidden flex justify-between items-center px-4 h-14 border-b border-surface-variant/50 shrink-0 select-none">
+            <div class="flex items-center gap-2">
                 <a href="{% url 'dashboard' %}" class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-soft-green/30 border border-primary/20 flex items-center justify-center p-0.5 overflow-hidden shrink-0">
                         <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
                     </div>
-                    <span class="font-headline-lg-mobile text-lg font-extrabold tracking-tight"><span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span></span>
+                    <span class="font-headline-lg-mobile text-base font-extrabold tracking-tight"><span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span></span>
                 </a>
             </div>
-            <div class="flex items-center gap-1">
-                <button id="btn-notifications-mobile" aria-label="Notifications" class="w-10 h-10 flex items-center justify-center active:scale-95 transition-transform text-on-surface-variant rounded-xl hover:bg-surface-container-low relative cursor-pointer">
+            <div class="flex items-center gap-2">
+                <button id="btn-notifications-mobile" aria-label="Notifications" class="w-9 h-9 flex items-center justify-center active:scale-95 transition-transform text-on-surface-variant rounded-xl hover:bg-surface-container-low relative cursor-pointer">
                     <span class="material-symbols-outlined text-[20px]">notifications</span>
-                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
                 </button>
-                <button id="btn-settings-mobile" aria-label="Settings" class="w-10 h-10 flex items-center justify-center active:scale-95 transition-transform text-on-surface-variant rounded-xl hover:bg-surface-container-low cursor-pointer">
-                    <span class="material-symbols-outlined text-[20px]">settings</span>
-                </button>
+                <!-- Mobile Header Clerk User Button -->
+                <div id="user-avatar-mobile" class="flex items-center justify-center min-w-[32px] min-h-[32px]"></div>
             </div>
         </header>
 

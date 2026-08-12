@@ -164,10 +164,12 @@
           const authButtonsDiv = document.getElementById('clerk-auth-buttons');
           const heroCtaBtn = document.getElementById('hero-cta-btn');
           const drawerCtaBtn = document.getElementById('drawer-cta-btn');
+          const drawerAuthButtons = document.getElementById('drawer-auth-buttons');
 
           if (user) {
             if (userButtonDiv) clerk.mountUserButton(userButtonDiv);
             if (authButtonsDiv) authButtonsDiv.classList.add('hidden');
+            if (drawerAuthButtons) drawerAuthButtons.classList.add('hidden');
 
             if (heroCtaBtn) {
               heroCtaBtn.innerHTML = `
@@ -178,11 +180,14 @@
               heroCtaBtn.href = "{% url 'dashboard' %}";
             }
             if (drawerCtaBtn) {
+              drawerCtaBtn.classList.remove('hidden');
+              drawerCtaBtn.classList.add('flex');
               drawerCtaBtn.href = "{% url 'dashboard' %}";
             }
           } else {
             if (userButtonDiv) userButtonDiv.classList.add('hidden');
             if (authButtonsDiv) authButtonsDiv.classList.remove('hidden');
+            if (drawerAuthButtons) drawerAuthButtons.classList.remove('hidden');
 
             if (heroCtaBtn) {
               heroCtaBtn.innerHTML = `
@@ -191,6 +196,10 @@
               `;
               heroCtaBtn.removeAttribute('href');
               heroCtaBtn.onclick = window.openClerkSignUp;
+            }
+            if (drawerCtaBtn) {
+              drawerCtaBtn.classList.add('hidden');
+              drawerCtaBtn.classList.remove('flex');
             }
           }
         }
@@ -242,22 +251,22 @@
             <div class="flex items-center gap-2 sm:gap-3">
                 
                 <!-- Clerk Auth Controls (Logged Out State) -->
-                <div id="clerk-auth-buttons" class="flex items-center gap-2">
-                    <button type="button" onclick="openClerkSignIn()" class="px-3 py-2 text-xs sm:text-sm font-bold text-deep-forest hover:text-primary transition-colors cursor-pointer">
+                <div id="clerk-auth-buttons" class="flex items-center gap-1.5 sm:gap-2">
+                    <button type="button" onclick="openClerkSignIn()" class="hidden sm:inline-block px-3 py-2 text-xs sm:text-sm font-bold text-deep-forest hover:text-primary transition-colors cursor-pointer">
                         Sign In
                     </button>
-                    <button type="button" onclick="openClerkSignUp()" class="px-3.5 sm:px-5 py-2 sm:py-2.5 min-h-[44px] rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
+                    <button type="button" onclick="openClerkSignUp()" class="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[38px] sm:min-h-[44px] rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
                         <span>Get Started</span>
-                        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">north_east</span>
+                        <span class="material-symbols-outlined text-[15px] sm:text-[18px]">north_east</span>
                     </button>
                 </div>
 
                 <!-- Clerk User Button (Logged In State) -->
-                <div id="clerk-user-button" class="flex items-center justify-center"></div>
+                <div id="clerk-user-button" class="flex items-center justify-center min-w-[32px] min-h-[32px]"></div>
 
                 <!-- Mobile Menu Button -->
-                <button type="button" id="btn-mobile-menu" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Toggle Navigation Menu" class="md:hidden w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border border-outline-variant/80 bg-surface-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all">
-                    <span id="menu-icon" class="material-symbols-outlined text-[24px]">menu</span>
+                <button type="button" id="btn-mobile-menu" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Toggle Navigation Menu" class="md:hidden w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-outline-variant/80 bg-surface-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
+                    <span id="menu-icon" class="material-symbols-outlined text-[22px] sm:text-[24px]">menu</span>
                 </button>
             </div>
 
@@ -270,8 +279,17 @@
             <a href="#ocr-scanner" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">Receipt Scanner</a>
             <a href="#screens" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">App Screens</a>
             <a href="#about" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">About</a>
-            <div class="pt-2 border-t border-outline-variant/60">
-                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center gap-2">
+            <div class="pt-3 border-t border-outline-variant/60 flex flex-col gap-2">
+                <div id="drawer-auth-buttons" class="flex flex-col gap-2">
+                    <button type="button" onclick="openClerkSignIn()" class="w-full py-2.5 rounded-xl border border-outline-variant text-deep-forest text-sm font-bold text-center">
+                        Sign In
+                    </button>
+                    <button type="button" onclick="openClerkSignUp()" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center gap-1.5">
+                        <span>Get Started Free</span>
+                        <span class="material-symbols-outlined text-[18px]">north_east</span>
+                    </button>
+                </div>
+                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold hidden items-center justify-center gap-2">
                     <span>Open Dashboard</span>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
