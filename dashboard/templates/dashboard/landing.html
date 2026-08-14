@@ -325,24 +325,27 @@
             <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[500px] lg:w-[650px] h-[320px] sm:h-[500px] lg:h-[650px] bg-soft-green/50 rounded-full blur-3xl pointer-events-none -z-10"></div>
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
                     
                     <!-- Left Column: Copy & CTAs -->
-                    <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 sm:space-y-6">
+                    <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
                         
-                        <!-- Hero Headline -->
-                        <h1 class="font-display text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-deep-forest tracking-tight leading-[1.15]" style="text-wrap: balance;">
-                            A Personal Expense <br class="hidden sm:inline" /><span class="text-primary">and Budget Tracker</span>
-                        </h1>
+                        <!-- Text Group -->
+                        <div class="flex flex-col gap-4 sm:gap-5 mb-8 sm:mb-10 lg:mb-12">
+                            <!-- Hero Headline -->
+                            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-deep-forest tracking-tight leading-[1.15]" style="text-wrap: balance;">
+                                A Personal Expense <br class="hidden sm:inline" /><span class="text-primary">and Budget Tracker</span>
+                            </h1>
 
-                        <!-- Supporting Subtitle -->
-                        <p class="text-xs sm:text-base lg:text-base xl:text-lg text-on-surface-variant max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
-                            Track daily spending, set category limits, and scan paper receipts into organized transactions with AI OCR — optimized for mobile & desktop.
-                        </p>
+                            <!-- Supporting Subtitle -->
+                            <p class="text-sm sm:text-base lg:text-lg text-on-surface-variant max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
+                                Track daily spending, set category limits, and scan paper receipts into organized transactions with AI OCR — optimized for mobile & desktop.
+                            </p>
+                        </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-1">
-                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-7 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-6 lg:mb-8">
+                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                                 <span class="material-symbols-outlined text-[20px]">north_east</span>
                                 <span>Start Tracking Free</span>
                             </a>
@@ -354,7 +357,7 @@
                         </div>
 
                         <!-- Micro Trust Badges -->
-                        <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-on-surface-variant font-semibold">
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-on-surface-variant font-semibold">
                             <div class="flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
                                 <span>100% Free • Zero Ads</span>
@@ -369,7 +372,7 @@
 
                     <!-- Right Column: User's Dashboard Phone Screenshot Frame -->
                     <div class="lg:col-span-6 relative flex flex-col items-center justify-center pt-2 lg:pt-0">
-                        <div class="relative w-full max-w-[280px] xs:max-w-[300px] sm:max-w-[340px] lg:max-w-[320px] xl:max-w-[360px] flex items-center justify-center">
+                        <div class="relative w-full max-w-[280px] xs:max-w-[300px] sm:max-w-[340px] lg:max-w-[260px] xl:max-w-[300px] flex items-center justify-center">
                             
                             <!-- Floating Savings Badge -->
                             <div class="hidden md:flex absolute -top-3 -left-3 lg:-top-4 lg:-left-4 z-30 bg-surface-lowest border border-outline-variant/80 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
@@ -396,14 +399,14 @@
                             </div>
 
                             <!-- iPhone Placeholder Frame with Thin Edges & Dynamic Island -->
-                            <div class="w-[260px] xs:w-[280px] sm:w-[310px] lg:w-[300px] xl:w-[330px] bg-neutral-900 rounded-[38px] lg:rounded-[44px] p-1.5 sm:p-2 shadow-2xl border border-white/20 relative z-20 overflow-hidden select-none">
+                            <div class="w-[260px] xs:w-[280px] sm:w-[310px] lg:w-[250px] xl:w-[280px] bg-neutral-900 rounded-[38px] lg:rounded-[44px] p-1.5 sm:p-2 shadow-2xl border border-white/20 relative z-20 overflow-hidden select-none">
                                 <!-- iPhone Dynamic Island Notch -->
                                 <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-4 sm:h-4.5 bg-black rounded-full z-30 flex items-center justify-end px-2 shadow-xs">
                                     <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
                                 </div>
                                 
-                                <div class="rounded-[30px] lg:rounded-[36px] overflow-hidden bg-black aspect-[9/19.5] relative border border-white/10 shadow-inner">
-                                    <img src="{% static 'images/home_dashboard.jpg' %}" alt="AntTipid Dashboard Phone Screen" class="w-full h-full object-cover object-top" />
+                                <div class="rounded-[30px] lg:rounded-[36px] overflow-hidden bg-black aspect-auto relative border border-white/10 shadow-inner">
+                                    <img src="{% static 'images/home_dashboard.jpg' %}" alt="AntTipid Dashboard Phone Screen" class="w-full h-auto object-contain object-top block" />
                                 </div>
                             </div>
 
@@ -506,8 +509,8 @@
                         <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
                             <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
                         </div>
-                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
-                            <img src="{% static 'images/transactions_screen.jpg' %}" alt="AntTipid Transactions Phone Screen" class="w-full h-full object-cover object-top" />
+                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
+                            <img src="{% static 'images/transactions_screen.jpg' %}" alt="AntTipid Transactions Phone Screen" class="w-full h-auto object-contain object-top block" />
                         </div>
                     </div>
                 </div>
@@ -699,8 +702,8 @@
                             <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
                                 <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
                             </div>
-                            <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
-                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="AntTipid OCR Scanning Phone Screen" class="w-full h-full object-cover object-top" />
+                            <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
+                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="AntTipid OCR Scanning Phone Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                     </div>
@@ -722,8 +725,8 @@
                         <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
                             <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
                         </div>
-                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10">
-                            <img src="{% static 'images/montly_budget.jpg' %}" alt="AntTipid Budget Planner Phone Screen" class="w-full h-full object-cover object-top" />
+                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
+                            <img src="{% static 'images/montly_budget.jpg' %}" alt="AntTipid Budget Planner Phone Screen" class="w-full h-auto object-contain object-top block" />
                         </div>
                     </div>
                 </div>
@@ -763,8 +766,8 @@
                             <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
                                 <div class="w-1 h-1 rounded-full bg-slate-800"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10 relative">
-                                <img src="{% static 'images/home_dashboard.jpg' %}" alt="Dashboard Screen" class="w-full h-full object-cover object-top" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
+                                <img src="{% static 'images/home_dashboard.jpg' %}" alt="Dashboard Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                         <h4 class="text-xs font-bold text-deep-forest text-center">Dashboard</h4>
@@ -777,8 +780,8 @@
                             <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
                                 <div class="w-1 h-1 rounded-full bg-slate-800"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10 relative">
-                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="OCR Scanner Screen" class="w-full h-full object-cover object-top" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
+                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="OCR Scanner Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                         <h4 class="text-xs font-bold text-deep-forest text-center">Receipt Scanner</h4>
@@ -791,8 +794,8 @@
                             <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
                                 <div class="w-1 h-1 rounded-full bg-slate-800"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10 relative">
-                                <img src="{% static 'images/montly_budget.jpg' %}" alt="Monthly Budget Screen" class="w-full h-full object-cover object-top" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
+                                <img src="{% static 'images/montly_budget.jpg' %}" alt="Monthly Budget Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                         <h4 class="text-xs font-bold text-deep-forest text-center">Monthly Budget</h4>
@@ -805,8 +808,8 @@
                             <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
                                 <div class="w-1 h-1 rounded-full bg-slate-800"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10 relative">
-                                <img src="{% static 'images/report_screen.jpg' %}" alt="Financial Reports Screen" class="w-full h-full object-cover object-top" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
+                                <img src="{% static 'images/report_screen.jpg' %}" alt="Financial Reports Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                         <h4 class="text-xs font-bold text-deep-forest text-center">Financial Insights</h4>
@@ -819,8 +822,8 @@
                             <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
                                 <div class="w-1 h-1 rounded-full bg-slate-800"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-[9/19.5] border border-white/10 relative">
-                                <img src="{% static 'images/transactions_screen.jpg' %}" alt="Transactions Screen" class="w-full h-full object-cover object-top" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
+                                <img src="{% static 'images/transactions_screen.jpg' %}" alt="Transactions Screen" class="w-full h-auto object-contain object-top block" />
                             </div>
                         </div>
                         <h4 class="text-xs font-bold text-deep-forest text-center">Transaction History</h4>
