@@ -7,6 +7,13 @@
     <title>{% block title %}AntTipid — Personal Finance & Budget Tracker{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}AntTipid is your intelligent personal finance manager — track expenses, set budgets, and archive receipt scans with ease.{% endblock %}">
 
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <meta name="theme-color" content="#5C8F3A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="AntTipid">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
     <!-- Favicon / Tab Bar Icon -->
     <link rel="icon" type="image/png" href="{% static 'images/AntTipidFavicon.png' %}?v=3">
     <link rel="apple-touch-icon" href="{% static 'images/AntTipidFavicon.png' %}?v=3">
@@ -501,6 +508,15 @@
                 });
             }
         });
+
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{% static 'service-worker.js' %}")
+                    .then((reg) => console.log('Service Worker registered:', reg.scope))
+                    .catch((err) => console.warn('Service Worker registration failed:', err));
+            });
+        }
     </script>
 
     {% block extra_scripts %}{% endblock %}
