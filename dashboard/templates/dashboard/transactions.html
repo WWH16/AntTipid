@@ -553,12 +553,172 @@
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════ -->
+<!-- EDIT TRANSACTION BOTTOM SHEET (Mobile only) -->
+<!-- ═══════════════════════════════════════ -->
+<div id="edit-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title" class="md:hidden fixed inset-0 z-[100] flex items-end justify-center p-0 hidden touch-none">
+    <div id="edit-sheet-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-md opacity-0 transition-opacity duration-200 pointer-events-auto"></div>
+
+    <div id="edit-sheet-content" class="bg-surface-container-lowest w-full rounded-t-2xl border border-surface-variant/60 p-5 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[88vh] overflow-y-auto">
+
+        <!-- Drag Handle -->
+        <div id="edit-sheet-handle" aria-label="Drag down to close" class="w-full py-3 -mt-2 -mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none">
+            <span class="w-10 h-[5px] rounded-full bg-outline/70"></span>
+        </div>
+
+        <!-- Type Switcher -->
+        <div class="w-full bg-surface-container-low p-1 rounded-xl flex items-center gap-1 border border-outline-variant/60">
+            <button type="button" id="edit-tab-expense" class="edit-type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer" data-type="expense">
+                <span class="material-symbols-outlined text-[18px] text-expense">arrow_upward</span>
+                Expense
+            </button>
+            <button type="button" id="edit-tab-income" class="edit-type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs font-medium transition-all flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-primary cursor-pointer" data-type="income">
+                <span class="material-symbols-outlined text-[18px] text-primary">arrow_downward</span>
+                Income
+            </button>
+            <button type="button" id="edit-tab-transfer" class="edit-type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs font-medium transition-all flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-amber-700 cursor-pointer" data-type="transfer">
+                <span class="material-symbols-outlined text-[18px] text-amber-700">swap_horiz</span>
+                Transfer
+            </button>
+        </div>
+
+        <!-- Amount -->
+        <div class="flex flex-col items-center justify-center py-5 px-4 bg-surface-container-low/40 rounded-xl border border-outline-variant/40 relative">
+            <label for="edit-input-amount" class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.06em] font-bold mb-1">Enter Amount</label>
+            <div class="flex items-center gap-1">
+                <span class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
+                <input type="number" id="edit-input-amount" step="0.01" min="0" placeholder="0.00" class="w-44 sm:w-56 bg-transparent font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight">
+            </div>
+
+            <!-- Quick Amount Preset Chips -->
+            <div class="flex items-center gap-1.5 mt-3 flex-wrap justify-center">
+                <button type="button" class="edit-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-soft-green hover:text-primary text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="100">+₱100</button>
+                <button type="button" class="edit-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-soft-green hover:text-primary text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="500">+₱500</button>
+                <button type="button" class="edit-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-soft-green hover:text-primary text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="1000">+₱1,000</button>
+            </div>
+        </div>
+
+        <!-- Category -->
+        <div class="flex flex-col gap-2">
+            <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
+            <div id="edit-category-grid" class="grid grid-cols-4 gap-2">
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Food &amp; Dining">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">restaurant</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Food</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Transportation">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">directions_car</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Transport</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Shopping">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shopping_bag</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Shopping</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Utilities">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">bolt</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Utilities</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Entertainment">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">movie</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Entertainment</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Groceries">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">local_grocery_store</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Groceries</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Salary">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">payments</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Salary</span>
+                </button>
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Others">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">category</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Others</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Detail Fields -->
+        <div class="flex flex-col gap-4">
+
+            <!-- Title / Merchant -->
+            <div class="flex flex-col gap-1.5">
+                <label for="edit-input-title" class="font-label-sm text-xs font-bold text-deep-forest">Title / Merchant</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
+                    <input type="text" id="edit-input-title" placeholder="e.g. Jollibee Lunch, Grab Fare" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Date & Account -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1.5">
+                    <label for="edit-input-date" class="font-label-sm text-xs font-bold text-deep-forest">Date</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">calendar_today</span>
+                        <input type="date" id="edit-input-date" class="w-full pl-9 pr-2 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs font-bold text-deep-forest outline-none transition-all">
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label for="edit-select-account" class="font-label-sm text-xs font-bold text-deep-forest">Account</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
+                        <select id="edit-select-account" class="w-full pl-9 pr-6 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer appearance-none">
+                            <option value="Cash">Cash Wallet</option>
+                            <option value="GCash">GCash</option>
+                            <option value="Maya">Maya</option>
+                            <option value="Bank Account">BPI Bank Account</option>
+                            <option value="Credit Card">BDO Credit Card</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes / Remarks -->
+            <div class="flex flex-col gap-1.5">
+                <label for="edit-input-notes" class="font-label-sm text-xs font-bold text-deep-forest">Notes (Optional)</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">notes</span>
+                    <input type="text" id="edit-input-notes" placeholder="e.g. Shared with team, reimbursed" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2.5 pt-2 border-t border-surface-variant/40">
+            <button type="button" id="btn-cancel-edit-sheet" class="flex-1 px-4 py-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs font-semibold transition-all cursor-pointer">Cancel</button>
+            <button type="button" id="btn-save-edit-sheet" class="flex-1 px-4 py-2.5 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 shadow-xs active:scale-[0.98] transition-all cursor-pointer">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Success Toast -->
+<div id="edit-toast-success" class="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] bg-on-surface text-inverse-on-surface px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 hidden opacity-0 transition-all duration-300 font-label-sm text-xs border border-surface-variant/40">
+    <span class="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
+    <span>Transaction updated successfully!</span>
+</div>
+
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Click a transaction (mobile card or desktop row) to open it in Edit mode
-        const editableRows = document.querySelectorAll('.tx-item[data-edit-id], .tx-row[data-edit-id]');
-        editableRows.forEach(row => {
+        // Desktop table rows: reuse the full-page Manual Entry form in edit mode
+        document.querySelectorAll('.tx-row[data-edit-id]').forEach(row => {
             row.addEventListener('click', () => {
                 const d = row.dataset;
                 const params = new URLSearchParams({
@@ -572,6 +732,11 @@
                 });
                 window.location.href = "{% url 'add_transaction' %}?" + params.toString();
             });
+        });
+
+        // Mobile cards: open the inline bottom-sheet editor instead of navigating
+        document.querySelectorAll('.tx-item[data-edit-id]').forEach(row => {
+            row.addEventListener('click', () => openEditSheet(row.dataset));
         });
 
         // View Switcher (All Activity vs Receipt Archive)
@@ -712,6 +877,210 @@
                     closeModal();
                 } else {
                     filterContent.style.transform = '';
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════
+        // EDIT TRANSACTION BOTTOM SHEET (Mobile)
+        // ═══════════════════════════════════════
+        const editSheetWrapper = document.getElementById('edit-sheet-wrapper');
+        const editSheetBackdrop = document.getElementById('edit-sheet-backdrop');
+        const editSheetContent = document.getElementById('edit-sheet-content');
+        const editInputAmount = document.getElementById('edit-input-amount');
+        const editInputTitle = document.getElementById('edit-input-title');
+        const editInputDate = document.getElementById('edit-input-date');
+        const editSelectAccount = document.getElementById('edit-select-account');
+        const editInputNotes = document.getElementById('edit-input-notes');
+        const editTypeTabs = document.querySelectorAll('.edit-type-tab');
+        const editCategoryBtns = document.querySelectorAll('.edit-category-btn');
+        const editPresetChips = document.querySelectorAll('.edit-preset-chip');
+        const editToast = document.getElementById('edit-toast-success');
+
+        // Type tabs: mirrors the Manual Entry form's toggle behavior exactly
+        function setEditType(type) {
+            editTypeTabs.forEach(tab => {
+                tab.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant/60', 'shadow-xs', 'font-semibold');
+                tab.classList.add('text-on-surface-variant', 'font-medium');
+                tab.setAttribute('aria-pressed', 'false');
+            });
+            const activeTab = document.getElementById(`edit-tab-${type}`);
+            if (activeTab) {
+                activeTab.classList.add('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant/60', 'shadow-xs', 'font-semibold');
+                activeTab.classList.remove('text-on-surface-variant', 'font-medium');
+                activeTab.setAttribute('aria-pressed', 'true');
+            }
+        }
+
+        // Category grid: mirrors the Manual Entry form's icon-box toggle behavior exactly
+        function setEditCategory(category) {
+            editCategoryBtns.forEach(b => {
+                b.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'shadow-xs', 'active');
+                b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+                b.setAttribute('aria-pressed', 'false');
+
+                const labelSpan = b.querySelector('span:last-child');
+                if (labelSpan) {
+                    labelSpan.classList.remove('font-semibold');
+                    labelSpan.classList.add('font-medium');
+                }
+
+                const iconBox = b.querySelector('.w-9');
+                if (iconBox) {
+                    iconBox.classList.remove('bg-primary/20', 'text-primary');
+                    iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
+                }
+
+                const iconEl = b.querySelector('.material-symbols-outlined');
+                if (iconEl) {
+                    iconEl.style.fontVariationSettings = "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24";
+                }
+            });
+
+            const activeBtn = document.querySelector(`.edit-category-btn[data-category="${category}"]`);
+            if (!activeBtn) return;
+
+            activeBtn.classList.add('border-primary', 'bg-primary/10', 'text-primary', 'shadow-xs', 'active');
+            activeBtn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+            activeBtn.setAttribute('aria-pressed', 'true');
+
+            const activeLabel = activeBtn.querySelector('span:last-child');
+            if (activeLabel) {
+                activeLabel.classList.remove('font-medium');
+                activeLabel.classList.add('font-semibold');
+            }
+
+            const activeIconBox = activeBtn.querySelector('.w-9');
+            if (activeIconBox) {
+                activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
+                activeIconBox.classList.add('bg-primary/20', 'text-primary');
+            }
+
+            const activeIconEl = activeBtn.querySelector('.material-symbols-outlined');
+            if (activeIconEl) {
+                activeIconEl.style.fontVariationSettings = "'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24";
+            }
+        }
+
+        editTypeTabs.forEach(tab => tab.addEventListener('click', () => setEditType(tab.dataset.type)));
+        editCategoryBtns.forEach(btn => btn.addEventListener('click', () => setEditCategory(btn.dataset.category)));
+
+        editPresetChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const addVal = parseFloat(chip.dataset.add) || 0;
+                const currentVal = parseFloat(editInputAmount.value) || 0;
+                editInputAmount.value = (currentVal + addVal).toFixed(2);
+                editInputAmount.focus();
+            });
+        });
+
+        let editSheetHideTimer = null;
+
+        function openEditSheet(d) {
+            // Cancel any pending hide from a previous close, otherwise it can
+            // fire after this sheet opens and yank it back off-screen.
+            if (editSheetHideTimer) {
+                clearTimeout(editSheetHideTimer);
+                editSheetHideTimer = null;
+            }
+
+            // Clear any leftover inline transform/transition from a drag gesture
+            // so it doesn't fight the class-based open transition.
+            editSheetContent.style.transition = '';
+            editSheetContent.style.transform = '';
+
+            editInputAmount.value = d.editAmount ? parseFloat(d.editAmount).toFixed(2) : '';
+            editInputTitle.value = d.editTitle || '';
+            editInputDate.value = d.editDate || '';
+            if (d.editAccount) editSelectAccount.value = d.editAccount;
+            editInputNotes.value = d.editNotes || '';
+            setEditType(d.editType || 'expense');
+            setEditCategory(d.editCategory || '');
+
+            document.body.style.overflow = 'hidden';
+            editSheetWrapper.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                editSheetBackdrop.classList.remove('opacity-0');
+                editSheetBackdrop.classList.add('opacity-100');
+                editSheetContent.classList.remove('translate-y-full', 'opacity-0');
+                editSheetContent.classList.add('translate-y-0', 'opacity-100');
+            });
+        }
+
+        function closeEditSheet() {
+            if (editSheetHideTimer) clearTimeout(editSheetHideTimer);
+
+            editSheetBackdrop.classList.remove('opacity-100');
+            editSheetBackdrop.classList.add('opacity-0');
+            editSheetContent.classList.remove('translate-y-0', 'opacity-100');
+            editSheetContent.classList.add('translate-y-full', 'opacity-0');
+            editSheetHideTimer = setTimeout(() => {
+                editSheetWrapper.classList.add('hidden');
+                document.body.style.overflow = '';
+                editSheetContent.style.transition = '';
+                editSheetContent.style.transform = '';
+                editSheetHideTimer = null;
+            }, 200);
+        }
+
+        const cancelEditBtn = document.getElementById('btn-cancel-edit-sheet');
+        const saveEditBtn = document.getElementById('btn-save-edit-sheet');
+
+        if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeEditSheet);
+        if (editSheetBackdrop) editSheetBackdrop.addEventListener('click', closeEditSheet);
+
+        if (saveEditBtn) {
+            saveEditBtn.addEventListener('click', () => {
+                closeEditSheet();
+                if (editToast) {
+                    setTimeout(() => {
+                        editToast.classList.remove('hidden');
+                        requestAnimationFrame(() => {
+                            editToast.classList.remove('opacity-0');
+                            editToast.classList.add('opacity-100');
+                        });
+                        setTimeout(() => {
+                            editToast.classList.remove('opacity-100');
+                            editToast.classList.add('opacity-0');
+                            setTimeout(() => editToast.classList.add('hidden'), 300);
+                        }, 1600);
+                    }, 220);
+                }
+            });
+        }
+
+        // Edit Sheet: Drag Down to Dismiss Gesture
+        const editDragHandle = document.getElementById('edit-sheet-handle');
+        let editStartY = 0;
+        let editCurrentY = 0;
+        let editIsDragging = false;
+
+        if (editDragHandle) {
+            editDragHandle.addEventListener('touchstart', (e) => {
+                editStartY = e.touches[0].clientY;
+                editCurrentY = editStartY;
+                editIsDragging = true;
+                editSheetContent.style.transition = 'none';
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!editIsDragging) return;
+                editCurrentY = e.touches[0].clientY;
+                const deltaY = editCurrentY - editStartY;
+                if (deltaY > 0) {
+                    editSheetContent.style.transform = `translateY(${deltaY}px)`;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                if (!editIsDragging) return;
+                editIsDragging = false;
+                editSheetContent.style.transition = '';
+                const deltaY = editCurrentY - editStartY;
+                if (deltaY > 80) {
+                    closeEditSheet();
+                } else {
+                    editSheetContent.style.transform = '';
                 }
             });
         }
