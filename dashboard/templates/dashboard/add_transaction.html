@@ -17,8 +17,8 @@
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 </a>
                 <div>
-                    <h1 class="font-headline-lg text-xl sm:text-2xl font-extrabold text-deep-forest tracking-tight">Manual Entry</h1>
-                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
+                    <h1 id="page-heading" class="font-headline-lg text-xl sm:text-2xl font-extrabold text-deep-forest tracking-tight">Manual Entry</h1>
+                    <p id="page-subheading" class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
                 </div>
             </div>
             <a href="{% url 'transactions' %}?mode=receipts" id="btn-switch-scan" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 hover:bg-primary hover:text-white transition-all font-label-md text-xs font-semibold cursor-pointer shadow-xs">
@@ -488,6 +488,51 @@
                 }
             });
         }
+
+        // Edit Mode: pre-fill the form when opened from a transaction's edit link
+        (function applyEditPrefill() {
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('edit');
+            if (!editId) return;
+
+            const heading = document.getElementById('page-heading');
+            const subheading = document.getElementById('page-subheading');
+            if (heading) heading.textContent = 'Edit Transaction';
+            if (subheading) subheading.textContent = "Update this transaction's details";
+
+            const amount = params.get('amount');
+            if (amount && inputAmount) inputAmount.value = parseFloat(amount).toFixed(2);
+
+            const title = params.get('title');
+            if (title && inputTitle) inputTitle.value = title;
+
+            const date = params.get('date');
+            if (date && inputDate) inputDate.value = date;
+
+            const account = params.get('account');
+            if (account && selectAccount) selectAccount.value = account;
+
+            const type = params.get('type');
+            if (type) {
+                const tab = document.getElementById(`tab-type-${type}`);
+                if (tab) tab.click();
+            }
+
+            const category = params.get('category');
+            if (category) {
+                const catBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
+                if (catBtn) catBtn.click();
+            }
+
+            const submitLabel = document.querySelector('#btn-save-transaction span:last-child');
+            if (submitLabel) submitLabel.textContent = 'Save Changes';
+
+            const toastMsg = document.getElementById('toast-msg');
+            if (toastMsg) toastMsg.textContent = 'Transaction updated successfully!';
+
+            // Pre-filling existing data shouldn't count as an unsaved edit
+            isFormDirty = false;
+        })();
     });
 </script>
 {% endblock %}
