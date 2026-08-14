@@ -195,12 +195,6 @@
 <!-- Mobile Bottom Navigation Spacer -->
 <div class="h-20 md:hidden" aria-hidden="true"></div>
 
-<!-- ─── Toast Notification Banner ─── -->
-<div id="toast-success" class="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-[80] bg-on-surface text-inverse-on-surface px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 hidden opacity-0 transition-all duration-300 font-label-sm text-xs border border-surface-variant/40">
-    <span class="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
-    <span id="toast-msg">Transaction saved successfully!</span>
-</div>
-
 <!-- ═══════════════════════════════════════════ -->
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
@@ -246,6 +240,7 @@
         let isFormDirty = false;
         let pendingTargetUrl = null;
         let lastFocusedElement = null;
+        let isEditMode = false;
 
         function markDirty() {
             isFormDirty = true;
@@ -464,28 +459,15 @@
             }
         });
 
-        // Form Submit Simulation
+        // Form Submit Simulation: navigate straight back to the list,
+        // which shows the success toast itself once it lands.
         const form = document.getElementById('form-manual-entry');
-        const toast = document.getElementById('toast-success');
         if (form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 isFormDirty = false;
-                if (toast) {
-                    toast.classList.remove('hidden');
-                    requestAnimationFrame(() => {
-                        toast.classList.remove('opacity-0', 'translate-y-2');
-                        toast.classList.add('opacity-100', 'translate-y-0');
-                    });
-                    setTimeout(() => {
-                        toast.classList.remove('opacity-100', 'translate-y-0');
-                        toast.classList.add('opacity-0', 'translate-y-2');
-                        setTimeout(() => {
-                            toast.classList.add('hidden');
-                            window.location.href = "{% url 'transactions' %}";
-                        }, 300);
-                    }, 1200);
-                }
+                const toastKind = isEditMode ? 'updated' : 'saved';
+                window.location.href = "{% url 'transactions' %}?toast=" + toastKind;
             });
         }
 
@@ -494,6 +476,8 @@
             const params = new URLSearchParams(window.location.search);
             const editId = params.get('edit');
             if (!editId) return;
+
+            isEditMode = true;
 
             const heading = document.getElementById('page-heading');
             const subheading = document.getElementById('page-subheading');
@@ -526,9 +510,6 @@
 
             const submitLabel = document.querySelector('#btn-save-transaction span:last-child');
             if (submitLabel) submitLabel.textContent = 'Save Changes';
-
-            const toastMsg = document.getElementById('toast-msg');
-            if (toastMsg) toastMsg.textContent = 'Transaction updated successfully!';
 
             // Pre-filling existing data shouldn't count as an unsaved edit
             isFormDirty = false;

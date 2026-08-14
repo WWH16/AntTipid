@@ -708,15 +708,65 @@
     </div>
 </div>
 
-<!-- Edit Success Toast -->
+<!-- Edit Success Toast (inline bottom-sheet save, mobile only) -->
 <div id="edit-toast-success" class="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] bg-deep-forest text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 hidden opacity-0 transition-all duration-300 font-label-sm text-xs border border-surface-variant/40">
     <span class="material-symbols-outlined text-soft-green text-[18px]">check_circle</span>
     <span>Transaction updated</span>
 </div>
 
+<!-- Page-load Success Toast (after returning from the Manual Entry / Edit page) -->
+<div id="nav-toast-success" class="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 md:left-auto md:bottom-auto md:top-8 md:right-8 md:translate-x-0 lg:top-10 lg:right-10 z-[110] bg-deep-forest text-white px-4 py-3 md:px-5 md:py-4 md:min-w-[300px] rounded-2xl shadow-2xl flex items-center gap-2 md:gap-3 hidden opacity-0 transition-all duration-300 font-label-sm text-xs md:text-sm border border-surface-variant/40 md:border-primary/30 md:shadow-[0_10px_30px_rgba(35,69,42,0.32)]">
+    <span class="material-symbols-outlined text-soft-green text-[18px] md:text-[24px] shrink-0">check_circle</span>
+    <span id="nav-toast-msg" class="flex-1">Transaction saved</span>
+    <button type="button" id="btn-close-nav-toast" aria-label="Dismiss notification" class="shrink-0 -mr-1 w-6 h-6 md:w-7 md:h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[16px] md:text-[19px]">close</span>
+    </button>
+</div>
+
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Page-load Success Toast: shown after redirecting back from Add/Edit
+        (function showNavToastIfNeeded() {
+            const params = new URLSearchParams(window.location.search);
+            const kind = params.get('toast');
+            if (!kind) return;
+
+            const navToast = document.getElementById('nav-toast-success');
+            const navToastMsg = document.getElementById('nav-toast-msg');
+            const btnCloseNavToast = document.getElementById('btn-close-nav-toast');
+            if (!navToast) return;
+
+            navToastMsg.textContent = kind === 'updated' ? 'Transaction updated' : 'Transaction saved';
+
+            let navToastHideTimer = null;
+
+            function dismissNavToast() {
+                if (navToastHideTimer) {
+                    clearTimeout(navToastHideTimer);
+                    navToastHideTimer = null;
+                }
+                navToast.classList.remove('opacity-100', 'translate-y-0');
+                navToast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => navToast.classList.add('hidden'), 300);
+            }
+
+            navToast.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                navToast.classList.remove('opacity-0');
+                navToast.classList.add('opacity-100');
+            });
+            navToastHideTimer = setTimeout(dismissNavToast, 3000);
+
+            if (btnCloseNavToast) btnCloseNavToast.addEventListener('click', dismissNavToast);
+
+            // Strip the ?toast= param so refreshing the page doesn't re-show it
+            params.delete('toast');
+            const cleanQuery = params.toString();
+            const cleanUrl = window.location.pathname + (cleanQuery ? `?${cleanQuery}` : '');
+            window.history.replaceState({}, '', cleanUrl);
+        })();
+
         // Desktop table rows: reuse the full-page Manual Entry form in edit mode
         document.querySelectorAll('.tx-row[data-edit-id]').forEach(row => {
             row.addEventListener('click', () => {
