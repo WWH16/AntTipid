@@ -97,31 +97,43 @@
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Today</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
                         <!-- Item 1: Jollibee (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Dining" data-edit-id="tx-m1" data-edit-type="expense" data-edit-amount="250.00" data-edit-title="Jollibee" data-edit-category="Food &amp; Dining" data-edit-date="2026-10-24" data-edit-account="Credit Card">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">restaurant</span>
+                        <div class="tx-item relative overflow-hidden border-b border-outline-variant/30 last:border-b-0" data-type="expense" data-category="Dining" data-edit-id="tx-m1" data-edit-type="expense" data-edit-amount="250.00" data-edit-title="Jollibee" data-edit-category="Food &amp; Dining" data-edit-date="2026-10-24" data-edit-account="Credit Card">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Jollibee transaction">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">restaurant</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Jollibee</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Food & Dining</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Jollibee</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Food & Dining</p>
-                                </div>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
                         </div>
 
                         <!-- Item 2: Grab (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Transportation" data-edit-id="tx-m2" data-edit-type="expense" data-edit-amount="180.00" data-edit-title="Grab" data-edit-category="Transportation" data-edit-date="2026-10-24" data-edit-account="GCash">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">directions_car</span>
+                        <div class="tx-item relative overflow-hidden border-b border-outline-variant/30 last:border-b-0" data-type="expense" data-category="Transportation" data-edit-id="tx-m2" data-edit-type="expense" data-edit-amount="180.00" data-edit-title="Grab" data-edit-category="Transportation" data-edit-date="2026-10-24" data-edit-account="GCash">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Grab transaction">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">directions_car</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Grab</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Transportation</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Grab</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Transportation</p>
-                                </div>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
                         </div>
                     </div>
                 </div>
@@ -131,31 +143,43 @@
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Yesterday</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
                         <!-- Item 1: Shopee (Expense) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Shopping" data-edit-id="tx-m3" data-edit-type="expense" data-edit-amount="650.00" data-edit-title="Shopee" data-edit-category="Shopping" data-edit-date="2026-10-23" data-edit-account="Credit Card">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+                        <div class="tx-item relative overflow-hidden border-b border-outline-variant/30 last:border-b-0" data-type="expense" data-category="Shopping" data-edit-id="tx-m3" data-edit-type="expense" data-edit-amount="650.00" data-edit-title="Shopee" data-edit-category="Shopping" data-edit-date="2026-10-23" data-edit-account="Credit Card">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Shopee transaction">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Shopee</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Shopping</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Shopee</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Shopping</p>
-                                </div>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
                         </div>
 
                         <!-- Item 2 (Income) -->
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="income" data-category="Income" data-edit-id="tx-m4" data-edit-type="income" data-edit-amount="20000.00" data-edit-title="Salary Deposit" data-edit-category="Salary" data-edit-date="2026-10-23" data-edit-account="Bank Account">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                        <div class="tx-item relative overflow-hidden border-b border-outline-variant/30 last:border-b-0" data-type="income" data-category="Income" data-edit-id="tx-m4" data-edit-type="income" data-edit-amount="20000.00" data-edit-title="Salary Deposit" data-edit-category="Salary" data-edit-date="2026-10-23" data-edit-account="Bank Account">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Salary Deposit transaction">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">payments</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Income</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Income</p>
-                                </div>
+                                <span class="font-label-md text-xs sm:text-sm text-primary font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-primary font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
                         </div>
                     </div>
                 </div>
@@ -164,17 +188,23 @@
                 <div class="transaction-group" data-date-group="older">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Oct 21</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden">
-                        <div class="tx-item flex items-center justify-between p-3.5 border-b border-outline-variant/30 last:border-b-0 hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Housing" data-edit-id="tx-m5" data-edit-type="expense" data-edit-amount="12500.00" data-edit-title="Downtown Apartments" data-edit-category="Others" data-edit-date="2026-10-21" data-edit-account="Bank Account">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">home</span>
+                        <div class="tx-item relative overflow-hidden border-b border-outline-variant/30 last:border-b-0" data-type="expense" data-category="Housing" data-edit-id="tx-m5" data-edit-type="expense" data-edit-amount="12500.00" data-edit-title="Downtown Apartments" data-edit-category="Others" data-edit-date="2026-10-21" data-edit-account="Bank Account">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Downtown Apartments transaction">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">home</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Downtown Apartments</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Housing & Rent</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Downtown Apartments</p>
-                                    <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Housing & Rent</p>
-                                </div>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱12,500.00</span>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱12,500.00</span>
                         </div>
                     </div>
                 </div>
@@ -711,7 +741,7 @@
 <!-- Edit Success Toast (inline bottom-sheet save, mobile only) -->
 <div id="edit-toast-success" class="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] bg-deep-forest text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 hidden opacity-0 transition-all duration-300 font-label-sm text-xs border border-surface-variant/40">
     <span class="material-symbols-outlined text-soft-green text-[18px]">check_circle</span>
-    <span>Transaction updated</span>
+    <span id="edit-toast-msg">Transaction updated</span>
 </div>
 
 <!-- Page-load Success Toast (after returning from the Manual Entry / Edit page) -->
@@ -721,6 +751,25 @@
     <button type="button" id="btn-close-nav-toast" aria-label="Dismiss notification" class="shrink-0 -mr-1 w-6 h-6 md:w-7 md:h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer">
         <span class="material-symbols-outlined text-[16px] md:text-[19px]">close</span>
     </button>
+</div>
+
+<!-- Delete Transaction Confirmation Modal (Mobile swipe-to-delete) -->
+<div id="modal-confirm-delete-tx" role="dialog" aria-modal="true" aria-labelledby="modal-delete-tx-title" class="md:hidden fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-tx-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
+        <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <h3 id="modal-delete-tx-title" class="font-headline-md text-sm font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-tx" class="px-3.5 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-tx" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Transaction</button>
+        </div>
+    </div>
 </div>
 
 {% block extra_scripts %}
@@ -737,7 +786,12 @@
             const btnCloseNavToast = document.getElementById('btn-close-nav-toast');
             if (!navToast) return;
 
-            navToastMsg.textContent = kind === 'updated' ? 'Transaction updated' : 'Transaction saved';
+            const toastMessages = {
+                updated: 'Transaction updated',
+                deleted: 'Transaction deleted',
+                saved: 'Transaction saved',
+            };
+            navToastMsg.textContent = toastMessages[kind] || toastMessages.saved;
 
             let navToastHideTimer = null;
 
@@ -767,6 +821,25 @@
             window.history.replaceState({}, '', cleanUrl);
         })();
 
+        // Deleted transactions are tracked client-side (no backend yet) so
+        // they stay hidden if the page reloads later this session.
+        function getDeletedTxIds() {
+            return JSON.parse(sessionStorage.getItem('anttipid_deleted_tx_ids') || '[]');
+        }
+
+        function markTransactionDeleted(id) {
+            if (!id) return;
+            const existing = getDeletedTxIds();
+            if (!existing.includes(id)) existing.push(id);
+            sessionStorage.setItem('anttipid_deleted_tx_ids', JSON.stringify(existing));
+        }
+
+        (function hideDeletedTransactions() {
+            getDeletedTxIds().forEach(id => {
+                document.querySelectorAll(`[data-edit-id="${id}"]`).forEach(el => el.remove());
+            });
+        })();
+
         // Desktop table rows: reuse the full-page Manual Entry form in edit mode
         document.querySelectorAll('.tx-row[data-edit-id]').forEach(row => {
             row.addEventListener('click', () => {
@@ -784,10 +857,208 @@
             });
         });
 
-        // Mobile cards: open the inline bottom-sheet editor instead of navigating
+        // Mobile cards: swipe left to reveal Delete (Instagram-style), tap to edit
+        const SWIPE_DELETE_WIDTH = 80; // matches the w-20 delete button behind each row
+        let openSwipeRow = null;
+
+        function closeSwipeRow(row) {
+            if (!row) return;
+            const fg = row.querySelector('.tx-item-fg');
+            if (fg) {
+                fg.style.transition = 'transform 0.25s ease';
+                fg.style.transform = 'translateX(0px)';
+            }
+            row.dataset.swipeOpen = 'false';
+            if (openSwipeRow === row) openSwipeRow = null;
+        }
+
+        function openSwipeRowFn(row) {
+            if (!row) return;
+            if (openSwipeRow && openSwipeRow !== row) closeSwipeRow(openSwipeRow);
+            const fg = row.querySelector('.tx-item-fg');
+            if (fg) {
+                fg.style.transition = 'transform 0.25s ease';
+                fg.style.transform = `translateX(-${SWIPE_DELETE_WIDTH}px)`;
+            }
+            row.dataset.swipeOpen = 'true';
+            openSwipeRow = row;
+        }
+
         document.querySelectorAll('.tx-item[data-edit-id]').forEach(row => {
-            row.addEventListener('click', () => openEditSheet(row.dataset));
+            const fg = row.querySelector('.tx-item-fg');
+            const deleteBtn = row.querySelector('.tx-swipe-delete-btn');
+            if (!fg) return;
+
+            row.dataset.swipeOpen = 'false';
+
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+            let isDragging = false;
+            let isHorizontal = null;
+            let hasDragged = false;
+
+            fg.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                currentX = startX;
+                isDragging = true;
+                isHorizontal = null;
+                hasDragged = false;
+                fg.style.transition = 'none';
+            }, { passive: true });
+
+            fg.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                const currentYPos = e.touches[0].clientY;
+                const deltaX = currentX - startX;
+                const deltaY = currentYPos - startY;
+
+                if (isHorizontal === null && (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6)) {
+                    isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+                }
+                if (!isHorizontal) return; // vertical scroll: let the page handle it
+
+                e.preventDefault();
+                hasDragged = true;
+
+                const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
+                const translate = Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + deltaX));
+                fg.style.transform = `translateX(${translate}px)`;
+            }, { passive: false });
+
+            fg.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                fg.style.transition = 'transform 0.25s ease';
+
+                if (!isHorizontal) return;
+
+                const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
+                const deltaX = currentX - startX;
+                const finalTranslate = Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + deltaX));
+
+                if (finalTranslate < -SWIPE_DELETE_WIDTH / 2) {
+                    openSwipeRowFn(row);
+                } else {
+                    closeSwipeRow(row);
+                }
+            });
+
+            // Tap: edit if closed, close the reveal if already open. Ignore
+            // the synthetic click that trails an actual drag gesture.
+            fg.addEventListener('click', () => {
+                if (hasDragged) {
+                    hasDragged = false;
+                    return;
+                }
+                if (row.dataset.swipeOpen === 'true') {
+                    closeSwipeRow(row);
+                    return;
+                }
+                openEditSheet(row.dataset);
+            });
+
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => requestDeleteTx(row));
+            }
         });
+
+        // Tapping anywhere outside an open swipe row closes it first,
+        // instead of also triggering whatever was tapped underneath.
+        document.addEventListener('click', (e) => {
+            if (!openSwipeRow) return;
+            if (openSwipeRow.contains(e.target)) return;
+            e.preventDefault();
+            e.stopPropagation();
+            closeSwipeRow(openSwipeRow);
+        }, true);
+
+        // Delete Transaction Confirmation Modal (mobile swipe-to-delete)
+        const deleteTxModal = document.getElementById('modal-confirm-delete-tx');
+        const deleteTxModalContent = document.getElementById('modal-confirm-delete-tx-content');
+        const btnCancelDeleteTx = document.getElementById('btn-cancel-delete-tx');
+        const btnConfirmDeleteTx = document.getElementById('btn-confirm-delete-tx');
+        const editToastMsgEl = document.getElementById('edit-toast-msg');
+        let pendingDeleteRow = null;
+
+        function requestDeleteTx(row) {
+            pendingDeleteRow = row;
+            if (!deleteTxModal) return;
+            deleteTxModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                deleteTxModal.classList.remove('opacity-0');
+                deleteTxModal.classList.add('opacity-100');
+                if (deleteTxModalContent) {
+                    deleteTxModalContent.classList.remove('scale-95');
+                    deleteTxModalContent.classList.add('scale-100');
+                }
+            });
+        }
+
+        function closeDeleteTxModal() {
+            if (!deleteTxModal) return;
+            deleteTxModal.classList.remove('opacity-100');
+            deleteTxModal.classList.add('opacity-0');
+            if (deleteTxModalContent) {
+                deleteTxModalContent.classList.remove('scale-100');
+                deleteTxModalContent.classList.add('scale-95');
+            }
+            setTimeout(() => deleteTxModal.classList.add('hidden'), 200);
+        }
+
+        if (btnCancelDeleteTx) {
+            btnCancelDeleteTx.addEventListener('click', () => {
+                closeDeleteTxModal();
+                if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
+                pendingDeleteRow = null;
+            });
+        }
+        if (deleteTxModal) {
+            deleteTxModal.addEventListener('click', (e) => {
+                if (e.target === deleteTxModal) {
+                    closeDeleteTxModal();
+                    if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
+                    pendingDeleteRow = null;
+                }
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && deleteTxModal && !deleteTxModal.classList.contains('hidden')) {
+                closeDeleteTxModal();
+                if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
+                pendingDeleteRow = null;
+            }
+        });
+        if (btnConfirmDeleteTx) {
+            btnConfirmDeleteTx.addEventListener('click', () => {
+                if (!pendingDeleteRow) {
+                    closeDeleteTxModal();
+                    return;
+                }
+                const deletedId = pendingDeleteRow.dataset.editId;
+                markTransactionDeleted(deletedId);
+                if (openSwipeRow === pendingDeleteRow) openSwipeRow = null;
+                pendingDeleteRow.remove();
+                pendingDeleteRow = null;
+                closeDeleteTxModal();
+
+                if (editToastMsgEl) editToastMsgEl.textContent = 'Transaction deleted';
+                if (editToast) {
+                    editToast.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        editToast.classList.remove('opacity-0');
+                        editToast.classList.add('opacity-100');
+                    });
+                    setTimeout(() => {
+                        editToast.classList.remove('opacity-100');
+                        editToast.classList.add('opacity-0');
+                        setTimeout(() => editToast.classList.add('hidden'), 300);
+                    }, 1600);
+                }
+            });
+        }
 
         // View Switcher (All Activity vs Receipt Archive)
         const btnViewTx = document.getElementById('btn-view-transactions');
