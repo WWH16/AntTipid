@@ -174,21 +174,29 @@
     <!-- STEP 3: OCR REVIEW RESULT SCREEN            -->
     <!-- ═══════════════════════════════════════════ -->
     <main id="section-ocr-review" class="hidden px-3 sm:px-5 md:px-6 pt-4 pb-20 max-w-6xl mx-auto w-full">
-        
+
+        <!-- Screen Intro -->
+        <div class="flex items-start justify-between gap-3 mb-4 px-0.5">
+            <div class="flex flex-col gap-0.5">
+                <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight">Verify Extracted Details</h2>
+                <p class="font-body-sm text-xs text-on-surface-variant">Compare against the photo and correct anything the scan missed.</p>
+            </div>
+            <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 rounded-full bg-soft-green text-primary font-label-sm text-[11px] font-bold border border-primary/30 mt-0.5">
+                <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                AI Extracted
+            </span>
+        </div>
+
         <!-- Responsive Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
-            
-            <!-- LEFT COLUMN: Sticky Receipt Image Preview & AI Highlights (Desktop: 4 cols) -->
-            <div class="lg:col-span-4 flex flex-col gap-3 lg:sticky lg:top-16">
-                
+
+            <!-- LEFT COLUMN: Sticky Receipt Image Preview & Summary (Desktop: 5 cols) -->
+            <div class="lg:col-span-5 flex flex-col gap-3 lg:sticky lg:top-16">
+
                 <!-- MOBILE PHONE VIEW (<lg): Compact Receipt Image Preview + Rescan Card -->
                 <div class="lg:hidden bg-surface-container-lowest p-2.5 sm:p-3 rounded-xl border border-outline-variant/60 shadow-xs flex flex-col gap-2">
                     <div class="flex items-center justify-between px-0.5">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                            <span class="font-label-sm text-xs font-bold text-deep-forest">Scanned Receipt</span>
-                        </div>
-                        
+                        <span class="font-label-sm text-xs font-bold text-deep-forest">Scanned Receipt</span>
                         <button type="button" id="btn-reupload-mobile" class="px-3 py-1.5 rounded-lg bg-primary text-white font-label-sm text-xs font-bold active:scale-95 transition-all flex items-center gap-1 shrink-0 shadow-xs">
                             <span class="material-symbols-outlined text-[16px]">sync</span>
                             <span>Rescan</span>
@@ -196,32 +204,36 @@
                     </div>
 
                     <!-- Compact Image Thumbnail Preview with Mobile Zoom Button -->
-                    <div class="w-full h-32 sm:h-40 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group">
+                    <div class="w-full h-40 sm:h-48 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group">
                         <img id="img-review-preview-mobile" class="object-cover w-full h-full opacity-90" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
-                        
+
                         <!-- Mobile Zoom Button -->
                         <button type="button" id="btn-zoom-image-mobile" class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-primary px-2.5 py-1 rounded-md flex items-center gap-1 shadow-xs hover:bg-soft-green active:scale-95 transition-all z-10 border border-outline-variant/40">
                             <span class="material-symbols-outlined text-[15px]">zoom_in</span>
                             <span class="font-label-sm text-[10px] font-bold">Zoom</span>
                         </button>
                     </div>
+
+                    <!-- Mobile Summary Strip -->
+                    <div class="flex items-center divide-x divide-outline-variant/50 border-t border-outline-variant/40 pt-2 mt-0.5">
+                        <div class="flex-1 flex flex-col px-0.5">
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Items</span>
+                            <span id="badge-item-count-mobile" class="font-label-md text-xs font-bold text-deep-forest mt-0.5">0 items</span>
+                        </div>
+                        <div class="flex-1 flex flex-col px-3">
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Total</span>
+                            <span id="badge-total-amount-mobile" class="font-label-md text-xs font-extrabold text-expense mt-0.5 tabular-nums">₱0.00</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- DESKTOP BIG SCREEN VIEW (≥lg): Scanned Receipt Image Card -->
                 <div class="hidden lg:flex bg-surface-container-lowest rounded-xl border border-outline-variant/60 p-3 shadow-xs flex-col gap-2.5">
-                    <div class="flex justify-between items-center px-0.5">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                            <span class="font-label-sm text-[11px] font-bold text-deep-forest">Scanned Receipt</span>
-                        </div>
-                        <span class="bg-soft-green text-primary px-2 py-0.5 rounded-full text-[10px] font-bold border border-primary/30">
-                            Gemini AI
-                        </span>
-                    </div>
+                    <span class="font-label-sm text-xs font-bold text-deep-forest px-0.5">Scanned Receipt</span>
 
                     <!-- Image Thumbnail -->
-                    <div class="w-full h-48 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group cursor-pointer" id="btn-zoom-image">
+                    <div class="w-full h-64 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group cursor-pointer" id="btn-zoom-image">
                         <img id="img-review-preview" class="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
                         <span class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-primary px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1 shadow-xs border border-outline-variant/40">
@@ -229,82 +241,83 @@
                         </span>
                     </div>
 
-                    <!-- Scan Highlights Badges -->
-                    <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-                        <div class="bg-surface-container-low/60 rounded-lg p-2 flex flex-col border border-outline-variant/40">
-                            <span class="font-label-sm text-[9px] text-deep-forest uppercase font-bold">Merchant</span>
-                            <span id="badge-merchant-name" class="font-label-md text-[11px] font-bold text-deep-forest truncate mt-0.5">Merchant</span>
+                    <!-- Summary Strip -->
+                    <div class="flex items-center divide-x divide-outline-variant/50 border-t border-outline-variant/40 pt-2.5 mt-0.5">
+                        <div class="flex-1 flex flex-col px-0.5 min-w-0">
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Merchant</span>
+                            <span id="badge-merchant-name" class="font-label-md text-xs font-bold text-deep-forest truncate mt-0.5">Merchant</span>
                         </div>
-                        <div class="bg-surface-container-low/60 rounded-lg p-2 flex flex-col border border-outline-variant/40">
-                            <span class="font-label-sm text-[9px] text-deep-forest uppercase font-bold">Items</span>
-                            <span id="badge-item-count" class="font-label-md text-[11px] font-bold text-deep-forest mt-0.5">0 items</span>
+                        <div class="flex-1 flex flex-col px-3 min-w-0">
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Items</span>
+                            <span id="badge-item-count" class="font-label-md text-xs font-bold text-deep-forest mt-0.5">0 items</span>
                         </div>
-                        <div class="bg-soft-green rounded-lg p-2 flex flex-col border border-primary/30">
-                            <span class="font-label-sm text-[9px] text-primary uppercase font-bold">Est. Total</span>
-                            <span id="badge-total-amount" class="font-label-md text-[11px] font-extrabold text-primary tabular-nums mt-0.5">₱0.00</span>
+                        <div class="flex-1 flex flex-col px-3 min-w-0">
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Total</span>
+                            <span id="badge-total-amount" class="font-label-md text-xs font-extrabold text-expense mt-0.5 tabular-nums">₱0.00</span>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- RIGHT COLUMN: Extracted Data Editor Form (Desktop: 8 cols) -->
-            <div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-5">
-                
-                <!-- Form Fields (Merchant Name, Date & Category) -->
-                <div class="flex flex-col gap-3">
-                    
-                    <!-- Merchant -->
-                    <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low/80 transition-colors rounded-xl p-2.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-                        <label for="input-review-merchant" class="block font-label-sm text-[10px] uppercase tracking-wider font-bold text-deep-forest mb-0.5 group-focus-within:text-primary transition-colors">
-                            Merchant Name
+            <!-- RIGHT COLUMN: Extracted Data Editor Form (Desktop: 7 cols) -->
+            <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-5">
+
+                <!-- Merchant (primary field) -->
+                <div class="flex flex-col gap-1">
+                    <label for="input-review-merchant" class="font-label-sm text-[11px] uppercase tracking-wider font-bold text-on-surface-variant">
+                        Merchant Name
+                    </label>
+                    <input type="text" id="input-review-merchant" class="font-headline-md text-lg sm:text-xl font-extrabold text-deep-forest bg-transparent border-0 border-b-2 border-outline-variant/50 focus:border-primary outline-none w-full py-1 transition-colors" value="Whole Foods Market" placeholder="e.g. SM Supermarket" />
+                </div>
+
+                <!-- Date & Category Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Date -->
+                    <div class="flex flex-col gap-1 bg-surface-container-low/50 rounded-xl p-2.5 border border-outline-variant/50 focus-within:border-primary transition-colors">
+                        <label for="input-review-date" class="font-label-sm text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">
+                            Transaction Date
                         </label>
-                        <input type="text" id="input-review-merchant" class="font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-transparent border-none outline-none w-full focus:ring-0 p-0" value="Whole Foods Market" placeholder="e.g. SM Supermarket" />
+                        <input type="date" id="input-review-date" class="font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer" value="2026-08-11" />
                     </div>
 
-                    <!-- Date & Category Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Date -->
-                        <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low/80 transition-colors rounded-xl p-2.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-                            <label for="input-review-date" class="block font-label-sm text-[10px] uppercase tracking-wider font-bold text-deep-forest mb-0.5 group-focus-within:text-primary transition-colors">
-                                Transaction Date
-                            </label>
-                            <input type="date" id="input-review-date" class="font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer" value="2026-08-11" />
-                        </div>
-
-                        <!-- Category -->
-                        <div class="group relative bg-surface-container-low/40 hover:bg-surface-container-low/80 transition-colors rounded-xl p-2.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-                            <div class="flex items-center justify-between mb-0.5">
-                                <label for="select-review-category" class="font-label-sm text-[10px] uppercase tracking-wider font-bold text-deep-forest group-focus-within:text-primary transition-colors">
-                                    Category
-                                </label>
-                                <span class="bg-soft-green text-primary px-1.5 py-0.2 rounded text-[9px] uppercase font-bold border border-primary/30">AI SUGGESTED</span>
-                            </div>
-                            <div class="relative flex items-center">
-                                <select id="select-review-category" class="font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer appearance-none pr-6">
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Dining">Dining & Coffee</option>
-                                    <option value="Transportation">Transportation</option>
-                                    <option value="Utilities">Utilities</option>
-                                    <option value="Shopping">Shopping & Hardware</option>
-                                    <option value="Healthcare">Healthcare</option>
-                                    <option value="Entertainment">Entertainment</option>
-                                    <option value="Services">Services</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <span class="material-symbols-outlined text-outline-variant text-[18px] absolute right-0 pointer-events-none">unfold_more</span>
-                            </div>
+                    <!-- Category -->
+                    <div class="flex flex-col gap-1 bg-surface-container-low/50 rounded-xl p-2.5 border border-outline-variant/50 focus-within:border-primary transition-colors">
+                        <label for="select-review-category" class="font-label-sm text-[10px] uppercase tracking-wider font-bold text-on-surface-variant">
+                            Category
+                        </label>
+                        <div class="relative flex items-center">
+                            <select id="select-review-category" class="font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-transparent border-none outline-none w-full focus:ring-0 p-0 cursor-pointer appearance-none pr-6">
+                                <option value="Groceries">Groceries</option>
+                                <option value="Dining">Dining & Coffee</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Shopping">Shopping & Hardware</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Services">Services</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="material-symbols-outlined text-outline-variant text-[18px] absolute right-0 pointer-events-none">unfold_more</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Line Items Section -->
-                <div class="flex flex-col gap-2.5 pt-2 border-t border-outline-variant/40">
+                <div class="flex flex-col gap-2 pt-2 border-t border-outline-variant/40">
                     <div class="flex justify-between items-center px-0.5">
-                        <h3 class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest uppercase tracking-wider">
-                            Itemized Line Items
+                        <h3 class="font-label-md text-xs font-bold text-deep-forest uppercase tracking-wider">
+                            Items
                         </h3>
                         <button type="button" id="btn-toggle-items" class="text-primary font-label-sm text-[11px] font-bold hover:underline transition-colors py-0.5 px-1.5 rounded hover:bg-soft-green/30">Collapse</button>
+                    </div>
+
+                    <!-- Column Headers -->
+                    <div class="flex items-center gap-2 px-3 font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
+                        <span class="flex-1">Description</span>
+                        <span class="w-12 sm:w-14 text-center shrink-0">Qty</span>
+                        <span class="w-20 sm:w-24 text-right shrink-0">Price</span>
+                        <span class="w-7 shrink-0"></span>
                     </div>
 
                     <!-- Items Container -->
@@ -322,36 +335,32 @@
                 <div class="flex flex-col gap-3 pt-2 border-t border-surface-variant/40">
                     <div class="flex justify-between items-center">
                         <span class="font-body-md text-xs text-on-surface-variant font-medium">Items Subtotal</span>
-                        <span id="label-review-subtotal" class="font-body-md text-xs text-on-surface font-semibold tabular-nums">₱0.00</span>
+                        <span id="label-review-subtotal" class="font-body-md text-xs text-deep-forest font-bold tabular-nums">₱0.00</span>
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-xs text-on-surface-variant font-medium">Tax / VAT</span>
-                            <span class="font-body-sm text-[10px] text-on-surface-variant/70">Extracted from receipt</span>
-                        </div>
+                        <span class="font-body-md text-xs text-on-surface-variant font-medium">Tax / VAT</span>
                         <div class="flex items-center gap-1">
                             <span class="text-xs text-on-surface-variant font-semibold">₱</span>
-                            <input type="number" step="0.01" min="0" id="input-review-tax" class="w-24 text-right font-body-md text-xs sm:text-sm text-on-surface font-semibold bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" />
+                            <input type="number" step="0.01" min="0" id="input-review-tax" class="w-24 text-right font-body-md text-xs sm:text-sm text-deep-forest font-semibold bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" />
                         </div>
                     </div>
-
-                    <div class="h-[1px] w-full bg-surface-variant/70"></div>
 
                     <!-- Grand Total Banner -->
-                    <div class="flex justify-between items-center bg-primary/5 p-3 rounded-lg border border-primary/20">
-                        <div class="flex flex-col">
-                            <span class="font-headline-md text-xs sm:text-sm font-bold text-on-surface">Grand Total</span>
-                            <span class="font-body-sm text-[10px] text-on-surface-variant">Final amount</span>
-                        </div>
+                    <div class="flex justify-between items-center bg-expense/5 p-3 rounded-xl border border-expense/20 mt-1">
+                        <span class="font-headline-md text-sm font-bold text-deep-forest">Total Amount</span>
                         <div class="flex items-center gap-1">
-                            <span class="text-base text-primary font-bold">₱</span>
-                            <input type="number" step="0.01" min="0" id="input-review-total" class="w-28 text-right font-headline-md text-base sm:text-lg font-bold text-primary bg-surface-container-lowest border border-primary/40 rounded-lg px-2.5 py-1 focus:border-primary outline-none tabular-nums shadow-xs" value="0.00" />
+                            <span class="text-base text-expense font-bold">₱</span>
+                            <input type="number" step="0.01" min="0" id="input-review-total" class="w-28 text-right font-headline-md text-base sm:text-lg font-extrabold text-expense bg-surface-container-lowest border border-expense/40 rounded-lg px-2.5 py-1 focus:border-expense outline-none tabular-nums shadow-xs" value="0.00" />
                         </div>
                     </div>
 
-                    <!-- Cash & Change Breakdown -->
-                    <div id="section-cash-breakdown" class="pt-2 border-t border-dashed border-surface-variant/80 flex flex-col gap-2">
+                    <!-- Cash & Change Disclosure -->
+                    <button type="button" id="btn-toggle-cash" class="self-start text-primary font-label-sm text-[11px] font-bold flex items-center gap-1 hover:underline mt-0.5">
+                        <span class="material-symbols-outlined text-[14px]" id="icon-toggle-cash">add</span>
+                        <span id="label-toggle-cash">Add cash payment details</span>
+                    </button>
+                    <div id="section-cash-breakdown" class="hidden flex-col gap-2 pt-2 border-t border-dashed border-surface-variant/80">
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant">
                             <span class="font-medium text-on-surface">Cash Tendered</span>
                             <div class="flex items-center gap-1">
@@ -361,7 +370,7 @@
                         </div>
 
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant">
-                            <span class="font-medium text-on-surface">Change Calculated</span>
+                            <span class="font-medium text-on-surface">Change</span>
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-on-surface-variant">₱</span>
                                 <input type="number" step="0.01" min="0" id="input-cash-change" class="w-24 text-right font-bold text-xs text-primary bg-primary/5 border border-primary/30 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" placeholder="0.00" />
@@ -381,19 +390,12 @@
 
 </div>
 
-<!-- Full Image Zoom Lightbox Modal -->
-<div id="modal-image-zoom" class="fixed inset-0 z-[100] bg-on-surface/80 backdrop-blur-md flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-200">
-    <div class="relative max-w-xl w-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-2xl p-4 flex flex-col gap-3">
-        <div class="flex justify-between items-center pb-2 border-b border-surface-variant">
-            <span class="font-headline-md text-sm font-bold text-on-surface">Original Receipt Image</span>
-            <button type="button" id="btn-close-zoom" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors">
-                <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
-        </div>
-        <div class="max-h-[70vh] overflow-auto flex items-center justify-center bg-surface-container-low rounded-xl p-2">
-            <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-full max-h-[65vh] object-contain rounded" src="" />
-        </div>
-    </div>
+<!-- Full Image Zoom Lightbox Modal (matches receipt detail page's image viewer) -->
+<div id="modal-image-zoom" role="dialog" aria-modal="true" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <button type="button" id="btn-close-zoom" aria-label="Close image modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-soft-green hover:text-primary transition-all z-10 shadow-md active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+    </button>
+    <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="" />
 </div>
 
 <!-- Leave / Discard Confirmation Modal -->
@@ -458,6 +460,13 @@
         const badgeMerchant = document.getElementById('badge-merchant-name');
         const badgeCount = document.getElementById('badge-item-count');
         const badgeTotal = document.getElementById('badge-total-amount');
+        const badgeCountMobile = document.getElementById('badge-item-count-mobile');
+        const badgeTotalMobile = document.getElementById('badge-total-amount-mobile');
+
+        const cashToggleBtn = document.getElementById('btn-toggle-cash');
+        const cashSection = document.getElementById('section-cash-breakdown');
+        const cashToggleIcon = document.getElementById('icon-toggle-cash');
+        const cashToggleLabel = document.getElementById('label-toggle-cash');
 
         const itemsContainer = document.getElementById('container-review-items');
         const addItemBtn = document.getElementById('btn-add-review-item');
@@ -527,6 +536,22 @@
             setTimeout(() => {
                 discardModal.classList.add('hidden');
             }, 200);
+        }
+
+        // Cash payment details disclosure (collapsed by default to declutter the totals block)
+        function setCashSectionOpen(isOpen) {
+            if (!cashSection) return;
+            cashSection.classList.toggle('hidden', !isOpen);
+            cashSection.classList.toggle('flex', isOpen);
+            if (cashToggleIcon) cashToggleIcon.textContent = isOpen ? 'remove' : 'add';
+            if (cashToggleLabel) cashToggleLabel.textContent = isOpen ? 'Hide cash payment details' : 'Add cash payment details';
+        }
+
+        if (cashToggleBtn) {
+            cashToggleBtn.addEventListener('click', () => {
+                const isCurrentlyOpen = cashSection && !cashSection.classList.contains('hidden');
+                setCashSectionOpen(!isCurrentlyOpen);
+            });
         }
 
         if (keepEditingBtn) keepEditingBtn.addEventListener('click', hideDiscardModal);
@@ -746,6 +771,10 @@
             reviewData.cash_tendered = parseFloat(cashInput.value) || 0;
             reviewData.change = parseFloat(changeInput.value) || 0;
 
+            if (reviewData.cash_tendered > 0 || reviewData.change > 0) {
+                setCashSectionOpen(true);
+            }
+
             saveActiveState();
             renderItems();
         }
@@ -762,9 +791,14 @@
                 items: reviewData.items
             }));
 
+            const itemCountLabel = `${reviewData.items.length} item${reviewData.items.length === 1 ? '' : 's'}`;
+            const totalLabel = `₱${(parseFloat(totalInput.value) || 0).toFixed(2)}`;
+
             if (badgeMerchant) badgeMerchant.textContent = merchantInput.value || "Merchant";
-            if (badgeCount) badgeCount.textContent = `${reviewData.items.length} item${reviewData.items.length === 1 ? '' : 's'}`;
-            if (badgeTotal) badgeTotal.textContent = `₱${(parseFloat(totalInput.value) || 0).toFixed(2)}`;
+            if (badgeCount) badgeCount.textContent = itemCountLabel;
+            if (badgeTotal) badgeTotal.textContent = totalLabel;
+            if (badgeCountMobile) badgeCountMobile.textContent = itemCountLabel;
+            if (badgeTotalMobile) badgeTotalMobile.textContent = totalLabel;
         }
 
         [merchantInput, dateInput, categorySelect, taxInput, totalInput, cashInput, changeInput].forEach(el => {
@@ -801,7 +835,7 @@
             } else {
                 reviewData.items.forEach((item, idx) => {
                     const row = document.createElement('div');
-                    row.className = "group flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:p-3 gap-2 bg-surface-container-lowest rounded-lg border border-surface-variant/80 hover:border-outline-variant/80 shadow-xs transition-all";
+                    row.className = "group flex items-center gap-2 p-2 sm:p-2.5 bg-surface-container-lowest rounded-lg border border-surface-variant/80 hover:border-outline-variant/80 shadow-xs transition-all";
 
                     let priceVal = '';
                     if (item.isNew) {
@@ -811,25 +845,22 @@
                     }
 
                     row.innerHTML = `
-                        <div class="flex-1 flex items-center bg-surface-container-low/40 rounded-md px-2.5 py-1 border border-surface-variant/40 focus-within:border-primary">
+                        <div class="flex-1 min-w-0 flex items-center bg-surface-container-low/40 rounded-md px-2.5 py-1.5 border border-surface-variant/40 focus-within:border-primary">
                             <input type="text" class="input-item-desc w-full font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 min-h-[28px]" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item description" />
                         </div>
-                        
-                        <div class="flex items-center justify-between sm:justify-end gap-2 pt-0.5 sm:pt-0">
-                            <div class="flex items-center gap-1 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
-                                <span class="text-[10px] font-semibold text-on-surface-variant/70 uppercase">Qty</span>
-                                <input type="number" min="1" step="1" class="input-item-qty w-10 text-center font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${item.quantity}" data-idx="${idx}" />
-                            </div>
 
-                            <div class="flex items-center gap-0.5 bg-surface-container-low/40 rounded-md px-2 py-1 border border-surface-variant/40 focus-within:border-primary">
-                                <span class="text-xs text-on-surface-variant font-medium">₱</span>
-                                <input type="number" step="0.01" min="0" class="input-item-price w-20 sm:w-24 text-right font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${priceVal}" placeholder="0.00" data-idx="${idx}" />
-                            </div>
-
-                            <button type="button" class="btn-delete-item text-outline-variant hover:text-error transition-colors p-1.5 rounded-md hover:bg-error/10 active:scale-95 shrink-0 ml-0.5" data-idx="${idx}" title="Remove item">
-                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
+                        <div class="w-12 sm:w-14 shrink-0 flex items-center justify-center bg-surface-container-low/40 rounded-md px-1 py-1.5 border border-surface-variant/40 focus-within:border-primary">
+                            <input type="number" min="1" step="1" class="input-item-qty w-full text-center font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${item.quantity}" data-idx="${idx}" aria-label="Quantity" />
                         </div>
+
+                        <div class="w-20 sm:w-24 shrink-0 flex items-center gap-0.5 bg-surface-container-low/40 rounded-md px-2 py-1.5 border border-surface-variant/40 focus-within:border-primary">
+                            <span class="text-xs text-on-surface-variant font-medium">₱</span>
+                            <input type="number" step="0.01" min="0" class="input-item-price w-full text-right font-body-md text-xs sm:text-sm font-medium text-on-surface bg-transparent border-none outline-none p-0 tabular-nums min-h-[28px]" value="${priceVal}" placeholder="0.00" data-idx="${idx}" aria-label="Price" />
+                        </div>
+
+                        <button type="button" class="btn-delete-item w-7 h-7 shrink-0 text-outline-variant hover:text-error transition-colors rounded-md hover:bg-error/10 active:scale-95 flex items-center justify-center" data-idx="${idx}" title="Remove item" aria-label="Remove item">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
                     `;
                     itemsContainer.appendChild(row);
                 });
@@ -974,25 +1005,48 @@
         }
 
         const zoomBtnMobile = document.getElementById('btn-zoom-image-mobile');
-        if (zoomBtnMobile && zoomModal) {
-            zoomBtnMobile.addEventListener('click', () => {
-                zoomModal.classList.remove('hidden');
-                requestAnimationFrame(() => zoomModal.classList.add('opacity-100'));
+
+        function openZoomModal() {
+            if (!zoomModal) return;
+            document.body.style.overflow = 'hidden';
+            zoomModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                zoomModal.classList.remove('opacity-0');
+                zoomModal.classList.add('opacity-100');
+                if (imgFullZoom) {
+                    imgFullZoom.classList.remove('scale-95');
+                    imgFullZoom.classList.add('scale-100');
+                }
             });
         }
 
-        if (zoomBtn && zoomModal) {
-            zoomBtn.addEventListener('click', () => {
-                zoomModal.classList.remove('hidden');
-                requestAnimationFrame(() => zoomModal.classList.add('opacity-100'));
+        function closeZoomModal() {
+            if (!zoomModal) return;
+            zoomModal.classList.remove('opacity-100');
+            zoomModal.classList.add('opacity-0');
+            if (imgFullZoom) {
+                imgFullZoom.classList.remove('scale-100');
+                imgFullZoom.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                zoomModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        if (zoomBtnMobile) zoomBtnMobile.addEventListener('click', openZoomModal);
+        if (zoomBtn) zoomBtn.addEventListener('click', openZoomModal);
+        if (closeZoomBtn) closeZoomBtn.addEventListener('click', closeZoomModal);
+        if (zoomModal) {
+            zoomModal.addEventListener('click', (e) => {
+                if (e.target === zoomModal) closeZoomModal();
             });
         }
-        if (closeZoomBtn && zoomModal) {
-            closeZoomBtn.addEventListener('click', () => {
-                zoomModal.classList.remove('opacity-100');
-                setTimeout(() => zoomModal.classList.add('hidden'), 200);
-            });
-        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && zoomModal && !zoomModal.classList.contains('hidden')) {
+                closeZoomModal();
+            }
+        });
     });
 
     function escapeHtml(str) {
