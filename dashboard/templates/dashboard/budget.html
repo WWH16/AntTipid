@@ -30,7 +30,7 @@
                     <button aria-label="Previous month" class="w-7 h-7 rounded-full flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                     </button>
-                    <span id="current-month-label" class="font-body-sm text-xs sm:text-sm font-bold text-deep-forest">November 2026</span>
+                    <span id="current-month-label" class="font-body-sm text-xs sm:text-sm font-bold text-deep-forest">August 2026</span>
                     <button aria-label="Next month" class="w-7 h-7 rounded-full flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                     </button>
@@ -50,8 +50,8 @@
         <!-- ═══════════════════════════════════════ -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
 
-            <!-- Overall Budget Ring — Gold Budget Color Accent -->
-            <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-3.5 sm:gap-4 relative overflow-hidden group">
+            <!-- Overall Budget Ring - Gold Budget Color Accent -->
+            <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex items-center gap-3.5 sm:gap-4 relative overflow-hidden group">
                 <div class="absolute -right-6 -top-6 w-28 h-28 bg-warning/15 rounded-full blur-xl pointer-events-none"></div>
                 <!-- SVG Ring with Gold Stroke -->
                 <div class="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
@@ -76,7 +76,7 @@
             </div>
 
             <!-- Total Spent -->
-            <div class="col-span-1 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-center gap-1 group">
+            <div class="col-span-1 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex flex-col justify-center gap-1 group">
                 <div class="flex items-center gap-1.5">
                     <div class="w-5 h-5 rounded-md bg-expense/15 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                         <span class="material-symbols-outlined text-[14px]">trending_down</span>
@@ -87,14 +87,14 @@
             </div>
 
             <!-- Over Budget Alert (Expense Red Accent) -->
-            <div class="col-span-1 bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-center gap-1 relative overflow-hidden group">
+            <div class="col-span-1 bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex flex-col justify-center gap-1 relative overflow-hidden group">
                 <div class="flex items-center gap-1.5 relative">
                     <div class="w-5 h-5 rounded-md bg-expense/20 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                         <span class="material-symbols-outlined text-[14px]">warning</span>
                     </div>
                     <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold uppercase tracking-wider truncate">Over Budget</span>
                 </div>
-                <span class="font-headline-md text-sm sm:text-base md:text-lg font-extrabold text-expense relative truncate">2 Categories</span>
+                <span class="font-headline-md text-sm sm:text-base md:text-lg font-extrabold text-expense relative truncate">1 Category</span>
             </div>
 
         </section>
@@ -110,8 +110,8 @@
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4" id="category-cards-grid">
 
-                <!-- Food & Dining (On Track — Soft Green + Ant Green) -->
-                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-2.5 group">
+                <!-- Food & Dining (On Track - Soft Green + Ant Green) -->
+                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Food & Dining" data-category="Food & Dining" data-spent="2400" data-target="3000">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-lg bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -122,7 +122,10 @@
                                 <span class="inline-block px-2 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-[9px] font-bold border border-primary/30">On Track</span>
                             </div>
                         </div>
-                        <button class="btn-adjust-budget text-primary font-label-sm text-[11px] hover:underline font-bold px-1.5 py-0.5 min-h-[36px] flex items-center cursor-pointer" data-category="Food & Dining" data-spent="2400" data-target="3000">Adjust</button>
+                        <span class="text-primary font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div>
@@ -136,8 +139,8 @@
                     </div>
                 </div>
 
-                <!-- Transportation (Over Budget — Expense Red) -->
-                <div class="bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-2.5 relative overflow-hidden group">
+                <!-- Transportation (Over Budget - Expense Red) -->
+                <div class="category-budget-card bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-expense/60 transition-all duration-200 flex flex-col gap-2.5 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Transportation" data-category="Transportation" data-spent="5200" data-target="4000">
                     <div class="flex justify-between items-start relative">
                         <div class="flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-lg bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -148,7 +151,10 @@
                                 <span class="inline-block px-2 py-0.5 rounded-full bg-expense/20 text-expense font-label-sm text-[9px] font-bold border border-expense/30">Over Budget</span>
                             </div>
                         </div>
-                        <button class="btn-adjust-budget text-expense font-label-sm text-[11px] hover:underline font-bold px-1.5 py-0.5 min-h-[36px] flex items-center cursor-pointer" data-category="Transportation" data-spent="5200" data-target="4000">Adjust</button>
+                        <span class="text-expense font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 relative">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
                     </div>
                     <div class="flex justify-between items-end relative">
                         <div>
@@ -166,8 +172,8 @@
                     </div>
                 </div>
 
-                <!-- Utilities (On Track — Soft Green + Ant Green) -->
-                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-2.5 group">
+                <!-- Utilities (On Track - Soft Green + Ant Green) -->
+                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Utilities" data-category="Utilities" data-spent="4500" data-target="5000">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-lg bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -178,7 +184,10 @@
                                 <span class="inline-block px-2 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-[9px] font-bold border border-primary/30">On Track</span>
                             </div>
                         </div>
-                        <button class="btn-adjust-budget text-primary font-label-sm text-[11px] hover:underline font-bold px-1.5 py-0.5 min-h-[36px] flex items-center cursor-pointer" data-category="Utilities" data-spent="4500" data-target="5000">Adjust</button>
+                        <span class="text-primary font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div>
@@ -192,8 +201,8 @@
                     </div>
                 </div>
 
-                <!-- Entertainment (Nearing Limit — Gold Accent) -->
-                <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-2.5 group">
+                <!-- Entertainment (Nearing Limit - Gold Accent) -->
+                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-warning/50 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Entertainment" data-category="Entertainment" data-spent="2800" data-target="3000">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-lg bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -204,7 +213,10 @@
                                 <span class="inline-block px-2 py-0.5 rounded-full bg-warning/15 text-amber-700 font-label-sm text-[9px] font-bold border border-warning/30">Nearing Limit</span>
                             </div>
                         </div>
-                        <button class="btn-adjust-budget text-amber-700 font-label-sm text-[11px] hover:underline font-bold px-1.5 py-0.5 min-h-[36px] flex items-center cursor-pointer" data-category="Entertainment" data-spent="2800" data-target="3000">Adjust</button>
+                        <span class="text-amber-700 font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div>
@@ -280,7 +292,7 @@
         const cancelBtn = document.getElementById('btn-cancel-adjust');
 
         function openAdjustModal(categoryName, spent, target) {
-            modalTitle.textContent = `Adjust Budget — ${categoryName}`;
+            modalTitle.textContent = `Adjust Budget: ${categoryName}`;
             inputTarget.value = target;
             
             document.body.style.overflow = 'hidden';
@@ -305,10 +317,15 @@
             }, 300);
         }
 
-        document.querySelectorAll('.btn-adjust-budget').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                openAdjustModal(btn.dataset.category, btn.dataset.spent, btn.dataset.target);
+        document.querySelectorAll('.category-budget-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openAdjustModal(card.dataset.category, card.dataset.spent, card.dataset.target);
+            });
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openAdjustModal(card.dataset.category, card.dataset.spent, card.dataset.target);
+                }
             });
         });
 
