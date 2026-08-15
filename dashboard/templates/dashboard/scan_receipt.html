@@ -74,17 +74,24 @@
             
             <!-- Main Upload Box -->
             <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-5 bg-surface-container-lowest p-8 sm:p-12 rounded-3xl shadow-soft border-2 border-dashed border-outline-variant/60 hover:border-primary hover:bg-soft-green/20 transition-all cursor-pointer text-center group overflow-hidden">
-                
-                <div class="w-16 h-16 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                    <span class="material-symbols-outlined text-[36px]">photo_camera</span>
+
+                <!-- Viewfinder frame: corner brackets signal "position the receipt here" -->
+                <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+                    <span class="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-primary/40 rounded-tl-lg group-hover:border-primary transition-colors"></span>
+                    <span class="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-primary/40 rounded-tr-lg group-hover:border-primary transition-colors"></span>
+                    <span class="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-primary/40 rounded-bl-lg group-hover:border-primary transition-colors"></span>
+                    <span class="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-primary/40 rounded-br-lg group-hover:border-primary transition-colors"></span>
+                    <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                        <span class="material-symbols-outlined text-[30px]">photo_camera</span>
+                    </div>
                 </div>
-                
+
                 <div class="space-y-1.5 max-w-md">
                     <h2 class="font-headline-lg text-lg sm:text-xl md:text-2xl font-extrabold text-deep-forest group-hover:text-primary transition-colors">
                         Scan Receipt
                     </h2>
                     <p class="font-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed font-medium">
-                        Position the receipt within the frame. Upload a photo or select an image to extract merchant, date, items, tax, and total automatically.
+                        Upload a clear photo and AI will pull out the merchant, items, and total for you.
                     </p>
                 </div>
 
@@ -100,6 +107,16 @@
                         <span>Try Sample Demo</span>
                     </button>
                 </div>
+
+                <span class="font-body-sm text-[11px] text-on-surface-variant/70 -mt-1">or drag and drop a JPG or PNG here</span>
+            </div>
+
+            <!-- Quick scan tip -->
+            <div class="flex items-start sm:items-center gap-2.5 px-4 py-3 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
+                <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 sm:mt-0">lightbulb</span>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    For the cleanest scan: flatten the receipt, use good lighting, and keep all edges in frame.
+                </p>
             </div>
 
         </div>
@@ -162,7 +179,7 @@
             <div class="w-full pt-2">
                 <button type="button" id="btn-cancel-processing" class="w-full h-11 min-h-[44px] flex items-center justify-center gap-2 bg-surface-container-lowest hover:bg-expense/10 border border-outline-variant/60 rounded-xl text-deep-forest hover:text-expense transition-all shadow-xs cursor-pointer active:scale-95">
                     <span class="material-symbols-outlined text-[18px] text-expense">close</span>
-                    <span class="font-label-md text-xs sm:text-sm font-bold">Cancel and Add Manually</span>
+                    <span class="font-label-md text-xs sm:text-sm font-bold">Cancel Scan</span>
                 </button>
             </div>
 
