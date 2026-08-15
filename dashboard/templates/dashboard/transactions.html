@@ -400,115 +400,121 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="receipt-cards-grid">
                 
                 <!-- Receipt Card 1 (Whole Foods Market) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
-                    <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
+                <div class="receipt-card-wrapper relative group h-full">
+                    <div class="absolute top-3 left-3 z-20 opacity-90 group-hover:opacity-100 transition-opacity">
                         <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
-                    
-                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
-                            <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
-                        </div>
-                    </div>
 
-                    <div class="p-4 flex flex-col justify-between flex-1 gap-3">
-                        <div>
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
-                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱142.50</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
-                                <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 24, 2026 • 14:30
+                    <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 relative flex flex-col justify-between h-full cursor-pointer" data-category="Groceries" data-merchant="Whole Foods Market">
+                        <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
+                            <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+                            <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                                <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
-                                <span class="material-symbols-outlined text-[14px]">restaurant</span>
-                                Groceries
-                            </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
-                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                            </span>
+                        <div class="p-4 flex flex-col justify-between flex-1 gap-3">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Whole Foods Market</h3>
+                                    <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱142.50</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Oct 24, 2026 • 14:30
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
+                                    <span class="material-symbols-outlined text-[14px]">shopping_cart</span>
+                                    Groceries
+                                </span>
+                                <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
+                                    <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
 
                 <!-- Receipt Card 2 (Blue Bottle Coffee) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Dining" data-merchant="Blue Bottle Coffee">
-                    <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
+                <div class="receipt-card-wrapper relative group h-full">
+                    <div class="absolute top-3 left-3 z-20 opacity-90 group-hover:opacity-100 transition-opacity">
                         <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
-                    
-                    <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
-                        <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
-                            <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
-                        </div>
-                    </div>
 
-                    <div class="p-4 flex flex-col justify-between flex-1 gap-3">
-                        <div>
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
-                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱12.75</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
-                                <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 23, 2026 • 08:15
+                    <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 relative flex flex-col justify-between h-full cursor-pointer" data-category="Dining" data-merchant="Blue Bottle Coffee">
+                        <div class="h-44 bg-surface-container-low relative overflow-hidden flex items-center justify-center border-b border-outline-variant/30">
+                            <img alt="Receipt scan thumbnail" class="w-full h-full object-cover opacity-90 transition-transform duration-300" src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80"/>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+                            <div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[11px] font-label-sm text-deep-forest font-bold flex items-center gap-1 border border-outline-variant/30 shadow-xs">
+                                <span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span> Scan
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
-                                <span class="material-symbols-outlined text-[14px]">restaurant</span>
-                                Dining
-                            </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
-                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                            </span>
+                        <div class="p-4 flex flex-col justify-between flex-1 gap-3">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Blue Bottle Coffee</h3>
+                                    <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱12.75</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Oct 23, 2026 • 08:15
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
+                                    <span class="material-symbols-outlined text-[14px]">restaurant</span>
+                                    Dining
+                                </span>
+                                <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
+                                    <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
 
                 <!-- Receipt Card 3 (AWS Digital Receipt) -->
-                <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 group relative flex flex-col justify-between cursor-pointer" data-category="Software" data-merchant="Amazon Web Services">
-                    <div class="absolute top-3 left-3 z-10 opacity-90 group-hover:opacity-100 transition-opacity">
+                <div class="receipt-card-wrapper relative group h-full">
+                    <div class="absolute top-3 left-3 z-20 opacity-90 group-hover:opacity-100 transition-opacity">
                         <input class="chk-receipt-item rounded border-outline-variant/60 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-5 h-5 cursor-pointer shadow-xs" type="checkbox"/>
                     </div>
-                    
-                    <div class="h-44 bg-surface-container-low flex flex-col items-center justify-center text-on-surface-variant relative border-b border-outline-variant/30">
-                        <span class="material-symbols-outlined text-4xl mb-1 text-primary">picture_as_pdf</span>
-                        <span class="font-label-sm text-xs font-bold text-deep-forest">Digital Receipt (PDF)</span>
-                    </div>
 
-                    <div class="p-4 flex flex-col justify-between flex-1 gap-3">
-                        <div>
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
-                                <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱89.00</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
-                                <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                Oct 20, 2026 • 19:42
-                            </div>
+                    <a href="{% url 'receipt_detail' %}" class="receipt-card bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/60 shadow-xs hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-200 relative flex flex-col justify-between h-full cursor-pointer" data-category="Utilities" data-merchant="Amazon Web Services">
+                        <div class="h-44 bg-surface-container-low flex flex-col items-center justify-center text-on-surface-variant relative border-b border-outline-variant/30">
+                            <span class="material-symbols-outlined text-4xl mb-1 text-primary">picture_as_pdf</span>
+                            <span class="font-label-sm text-xs font-bold text-deep-forest">Digital Receipt (PDF)</span>
                         </div>
 
-                        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-700 font-label-sm text-xs font-bold border border-sky-500/30">
-                                <span class="material-symbols-outlined text-[14px]">bolt</span>
-                                Utilities
-                            </span>
-                            <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
-                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                            </span>
+                        <div class="p-4 flex flex-col justify-between flex-1 gap-3">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="receipt-merchant-title font-headline-md text-base text-deep-forest font-bold truncate pr-2 group-hover:text-primary transition-colors">Amazon Web Services</h3>
+                                    <span class="font-headline-md text-base text-expense font-extrabold whitespace-nowrap tabular-nums">₱89.00</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-xs font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Oct 20, 2026 • 19:42
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center border-t border-outline-variant/30 pt-2.5">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-700 font-label-sm text-xs font-bold border border-sky-500/30">
+                                    <span class="material-symbols-outlined text-[14px]">bolt</span>
+                                    Utilities
+                                </span>
+                                <span class="text-on-surface-variant group-hover:text-primary transition-colors p-1 rounded-lg hover:bg-soft-green/30 flex items-center">
+                                    <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
 
             </div>
 
@@ -610,15 +616,15 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<!-- EDIT TRANSACTION BOTTOM SHEET (Mobile only) -->
+<!-- EDIT TRANSACTION SHEET (Bottom sheet on mobile, centered modal on desktop) -->
 <!-- ═══════════════════════════════════════ -->
-<div id="edit-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title" class="md:hidden fixed inset-0 z-[100] flex items-end justify-center p-0 hidden touch-none">
+<div id="edit-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden touch-none">
     <div id="edit-sheet-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-md opacity-0 transition-opacity duration-200 pointer-events-auto"></div>
 
-    <div id="edit-sheet-content" class="bg-surface-container-lowest w-full rounded-t-2xl border border-surface-variant/60 p-5 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[88vh] overflow-y-auto">
+    <div id="edit-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-surface-variant/60 p-5 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[88vh] overflow-y-auto">
 
-        <!-- Drag Handle -->
-        <div id="edit-sheet-handle" aria-label="Drag down to close" class="w-full py-3 -mt-2 -mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none">
+        <!-- Drag Handle (mobile only) -->
+        <div id="edit-sheet-handle" aria-label="Drag down to close" class="w-full py-3 -mt-2 -mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none sm:hidden">
             <span class="w-10 h-[5px] rounded-full bg-outline/70"></span>
         </div>
 
@@ -892,27 +898,15 @@
             });
         })();
 
-        // Desktop table rows: reuse the full-page Manual Entry form in edit mode
+        // Desktop table rows: open the same edit sheet used on mobile
         document.querySelectorAll('.tx-row[data-edit-id]').forEach(row => {
-            row.addEventListener('click', () => {
-                const d = row.dataset;
-                const params = new URLSearchParams({
-                    edit: d.editId,
-                    type: d.editType || '',
-                    amount: d.editAmount || '',
-                    title: d.editTitle || '',
-                    category: d.editCategory || '',
-                    date: d.editDate || '',
-                    account: d.editAccount || '',
-                });
-                window.location.href = "{% url 'add_transaction' %}?" + params.toString();
-            });
+            row.addEventListener('click', () => openEditSheet(row.dataset));
 
             const rowDeleteBtn = row.querySelector('.tx-row-delete-btn');
             if (rowDeleteBtn) {
                 rowDeleteBtn.addEventListener('click', (e) => {
                     // Don't let this bubble up to the row's own click handler
-                    // (which would navigate to the edit page instead).
+                    // (which would open the edit sheet instead).
                     e.stopPropagation();
                     requestDeleteRow(row);
                 });
@@ -1214,6 +1208,11 @@
         if (btnViewTx) btnViewTx.addEventListener('click', () => switchViewMode('transactions'));
         if (btnViewReceipts) btnViewReceipts.addEventListener('click', () => switchViewMode('receipts'));
 
+        // Land on the Receipt Archive tab when linked here with ?mode=receipts
+        if (new URLSearchParams(window.location.search).get('mode') === 'receipts') {
+            switchViewMode('receipts');
+        }
+
         // Receipt Checkboxes Multi-Selection
         const receiptBar = document.getElementById('receipt-selection-bar');
         const receiptCheckboxes = document.querySelectorAll('.chk-receipt-item');
@@ -1452,8 +1451,8 @@
             requestAnimationFrame(() => {
                 editSheetBackdrop.classList.remove('opacity-0');
                 editSheetBackdrop.classList.add('opacity-100');
-                editSheetContent.classList.remove('translate-y-full', 'opacity-0');
-                editSheetContent.classList.add('translate-y-0', 'opacity-100');
+                editSheetContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
+                editSheetContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
             });
         }
 
@@ -1462,8 +1461,8 @@
 
             editSheetBackdrop.classList.remove('opacity-100');
             editSheetBackdrop.classList.add('opacity-0');
-            editSheetContent.classList.remove('translate-y-0', 'opacity-100');
-            editSheetContent.classList.add('translate-y-full', 'opacity-0');
+            editSheetContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
+            editSheetContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
             editSheetHideTimer = setTimeout(() => {
                 editSheetWrapper.classList.add('hidden');
                 document.body.style.overflow = '';
