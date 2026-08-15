@@ -103,7 +103,7 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">restaurant</span>
@@ -123,7 +123,7 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">directions_car</span>
@@ -149,7 +149,7 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
@@ -169,7 +169,7 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">payments</span>
@@ -194,7 +194,7 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">home</span>
@@ -825,7 +825,24 @@
 
         // Mobile cards: swipe left to reveal Delete (Instagram-style), tap to edit
         const SWIPE_DELETE_WIDTH = 80; // matches the w-20 delete button behind each row
+        // A plain tap's touchstart/touchend coordinates routinely drift by several
+        // pixels (finger contact patch shifting as pressure changes). Direction-
+        // locking alone only decides whether we treat the gesture as horizontal;
+        // it doesn't stop that first jittery reading from being applied as a
+        // transform, which is what caused the instant flash-then-spring-back on
+        // tap. SWIPE_DEAD_ZONE fixes that: the row stays pinned in place until
+        // the drag has traveled a distance no ordinary tap reaches, and a real
+        // swipe continues smoothly from zero past that point.
+        const SWIPE_LOCK_THRESHOLD = 10;
+        const SWIPE_HORIZONTAL_RATIO = 1.5;
+        const SWIPE_DEAD_ZONE = 24;
         let openSwipeRow = null;
+
+        function computeSwipeTranslate(baseOffset, deltaX) {
+            const sign = deltaX < 0 ? -1 : 1;
+            const adjusted = sign * Math.max(0, Math.abs(deltaX) - SWIPE_DEAD_ZONE);
+            return Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + adjusted));
+        }
 
         function closeSwipeRow(row) {
             if (!row) return;
@@ -859,14 +876,27 @@
 
             let startX = 0;
             let startY = 0;
+            let startTime = 0;
             let currentX = 0;
             let isDragging = false;
             let isHorizontal = null;
             let hasDragged = false;
 
+            // While no swipe direction has locked in yet, re-baseline the
+            // start point every REANCHOR_INTERVAL ms. A long press's touch
+            // coordinates keep drifting from sensor noise/tremor the whole
+            // time it's held, and without this a hold long enough can random-
+            // walk far enough from the original touchstart point to clear the
+            // lock threshold and dead zone on its own, with no real swipe.
+            // Re-anchoring caps how much of that drift can ever accumulate to
+            // whatever a single REANCHOR_INTERVAL window allows, which a real
+            // swipe clears almost immediately but idle jitter never does.
+            const REANCHOR_INTERVAL = 120;
+
             fg.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
+                startTime = e.timeStamp;
                 currentX = startX;
                 isDragging = true;
                 isHorizontal = null;
@@ -878,20 +908,28 @@
                 if (!isDragging) return;
                 currentX = e.touches[0].clientX;
                 const currentYPos = e.touches[0].clientY;
+
+                if (isHorizontal === null && e.timeStamp - startTime > REANCHOR_INTERVAL) {
+                    startX = currentX;
+                    startY = currentYPos;
+                    startTime = e.timeStamp;
+                }
+
                 const deltaX = currentX - startX;
                 const deltaY = currentYPos - startY;
 
-                if (isHorizontal === null && (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6)) {
-                    isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+                if (isHorizontal === null && (Math.abs(deltaX) > SWIPE_LOCK_THRESHOLD || Math.abs(deltaY) > SWIPE_LOCK_THRESHOLD)) {
+                    isHorizontal = Math.abs(deltaX) > Math.abs(deltaY) * SWIPE_HORIZONTAL_RATIO;
                 }
-                if (!isHorizontal) return; // vertical scroll: let the page handle it
+                if (!isHorizontal) return; // vertical scroll or an in-place tap: let it be
 
                 e.preventDefault();
+                if (Math.abs(deltaX) <= SWIPE_DEAD_ZONE) return; // tap jitter: still inside the dead zone, don't move anything
+
                 hasDragged = true;
 
                 const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
-                const translate = Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + deltaX));
-                fg.style.transform = `translateX(${translate}px)`;
+                fg.style.transform = `translateX(${computeSwipeTranslate(baseOffset, deltaX)}px)`;
             }, { passive: false });
 
             fg.addEventListener('touchend', () => {
@@ -903,7 +941,7 @@
 
                 const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
                 const deltaX = currentX - startX;
-                const finalTranslate = Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + deltaX));
+                const finalTranslate = computeSwipeTranslate(baseOffset, deltaX);
 
                 if (finalTranslate < -SWIPE_DELETE_WIDTH / 2) {
                     openSwipeRowFn(row);

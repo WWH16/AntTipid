@@ -182,7 +182,16 @@
                 "xs": "0 1px 3px rgba(35, 69, 42, 0.04)"
               }
           }
-        }
+        },
+        // Without this, `hover:` compiles to plain `:hover`, which touchscreens
+        // trigger on tap and then get "stuck" in (no mouse to move away and
+        // clear it). That's what let the translucent `hover:bg-soft-green/30`
+        // on transaction rows bleed through to the solid Delete button sitting
+        // behind them when tapped. Scoping `hover:` to devices that support a
+        // real hover (mouse/trackpad) fixes that everywhere, not just there.
+        future: {
+          hoverOnlyWhenSupported: true,
+        },
       }
     </script>
     <style>
