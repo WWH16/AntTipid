@@ -134,7 +134,7 @@
                         </div>
                         <span class="font-label-sm text-[11px] sm:text-xs text-primary font-extrabold tabular-nums">80%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
+                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
                         <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 80%;"></div>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                         </div>
                         <span class="font-label-sm text-[11px] sm:text-xs text-primary font-extrabold tabular-nums">90%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
+                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
                         <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 90%;"></div>
                     </div>
                 </div>
@@ -225,7 +225,7 @@
                         </div>
                         <span class="font-label-sm text-[11px] sm:text-xs text-amber-700 font-extrabold tabular-nums">93%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
+                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
                         <div class="h-full bg-warning rounded-full transition-all duration-500" style="width: 93%;"></div>
                     </div>
                 </div>
@@ -337,6 +337,42 @@
             e.preventDefault();
             closeAdjustModal();
         });
+
+        // Mobile Drag Down to Dismiss Gesture (matches the filter sheet's behavior)
+        const adjustDragHandle = document.getElementById('adjust-modal-handle');
+        let adjustStartY = 0;
+        let adjustCurrentY = 0;
+        let isDraggingAdjust = false;
+
+        if (adjustDragHandle) {
+            adjustDragHandle.addEventListener('touchstart', (e) => {
+                adjustStartY = e.touches[0].clientY;
+                adjustCurrentY = adjustStartY;
+                isDraggingAdjust = true;
+                modalContent.style.transition = 'none';
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDraggingAdjust) return;
+                adjustCurrentY = e.touches[0].clientY;
+                const deltaY = adjustCurrentY - adjustStartY;
+                if (deltaY > 0) {
+                    modalContent.style.transform = `translateY(${deltaY}px)`;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                if (!isDraggingAdjust) return;
+                isDraggingAdjust = false;
+                modalContent.style.transition = '';
+                const deltaY = adjustCurrentY - adjustStartY;
+                if (deltaY > 80) {
+                    closeAdjustModal();
+                } else {
+                    modalContent.style.transform = '';
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
