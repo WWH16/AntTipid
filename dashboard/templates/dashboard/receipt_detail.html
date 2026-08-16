@@ -39,11 +39,18 @@
                 <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
                     <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">edit</span>
-                        <span>Edit</span>
+                        <span>Edit Items</span>
                     </button>
                     <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">delete</span>
                         <span>Delete</span>
+                    </button>
+                    <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
+                        <span>Cancel</span>
+                    </button>
+                    <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                        <span class="material-symbols-outlined text-[16px]">check</span>
+                        <span>Save Items</span>
                     </button>
                 </div>
             </div>
@@ -82,7 +89,7 @@
                             <span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
                             Scanned Items
                         </h2>
-                        <span class="font-label-sm text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/30">5 Items Detected</span>
+                        <span id="items-count-badge" class="font-label-sm text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/30">5 Items Detected</span>
                     </div>
 
                     <!-- Items Table -->
@@ -95,64 +102,29 @@
                                     <th class="py-2.5 px-3 font-label-md font-bold w-1/5 text-right">Price</th>
                                 </tr>
                             </thead>
-                            <tbody class="font-body-md text-xs sm:text-sm text-deep-forest divide-y divide-outline-variant/30">
-                                <tr class="hover:bg-soft-green/30 transition-colors">
-                                    <td class="py-3 px-3">
-                                        <div class="font-bold text-deep-forest">Organic Hass Avocados</div>
-                                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">2 @ ₱4.50/ea</span>
-                                    </td>
-                                    <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">2</td>
-                                    <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">₱9.00</td>
-                                </tr>
-                                <tr class="hover:bg-soft-green/30 transition-colors">
-                                    <td class="py-3 px-3">
-                                        <div class="font-bold text-deep-forest">Almond Milk, Unsweetened</div>
-                                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">1 item</span>
-                                    </td>
-                                    <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">1</td>
-                                    <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">₱3.99</td>
-                                </tr>
-                                <tr class="hover:bg-soft-green/30 transition-colors">
-                                    <td class="py-3 px-3">
-                                        <div class="font-bold text-deep-forest">Free Range Eggs (Dozen)</div>
-                                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">1 item</span>
-                                    </td>
-                                    <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">1</td>
-                                    <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">₱6.49</td>
-                                </tr>
-                                <tr class="hover:bg-soft-green/30 transition-colors">
-                                    <td class="py-3 px-3">
-                                        <div class="font-bold text-deep-forest">Sourdough Loaf</div>
-                                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">1 item</span>
-                                    </td>
-                                    <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">1</td>
-                                    <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">₱5.50</td>
-                                </tr>
-                                <tr class="hover:bg-soft-green/30 transition-colors">
-                                    <td class="py-3 px-3">
-                                        <div class="font-bold text-deep-forest">Organic Baby Spinach</div>
-                                        <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">1 item</span>
-                                    </td>
-                                    <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">1</td>
-                                    <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">₱4.29</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="receipt-items-tbody" class="font-body-md text-xs sm:text-sm text-deep-forest divide-y divide-outline-variant/30"></tbody>
                         </table>
                     </div>
+
+                    <!-- Add Item (shown only while editing) -->
+                    <button type="button" id="btn-add-item" class="hidden mt-3 self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-primary/40 text-primary font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all active:scale-[0.98] cursor-pointer">
+                        <span class="material-symbols-outlined text-[16px]">add</span>
+                        Add Item
+                    </button>
 
                     <!-- Financial Summary Breakdown -->
                     <div class="mt-4 pt-4 border-t border-outline-variant/40 flex flex-col gap-2">
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant font-medium">
                             <span>Subtotal</span>
-                            <span class="font-bold text-deep-forest tabular-nums">₱29.27</span>
+                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱29.27</span>
                         </div>
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant font-medium">
                             <span>Tax (8.5%)</span>
-                            <span class="font-bold text-deep-forest tabular-nums">₱2.63</span>
+                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱2.63</span>
                         </div>
                         <div class="border-t border-outline-variant/40 pt-3 mt-1 flex justify-between items-end">
                             <span class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Total Amount</span>
-                            <span class="font-headline-lg text-xl sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">₱31.90</span>
+                            <span id="receipt-total" class="font-headline-lg text-xl sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">₱31.90</span>
                         </div>
                     </div>
                 </div>
@@ -189,8 +161,8 @@
     <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
     <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
+{% endblock %}
 
-{% include 'dashboard/components/edit_transaction_sheet.html' %}
 <!-- ═══════════════════════════════════════ -->
 <!-- DELETE RECEIPT CONFIRMATION MODAL       -->
 <!-- ═══════════════════════════════════════ -->
@@ -223,7 +195,6 @@
 </div>
 
 {% block extra_scripts %}
-<script src="{% static 'js/edit-transaction-sheet.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const imageModal = document.getElementById('image-modal-wrapper');
@@ -275,20 +246,152 @@
             }
         });
 
-        // Edit Receipt Sheet (shared component, see edit-transaction-sheet.js)
-        const editBtn = document.getElementById('btn-edit-receipt');
-        const editSheet = window.initEditTransactionSheet();
+        // ─── Edit Scanned Items (inline, replaces the old whole-transaction sheet) ───
+        const TAX_RATE = 0.085;
+        let receiptItems = [
+            { description: 'Organic Hass Avocados', qty: 2, unitPrice: 4.50 },
+            { description: 'Almond Milk, Unsweetened', qty: 1, unitPrice: 3.99 },
+            { description: 'Free Range Eggs (Dozen)', qty: 1, unitPrice: 6.49 },
+            { description: 'Sourdough Loaf', qty: 1, unitPrice: 5.50 },
+            { description: 'Organic Baby Spinach', qty: 1, unitPrice: 4.29 },
+        ];
+        let isEditingItems = false;
 
-        if (editBtn) {
-            editBtn.addEventListener('click', () => {
-                editSheet.open({
-                    editAmount: '31.90',
-                    editTitle: 'Whole Foods Market',
-                    editDate: '2026-10-24',
-                    editAccount: 'Credit Card',
-                    editType: 'expense',
-                    editCategory: 'Groceries',
-                });
+        const editBtn = document.getElementById('btn-edit-receipt');
+        const cancelEditBtn = document.getElementById('btn-cancel-edit-items');
+        const saveEditBtn = document.getElementById('btn-save-edit-items');
+        const addItemBtn = document.getElementById('btn-add-item');
+        const itemsTbody = document.getElementById('receipt-items-tbody');
+        const itemsCountBadge = document.getElementById('items-count-badge');
+        const subtotalEl = document.getElementById('receipt-subtotal');
+        const taxEl = document.getElementById('receipt-tax');
+        const totalEl = document.getElementById('receipt-total');
+
+        function money(n) {
+            return `₱${n.toFixed(2)}`;
+        }
+
+        function renderReadOnlyRows() {
+            itemsTbody.innerHTML = receiptItems.map(item => {
+                const lineTotal = item.qty * item.unitPrice;
+                const subLabel = item.qty > 1 ? `${item.qty} @ ${money(item.unitPrice)}/ea` : '1 item';
+                return `
+                    <tr class="hover:bg-soft-green/30 transition-colors">
+                        <td class="py-3 px-3">
+                            <div class="font-bold text-deep-forest">${item.description}</div>
+                            <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">${subLabel}</span>
+                        </td>
+                        <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">${item.qty}</td>
+                        <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">${money(lineTotal)}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        function renderEditableRows() {
+            itemsTbody.innerHTML = receiptItems.map((item, i) => `
+                <tr data-editable-row data-index="${i}">
+                    <td class="py-2 px-3">
+                        <input type="text" value="${item.description.replace(/"/g, '&quot;')}" class="item-desc-input w-full px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    </td>
+                    <td class="py-2 px-3 text-right">
+                        <input type="number" min="1" step="1" value="${item.qty}" class="item-qty-input w-14 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    </td>
+                    <td class="py-2 px-3">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <input type="number" min="0" step="0.01" value="${item.unitPrice}" class="item-price-input w-20 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                            <button type="button" class="btn-remove-item w-7 h-7 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 transition-colors cursor-pointer" aria-label="Remove item">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function recalcAndRenderTotals() {
+            const subtotal = receiptItems.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + tax;
+            subtotalEl.textContent = money(subtotal);
+            taxEl.textContent = money(tax);
+            totalEl.textContent = money(total);
+            itemsCountBadge.textContent = `${receiptItems.length} Item${receiptItems.length !== 1 ? 's' : ''} Detected`;
+        }
+
+        function enterEditMode() {
+            isEditingItems = true;
+            renderEditableRows();
+            editBtn.classList.add('hidden');
+            deleteBtn.classList.add('hidden');
+            cancelEditBtn.classList.remove('hidden');
+            saveEditBtn.classList.remove('hidden');
+            addItemBtn.classList.remove('hidden');
+        }
+
+        function exitEditMode() {
+            isEditingItems = false;
+            renderReadOnlyRows();
+            editBtn.classList.remove('hidden');
+            deleteBtn.classList.remove('hidden');
+            cancelEditBtn.classList.add('hidden');
+            saveEditBtn.classList.add('hidden');
+            addItemBtn.classList.add('hidden');
+        }
+
+        function commitEditsFromDOM() {
+            const rows = itemsTbody.querySelectorAll('tr[data-editable-row]');
+            const newItems = [];
+            rows.forEach(row => {
+                const description = row.querySelector('.item-desc-input').value.trim();
+                const qty = parseFloat(row.querySelector('.item-qty-input').value) || 0;
+                const unitPrice = parseFloat(row.querySelector('.item-price-input').value) || 0;
+                if (description && qty > 0) {
+                    newItems.push({ description, qty, unitPrice });
+                }
+            });
+            receiptItems = newItems;
+        }
+
+        renderReadOnlyRows();
+
+        if (editBtn) editBtn.addEventListener('click', enterEditMode);
+        if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
+        if (saveEditBtn) {
+            saveEditBtn.addEventListener('click', () => {
+                commitEditsFromDOM();
+                recalcAndRenderTotals();
+                exitEditMode();
+            });
+        }
+        if (addItemBtn) {
+            addItemBtn.addEventListener('click', () => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-editable-row', '');
+                tr.setAttribute('data-index', itemsTbody.children.length);
+                tr.innerHTML = `
+                    <td class="py-2 px-3">
+                        <input type="text" value="" placeholder="New item" class="item-desc-input w-full px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    </td>
+                    <td class="py-2 px-3 text-right">
+                        <input type="number" min="1" step="1" value="1" class="item-qty-input w-14 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    </td>
+                    <td class="py-2 px-3">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <input type="number" min="0" step="0.01" value="0.00" class="item-price-input w-20 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                            <button type="button" class="btn-remove-item w-7 h-7 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 transition-colors cursor-pointer" aria-label="Remove item">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                        </div>
+                    </td>`;
+                itemsTbody.appendChild(tr);
+                tr.querySelector('.item-desc-input').focus();
+            });
+        }
+        if (itemsTbody) {
+            itemsTbody.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.btn-remove-item');
+                if (removeBtn) {
+                    removeBtn.closest('tr[data-editable-row]')?.remove();
+                }
             });
         }
 
@@ -344,5 +447,4 @@
         });
     });
 </script>
-{% endblock %}
 {% endblock %}
