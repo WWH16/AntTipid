@@ -149,6 +149,12 @@ activemq-data/
 # SageMath parsed files
 *.sage.py
 
+# Node / Tailwind build
+node_modules/
+
+# Django collectstatic output (whitenoise serves from here in production)
+/staticfiles/
+
 # Environments
 .env
 .envrc

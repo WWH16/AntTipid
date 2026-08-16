@@ -1,0 +1,27 @@
+{
+  "name": "anttipid",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npm run build:css:app && npm run build:css:landing",
+    "build:css:app": "tailwindcss -c tailwind.app.config.js -i static_src/app.css -o static/css/app.css --minify",
+    "build:css:landing": "tailwindcss -c tailwind.landing.config.js -i static_src/landing.css -o static/css/landing.css --minify",
+    "watch:css": "npm run build:css:app -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WWH16/AntTipid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WWH16/AntTipid/issues"
+  },
+  "homepage": "https://github.com/WWH16/AntTipid#readme",
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

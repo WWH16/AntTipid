@@ -116,7 +116,10 @@ def api_scan_receipt_view(request):
             from google import genai
             from google.genai import types
 
-            client = genai.Client(api_key=gemini_key)
+            client = genai.Client(
+                api_key=gemini_key,
+                http_options=types.HttpOptions(timeout=20_000),  # ms; bounds how long a request thread can be held
+            )
             prompt_text = (
                 "You are an expert receipt OCR assistant for a Philippine personal finance app (AntTipid). "
                 "Analyze this receipt image and return ONLY a valid JSON object matching this exact schema without markdown wrap:\n"

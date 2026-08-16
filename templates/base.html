@@ -25,6 +25,10 @@
 
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Tailwind CSS (pre-built, not the CDN JIT compiler) -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+
     <script>
       window.openClerkUserProfile = function() {
         if (window.Clerk && window.Clerk.openUserProfile) {
@@ -98,102 +102,6 @@
       }
     </script>
 
-    <!-- Tailwind CSS (via CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind Config: Design Tokens from AntTipid_Design_System.md -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-                "primary": "#5C8F3A",
-                "secondary": "#23452A",
-                "on-secondary": "#FFFFFF",
-                "ant-green": "#5C8F3A",
-                "deep-forest": "#23452A",
-                "soft-green": "#E7F1D9",
-                "warm-cream": "#F8F5EA",
-                "light-border": "#E5E5DD",
-                "background": "#F8F5EA",
-                "surface": "#FAF8F2",
-                "surface-container-lowest": "#FFFFFF",
-                "surface-container-low": "#F3EFE4",
-                "surface-container": "#EAE5D7",
-                "surface-container-high": "#E2DCCE",
-                "surface-container-highest": "#D8D2C2",
-                "on-surface": "#23452A",
-                "on-surface-variant": "#586255",
-                "outline-variant": "#E5E5DD",
-                "outline": "#B3BBAA",
-                "on-primary": "#FFFFFF",
-                "income": "#5C8F3A",
-                "expense": "#D96B4A",
-                "warning": "#E4A72C",
-                "safe": "#6C9B45",
-                "neutral": "#777B73",
-                "error": "#D96B4A",
-              },
-              borderRadius: {
-                "sm": "8px",
-                "md": "10px",
-                "lg": "12px",
-                "xl": "16px",
-                "2xl": "18px",
-                "3xl": "20px",
-                "full": "9999px"
-              },
-              spacing: {
-                "sm": "8px",
-                "lg": "24px",
-                "xs": "4px",
-                "touch-target-min": "44px",
-                "gutter": "16px",
-                "margin-mobile": "20px",
-                "md": "16px",
-                "xl": "32px"
-              },
-              fontFamily: {
-                "sans": ["Inter", "sans-serif"],
-                "headline-lg-mobile": ["Inter", "sans-serif"],
-                "headline-lg": ["Inter", "sans-serif"],
-                "body-md": ["Inter", "sans-serif"],
-                "body-sm": ["Inter", "sans-serif"],
-                "label-md": ["Inter", "sans-serif"],
-                "body-lg": ["Inter", "sans-serif"],
-                "label-sm": ["Inter", "sans-serif"],
-                "headline-md": ["Inter", "sans-serif"],
-                "display": ["Inter", "sans-serif"]
-              },
-              fontSize: {
-                "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
-                "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
-                "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
-                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-                "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
-                "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
-              },
-              boxShadow: {
-                "soft": "0 2px 8px rgba(35, 69, 42, 0.05)",
-                "elevated": "0 6px 18px rgba(35, 69, 42, 0.08)",
-                "xs": "0 1px 3px rgba(35, 69, 42, 0.04)"
-              }
-          }
-        },
-        // Without this, `hover:` compiles to plain `:hover`, which touchscreens
-        // trigger on tap and then get "stuck" in (no mouse to move away and
-        // clear it). That's what let the translucent `hover:bg-soft-green/30`
-        // on transaction rows bleed through to the solid Delete button sitting
-        // behind them when tapped. Scoping `hover:` to devices that support a
-        // real hover (mouse/trackpad) fixes that everywhere, not just there.
-        future: {
-          hoverOnlyWhenSupported: true,
-        },
-      }
-    </script>
     <style>
         .pulse-ring {
             animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
