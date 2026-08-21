@@ -22,59 +22,82 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="lg:col-span-8 flex flex-col gap-md md:gap-lg">
 
-            <!-- ─── Financial Summary Cards Grid (Section 6) ─── -->
-            <section class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-md">
-                <!-- Total Income (Soft Green + Ant Green) -->
-                <a href="{% url 'transactions' %}" id="card-income" class="bg-soft-green/60 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl border border-primary/30 shadow-xs flex flex-row sm:flex-col items-center sm:items-stretch justify-between gap-2.5 sm:gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group">
-                    <div class="flex items-center sm:justify-between gap-2.5 sm:gap-0">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_upward</span>
-                        </div>
-                        <div class="flex flex-col sm:block">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-primary uppercase tracking-[0.05em] font-bold">Total Income</span>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-primary font-bold sm:hidden">+₱5,000 this month</span>
-                        </div>
-                    </div>
-                    <div class="text-right sm:text-left">
-                        <p class="font-headline-md text-sm sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱20,000.00</p>
-                        <span class="font-label-sm text-[11px] text-primary font-bold mt-1 hidden sm:inline-block">+₱5,000 this month</span>
-                    </div>
-                </a>
+            <!-- ─── Financial Summary Cards (Discrete Carousel on Mobile / 3-Col Grid on Desktop) ─── -->
+            <div class="flex flex-col gap-2.5">
+                <!-- Discrete Slide Viewport on Mobile / 3-Column Grid on Desktop -->
+                <div class="relative w-full rounded-2xl" id="summary-carousel-viewport" aria-roledescription="carousel" aria-label="Financial Summary Cards" role="region">
+                    <!-- Sliding Track (Mobile Swipe with Next Card Peek) / Grid (Desktop) -->
+                    <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-3 sm:grid sm:grid-cols-3 sm:gap-md sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
+                        
+                        <!-- Card 1: Total Income (Default Active) -->
+                        <a href="{% url 'transactions' %}" id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Total Income" class="summary-card-slide w-[86%] shrink-0 snap-start snap-always sm:w-auto sm:shrink sm:snap-none bg-soft-green/60 p-4 sm:p-5 rounded-2xl border border-primary/30 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group focus:outline-none focus:ring-2 focus:ring-primary/40">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+                                    </div>
+                                    <span class="font-label-sm text-[11px] text-primary uppercase tracking-[0.05em] font-bold">Total Income</span>
+                                </div>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] text-primary font-bold bg-primary/15 px-2 py-0.5 rounded-md tabular-nums">+₱5,000</span>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱20,000.00</p>
+                                    <span class="font-label-sm text-[11px] text-on-surface-variant font-medium mt-0.5 block">+₱5,000 this month</span>
+                                </div>
+                                <span class="text-xs font-bold text-primary sm:hidden flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">View &rarr;</span>
+                            </div>
+                        </a>
 
-                <!-- Total Expenses (Orange/Red Expense) -->
-                <a href="{% url 'transactions' %}" id="card-expenses" class="bg-expense/10 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl border border-expense/30 shadow-xs flex flex-row sm:flex-col items-center sm:items-stretch justify-between gap-2.5 sm:gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group">
-                    <div class="flex items-center sm:justify-between gap-2.5 sm:gap-0">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_downward</span>
-                        </div>
-                        <div class="flex flex-col sm:block">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-expense uppercase tracking-[0.05em] font-bold">Total Expenses</span>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold sm:hidden">42% of income</span>
-                        </div>
-                    </div>
-                    <div class="text-right sm:text-left">
-                        <p class="font-headline-md text-sm sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱8,450.00</p>
-                        <span class="font-label-sm text-[11px] text-expense font-bold mt-1 hidden sm:inline-block">42% of income</span>
-                    </div>
-                </a>
+                        <!-- Card 2: Total Expenses -->
+                        <a href="{% url 'transactions' %}" id="card-expenses" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Expenses" class="summary-card-slide w-[86%] shrink-0 snap-start snap-always sm:w-auto sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group focus:outline-none focus:ring-2 focus:ring-expense/40">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
+                                    </div>
+                                    <span class="font-label-sm text-[11px] text-expense uppercase tracking-[0.05em] font-bold">Total Expenses</span>
+                                </div>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/15 px-2 py-0.5 rounded-md tabular-nums">42% of income</span>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱8,450.00</p>
+                                    <span class="font-label-sm text-[11px] text-on-surface-variant font-medium mt-0.5 block">Spent across 4 categories</span>
+                                </div>
+                                <span class="text-xs font-bold text-expense sm:hidden flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">View &rarr;</span>
+                            </div>
+                        </a>
 
-                <!-- Remaining Budget (Gold Budget/Savings Color) -->
-                <a href="{% url 'budget' %}" id="card-remaining" class="bg-warning/10 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl border border-warning/30 shadow-xs flex flex-row sm:flex-col items-center sm:items-stretch justify-between gap-2.5 sm:gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group">
-                    <div class="flex items-center sm:justify-between gap-2.5 sm:gap-0">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-warning/20 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[16px] sm:text-[18px]">savings</span>
-                        </div>
-                        <div class="flex flex-col sm:block">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 uppercase tracking-[0.05em] font-bold">Remaining Budget</span>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 font-bold sm:hidden">58% left to spend</span>
-                        </div>
+                        <!-- Card 3: Remaining Budget -->
+                        <a href="{% url 'budget' %}" id="card-remaining" role="group" aria-roledescription="slide" aria-label="3 of 3: Remaining Budget" class="summary-card-slide w-[86%] shrink-0 snap-start snap-always sm:w-auto sm:shrink sm:snap-none bg-warning/10 p-4 sm:p-5 rounded-2xl border border-warning/30 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group focus:outline-none focus:ring-2 focus:ring-warning/40">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-warning/20 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-[18px]">savings</span>
+                                    </div>
+                                    <span class="font-label-sm text-[11px] text-amber-700 uppercase tracking-[0.05em] font-bold">Remaining Budget</span>
+                                </div>
+                                <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 font-bold bg-warning/20 px-2 py-0.5 rounded-md tabular-nums">58% left</span>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱11,550.00</p>
+                                    <span class="font-label-sm text-[11px] text-on-surface-variant font-medium mt-0.5 block">₱11,550 left to spend</span>
+                                </div>
+                                <span class="text-xs font-bold text-amber-700 sm:hidden flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">View &rarr;</span>
+                            </div>
+                        </a>
                     </div>
-                    <div class="text-right sm:text-left">
-                        <p class="font-headline-md text-sm sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱11,550.00</p>
-                        <span class="font-label-sm text-[11px] text-amber-700 font-bold mt-1 hidden sm:inline-block">58% left to spend</span>
-                    </div>
-                </a>
-            </section>
+                </div>
+
+                <!-- Mobile Carousel Indicators (Centered, No Chevrons / Arrows) -->
+                <div class="flex sm:hidden items-center justify-center gap-1.5 pt-1" id="summary-carousel-indicators" role="tablist" aria-label="Summary card selector">
+                    <button type="button" role="tab" aria-selected="true" tabindex="0" aria-label="Slide 1: Total Income" data-slide-index="0" class="carousel-dot h-1.5 w-6 bg-primary rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"></button>
+                    <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Slide 2: Total Expenses" data-slide-index="1" class="carousel-dot h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"></button>
+                    <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Slide 3: Remaining Budget" data-slide-index="2" class="carousel-dot h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"></button>
+                </div>
+            </div>
 
             <!-- ─── Budget Progress Card (Section 7 - Gold Accent) ─── -->
             <section id="card-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-xs flex flex-col gap-2.5 sm:gap-4 transition-all hover:shadow-soft">
@@ -291,3 +314,191 @@
     <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const track = document.getElementById('summary-carousel-track');
+        const dots = document.querySelectorAll('#summary-carousel-indicators .carousel-dot');
+        const slides = track ? track.querySelectorAll('.summary-card-slide') : [];
+        if (!track || !dots.length || !slides.length) return;
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        function updateActiveDot(index) {
+            if (currentIndex === index) return;
+            currentIndex = index;
+            dots.forEach((dot, idx) => {
+                const isActive = idx === currentIndex;
+                dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                dot.setAttribute('tabindex', isActive ? '0' : '-1');
+                if (isActive) {
+                    dot.className = 'carousel-dot h-1.5 w-6 bg-primary rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer';
+                } else {
+                    dot.className = 'carousel-dot h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer';
+                }
+            });
+        }
+
+        // Smooth scroll to slide by index
+        function scrollToSlide(index) {
+            if (window.innerWidth >= 640 || !slides[index]) return;
+            slides[index].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+            updateActiveDot(index);
+        }
+
+        // Indicator dot clicks
+        dots.forEach((dot) => {
+            dot.addEventListener('click', () => {
+                const index = parseInt(dot.getAttribute('data-slide-index'), 10);
+                scrollToSlide(index);
+            });
+        });
+
+        // Sync active dot on scroll with requestAnimationFrame
+        let isTicking = false;
+        track.addEventListener('scroll', () => {
+            if (window.innerWidth >= 640) return;
+            if (!isTicking) {
+                window.requestAnimationFrame(() => {
+                    const trackRect = track.getBoundingClientRect();
+                    let closestIndex = 0;
+                    let minDistance = Infinity;
+                    
+                    slides.forEach((slide, idx) => {
+                        const slideRect = slide.getBoundingClientRect();
+                        const distance = Math.abs(slideRect.left - trackRect.left);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestIndex = idx;
+                        }
+                    });
+
+                    updateActiveDot(closestIndex);
+                    isTicking = false;
+                });
+                isTicking = true;
+            }
+        }, { passive: true });
+
+        // Keyboard arrow navigation when track is focused
+        track.addEventListener('keydown', (e) => {
+            if (window.innerWidth >= 640) return;
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const nextIdx = Math.max(0, currentIndex - 1);
+                scrollToSlide(nextIdx);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextIdx = Math.min(totalSlides - 1, currentIndex + 1);
+                scrollToSlide(nextIdx);
+            }
+        });
+
+        // Touch Swipe Controller: Enforce discrete 1-card advance on swipe arrival (no velocity skipping)
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let initialTouchIndex = 0;
+        let isTouching = false;
+
+        track.addEventListener('touchstart', (e) => {
+            if (window.innerWidth >= 640) return;
+            isTouching = true;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            initialTouchIndex = currentIndex;
+        }, { passive: true });
+
+        track.addEventListener('touchend', (e) => {
+            if (!isTouching || window.innerWidth >= 640) return;
+            isTouching = false;
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Only act on intentional horizontal swipes
+            if (Math.abs(deltaX) > 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX < 0) {
+                    // Swiped left -> advance strictly to the immediate next card (max +1)
+                    const target = Math.min(totalSlides - 1, initialTouchIndex + 1);
+                    scrollToSlide(target);
+                } else {
+                    // Swiped right -> go strictly to the immediate previous card (max -1)
+                    const target = Math.max(0, initialTouchIndex - 1);
+                    scrollToSlide(target);
+                }
+            } else if (Math.abs(deltaX) <= 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                // If swipe distance didn't cross arrival threshold, snap cleanly back to current card
+                scrollToSlide(initialTouchIndex);
+            }
+        }, { passive: true });
+
+        // Mouse Drag-to-Swipe for Desktop/Preview testing (Discrete 1-card step)
+        let isMouseDown = false;
+        let startX = 0;
+        let scrollLeftStart = 0;
+        let initialMouseIndex = 0;
+        let hasDragged = false;
+
+        track.addEventListener('mousedown', (e) => {
+            if (window.innerWidth >= 640) return;
+            isMouseDown = true;
+            hasDragged = false;
+            startX = e.pageX - track.offsetLeft;
+            scrollLeftStart = track.scrollLeft;
+            initialMouseIndex = currentIndex;
+            track.classList.remove('scroll-smooth');
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            const x = e.pageX - track.offsetLeft;
+            const walk = (x - startX);
+            if (Math.abs(walk) > 6) {
+                hasDragged = true;
+            }
+            track.scrollLeft = scrollLeftStart - walk;
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!isMouseDown) return;
+            isMouseDown = false;
+            track.classList.add('scroll-smooth');
+            if (hasDragged && window.innerWidth < 640) {
+                const deltaX = (e.pageX - track.offsetLeft) - startX;
+                if (deltaX < -30) {
+                    const target = Math.min(totalSlides - 1, initialMouseIndex + 1);
+                    scrollToSlide(target);
+                } else if (deltaX > 30) {
+                    const target = Math.max(0, initialMouseIndex - 1);
+                    scrollToSlide(target);
+                } else {
+                    scrollToSlide(initialMouseIndex);
+                }
+            }
+        });
+
+        // Prevent accidental link clicks when dragging
+        slides.forEach((slide) => {
+            slide.addEventListener('click', (e) => {
+                if (hasDragged) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    hasDragged = false;
+                }
+            });
+        });
+
+        // Handle window resize cleanly
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 640) {
+                track.scrollLeft = 0;
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+
