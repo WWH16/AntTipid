@@ -12,17 +12,56 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- SEARCH & FILTER BAR                     -->
         <!-- ═══════════════════════════════════════ -->
-        <!-- Mobile Search & Filter trigger (<md) -->
-        <div class="md:hidden sticky top-[56px] z-30 py-2 bg-surface/95 backdrop-blur-md -mx-margin-mobile px-margin-mobile border-b border-outline-variant/30">
-            <div class="flex gap-2">
-                <div class="relative flex-grow">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                    <input id="input-search-mobile" class="w-full pl-9 pr-3 h-10 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-xs" placeholder="Search transactions or receipts..." type="text">
+        <!-- Mobile Search & Filter Bar (<md) -->
+        <div class="md:hidden sticky top-[56px] z-30 pt-2 pb-2.5 bg-background/95 backdrop-blur-md -mx-margin-mobile px-margin-mobile border-b border-outline-variant/40">
+            <div class="flex items-center gap-2">
+                <!-- Search Input with Clear Button -->
+                <div class="relative flex-1 flex items-center">
+                    <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
+                        <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
+                    </div>
+                    <input id="input-search-mobile" class="w-full pl-10 pr-9 h-10 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-xs transition-all text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
+                    <button type="button" id="btn-clear-search-mobile" aria-label="Clear search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-deep-forest flex items-center justify-center transition-all cursor-pointer">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                    </button>
                 </div>
-                <button id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer font-bold shadow-xs">
-                    <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                
+                <!-- Filter Sheet Trigger Button -->
+                <button type="button" id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">tune</span>
                     <span class="font-label-sm text-xs font-bold">Filter</span>
-                    <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-on-primary rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
+                    <span id="badge-active-filters-mobile" class="hidden min-w-[18px] h-[18px] px-1 bg-deep-forest text-primary rounded-full text-[10px] font-extrabold flex items-center justify-center">0</span>
+                </button>
+            </div>
+
+            <!-- Horizontal Quick Filter Chips Strip -->
+            <div id="mobile-quick-filter-strip" class="flex items-center gap-1.5 pt-2 pb-0.5 overflow-x-auto no-scrollbar -mx-margin-mobile px-margin-mobile">
+                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
+                    All
+                </button>
+                <button type="button" data-quick-filter="type:expense" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Expenses
+                </button>
+                <button type="button" data-quick-filter="type:income" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Income
+                </button>
+                <button type="button" data-quick-filter="source:receipt" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Receipts
+                </button>
+                <button type="button" data-quick-filter="cat:Groceries" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Groceries
+                </button>
+                <button type="button" data-quick-filter="cat:Dining" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Dining
+                </button>
+                <button type="button" data-quick-filter="cat:Utilities" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Utilities
+                </button>
+                <button type="button" data-quick-filter="cat:Shopping" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Shopping
+                </button>
+                <button type="button" data-quick-filter="cat:Healthcare" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Healthcare
                 </button>
             </div>
         </div>
@@ -30,9 +69,11 @@
         <!-- Desktop Filters (md+) -->
         <div class="hidden md:flex flex-wrap gap-2.5 items-center">
             <!-- Desktop Search Bar -->
-            <div class="relative flex-1 max-w-xs min-w-[220px]">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs" placeholder="Search transactions or receipts..." type="text">
+            <div class="relative flex-1 max-w-xs min-w-[220px] flex items-center">
+                <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
+                    <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
+                </div>
+                <input id="input-search-desktop" class="w-full pl-10 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
             </div>
 
             <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5">filter_list</span>
