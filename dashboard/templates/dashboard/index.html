@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Dashboard | AntTipid{% endblock %}
 {% block meta_description %}Your personal finance overview — track balances, monthly budgets, spending trends, and recent transactions.{% endblock %}
@@ -34,64 +35,73 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- 3-HERO SUMMARY SECTION                  -->
         <!-- ═══════════════════════════════════════ -->
-        <section aria-label="Financial Summary" class="flex flex-col gap-2">
+        <section aria-label="Financial Summary Overview" class="flex flex-col gap-2">
             
             <!-- Sliding Track on Mobile (Full width, level with bottom cards) / 3-Column Grid on sm+ -->
             <div class="relative w-full" id="summary-carousel-viewport" aria-roledescription="carousel" aria-label="Financial Summary Cards" role="region">
                 <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-4 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
                     
                     <!-- Card 1: Net Cash Flow (Primary Anchor) -->
-                    <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
-                        <div class="flex items-center justify-between gap-2">
+                    <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
+                        <!-- Logo Silhouette Watermark (Upper Right) -->
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.09] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.14]" aria-hidden="true" />
+
+                        <div class="flex items-center justify-between gap-2 relative z-10">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                                     <span class="material-symbols-outlined text-[18px]">trending_up</span>
                                 </div>
                                 <span class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.05em] font-extrabold">Net Cash Flow</span>
                             </div>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-white/90 px-2 py-0.5 rounded-md tabular-nums border border-positive/30">+58% retained</span>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-white/90 px-2 py-0.5 rounded-md tabular-nums border border-positive/30">+58% saved</span>
                         </div>
-                        <div class="flex items-end justify-between gap-2">
+                        <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
-                                <a href="{% url 'reports' %}" class="block group/link focus:outline-none">
+                                <a href="{% url 'reports' %}" class="block group/link focus:outline-none" aria-label="View Net Cash Flow reports">
                                     <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">+₱11,550.00</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱20k in · ₱8.45k out</span>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱20,000 in · ₱8,450 out</span>
                                 </a>
                             </div>
-                            <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add transaction" class="inline-flex items-center gap-1 bg-primary hover:bg-primary-hover text-on-primary font-bold text-[11px] sm:text-xs px-3 py-1.5 min-h-[34px] rounded-xl shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer">
+                            <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1 bg-primary hover:bg-primary-hover text-on-primary font-bold text-[11px] sm:text-xs px-3 py-1.5 min-h-[34px] rounded-xl shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer">
                                 <span class="material-symbols-outlined text-[15px]">add</span>
-                                <span>Entry</span>
+                                <span>Add</span>
                             </a>
                         </div>
                     </div>
 
                     <!-- Card 2: Total Income -->
-                    <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
-                        <div class="flex items-center justify-between gap-2">
+                    <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
+                        <!-- Logo Silhouette Watermark (Upper Right) -->
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
+
+                        <div class="flex items-center justify-between gap-2 relative z-10">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">payments</span>
                                 </div>
                                 <span class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.05em] font-bold">Total Income</span>
                             </div>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 py-0.5 rounded-md tabular-nums border border-positive/30">+₱5,000</span>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 py-0.5 rounded-md tabular-nums border border-positive/30">+₱5,000 vs last mo</span>
                         </div>
-                        <div class="flex items-end justify-between gap-2">
+                        <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
-                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none">
+                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none" aria-label="View Income history">
                                     <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱20,000.00</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">1 active source</span>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">1 active income source</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" class="font-label-sm text-xs text-deep-forest hover:text-positive-deep font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
+                            <a href="{% url 'transactions' %}" aria-label="View income transaction history" class="font-label-sm text-xs text-deep-forest hover:text-positive-deep font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
                                 History →
                             </a>
                         </div>
                     </div>
 
                     <!-- Card 3: Total Expenses -->
-                    <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40">
-                        <div class="flex items-center justify-between gap-2">
+                    <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40 relative overflow-hidden">
+                        <!-- Logo Silhouette Watermark (Upper Right) -->
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
+
+                        <div class="flex items-center justify-between gap-2 relative z-10">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
@@ -100,14 +110,14 @@
                             </div>
                             <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/15 px-2 py-0.5 rounded-md tabular-nums">42% of budget</span>
                         </div>
-                        <div class="flex items-end justify-between gap-2">
+                        <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
-                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none">
+                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none" aria-label="View expense breakdown">
                                     <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱8,450.00</p>
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across 4 categories</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" class="font-label-sm text-xs text-expense hover:text-expense-dark font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-expense/20">
+                            <a href="{% url 'transactions' %}" aria-label="View all expense transactions" class="font-label-sm text-xs text-expense hover:text-expense-dark font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-expense/20">
                                 View →
                             </a>
                         </div>
@@ -138,19 +148,19 @@
             <div class="lg:col-span-8 flex flex-col gap-4 sm:gap-6">
 
                 <!-- Monthly Budget & Category Allocation Card -->
-                <section id="card-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-4 sm:gap-5 transition-all hover:shadow-soft">
+                <section id="card-budget" aria-labelledby="heading-monthly-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-4 sm:gap-5 transition-all hover:shadow-soft">
                     <div class="flex justify-between items-center gap-2">
                         <div class="flex items-center gap-2 min-w-0">
-                            <h3 class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight whitespace-nowrap">Monthly Budget</h3>
+                            <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight whitespace-nowrap">Monthly Budget</h3>
                             <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] sm:text-xs font-bold border border-positive/30 shrink-0">Active</span>
                         </div>
                         <span class="font-headline-md text-xs sm:text-base font-extrabold text-amber-900 bg-warning/20 px-2.5 py-1 rounded-xl border border-warning/40 tabular-nums shadow-xs shrink-0">
-                            42% Used
+                            42% Spent
                         </span>
                     </div>
                     <div class="flex justify-between items-center text-xs text-body -mt-2">
-                        <p class="font-body-sm font-medium">₱8,450.00 spent of ₱20,000.00 target</p>
-                        <a href="{% url 'budget' %}" class="inline-flex text-xs font-bold text-deep-forest hover:text-positive-deep hover:underline items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
+                        <p class="font-body-sm font-medium">₱8,450.00 spent of ₱20,000.00 budget</p>
+                        <a href="{% url 'budget' %}" aria-label="Manage budget categories" class="inline-flex text-xs font-bold text-deep-forest hover:text-positive-deep hover:underline items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
                             Manage →
                         </a>
                     </div>
@@ -160,7 +170,7 @@
                         <div class="flex justify-between items-center font-label-sm text-xs gap-2">
                             <span class="text-deep-forest font-semibold flex items-center gap-1.5 truncate">
                                 <span class="w-2 h-2 rounded-full bg-positive animate-pulse shrink-0"></span>
-                                Pace: <strong class="text-positive-deep font-bold">Within Budget</strong>
+                                Pace: <strong class="text-positive-deep font-bold">On Track</strong>
                             </span>
                             <span class="text-body font-medium shrink-0">
                                 Remaining: <strong class="text-amber-900 font-extrabold tabular-nums">₱11,550.00</strong>
@@ -174,7 +184,7 @@
                     <!-- Category Allocation Breakdown -->
                     <div class="space-y-2.5 sm:space-y-3.5 border-t border-outline-variant/40 pt-3.5 sm:pt-4">
                         <div class="flex justify-between items-center">
-                            <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Category Allocation</h4>
+                            <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Category Spending Breakdown</h4>
                             <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱8,450.00 Total</span>
                         </div>
                         
@@ -249,44 +259,44 @@
             <div class="lg:col-span-4 flex flex-col gap-4 sm:gap-6">
 
                 <!-- Weekly Cash Flow Chart -->
-                <section id="card-chart" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col gap-3.5 sm:gap-4 transition-all hover:shadow-soft">
+                <section id="card-chart" aria-labelledby="heading-weekly-spending" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col gap-3.5 sm:gap-4 transition-all hover:shadow-soft">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Weekly Spending</h3>
-                            <p class="font-body-sm text-[11px] text-body">Outflow by calendar week</p>
+                            <h3 id="heading-weekly-spending" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Weekly Spending</h3>
+                            <p class="font-body-sm text-[11px] text-body">Spending by calendar week</p>
                         </div>
-                        <select id="select-chart-period" class="bg-surface-container-low border border-outline-variant/60 rounded-xl font-label-sm text-xs text-deep-forest py-1.5 px-2.5 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer font-bold">
+                        <select id="select-chart-period" aria-label="Select spending period" class="bg-surface-container-low border border-outline-variant/60 rounded-xl font-label-sm text-xs text-deep-forest py-1.5 px-2.5 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer font-bold">
                             <option>This Month</option>
                             <option>Last Month</option>
                         </select>
                     </div>
 
                     <!-- Bar Chart Visualizer -->
-                    <div class="flex items-end justify-between gap-3 pt-3 border-t border-outline-variant/40 h-28 sm:h-32">
+                    <div class="flex items-end justify-between gap-3 pt-3 border-t border-outline-variant/40 h-28 sm:h-32" role="img" aria-label="Bar chart showing weekly spending for the month">
                         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
                             <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱4.0k</span>
-                            <div class="w-full bg-primary/30 hover:bg-primary/60 rounded-t-lg h-10 transition-colors cursor-pointer relative group">
+                            <div class="w-full bg-primary/30 hover:bg-primary/60 rounded-t-lg h-10 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 1 spending: ₱4,000">
                                 <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 1: ₱4,000</div>
                             </div>
                             <span class="font-label-sm text-xs text-deep-forest font-bold">W1</span>
                         </div>
                         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
                             <span class="text-[10px] text-deep-forest font-bold md:hidden tabular-nums">₱8.5k</span>
-                            <div class="w-full bg-primary rounded-t-lg h-20 hover:bg-primary/90 transition-colors cursor-pointer relative group shadow-xs">
+                            <div class="w-full bg-primary rounded-t-lg h-20 hover:bg-primary/90 transition-colors cursor-pointer relative group shadow-xs" tabindex="0" aria-label="Week 2 spending: ₱8,500">
                                 <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 2: ₱8,500</div>
                             </div>
                             <span class="font-label-sm text-xs text-deep-forest font-bold">W2</span>
                         </div>
                         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
                             <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱6.0k</span>
-                            <div class="w-full bg-primary/60 hover:bg-primary/80 rounded-t-lg h-14 transition-colors cursor-pointer relative group">
+                            <div class="w-full bg-primary/60 hover:bg-primary/80 rounded-t-lg h-14 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 3 spending: ₱6,000">
                                 <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 3: ₱6,000</div>
                             </div>
                             <span class="font-label-sm text-xs text-deep-forest font-bold">W3</span>
                         </div>
                         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
                             <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱5.0k</span>
-                            <div class="w-full bg-primary/40 hover:bg-primary/60 rounded-t-lg h-12 transition-colors cursor-pointer relative group">
+                            <div class="w-full bg-primary/40 hover:bg-primary/60 rounded-t-lg h-12 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 4 spending: ₱5,000">
                                 <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 4: ₱5,000</div>
                             </div>
                             <span class="font-label-sm text-xs text-deep-forest font-bold">W4</span>
@@ -300,19 +310,19 @@
                 </section>
 
                 <!-- Recent Activity Section -->
-                <section id="card-transactions" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs flex flex-col overflow-hidden transition-all hover:shadow-soft">
+                <section id="card-transactions" aria-labelledby="heading-recent-transactions" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs flex flex-col overflow-hidden transition-all hover:shadow-soft">
                     <div class="p-3.5 sm:p-4 border-b border-outline-variant/40 flex justify-between items-center bg-surface-container-low/30">
                         <div>
-                            <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Recent Activity</h3>
-                            <p class="font-body-sm text-[11px] text-body">Latest recorded items</p>
+                            <h3 id="heading-recent-transactions" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Recent Activity</h3>
+                            <p class="font-body-sm text-[11px] text-body">Latest recorded transactions</p>
                         </div>
-                        <a id="link-view-all" class="text-deep-forest hover:text-positive-deep font-label-sm text-xs hover:underline font-bold flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low" href="{% url 'transactions' %}">
+                        <a id="link-view-all" aria-label="View all transactions history" class="text-deep-forest hover:text-positive-deep font-label-sm text-xs hover:underline font-bold flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low" href="{% url 'transactions' %}">
                             See all →
                         </a>
                     </div>
                     <div class="flex flex-col divide-y divide-outline-variant/30">
                         <!-- Transaction 1: Salary Deposit (Income) -->
-                        <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Salary Deposit, Income, plus 35,000 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">payments</span>
@@ -326,7 +336,7 @@
                         </a>
 
                         <!-- Transaction 2: Meralco Electric (Expense) -->
-                        <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Meralco Electric, Utilities, minus 1,205 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">bolt</span>
@@ -340,7 +350,7 @@
                         </a>
 
                         <!-- Transaction 3: Jollibee (Expense) -->
-                        <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Jollibee, Food, minus 250 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">restaurant</span>
@@ -354,7 +364,7 @@
                         </a>
 
                         <!-- Transaction 4: SM Supermarket (Expense) -->
-                        <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        <a href="{% url 'transactions' %}" aria-label="Transaction details for SM Supermarket, Groceries, minus 842 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
