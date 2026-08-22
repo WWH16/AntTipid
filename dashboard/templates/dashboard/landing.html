@@ -232,7 +232,7 @@
                     <button type="button" onclick="openClerkSignIn()" class="hidden sm:inline-block px-3 py-2 text-xs sm:text-sm font-bold text-deep-forest hover:text-primary transition-colors cursor-pointer">
                         Sign In
                     </button>
-                    <button type="button" onclick="openClerkSignUp()" class="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[38px] sm:min-h-[44px] rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
+                    <button type="button" onclick="openClerkSignUp()" class="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[38px] sm:min-h-[44px] rounded-xl bg-primary text-on-primary text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
                         <span>Get Started</span>
                         <span class="material-symbols-outlined text-[15px] sm:text-[18px]">north_east</span>
                     </button>
@@ -261,12 +261,12 @@
                     <button type="button" onclick="openClerkSignIn()" class="w-full py-2.5 rounded-xl border border-outline-variant text-deep-forest text-sm font-bold text-center">
                         Sign In
                     </button>
-                    <button type="button" onclick="openClerkSignUp()" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="openClerkSignUp()" class="w-full py-3 rounded-xl bg-primary text-on-primary text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-primary-hover transition-all">
                         <span>Get Started Free</span>
                         <span class="material-symbols-outlined text-[18px]">north_east</span>
                     </button>
                 </div>
-                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold hidden items-center justify-center gap-2">
+                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-on-primary text-sm font-bold hidden items-center justify-center gap-2 hover:bg-primary-hover transition-all">
                     <span>Open Dashboard</span>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
@@ -293,36 +293,36 @@
                         <div class="flex flex-col gap-4 sm:gap-5 mb-8 sm:mb-10 lg:mb-12">
                             <!-- Hero Headline -->
                             <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-deep-forest tracking-tight leading-[1.15]" style="text-wrap: balance;">
-                                A Personal Expense <br class="hidden sm:inline" /><span class="text-primary">and Budget Tracker</span>
+                                A Personal Expense <br class="hidden sm:inline" /><span class="text-positive-deep">and Budget Tracker</span>
                             </h1>
 
                             <!-- Supporting Subtitle -->
-                            <p class="text-sm sm:text-base lg:text-lg text-on-surface-variant max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
+                            <p class="text-sm sm:text-base lg:text-lg text-body max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
                                 Track daily spending, set category limits, and scan paper receipts into organized transactions with AI OCR — optimized for mobile & desktop.
                             </p>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-6 lg:mb-8">
-                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl bg-primary text-on-primary text-sm font-bold hover:bg-primary-hover transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                                 <span class="material-symbols-outlined text-[20px]">north_east</span>
                                 <span>Start Tracking Free</span>
                             </a>
                             
-                            <a href="#how-it-works" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl border border-outline-variant/80 bg-surface-lowest text-deep-forest hover:bg-soft-green/30 text-sm font-bold transition-all shadow-xs active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                <span class="material-symbols-outlined text-[20px] text-primary">arrow_downward</span>
+                            <a href="#how-it-works" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl border border-outline-variant/80 bg-surface-lowest text-deep-forest hover:bg-primary-pale text-sm font-bold transition-all shadow-xs active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px] text-positive-deep">arrow_downward</span>
                                 <span>How It Works</span>
                             </a>
                         </div>
 
                         <!-- Micro Trust Badges -->
-                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-on-surface-variant font-semibold">
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-body font-semibold">
                             <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                                <span class="material-symbols-outlined text-[18px] text-positive-deep">check_circle</span>
                                 <span>100% Free • Zero Ads</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                                <span class="material-symbols-outlined text-[18px] text-positive-deep">check_circle</span>
                                 <span>PWA & Offline Enabled</span>
                             </div>
                         </div>
@@ -335,24 +335,24 @@
                             
                             <!-- Floating Savings Badge -->
                             <div class="hidden md:flex absolute -top-3 -left-3 lg:-top-4 lg:-left-4 z-30 bg-surface-lowest border border-outline-variant/80 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
-                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center font-bold text-base lg:text-lg shrink-0">
+                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center font-bold text-base lg:text-lg shrink-0">
                                     <span class="material-symbols-outlined text-[18px] lg:text-[20px]">trending_up</span>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] lg:text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider">Monthly Tipid</p>
+                                    <p class="text-[9px] lg:text-[10px] text-body font-semibold uppercase tracking-wider">Monthly Tipid</p>
                                     <p class="text-xs font-extrabold text-deep-forest flex items-center gap-1">
-                                        <span class="text-primary">+₱4,250</span> Saved
+                                        <span class="text-positive-deep font-extrabold">+₱4,250</span> Saved
                                     </p>
                                 </div>
                             </div>
 
                             <!-- Floating OCR Receipt Badge -->
-                            <div class="hidden md:flex absolute -bottom-3 -right-3 lg:-bottom-4 lg:-right-4 z-30 bg-surface-lowest border border-primary/30 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
-                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <div class="hidden md:flex absolute -bottom-3 -right-3 lg:-bottom-4 lg:-right-4 z-30 bg-surface-lowest border border-positive/30 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
+                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px] lg:text-[20px]">document_scanner</span>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] lg:text-[10px] text-primary font-bold uppercase tracking-wider">OCR Receipt</p>
+                                    <p class="text-[9px] lg:text-[10px] text-positive-deep font-bold uppercase tracking-wider">OCR Receipt</p>
                                     <p class="text-xs font-extrabold text-deep-forest">Auto Merchant & Total</p>
                                 </div>
                             </div>
@@ -384,42 +384,42 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
                     
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         </div>
                         <div class="text-center sm:text-left">
                             <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Track Expenses</h4>
-                            <p class="text-[11px] text-on-surface-variant font-medium">Income & spend logging</p>
+                            <p class="text-[11px] text-body font-medium">Income & spend logging</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[20px]">document_scanner</span>
                         </div>
                         <div class="text-center sm:text-left">
                             <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Scan Receipts</h4>
-                            <p class="text-[11px] text-on-surface-variant font-medium">AI OCR extraction</p>
+                            <p class="text-[11px] text-body font-medium">AI OCR extraction</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
                         </div>
                         <div class="text-center sm:text-left">
                             <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Manage Budgets</h4>
-                            <p class="text-[11px] text-on-surface-variant font-medium">Monthly category limits</p>
+                            <p class="text-[11px] text-body font-medium">Monthly category limits</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-soft-green text-primary flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[20px]">analytics</span>
                         </div>
                         <div class="text-center sm:text-left">
                             <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Spending Trends</h4>
-                            <p class="text-[11px] text-on-surface-variant font-medium">Visual charts & insights</p>
+                            <p class="text-[11px] text-body font-medium">Visual charts & insights</p>
                         </div>
                     </div>
 
@@ -485,49 +485,49 @@
                 
                 <div class="text-center max-w-2xl mx-auto space-y-2 mb-10 sm:mb-12">
                     <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">Simple money management workflow.</h2>
-                    <p class="text-sm sm:text-base text-on-surface-variant font-medium">Keep your budget on target without complicated financial spreadsheets.</p>
+                    <p class="text-sm sm:text-base text-body font-medium">Keep your budget on target without complicated financial spreadsheets.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     <!-- Step 1 -->
                     <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shadow-xs">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
                             <span class="material-symbols-outlined text-[28px]">add_a_photo</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-primary uppercase tracking-wider">Step 1</span>
+                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 1</span>
                             <h3 class="font-display text-lg font-bold text-deep-forest">Record & Scan</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                             Log expenses manually in seconds or snap paper receipts to extract transaction details automatically.
                         </p>
                     </div>
 
                     <!-- Step 2 -->
                     <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shadow-xs">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
                             <span class="material-symbols-outlined text-[28px]">category</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-primary uppercase tracking-wider">Step 2</span>
+                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 2</span>
                             <h3 class="font-display text-lg font-bold text-deep-forest">Organize & Budget</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                             Categorize transactions, tag payment accounts (GCash, Maya, BPI, Cash), and monitor monthly limits.
                         </p>
                     </div>
 
                     <!-- Step 3 -->
                     <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shadow-xs">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
                             <span class="material-symbols-outlined text-[28px]">insights</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-primary uppercase tracking-wider">Step 3</span>
+                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 3</span>
                             <h3 class="font-display text-lg font-bold text-deep-forest">Understand Trends</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                             Review clear spending charts, track category progress bars, and see where your money goes.
                         </p>
                     </div>
@@ -537,7 +537,7 @@
             </div>
         </section>
 
-        <!-- ═══════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════════ -->
         <!-- 6. KEY FEATURES GRID                        -->
         <!-- ═══════════════════════════════════════════ -->
         <section id="features" class="py-14 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -549,66 +549,66 @@
                 
                 <!-- Feature 1 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">receipt_long</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">Expense Tracking</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Log income & daily spends with custom payment tags (GCash, Maya, BPI, Cash).
                     </p>
                 </div>
 
                 <!-- Feature 2 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">photo_camera</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">OCR Receipt Scanner</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Capture paper receipts and auto-extract merchant names, date, and total PHP amounts with Gemini AI.
                     </p>
                 </div>
 
                 <!-- Feature 3 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">Budget Management</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Set monthly category limits and monitor progress with real-time warning indicators.
                     </p>
                 </div>
 
                 <!-- Feature 4 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">payments</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">Income & Savings</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Keep income streams alongside expenses to track net monthly savings growth accurately.
                     </p>
                 </div>
 
                 <!-- Feature 5 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">folder_zip</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">Receipt Vault</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Store and search original scanned receipt images anytime for tax or reimbursement reference.
                     </p>
                 </div>
 
                 <!-- Feature 6 -->
                 <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-soft-green text-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
                         <span class="material-symbols-outlined text-[22px]">bar_chart</span>
                     </div>
                     <h3 class="text-base font-bold text-deep-forest">Financial Reports</h3>
-                    <p class="text-xs sm:text-sm text-on-surface-variant font-medium leading-relaxed">
+                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
                         Gain insights through category breakdown charts, weekly summaries, and spending trends.
                     </p>
                 </div>
@@ -640,7 +640,7 @@
                                 <span class="text-white/40">→</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span class="px-2.5 py-1 rounded-lg bg-primary text-white">Extract Data</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-primary text-on-primary font-bold">Extract Data</span>
                                 <span class="text-white/40">→</span>
                             </div>
                             <div class="flex items-center gap-1.5">
@@ -807,7 +807,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 py-3.5 min-h-[48px] rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 py-3.5 min-h-[48px] rounded-xl bg-primary text-on-primary text-sm font-bold hover:bg-primary-hover transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                         <span>Open AntTipid App</span>
                         <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                     </a>
@@ -878,7 +878,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- FLOATING SCROLL UP BUTTON                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <button type="button" id="btn-back-to-top" aria-label="Scroll to top" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-elevated border border-primary/30 flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-all opacity-0 pointer-events-none cursor-pointer">
+    <button type="button" id="btn-back-to-top" aria-label="Scroll to top" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary text-on-primary shadow-elevated border border-primary/30 flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all opacity-0 pointer-events-none cursor-pointer">
         <span class="material-symbols-outlined text-[26px]">keyboard_arrow_up</span>
     </button>
 

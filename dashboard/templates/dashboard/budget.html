@@ -38,7 +38,7 @@
             </div>
 
             <div class="flex items-center gap-2 self-end sm:self-auto">
-                <button id="btn-add-category" class="px-4 py-2 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-primary/90 shadow-xs transition-all active:scale-95 cursor-pointer">
+                <button id="btn-add-category" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-primary-hover shadow-xs transition-all active:scale-95 cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     New Category
                 </button>
@@ -111,18 +111,18 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4" id="category-cards-grid">
 
                 <!-- Food & Dining (On Track - Soft Green + Ant Green) -->
-                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Food & Dining" data-category="Food & Dining" data-spent="2400" data-target="3000">
+                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Food & Dining" data-category="Food & Dining" data-spent="2400" data-target="3000">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <div class="w-8 h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-[18px]">restaurant</span>
                             </div>
                             <div>
                                 <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Food & Dining</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-[9px] font-bold border border-primary/30">On Track</span>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[9px] font-bold border border-positive/30">On Track</span>
                             </div>
                         </div>
-                        <span class="text-primary font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
+                        <span class="text-deep-forest group-hover:text-positive-deep font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 transition-colors">
                             Adjust
                             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
                         </span>
@@ -130,12 +130,12 @@
                     <div class="flex justify-between items-end">
                         <div>
                             <span class="font-body-md text-xs sm:text-sm font-extrabold text-deep-forest tabular-nums">₱2,400.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant ml-1 font-medium tabular-nums">/ ₱3,000.00</span>
+                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱3,000.00</span>
                         </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-primary font-extrabold tabular-nums">80%</span>
+                        <span class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-extrabold tabular-nums">80%</span>
                     </div>
                     <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
-                        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 80%;"></div>
+                        <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 80%;"></div>
                     </div>
                 </div>
 
@@ -159,7 +159,7 @@
                     <div class="flex justify-between items-end relative">
                         <div>
                             <span class="font-body-md text-xs sm:text-sm font-extrabold text-expense tabular-nums">₱5,200.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant ml-1 font-medium tabular-nums">/ ₱4,000.00</span>
+                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱4,000.00</span>
                         </div>
                         <span class="font-label-sm text-[11px] sm:text-xs text-expense font-extrabold tabular-nums">130%</span>
                     </div>
@@ -173,18 +173,18 @@
                 </div>
 
                 <!-- Utilities (On Track - Soft Green + Ant Green) -->
-                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Utilities" data-category="Utilities" data-spent="4500" data-target="5000">
+                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Utilities" data-category="Utilities" data-spent="4500" data-target="5000">
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <div class="w-8 h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-[18px]">bolt</span>
                             </div>
                             <div>
                                 <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Utilities</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-[9px] font-bold border border-primary/30">On Track</span>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[9px] font-bold border border-positive/30">On Track</span>
                             </div>
                         </div>
-                        <span class="text-primary font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
+                        <span class="text-deep-forest group-hover:text-positive-deep font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 transition-colors">
                             Adjust
                             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
                         </span>
@@ -192,12 +192,12 @@
                     <div class="flex justify-between items-end">
                         <div>
                             <span class="font-body-md text-xs sm:text-sm font-extrabold text-deep-forest tabular-nums">₱4,500.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant ml-1 font-medium tabular-nums">/ ₱5,000.00</span>
+                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱5,000.00</span>
                         </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-primary font-extrabold tabular-nums">90%</span>
+                        <span class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-extrabold tabular-nums">90%</span>
                     </div>
                     <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
-                        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 90%;"></div>
+                        <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 90%;"></div>
                     </div>
                 </div>
 
@@ -275,7 +275,7 @@
 
             <div class="pt-2 flex gap-3">
                 <button type="button" id="btn-cancel-adjust" class="flex-1 min-h-[44px] rounded-xl border border-outline-variant/60 text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="flex-1 min-h-[44px] rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-colors shadow-xs cursor-pointer">Save Budget</button>
+                <button type="submit" class="flex-1 min-h-[44px] rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-colors shadow-xs cursor-pointer">Save Budget</button>
             </div>
         </form>
     </div>

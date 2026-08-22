@@ -2,15 +2,15 @@
 {# Accepts: title, subtitle, amount, is_income (boolean), icon #}
 <div class="flex items-center justify-between p-sm sm:p-md hover:bg-surface-container-low transition-colors border-b border-surface-variant/60 last:border-0">
     <div class="flex items-center gap-2.5 sm:gap-md min-w-0">
-        <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full {% if is_income %}bg-primary/10 text-primary{% else %}bg-surface-container text-on-surface-variant{% endif %} flex items-center justify-center shrink-0">
+        <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full {% if is_income %}bg-primary-pale text-positive-deep border border-positive/30{% else %}bg-surface-container text-body{% endif %} flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-[18px] sm:text-[22px]">{{ icon|default:"receipt" }}</span>
         </div>
         <div class="min-w-0">
-            <p class="font-label-md text-xs sm:text-label-md text-on-surface font-medium truncate">{{ title }}</p>
-            <p class="font-body-sm text-[11px] sm:text-body-sm text-on-surface-variant truncate">{{ subtitle }}</p>
+            <p class="font-label-md text-xs sm:text-label-md text-deep-forest font-bold truncate">{{ title }}</p>
+            <p class="font-body-sm text-[11px] sm:text-body-sm text-body truncate">{{ subtitle }}</p>
         </div>
     </div>
-    <span class="font-label-md text-xs sm:text-label-md {% if is_income %}text-primary font-bold{% else %}text-on-surface font-semibold{% endif %} whitespace-nowrap ml-2">
+    <span class="font-label-md text-xs sm:text-label-md {% if is_income %}text-positive-deep font-extrabold{% else %}text-deep-forest font-bold{% endif %} whitespace-nowrap ml-2 tabular-nums">
         {% if is_income %}+{% else %}-{% endif %}{{ amount }}
     </span>
 </div>

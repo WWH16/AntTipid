@@ -20,7 +20,7 @@
             <!-- View Switcher (All Activity vs Receipt Archive) -->
             <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
                 <div class="flex bg-surface-container-low rounded-xl p-1 border border-outline-variant/60 shadow-xs" id="view-mode-toggle-group">
-                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
+                    <button id="btn-view-transactions" class="btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer">All Activity</button>
                     <button id="btn-view-receipts" class="btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-bold transition-all flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[16px]">receipt</span>
                         Receipt Archive
@@ -42,7 +42,7 @@
                 <button id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer font-bold shadow-xs">
                     <span class="material-symbols-outlined text-[18px]">filter_list</span>
                     <span class="font-label-sm text-xs font-bold">Filter</span>
-                    <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-white rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
+                    <span id="badge-active-filters-mobile" class="hidden w-4 h-4 bg-primary text-on-primary rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
                 </button>
             </div>
         </div>
@@ -55,17 +55,17 @@
                 <input id="input-search-desktop" class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs" placeholder="Search transactions or receipts..." type="text">
             </div>
 
-            <span class="material-symbols-outlined text-primary text-[20px] mr-0.5">filter_list</span>
+            <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5">filter_list</span>
             
             <!-- Filter: Type -->
-            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+            <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Type: All</option>
                 <option value="income">Type: Income</option>
                 <option value="expense">Type: Expense</option>
             </select>
 
             <!-- Filter: Category -->
-            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+            <select id="select-category-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Category: All</option>
                 <option value="Groceries">Groceries</option>
                 <option value="Dining">Dining</option>
@@ -77,13 +77,13 @@
             </select>
 
             <!-- Filter: Date Range -->
-            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-soft-green/30 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="30days">Date: Last 30 Days</option>
                 <option value="this-month">Date: This Month</option>
                 <option value="all-time">Date: All Time</option>
             </select>
 
-            <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-primary hover:underline font-bold cursor-pointer">Clear Filters</button>
+            <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-deep-forest hover:text-positive-deep hover:underline font-bold cursor-pointer">Clear Filters</button>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -103,14 +103,14 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Jollibee</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Food & Dining</p>
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Jollibee</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Food & Dining</p>
                                     </div>
                                 </div>
                                 <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
@@ -123,14 +123,14 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">directions_car</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Grab</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Transportation</p>
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Grab</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Transportation</p>
                                     </div>
                                 </div>
                                 <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱180.00</span>
@@ -149,14 +149,14 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Shopee</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Shopping</p>
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Shopee</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Shopping</p>
                                     </div>
                                 </div>
                                 <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱650.00</span>
@@ -169,17 +169,17 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                    <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">payments</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Salary Deposit</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Income</p>
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Salary Deposit</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Income</p>
                                     </div>
                                 </div>
-                                <span class="font-label-md text-xs sm:text-sm text-primary font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
+                                <span class="font-label-md text-xs sm:text-sm text-positive-deep font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱20,000.00</span>
                             </div>
                         </div>
                     </div>
@@ -194,14 +194,14 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-soft-green/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">home</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-primary transition-colors">Downtown Apartments</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-on-surface-variant truncate font-medium">Housing & Rent</p>
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Downtown Apartments</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Housing & Rent</p>
                                     </div>
                                 </div>
                                 <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱12,500.00</span>
@@ -227,106 +227,106 @@
                         </thead>
                         <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-outline-variant/30">
                             <!-- Row 1 (Expense) -->
-                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Groceries" data-edit-id="tx-d1" data-edit-type="expense" data-edit-amount="842.00" data-edit-title="SM Supermarket" data-edit-category="Groceries" data-edit-date="2026-10-24" data-edit-account="Bank Account">
-                                <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 24, 2026</td>
+                            <tr class="tx-row hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-type="expense" data-category="Groceries" data-edit-id="tx-d1" data-edit-type="expense" data-edit-amount="842.00" data-edit-title="SM Supermarket" data-edit-category="Groceries" data-edit-date="2026-10-24" data-edit-account="Bank Account">
+                                <td class="py-3.5 px-4 text-body whitespace-nowrap font-medium">Oct 24, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                                         </div>
-                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">SM Supermarket</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors">SM Supermarket</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
                                     <span class="inline-block px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30 tx-cat">Groceries</span>
                                 </td>
-                                <td class="py-3.5 px-4 text-on-surface-variant font-medium">BDO Savings</td>
+                                <td class="py-3.5 px-4 text-body font-medium">BDO Savings</td>
                                 <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱842.00</td>
                                 <td class="py-3.5 px-2 text-right">
-                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete SM Supermarket transaction">
+                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete SM Supermarket transaction">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </td>
                             </tr>
 
                             <!-- Row 2 (Income) -->
-                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="income" data-category="Income" data-edit-id="tx-d2" data-edit-type="income" data-edit-amount="35000.00" data-edit-title="TechCorp Salary" data-edit-category="Salary" data-edit-date="2026-10-22" data-edit-account="Bank Account">
-                                <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 22, 2026</td>
+                            <tr class="tx-row hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-type="income" data-category="Income" data-edit-id="tx-d2" data-edit-type="income" data-edit-amount="35000.00" data-edit-title="TechCorp Salary" data-edit-category="Salary" data-edit-date="2026-10-22" data-edit-account="Bank Account">
+                                <td class="py-3.5 px-4 text-body whitespace-nowrap font-medium">Oct 22, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">payments</span>
                                         </div>
-                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">TechCorp Salary</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors">TechCorp Salary</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-soft-green text-primary font-label-sm text-xs font-bold border border-primary/30 tx-cat">Salary</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-xs font-bold border border-positive/30 tx-cat">Salary</span>
                                 </td>
-                                <td class="py-3.5 px-4 text-on-surface-variant font-medium">Payroll Account</td>
-                                <td class="py-3.5 px-4 text-right font-extrabold text-primary tabular-nums">+₱35,000.00</td>
+                                <td class="py-3.5 px-4 text-body font-medium">Payroll Account</td>
+                                <td class="py-3.5 px-4 text-right font-extrabold text-positive-deep tabular-nums">+₱35,000.00</td>
                                 <td class="py-3.5 px-2 text-right">
-                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete TechCorp Salary transaction">
+                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete TechCorp Salary transaction">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </td>
                             </tr>
 
                             <!-- Row 3 (Expense) -->
-                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Utilities" data-edit-id="tx-d3" data-edit-type="expense" data-edit-amount="1205.00" data-edit-title="Meralco Electricity" data-edit-category="Utilities" data-edit-date="2026-10-21" data-edit-account="GCash">
-                                <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 21, 2026</td>
+                            <tr class="tx-row hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-type="expense" data-category="Utilities" data-edit-id="tx-d3" data-edit-type="expense" data-edit-amount="1205.00" data-edit-title="Meralco Electricity" data-edit-category="Utilities" data-edit-date="2026-10-21" data-edit-account="GCash">
+                                <td class="py-3.5 px-4 text-body whitespace-nowrap font-medium">Oct 21, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">bolt</span>
                                         </div>
-                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Meralco Electricity</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors">Meralco Electricity</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
                                     <span class="inline-block px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-700 font-label-sm text-xs font-bold border border-sky-500/30 tx-cat">Utilities</span>
                                 </td>
-                                <td class="py-3.5 px-4 text-on-surface-variant font-medium">GCash Wallet</td>
+                                <td class="py-3.5 px-4 text-body font-medium">GCash Wallet</td>
                                 <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱1,205.00</td>
                                 <td class="py-3.5 px-2 text-right">
-                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Meralco Electricity transaction">
+                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Meralco Electricity transaction">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </td>
                             </tr>
 
                             <!-- Row 4 (Expense) -->
-                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Dining" data-edit-id="tx-d4" data-edit-type="expense" data-edit-amount="1120.00" data-edit-title="Manam Restaurant" data-edit-category="Food &amp; Dining" data-edit-date="2026-10-20" data-edit-account="Credit Card">
-                                <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 20, 2026</td>
+                            <tr class="tx-row hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-type="expense" data-category="Dining" data-edit-id="tx-d4" data-edit-type="expense" data-edit-amount="1120.00" data-edit-title="Manam Restaurant" data-edit-category="Food &amp; Dining" data-edit-date="2026-10-20" data-edit-account="Credit Card">
+                                <td class="py-3.5 px-4 text-body whitespace-nowrap font-medium">Oct 20, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">restaurant</span>
                                         </div>
-                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Manam Restaurant</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors">Manam Restaurant</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
                                     <span class="inline-block px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30 tx-cat">Dining</span>
                                 </td>
-                                <td class="py-3.5 px-4 text-on-surface-variant font-medium">Credit Card</td>
+                                <td class="py-3.5 px-4 text-body font-medium">Credit Card</td>
                                 <td class="py-3.5 px-4 text-right font-extrabold text-expense tabular-nums">-₱1,120.00</td>
                                 <td class="py-3.5 px-2 text-right">
-                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Manam Restaurant transaction">
+                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Manam Restaurant transaction">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </td>
                             </tr>
 
                             <!-- Row 5 (Transfer - Gold Accent) -->
-                            <tr class="tx-row hover:bg-soft-green/30 transition-colors cursor-pointer group" data-type="expense" data-category="Housing" data-edit-id="tx-d5" data-edit-type="transfer" data-edit-amount="5000.00" data-edit-title="Transfer to Savings" data-edit-category="Others" data-edit-date="2026-10-18" data-edit-account="Bank Account">
-                                <td class="py-3.5 px-4 text-on-surface-variant whitespace-nowrap font-medium">Oct 18, 2026</td>
+                            <tr class="tx-row hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-type="expense" data-category="Housing" data-edit-id="tx-d5" data-edit-type="transfer" data-edit-amount="5000.00" data-edit-title="Transfer to Savings" data-edit-category="Others" data-edit-date="2026-10-18" data-edit-account="Bank Account">
+                                <td class="py-3.5 px-4 text-body whitespace-nowrap font-medium">Oct 18, 2026</td>
                                 <td class="py-3.5 px-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
                                         </div>
-                                        <span class="font-bold text-deep-forest tx-name group-hover:text-primary transition-colors">Transfer to Savings</span>
+                                        <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors">Transfer to Savings</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
@@ -388,7 +388,7 @@
             <div id="receipt-items-list" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs overflow-hidden divide-y divide-outline-variant/30 select-none">
                 
                 <!-- Receipt Row 1: SM Supermarket -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Groceries" data-merchant="SM Supermarket BGC" data-date="2026-10-24" data-amount="1248.50" data-receipt-id="rc-1">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Groceries" data-merchant="SM Supermarket BGC" data-date="2026-10-24" data-amount="1248.50" data-receipt-id="rc-1">
                     <!-- Left: Checkbox (hidden by default) + Category Icon + Merchant & Date/Time -->
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
@@ -403,10 +403,10 @@
 
                         <!-- Middle Content: Merchant Name + Date & Time Below -->
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 SM Supermarket BGC
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 24, 2026 • 2:30 PM
                             </p>
                         </div>
@@ -417,14 +417,14 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱1,248.50
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Receipt Row 2: Starbucks Reserve -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Dining" data-merchant="Starbucks Reserve High Street" data-date="2026-10-23" data-amount="385.00" data-receipt-id="rc-2">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Dining" data-merchant="Starbucks Reserve High Street" data-date="2026-10-23" data-amount="385.00" data-receipt-id="rc-2">
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
                             <input type="checkbox" class="chk-receipt-item rounded border-outline-variant/80 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-4 h-4 cursor-pointer shadow-xs" data-receipt-id="rc-2">
@@ -437,10 +437,10 @@
                         </div>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 Starbucks Reserve High Street
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 23, 2026 • 8:15 AM
                             </p>
                         </div>
@@ -450,14 +450,14 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱385.00
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Receipt Row 3: AWS Digital Receipt -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Utilities" data-merchant="Amazon Web Services" data-date="2026-10-20" data-amount="4985.00" data-receipt-id="rc-3">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Utilities" data-merchant="Amazon Web Services" data-date="2026-10-20" data-amount="4985.00" data-receipt-id="rc-3">
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
                             <input type="checkbox" class="chk-receipt-item rounded border-outline-variant/80 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-4 h-4 cursor-pointer shadow-xs" data-receipt-id="rc-3">
@@ -470,10 +470,10 @@
                         </div>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 Amazon Web Services
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 20, 2026 • 7:42 PM
                             </p>
                         </div>
@@ -483,14 +483,14 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱4,985.00
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Receipt Row 4: Mercury Drug -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Healthcare" data-merchant="Mercury Drug Pharmacy" data-date="2026-10-19" data-amount="874.20" data-receipt-id="rc-4">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Healthcare" data-merchant="Mercury Drug Pharmacy" data-date="2026-10-19" data-amount="874.20" data-receipt-id="rc-4">
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
                             <input type="checkbox" class="chk-receipt-item rounded border-outline-variant/80 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-4 h-4 cursor-pointer shadow-xs" data-receipt-id="rc-4">
@@ -503,10 +503,10 @@
                         </div>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 Mercury Drug Pharmacy
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 19, 2026 • 11:20 AM
                             </p>
                         </div>
@@ -516,14 +516,14 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱874.20
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Receipt Row 5: Uniqlo -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Shopping" data-merchant="Uniqlo Mall of Asia" data-date="2026-10-17" data-amount="2490.00" data-receipt-id="rc-5">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Shopping" data-merchant="Uniqlo Mall of Asia" data-date="2026-10-17" data-amount="2490.00" data-receipt-id="rc-5">
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
                             <input type="checkbox" class="chk-receipt-item rounded border-outline-variant/80 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-4 h-4 cursor-pointer shadow-xs" data-receipt-id="rc-5">
@@ -536,10 +536,10 @@
                         </div>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 Uniqlo Mall of Asia
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 17, 2026 • 4:45 PM
                             </p>
                         </div>
@@ -549,14 +549,14 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱2,490.00
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Receipt Row 6: Petron Service Station -->
-                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-soft-green/20 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Transportation" data-merchant="Petron Service Station EDSA" data-date="2026-10-15" data-amount="1850.00" data-receipt-id="rc-6">
+                <div class="receipt-row-item relative flex items-center justify-between p-3 hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors duration-150 cursor-pointer" data-category="Transportation" data-merchant="Petron Service Station EDSA" data-date="2026-10-15" data-amount="1850.00" data-receipt-id="rc-6">
                     <div class="flex items-center gap-3 min-w-0 flex-1 mr-3">
                         <label class="receipt-chk-label hidden items-center justify-center shrink-0 cursor-pointer rounded-lg hover:bg-surface-container-low transition-all w-7 h-7 sm:w-8 sm:h-8 -ml-1 sm:ml-0" title="Select receipt">
                             <input type="checkbox" class="chk-receipt-item rounded border-outline-variant/80 bg-surface-container-lowest text-primary focus:ring-2 focus:ring-primary/20 w-4 h-4 cursor-pointer shadow-xs" data-receipt-id="rc-6">
@@ -569,10 +569,10 @@
                         </div>
 
                         <div class="min-w-0 flex-1">
-                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-primary transition-colors truncate tracking-tight block">
+                            <a href="{% url 'receipt_detail' %}" class="receipt-merchant-name font-label-md text-xs sm:text-sm md:text-[15px] font-bold text-deep-forest hover:text-positive-deep transition-colors truncate tracking-tight block">
                                 Petron Service Station EDSA
                             </a>
-                            <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium mt-0.5 truncate">
+                            <p class="font-body-sm text-[11px] sm:text-xs text-body font-medium mt-0.5 truncate">
                                 Oct 15, 2026 • 9:10 AM
                             </p>
                         </div>
@@ -582,7 +582,7 @@
                         <span class="font-headline-md sm:font-headline-lg text-xs sm:text-sm md:text-base text-expense font-extrabold tabular-nums whitespace-nowrap">
                             -₱1,850.00
                         </span>
-                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-soft-green hover:text-primary active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
+                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-xl bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep active:scale-95 transition-all flex items-center justify-center shrink-0 cursor-pointer" title="View details">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </a>
                     </div>
@@ -590,12 +590,12 @@
 
                 <!-- Receipt List Pagination Footer -->
                 <div class="border-t border-outline-variant/40 p-3.5 sm:p-4 flex items-center justify-between bg-surface-container-lowest">
-                    <span id="receipt-pagination-status" class="font-body-sm text-xs text-on-surface-variant font-semibold">Showing 1-6 of 6 receipts</span>
+                    <span id="receipt-pagination-status" class="font-body-sm text-xs text-body font-semibold">Showing 1-6 of 6 receipts</span>
                     <div class="flex gap-2">
-                        <button type="button" class="p-1.5 rounded-lg border border-outline-variant/60 text-on-surface-variant disabled:opacity-40 cursor-pointer" disabled title="Previous page">
+                        <button type="button" class="p-1.5 rounded-lg border border-outline-variant/60 text-body disabled:opacity-40 cursor-pointer" disabled title="Previous page">
                             <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                         </button>
-                        <button type="button" class="p-1.5 rounded-lg border border-outline-variant/60 text-deep-forest hover:bg-soft-green/30 transition-colors cursor-pointer" title="Next page">
+                        <button type="button" class="p-1.5 rounded-lg border border-outline-variant/60 text-deep-forest hover:bg-primary-pale/40 transition-colors cursor-pointer" title="Next page">
                             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                         </button>
                     </div>
@@ -605,12 +605,12 @@
 
             <!-- Receipt Filter Empty State -->
             <div id="empty-state-receipts" class="hidden flex-col items-center justify-center text-center py-12 px-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/60 my-2">
-                <div class="w-12 h-12 rounded-2xl bg-soft-green text-primary border border-primary/20 flex items-center justify-center mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center mb-3">
                     <span class="material-symbols-outlined text-[24px]">receipt_long</span>
                 </div>
                 <h3 class="font-headline-md text-base text-deep-forest font-bold">No Receipts Found</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant mt-1 max-w-xs font-medium">No scanned receipts match your active search keyword or category filter.</p>
-                <button type="button" id="btn-reset-receipt-filters" class="mt-4 px-4 py-2 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-deep-forest transition-all shadow-xs active:scale-95 cursor-pointer">Reset Filters</button>
+                <p class="font-body-sm text-xs text-body mt-1 max-w-xs font-medium">No scanned receipts match your active search keyword or category filter.</p>
+                <button type="button" id="btn-reset-receipt-filters" class="mt-4 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-95 cursor-pointer">Reset Filters</button>
             </div>
         </div>
 
@@ -758,12 +758,12 @@
         <!-- Header -->
         <div class="p-4 sm:p-5 border-b border-outline-variant/40 flex items-center justify-between bg-surface-container-low/40">
             <div class="flex items-center gap-2.5 min-w-0">
-                <div id="modal-preview-icon-wrapper" class="w-9 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0">
+                <div id="modal-preview-icon-wrapper" class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-[20px]" id="modal-preview-icon">receipt_long</span>
                 </div>
                 <div class="min-w-0">
                     <h3 id="modal-preview-receipt-title" class="font-headline-md text-base font-bold text-deep-forest truncate">Receipt Scan</h3>
-                    <p id="modal-preview-receipt-meta" class="font-body-sm text-xs text-on-surface-variant font-medium truncate">Oct 24, 2026 • 14:30</p>
+                    <p id="modal-preview-receipt-meta" class="font-body-sm text-xs text-body font-medium truncate">Oct 24, 2026 • 14:30</p>
                 </div>
             </div>
             <button type="button" id="btn-close-preview-modal" aria-label="Close modal" class="w-8 h-8 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
@@ -793,7 +793,7 @@
                 <button type="button" id="btn-modal-preview-close" class="flex-1 sm:flex-none px-4 py-2 rounded-xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low transition-all cursor-pointer">
                     Close
                 </button>
-                <a id="btn-modal-preview-details" href="{% url 'receipt_detail' %}" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-deep-forest transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                <a id="btn-modal-preview-details" href="{% url 'receipt_detail' %}" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                     <span>View Itemized Details</span>
                     <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </a>
@@ -1213,13 +1213,13 @@
         function switchViewMode(mode) {
             if (mode === 'receipts') {
                 btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-bold transition-all flex items-center gap-1 cursor-pointer';
-                btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
+                btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
                 secTx.classList.add('hidden');
                 secReceipts.classList.remove('hidden');
                 secReceipts.classList.add('flex');
             } else {
                 btnViewReceipts.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg font-label-md text-xs text-on-surface-variant hover:text-deep-forest font-bold transition-all flex items-center gap-1 cursor-pointer';
-                btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-white font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
+                btnViewTx.className = 'btn-view-mode px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer';
                 secReceipts.classList.add('hidden');
                 secReceipts.classList.remove('flex');
                 secTx.classList.remove('hidden');
@@ -1774,7 +1774,7 @@
                 document.querySelectorAll('.chip-cat').forEach(c => {
                     c.className = 'chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer';
                 });
-                chip.className = 'chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-white font-label-sm text-xs font-semibold shadow-xs transition-all cursor-pointer';
+                chip.className = 'chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-xs font-bold shadow-xs transition-all cursor-pointer';
                 currentCategory = chip.dataset.cat;
                 if (selectCatDesktop) selectCatDesktop.value = currentCategory;
             });
@@ -1786,7 +1786,7 @@
                 document.querySelectorAll('.pill-type').forEach(p => {
                     p.className = 'pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center';
                 });
-                pill.className = 'pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-white font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center';
+                pill.className = 'pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all cursor-pointer text-center';
                 currentType = pill.dataset.type;
                 if (selectTypeDesktop) selectTypeDesktop.value = currentType;
             });

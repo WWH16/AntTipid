@@ -58,7 +58,7 @@
         
         <div class="flex items-center gap-2">
             <button type="button" id="btn-reupload-top" class="hidden sm:flex px-3 py-1.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest text-on-surface hover:bg-surface-container-low active:scale-95 transition-all font-label-sm text-xs font-semibold items-center gap-1.5 shadow-xs">
-                <span class="material-symbols-outlined text-[16px] text-primary">sync</span>
+                <span class="material-symbols-outlined text-[16px] text-positive-deep">sync</span>
                 <span>Rescan</span>
             </button>
         </div>
@@ -74,7 +74,7 @@
         <div class="flex flex-col gap-5">
             
             <!-- Main Upload Box -->
-            <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-5 bg-surface-container-lowest p-8 sm:p-12 rounded-3xl shadow-soft border-2 border-dashed border-outline-variant/60 hover:border-primary hover:bg-soft-green/20 transition-all cursor-pointer text-center group overflow-hidden">
+            <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-5 bg-surface-container-lowest p-8 sm:p-12 rounded-3xl shadow-soft border-2 border-dashed border-outline-variant/60 hover:border-positive/60 hover:bg-primary-pale/20 transition-all cursor-pointer text-center group overflow-hidden">
 
                 <!-- Viewfinder frame: corner brackets signal "position the receipt here" -->
                 <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
@@ -82,40 +82,40 @@
                     <span class="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-primary/40 rounded-tr-lg group-hover:border-primary transition-colors"></span>
                     <span class="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-primary/40 rounded-bl-lg group-hover:border-primary transition-colors"></span>
                     <span class="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-primary/40 rounded-br-lg group-hover:border-primary transition-colors"></span>
-                    <div class="w-14 h-14 rounded-2xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                    <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
                         <span class="material-symbols-outlined text-[30px]">photo_camera</span>
                     </div>
                 </div>
 
                 <div class="space-y-1.5 max-w-md">
-                    <h2 class="font-headline-lg text-lg sm:text-xl md:text-2xl font-extrabold text-deep-forest group-hover:text-primary transition-colors">
+                    <h2 class="font-headline-lg text-lg sm:text-xl md:text-2xl font-extrabold text-deep-forest group-hover:text-positive-deep transition-colors">
                         Scan Receipt
                     </h2>
-                    <p class="font-body-md text-xs sm:text-sm text-on-surface-variant leading-relaxed font-medium">
+                    <p class="font-body-md text-xs sm:text-sm text-body leading-relaxed font-medium">
                         Upload a clear photo and AI will pull out the merchant, items, and total for you.
                     </p>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-2">
-                    <button type="button" id="btn-select-file" class="w-full sm:w-auto px-6 py-2.5 h-11 rounded-xl bg-primary text-white font-label-md text-xs sm:text-sm font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 cursor-pointer">
+                    <button type="button" id="btn-select-file" class="w-full sm:w-auto px-6 py-2.5 h-11 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 cursor-pointer">
                         <span class="material-symbols-outlined text-[20px]">upload_file</span>
                         <span>Choose Receipt Image</span>
                     </button>
 
-                    <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-5 py-2.5 h-11 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-soft-green/30 transition-all font-label-md text-xs sm:text-sm font-bold flex items-center justify-center gap-2 active:scale-95 shadow-xs">
-                        <span class="material-symbols-outlined text-[18px] text-primary">auto_awesome</span>
+                    <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-5 py-2.5 h-11 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 transition-all font-label-md text-xs sm:text-sm font-bold flex items-center justify-center gap-2 active:scale-95 shadow-xs">
+                        <span class="material-symbols-outlined text-[18px] text-positive-deep">auto_awesome</span>
                         <span>Try Sample Demo</span>
                     </button>
                 </div>
 
-                <span class="font-body-sm text-[11px] text-on-surface-variant/70 -mt-1">or drag and drop a JPG or PNG here</span>
+                <span class="font-body-sm text-[11px] text-body -mt-1">or drag and drop a JPG or PNG here</span>
             </div>
 
             <!-- Quick scan tip -->
             <div class="flex items-start sm:items-center gap-2.5 px-4 py-3 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
-                <span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 sm:mt-0">lightbulb</span>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                <span class="material-symbols-outlined text-positive-deep text-[18px] shrink-0 mt-0.5 sm:mt-0">lightbulb</span>
+                <p class="font-body-sm text-xs text-body leading-relaxed">
                     For the cleanest scan: flatten the receipt, use good lighting, and keep all edges in frame.
                 </p>
             </div>
@@ -152,7 +152,7 @@
                 <!-- Pulsing Icon -->
                 <div class="relative z-20">
                     <div class="pulse-ring absolute inset-0 bg-primary/20 rounded-full"></div>
-                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(92,143,58,0.35)]">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(159,232,112,0.35)]">
                         <span class="material-symbols-outlined text-2xl sm:text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">
                             document_scanner
                         </span>
@@ -170,9 +170,9 @@
                 <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
                     <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full shadow-xs"></div>
                 </div>
-                <div class="flex justify-between items-center text-xs text-on-surface-variant font-medium px-1">
+                <div class="flex justify-between items-center text-xs text-body font-medium px-1">
                     <span id="step-count-text" class="font-semibold text-deep-forest">Step 1 of 4</span>
-                    <span class="font-bold text-primary tabular-nums">Processing</span>
+                    <span class="font-bold text-positive-deep tabular-nums">Processing</span>
                 </div>
             </div>
 
@@ -197,9 +197,9 @@
         <div class="flex items-start justify-between gap-3 mb-4 px-0.5">
             <div class="flex flex-col gap-0.5">
                 <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight">Verify Extracted Details</h2>
-                <p class="font-body-sm text-xs text-on-surface-variant">Compare against the photo and correct anything the scan missed.</p>
+                <p class="font-body-sm text-xs text-body">Compare against the photo and correct anything the scan missed.</p>
             </div>
-            <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 rounded-full bg-soft-green text-primary font-label-sm text-[11px] font-bold border border-primary/30 mt-0.5">
+            <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[11px] font-bold border border-positive/30 mt-0.5">
                 <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
                 AI Extracted
             </span>
@@ -215,7 +215,7 @@
                 <div class="lg:hidden bg-surface-container-lowest p-2.5 sm:p-3 rounded-xl border border-outline-variant/60 shadow-xs flex flex-col gap-2">
                     <div class="flex items-center justify-between px-0.5">
                         <span class="font-label-sm text-xs font-bold text-deep-forest">Scanned Receipt</span>
-                        <button type="button" id="btn-reupload-mobile" class="px-3 py-1.5 rounded-lg bg-primary text-white font-label-sm text-xs font-bold active:scale-95 transition-all flex items-center gap-1 shrink-0 shadow-xs">
+                        <button type="button" id="btn-reupload-mobile" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-xs font-bold active:scale-95 transition-all flex items-center gap-1 shrink-0 shadow-xs">
                             <span class="material-symbols-outlined text-[16px]">sync</span>
                             <span>Rescan</span>
                         </button>
@@ -227,7 +227,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
 
                         <!-- Mobile Zoom Button -->
-                        <button type="button" id="btn-zoom-image-mobile" class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-primary px-2.5 py-1 rounded-md flex items-center gap-1 shadow-xs hover:bg-soft-green active:scale-95 transition-all z-10 border border-outline-variant/40">
+                        <button type="button" id="btn-zoom-image-mobile" class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-deep-forest hover:text-positive-deep px-2.5 py-1 rounded-md flex items-center gap-1 shadow-xs hover:bg-primary-pale active:scale-95 transition-all z-10 border border-outline-variant/40">
                             <span class="material-symbols-outlined text-[15px]">zoom_in</span>
                             <span class="font-label-sm text-[10px] font-bold">Zoom</span>
                         </button>
@@ -236,11 +236,11 @@
                     <!-- Mobile Summary Strip -->
                     <div class="flex items-center divide-x divide-outline-variant/50 border-t border-outline-variant/40 pt-2 mt-0.5">
                         <div class="flex-1 flex flex-col px-0.5">
-                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Items</span>
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-body font-semibold">Items</span>
                             <span id="badge-item-count-mobile" class="font-label-md text-xs font-bold text-deep-forest mt-0.5">0 items</span>
                         </div>
                         <div class="flex-1 flex flex-col px-3">
-                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Total</span>
+                            <span class="font-label-sm text-[10px] uppercase tracking-wider text-body font-semibold">Total</span>
                             <span id="badge-total-amount-mobile" class="font-label-md text-xs font-extrabold text-expense mt-0.5 tabular-nums">₱0.00</span>
                         </div>
                     </div>
@@ -254,7 +254,7 @@
                     <div class="w-full h-64 rounded-lg bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group cursor-pointer" id="btn-zoom-image">
                         <img id="img-review-preview" class="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform" alt="Scanned Receipt Preview" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=600&q=80"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
-                        <span class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-primary px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1 shadow-xs border border-outline-variant/40">
+                        <span class="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur-sm text-deep-forest px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1 shadow-xs border border-outline-variant/40">
                             <span class="material-symbols-outlined text-[14px]">zoom_in</span> Click to Enlarge
                         </span>
                     </div>
@@ -327,11 +327,11 @@
                         <h3 class="font-label-md text-xs font-bold text-deep-forest uppercase tracking-wider">
                             Items
                         </h3>
-                        <button type="button" id="btn-toggle-items" class="text-primary font-label-sm text-[11px] font-bold hover:underline transition-colors py-0.5 px-1.5 rounded hover:bg-soft-green/30">Collapse</button>
+                        <button type="button" id="btn-toggle-items" class="text-deep-forest hover:text-positive-deep font-label-sm text-[11px] font-bold hover:underline transition-colors py-0.5 px-1.5 rounded hover:bg-primary-pale/30">Collapse</button>
                     </div>
 
                     <!-- Column Headers -->
-                    <div class="flex items-center gap-2 px-3 font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
+                    <div class="flex items-center gap-2 px-3 font-label-sm text-[10px] uppercase tracking-wider text-body font-semibold">
                         <span class="flex-1">Description</span>
                         <span class="w-12 sm:w-14 text-center shrink-0">Qty</span>
                         <span class="w-20 sm:w-24 text-right shrink-0">Price</span>
@@ -343,7 +343,7 @@
                         <!-- Line items rendered dynamically -->
                     </div>
 
-                    <button type="button" id="btn-add-review-item" class="self-start text-primary font-label-md text-xs font-bold flex items-center gap-1 mt-0.5 hover:bg-soft-green/30 transition-colors px-3 py-1.5 rounded-xl border border-primary/30 active:scale-95 shadow-xs">
+                    <button type="button" id="btn-add-review-item" class="self-start text-positive-deep font-label-md text-xs font-bold flex items-center gap-1 mt-0.5 hover:bg-primary-pale/40 transition-colors px-3 py-1.5 rounded-xl border border-positive/30 active:scale-95 shadow-xs">
                         <span class="material-symbols-outlined text-[16px]">add</span>
                         <span>Add Item</span>
                     </button>
@@ -352,14 +352,14 @@
                 <!-- Totals & Payment Breakdown -->
                 <div class="flex flex-col gap-3 pt-2 border-t border-surface-variant/40">
                     <div class="flex justify-between items-center">
-                        <span class="font-body-md text-xs text-on-surface-variant font-medium">Items Subtotal</span>
+                        <span class="font-body-md text-xs text-body font-medium">Items Subtotal</span>
                         <span id="label-review-subtotal" class="font-body-md text-xs text-deep-forest font-bold tabular-nums">₱0.00</span>
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <span class="font-body-md text-xs text-on-surface-variant font-medium">Tax / VAT</span>
+                        <span class="font-body-md text-xs text-body font-medium">Tax / VAT</span>
                         <div class="flex items-center gap-1">
-                            <span class="text-xs text-on-surface-variant font-semibold">₱</span>
+                            <span class="text-xs text-body font-semibold">₱</span>
                             <input type="number" step="0.01" min="0" id="input-review-tax" class="w-24 text-right font-body-md text-xs sm:text-sm text-deep-forest font-semibold bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" />
                         </div>
                     </div>
@@ -374,24 +374,24 @@
                     </div>
 
                     <!-- Cash & Change Disclosure -->
-                    <button type="button" id="btn-toggle-cash" class="self-start text-primary font-label-sm text-[11px] font-bold flex items-center gap-1 hover:underline mt-0.5">
+                    <button type="button" id="btn-toggle-cash" class="self-start text-deep-forest hover:text-positive-deep font-label-sm text-[11px] font-bold flex items-center gap-1 hover:underline mt-0.5">
                         <span class="material-symbols-outlined text-[14px]" id="icon-toggle-cash">add</span>
                         <span id="label-toggle-cash">Add cash payment details</span>
                     </button>
                     <div id="section-cash-breakdown" class="hidden flex-col gap-2 pt-2 border-t border-dashed border-surface-variant/80">
-                        <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant">
-                            <span class="font-medium text-on-surface">Cash Tendered</span>
+                        <div class="flex justify-between items-center font-body-sm text-xs text-body">
+                            <span class="font-medium text-deep-forest">Cash Tendered</span>
                             <div class="flex items-center gap-1">
-                                <span class="text-xs text-on-surface-variant">₱</span>
-                                <input type="number" step="0.01" min="0" id="input-cash-tendered" class="w-24 text-right font-semibold text-xs text-on-surface bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" placeholder="0.00" />
+                                <span class="text-xs text-body">₱</span>
+                                <input type="number" step="0.01" min="0" id="input-cash-tendered" class="w-24 text-right font-semibold text-xs text-deep-forest bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" placeholder="0.00" />
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant">
-                            <span class="font-medium text-on-surface">Change</span>
+                        <div class="flex justify-between items-center font-body-sm text-xs text-body">
+                            <span class="font-medium text-deep-forest">Change</span>
                             <div class="flex items-center gap-1">
-                                <span class="text-xs text-on-surface-variant">₱</span>
-                                <input type="number" step="0.01" min="0" id="input-cash-change" class="w-24 text-right font-bold text-xs text-primary bg-primary/5 border border-primary/30 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" placeholder="0.00" />
+                                <span class="text-xs text-body">₱</span>
+                                <input type="number" step="0.01" min="0" id="input-cash-change" class="w-24 text-right font-bold text-xs text-positive-deep bg-primary-pale/30 border border-positive/30 rounded-lg px-2 py-1 focus:border-positive outline-none tabular-nums" value="0.00" placeholder="0.00" />
                             </div>
                         </div>
                     </div>
@@ -410,7 +410,7 @@
 
 <!-- Full Image Zoom Lightbox Modal (matches receipt detail page's image viewer) -->
 <div id="modal-image-zoom" role="dialog" aria-modal="true" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <button type="button" id="btn-close-zoom" aria-label="Close image modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-soft-green hover:text-primary transition-all z-10 shadow-md active:scale-95 cursor-pointer">
+    <button type="button" id="btn-close-zoom" aria-label="Close image modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-expense/20 hover:text-expense transition-all z-10 shadow-md active:scale-95 cursor-pointer">
         <span class="material-symbols-outlined text-[20px]">close</span>
     </button>
     <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="" />
@@ -436,7 +436,7 @@
             <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-expense hover:bg-expense/10 font-label-md text-xs font-bold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer">
                 Discard Scan
             </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
+            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary-hover font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                 Keep Scanning
             </button>
         </div>

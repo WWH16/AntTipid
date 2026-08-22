@@ -8,7 +8,7 @@
     <meta name="description" content="{% block meta_description %}AntTipid is your intelligent personal finance manager — track expenses, set budgets, and archive receipt scans with ease.{% endblock %}">
 
     <!-- PWA & Mobile Web App Meta Tags -->
-    <meta name="theme-color" content="#5C8F3A">
+    <meta name="theme-color" content="#9FE870">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="AntTipid">
@@ -21,7 +21,7 @@
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -149,19 +149,19 @@
             <div class="flex flex-col gap-1">
                 <p class="font-label-sm text-[10px] text-white/60 uppercase tracking-widest font-semibold px-3 mb-1">Navigation</p>
                 {% block sidebar_nav %}
-                <a id="nav-dashboard" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'dashboard' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'dashboard' %}">
+                <a id="nav-dashboard" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'dashboard' %}bg-primary text-on-primary shadow-sm font-bold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'dashboard' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
                     Dashboard
                 </a>
-                <a id="nav-transactions" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'transactions' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'transactions' %}">
+                <a id="nav-transactions" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'transactions' %}bg-primary text-on-primary shadow-sm font-bold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'transactions' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
                     History
                 </a>
-                <a id="nav-budgets" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'budgets' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'budget' %}">
+                <a id="nav-budgets" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'budgets' %}bg-primary text-on-primary shadow-sm font-bold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'budget' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
                     Budgets
                 </a>
-                <a id="nav-reports" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'reports' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'reports' %}">
+                <a id="nav-reports" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'reports' %}bg-primary text-on-primary shadow-sm font-bold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'reports' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'reports' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>analytics</span>
                     Reports
                 </a>
@@ -169,7 +169,7 @@
             </div>
 
             <!-- Primary Action CTA -->
-            <button id="btn-add-transaction-desktop" class="w-full bg-primary hover:bg-primary/90 text-white py-2.5 rounded-xl font-label-md text-xs font-semibold flex justify-center items-center gap-2 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+            <button id="btn-add-transaction-desktop" class="w-full bg-primary hover:bg-primary-hover text-on-primary py-2.5 rounded-xl font-label-md text-xs font-bold flex justify-center items-center gap-2 shadow-sm active:scale-[0.98] transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-[18px]">add</span> Add Transaction
             </button>
         </div>
@@ -287,34 +287,34 @@
                 <!-- Choice 1: Scan / Upload Receipt -->
                 <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt" class="flex flex-col justify-between p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs">
                     <div class="flex justify-between items-start mb-3">
-                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <div class="w-9 h-9 rounded-xl bg-surface-container text-deep-forest flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors shadow-xs">
                             <span class="material-symbols-outlined text-[20px]">photo_camera</span>
                         </div>
-                        <span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold border border-primary/20">AI Scan</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-bold border border-positive/30">AI Scan</span>
                     </div>
                     <div>
-                        <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
+                        <h4 class="font-label-md text-sm font-bold text-on-surface group-hover:text-deep-forest transition-colors flex items-center justify-between">
                             Scan Receipt
-                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
+                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
                         </h4>
-                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Auto-scan items & totals from receipts with AI.</p>
+                        <p class="font-body-sm text-xs text-body mt-0.5">Auto-scan items & totals from receipts with AI.</p>
                     </div>
                 </a>
 
                 <!-- Choice 2: Add Manual Transaction -->
                 <a href="{% url 'add_transaction' %}" id="choice-manual-entry" class="flex flex-col justify-between p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs">
                     <div class="flex justify-between items-start mb-3">
-                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-surface-container-high transition-colors">
+                        <div class="w-9 h-9 rounded-xl bg-surface-container text-deep-forest flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors shadow-xs">
                             <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         </div>
-                        <span class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-semibold border border-surface-variant/40">Manual</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-surface-container text-deep-forest text-[10px] font-bold border border-surface-variant/40">Manual</span>
                     </div>
                     <div>
-                        <h4 class="font-label-md text-sm font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center justify-between">
+                        <h4 class="font-label-md text-sm font-bold text-on-surface group-hover:text-deep-forest transition-colors flex items-center justify-between">
                             Manual Entry
-                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-primary group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
+                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[16px]">chevron_right</span>
                         </h4>
-                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log expense, income, or transfer manually.</p>
+                        <p class="font-body-sm text-xs text-body mt-0.5">Log expense, income, or transfer manually.</p>
                     </div>
                 </a>
 

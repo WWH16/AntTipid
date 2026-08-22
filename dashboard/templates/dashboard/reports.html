@@ -41,12 +41,12 @@
                 <!-- Time Period Selector Pill Group -->
                 <div class="flex bg-surface-container-low rounded-full p-1 border border-outline-variant/60 shadow-xs" id="period-selector-group">
                     <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Week</button>
-                    <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-primary text-white shadow-xs font-label-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Month</button>
+                    <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-primary text-on-primary shadow-xs font-label-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Month</button>
                     <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Year</button>
                 </div>
 
                 <!-- Export Report Button -->
-                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-primary/30 bg-soft-green text-primary font-label-md text-xs font-bold hover:bg-primary hover:text-white transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-positive/30 bg-primary-pale text-positive-deep font-label-md text-xs font-bold hover:bg-primary hover:text-on-primary transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span class="hidden sm:inline">Export</span>
                 </button>
@@ -225,7 +225,7 @@
             <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
                 <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
                     <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/30">November</span>
+                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
                 </div>
 
                 <!-- Donut SVG Area -->
@@ -324,14 +324,14 @@
                 </a>
 
                 <!-- Trend Item 2 (Groceries) -->
-                <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
+                <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-positive/30 hover:bg-primary-pale/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_bag</span>
                         </div>
                         <div class="min-w-0">
                             <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Groceries</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-primary">
+                            <div class="flex items-center gap-1 mt-0.5 text-positive-deep">
                                 <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_down</span>
                                 <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">-5%</span>
                             </div>
@@ -509,7 +509,7 @@
                 periodButtons.forEach(b => {
                     b.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-label-md text-xs lg:text-sm text-on-surface-variant hover:text-on-surface transition-all cursor-pointer';
                 });
-                btn.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary text-white font-bold shadow-xs font-label-md text-xs lg:text-sm transition-all cursor-pointer';
+                btn.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary text-on-primary font-bold shadow-xs font-label-md text-xs lg:text-sm transition-all cursor-pointer';
                 updatePeriod(btn.dataset.period);
             });
         });
