@@ -413,13 +413,33 @@
             });
         }
 
-        // Global Link & Nav Interception when form is dirty
+        function navigateBack() {
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
+                window.history.back();
+            } else {
+                window.location.href = "{% url 'dashboard' %}";
+            }
+        }
+
+        // Global Link & Nav Interception
         document.addEventListener('click', (e) => {
+            const backTarget = e.target.closest('#btn-back, #btn-cancel');
+            if (backTarget) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isFormDirty) {
+                    openConfirmModal('BACK');
+                } else {
+                    navigateBack();
+                }
+                return;
+            }
+
             if (!isFormDirty) return;
 
             const linkOrBtn = e.target.closest('a[href], button:not(#btn-save-transaction):not(#btn-keep-editing):not(#btn-confirm-discard):not(.btn-preset-chip):not(.category-btn):not(.type-tab)');
             if (linkOrBtn) {
-                const href = linkOrBtn.getAttribute('href') || "{% url 'transactions' %}";
+                const href = linkOrBtn.getAttribute('href');
                 if (href && href !== '#' && !href.startsWith('javascript:')) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -439,34 +459,13 @@
                 const mainContainer = document.querySelector('main') || document.body;
                 mainContainer.removeAttribute('aria-hidden');
 
-                if (pendingTargetUrl) {
+                if (pendingTargetUrl && pendingTargetUrl !== 'BACK') {
                     window.location.href = pendingTargetUrl;
-                } else if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
-                    window.history.back();
                 } else {
-                    window.location.href = "{% url 'transactions' %}";
+                    navigateBack();
                 }
             });
         }
-
-        // Smart Back Navigation for Top Back Button and Cancel Button
-        function handleSmartBack(e) {
-            if (isFormDirty) {
-                e.preventDefault();
-                const fallbackUrl = document.referrer && document.referrer.includes(window.location.host) ? document.referrer : "{% url 'transactions' %}";
-                openConfirmModal(fallbackUrl);
-                return;
-            }
-            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
-                e.preventDefault();
-                window.history.back();
-            }
-        }
-
-        const btnBack = document.getElementById('btn-back');
-        const btnCancel = document.getElementById('btn-cancel');
-        if (btnBack) btnBack.addEventListener('click', handleSmartBack);
-        if (btnCancel) btnCancel.addEventListener('click', handleSmartBack);
 
         if (confirmModal) {
             confirmModal.addEventListener('click', (e) => {
