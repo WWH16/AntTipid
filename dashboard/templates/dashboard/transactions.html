@@ -98,8 +98,12 @@
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
                         
                         <!-- Item 1: SM Supermarket BGC (Receipt) -->
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Groceries" data-merchant="SM Supermarket BGC" data-date="2026-10-24" data-amount="1248.50" data-receipt-id="rc-1" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 24, 2026 • 2:30 PM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Groceries" data-merchant="SM Supermarket BGC" data-date="2026-10-24" data-amount="1248.50" data-receipt-id="rc-1" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 24, 2026 • 2:30 PM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete SM Supermarket BGC receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
@@ -114,13 +118,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Groceries • 2:30 PM</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱1,248.50</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱1,248.50</span>
+                            </div>
                         </div>
 
                         <!-- Item 2: Jollibee (Manual Expense) -->
@@ -181,8 +180,12 @@
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
                         
                         <!-- Starbucks Reserve (Receipt) -->
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Dining" data-merchant="Starbucks Reserve High Street" data-date="2026-10-23" data-amount="385.00" data-receipt-id="rc-2" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 23, 2026 • 8:15 AM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Dining" data-merchant="Starbucks Reserve High Street" data-date="2026-10-23" data-amount="385.00" data-receipt-id="rc-2" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 23, 2026 • 8:15 AM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Starbucks Reserve receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">restaurant</span>
@@ -197,13 +200,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Dining • 8:15 AM</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱385.00</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱385.00</span>
+                            </div>
                         </div>
 
                         <!-- Shopee (Manual Expense) -->
@@ -294,8 +292,12 @@
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
                         
                         <!-- Amazon Web Services (Receipt) -->
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Utilities" data-merchant="Amazon Web Services" data-date="2026-10-20" data-amount="4985.00" data-receipt-id="rc-3" data-receipt-type="pdf" data-items="Oct 20, 2026 • 7:42 PM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Utilities" data-merchant="Amazon Web Services" data-date="2026-10-20" data-amount="4985.00" data-receipt-id="rc-3" data-receipt-type="pdf" data-items="Oct 20, 2026 • 7:42 PM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Amazon Web Services receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">bolt</span>
@@ -310,13 +312,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Utilities • 7:42 PM • PDF</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱4,985.00</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱4,985.00</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -325,8 +322,12 @@
                 <div class="transaction-group" data-date-group="older">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Oct 19, 2026</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Healthcare" data-merchant="Mercury Drug Pharmacy" data-date="2026-10-19" data-amount="874.20" data-receipt-id="rc-4" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 19, 2026 • 11:20 AM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="Healthcare" data-merchant="Mercury Drug Pharmacy" data-date="2026-10-19" data-amount="874.20" data-receipt-id="rc-4" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 19, 2026 • 11:20 AM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Mercury Drug Pharmacy receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">medication</span>
@@ -341,13 +342,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Healthcare • 11:20 AM</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱874.20</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱874.20</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -356,8 +352,12 @@
                 <div class="transaction-group" data-date-group="older">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Oct 17, 2026</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-category="Shopping" data-type="expense" data-merchant="Uniqlo Mall of Asia" data-date="2026-10-17" data-amount="2490.00" data-receipt-id="rc-5" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 17, 2026 • 4:45 PM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-category="Shopping" data-type="expense" data-merchant="Uniqlo Mall of Asia" data-date="2026-10-17" data-amount="2490.00" data-receipt-id="rc-5" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 17, 2026 • 4:45 PM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Uniqlo Mall of Asia receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-700 border border-purple-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
@@ -372,13 +372,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Shopping • 4:45 PM</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱2,490.00</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱2490.00</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -387,8 +382,12 @@
                 <div class="transaction-group" data-date-group="older">
                     <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">Oct 15, 2026</h2>
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-category="Transportation" data-type="expense" data-merchant="Petron Service Station EDSA" data-date="2026-10-15" data-amount="1850.00" data-receipt-id="rc-6" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 15, 2026 • 9:10 AM">
-                            <a href="{% url 'receipt_detail' %}" class="flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-category="Transportation" data-type="expense" data-merchant="Petron Service Station EDSA" data-date="2026-10-15" data-amount="1850.00" data-receipt-id="rc-6" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}" data-items="Oct 15, 2026 • 9:10 AM" data-detail-url="{% url 'receipt_detail' %}">
+                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete Petron Service Station EDSA receipt">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
+                            </button>
+                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-xl bg-orange-500/15 text-orange-700 border border-orange-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">local_gas_station</span>
@@ -403,13 +402,8 @@
                                         <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">Transportation • 9:10 AM</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0 ml-2">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱1,850.00</span>
-                                    <span class="w-7 h-7 rounded-lg bg-surface-container-low text-body hover:bg-primary-pale hover:text-positive-deep flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                                    </span>
-                                </div>
-                            </a>
+                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱1,850.00</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -461,9 +455,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="SM Supermarket BGC" data-date="Oct 24, 2026" data-items="2:30 PM • 6 items" data-amount="₱1,248.50" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete SM Supermarket BGC receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -527,9 +521,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="Starbucks Reserve High Street" data-date="Oct 23, 2026" data-items="8:15 AM • 2 items" data-amount="₱385.00" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Starbucks Reserve receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -622,9 +616,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="Amazon Web Services" data-date="Oct 20, 2026" data-items="7:42 PM • PDF Invoice" data-amount="₱4,985.00" data-receipt-type="pdf">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Amazon Web Services receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -688,9 +682,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="Mercury Drug Pharmacy" data-date="Oct 19, 2026" data-items="11:20 AM • 4 items" data-amount="₱874.20" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Mercury Drug Pharmacy receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -754,9 +748,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="Uniqlo Mall of Asia" data-date="Oct 17, 2026" data-items="4:45 PM • 3 items" data-amount="₱2,490.00" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Uniqlo Mall of Asia receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -791,9 +785,9 @@
                                         <button type="button" class="btn-preview-receipt-avatar w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer" title="Preview receipt" data-merchant="Petron Service Station EDSA" data-date="Oct 15, 2026" data-items="9:10 AM • Fuel" data-amount="₱1,850.00" data-receipt-type="image" data-receipt-img="{% static 'images/receipt-sample.jpg' %}">
                                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                                         </button>
-                                        <a href="{% url 'receipt_detail' %}" class="w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-all" title="View details">
-                                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                                        </a>
+                                        <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer" aria-label="Delete Petron Service Station EDSA receipt" title="Delete receipt">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -945,7 +939,7 @@
             </div>
             <div class="flex flex-col gap-1">
                 <h3 id="modal-delete-row-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
-                <p class="font-body-sm text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
+                <p id="modal-delete-row-desc" class="font-body-sm text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
             </div>
         </div>
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
@@ -964,7 +958,7 @@
             </div>
             <div class="flex flex-col gap-1">
                 <h3 id="modal-delete-tx-title" class="font-headline-md text-sm font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
+                <p id="modal-delete-tx-desc" class="font-body-sm text-xs text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
             </div>
         </div>
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
@@ -1118,25 +1112,31 @@
             getDeletedReceiptIds().forEach(id => {
                 document.querySelectorAll(`[data-receipt-id="${id}"]`).forEach(el => el.remove());
             });
-            updateReceiptCounters();
         })();
 
-        // Desktop table rows: open the same edit sheet used on mobile
-        document.querySelectorAll('.tx-row[data-edit-id]').forEach(row => {
-            row.addEventListener('click', () => editSheet.open(row.dataset));
+        // Desktop table rows: tap row or click delete
+        document.querySelectorAll('.tx-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // If clicked a button or link inside the row, do not trigger row-level click
+                if (e.target.closest('button') || e.target.closest('a')) return;
+
+                if (row.dataset.source === 'receipt') {
+                    openReceiptPreview(row.dataset);
+                } else {
+                    editSheet.open(row.dataset);
+                }
+            });
 
             const rowDeleteBtn = row.querySelector('.tx-row-delete-btn');
             if (rowDeleteBtn) {
                 rowDeleteBtn.addEventListener('click', (e) => {
-                    // Don't let this bubble up to the row's own click handler
-                    // (which would open the edit sheet instead).
                     e.stopPropagation();
                     requestDeleteRow(row);
                 });
             }
         });
 
-        // Delete Transaction Confirmation Modal (desktop table)
+        // Delete Confirmation Modal (desktop table)
         const deleteRowModal = document.getElementById('modal-confirm-delete-row');
         const deleteRowModalContent = document.getElementById('modal-confirm-delete-row-content');
         const btnCancelDeleteRow = document.getElementById('btn-cancel-delete-row');
@@ -1146,6 +1146,18 @@
         function requestDeleteRow(row) {
             pendingDeleteTableRow = row;
             if (!deleteRowModal) return;
+
+            const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
+            const modalTitle = document.getElementById('modal-delete-row-title');
+            const modalDesc = document.getElementById('modal-delete-row-desc');
+            const confirmBtn = document.getElementById('btn-confirm-delete-row');
+
+            if (modalTitle) modalTitle.textContent = isReceipt ? 'Delete this receipt?' : 'Delete this transaction?';
+            if (modalDesc) modalDesc.textContent = isReceipt
+                ? "This can't be undone. The scanned receipt and its itemized logs will be permanently removed."
+                : "This can't be undone. The transaction will be permanently removed.";
+            if (confirmBtn) confirmBtn.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
+
             deleteRowModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 deleteRowModal.classList.remove('opacity-0');
@@ -1195,15 +1207,21 @@
                     closeDeleteRowModal();
                     return;
                 }
-                markTransactionDeleted(pendingDeleteTableRow.dataset.editId);
+                const isReceipt = pendingDeleteTableRow.dataset.source === 'receipt' || !!pendingDeleteTableRow.dataset.receiptId;
+                if (isReceipt && pendingDeleteTableRow.dataset.receiptId) {
+                    markReceiptsDeleted([pendingDeleteTableRow.dataset.receiptId]);
+                } else if (pendingDeleteTableRow.dataset.editId) {
+                    markTransactionDeleted(pendingDeleteTableRow.dataset.editId);
+                }
                 pendingDeleteTableRow.remove();
                 pendingDeleteTableRow = null;
                 closeDeleteRowModal();
-                showPageToast('deleted');
+                if (typeof applyAllFilters === 'function') applyAllFilters();
+                editSheet.showToast(isReceipt ? 'Receipt deleted' : 'Transaction deleted');
             });
         }
 
-        // Mobile cards: swipe left to reveal Delete (Instagram-style), tap to edit
+        // Mobile cards: swipe left to reveal Delete (Instagram-style), tap to edit/view
         const SWIPE_DELETE_WIDTH = 80;
         const SWIPE_LOCK_THRESHOLD = 10;
         const SWIPE_HORIZONTAL_RATIO = 1.5;
@@ -1239,7 +1257,7 @@
             openSwipeRow = row;
         }
 
-        document.querySelectorAll('.tx-item[data-edit-id]').forEach(row => {
+        document.querySelectorAll('.tx-item').forEach(row => {
             const fg = row.querySelector('.tx-item-fg');
             const deleteBtn = row.querySelector('.tx-swipe-delete-btn');
             if (!fg) return;
@@ -1321,7 +1339,11 @@
                     closeSwipeRow(row);
                     return;
                 }
-                editSheet.open(row.dataset);
+                if (row.dataset.source === 'receipt') {
+                    window.location.href = row.dataset.detailUrl || "{% url 'receipt_detail' %}";
+                } else {
+                    editSheet.open(row.dataset);
+                }
             });
 
             if (deleteBtn) {
@@ -1337,7 +1359,7 @@
             closeSwipeRow(openSwipeRow);
         }, true);
 
-        // Delete Transaction Confirmation Modal (mobile swipe-to-delete)
+        // Delete Confirmation Modal (mobile swipe-to-delete)
         const deleteTxModal = document.getElementById('modal-confirm-delete-tx');
         const deleteTxModalContent = document.getElementById('modal-confirm-delete-tx-content');
         const btnCancelDeleteTx = document.getElementById('btn-cancel-delete-tx');
@@ -1347,6 +1369,18 @@
         function requestDeleteTx(row) {
             pendingDeleteRow = row;
             if (!deleteTxModal) return;
+
+            const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
+            const modalTitle = document.getElementById('modal-delete-tx-title');
+            const modalDesc = document.getElementById('modal-delete-tx-desc');
+            const confirmBtn = document.getElementById('btn-confirm-delete-tx');
+
+            if (modalTitle) modalTitle.textContent = isReceipt ? 'Delete this receipt?' : 'Delete this transaction?';
+            if (modalDesc) modalDesc.textContent = isReceipt
+                ? "This can't be undone. The scanned receipt and its itemized logs will be permanently removed."
+                : "This can't be undone. The transaction will be permanently removed.";
+            if (confirmBtn) confirmBtn.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
+
             deleteTxModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 deleteTxModal.classList.remove('opacity-0');
@@ -1398,14 +1432,20 @@
                     closeDeleteTxModal();
                     return;
                 }
-                const deletedId = pendingDeleteRow.dataset.editId;
-                markTransactionDeleted(deletedId);
+                const isReceipt = pendingDeleteRow.dataset.source === 'receipt' || !!pendingDeleteRow.dataset.receiptId;
+                if (isReceipt && pendingDeleteRow.dataset.receiptId) {
+                    markReceiptsDeleted([pendingDeleteRow.dataset.receiptId]);
+                } else if (pendingDeleteRow.dataset.editId) {
+                    markTransactionDeleted(pendingDeleteRow.dataset.editId);
+                }
+
                 if (openSwipeRow === pendingDeleteRow) openSwipeRow = null;
                 pendingDeleteRow.remove();
                 pendingDeleteRow = null;
                 closeDeleteTxModal();
+                if (typeof applyAllFilters === 'function') applyAllFilters();
 
-                editSheet.showToast('Transaction deleted');
+                editSheet.showToast(isReceipt ? 'Receipt deleted' : 'Transaction deleted');
             });
         }
 
