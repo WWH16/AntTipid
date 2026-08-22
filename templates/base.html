@@ -155,7 +155,7 @@
                 </a>
                 <a id="nav-transactions" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'transactions' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'transactions' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
-                    Transactions
+                    History
                 </a>
                 <a id="nav-budgets" class="flex items-center gap-3 px-3 py-2.5 {% if active_nav == 'budgets' %}bg-primary text-white shadow-md font-semibold{% else %}text-white/80 hover:text-white hover:bg-white/10 font-medium{% endif %} rounded-xl transition-all duration-150 font-label-md text-xs" href="{% url 'budget' %}">
                     <span class="material-symbols-outlined text-[20px]" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>

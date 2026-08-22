@@ -6,7 +6,7 @@
     </a>
     <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-white font-bold{% else %}text-white/70 font-medium{% endif %} hover:text-white active:scale-90 transition-all w-[20%]" href="{% url 'transactions' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
-        <span class="font-label-sm text-[10px] leading-tight mt-0.5">Transactions</span>
+        <span class="font-label-sm text-[10px] leading-tight mt-0.5">History</span>
     </a>
     <a id="bnav-add" class="flex flex-col items-center justify-center w-[20%] -mt-6" href="{% url 'add_transaction' %}">
         <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 hover:bg-primary/90 transition-all ring-4 ring-deep-forest">
