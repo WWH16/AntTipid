@@ -12,28 +12,30 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- TOP COMPACT NAVIGATION & ACTIONS BAR    -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="flex items-center justify-between gap-3 pt-1 pb-1">
-            <a href="{% url 'transactions' %}?mode=receipts" class="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs font-bold py-1">
+        <div class="flex items-center justify-between gap-2 pt-1 pb-1">
+            <a href="{% url 'transactions' %}?mode=receipts" class="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs font-bold py-1 shrink-0">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                Back to History & Receipts
+                <span class="hidden sm:inline">Back to History &amp; Receipts</span>
+                <span class="sm:hidden">Back</span>
             </a>
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-2">
-                <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[15px]">edit</span>
-                    <span>Edit Items</span>
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 h-9 sm:h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">edit</span>
+                    <span class="hidden sm:inline">Edit Items</span>
                 </button>
-                <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 h-8 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[15px]">delete</span>
-                    <span>Delete</span>
+                <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 h-9 sm:h-8 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">delete</span>
+                    <span class="hidden sm:inline">Delete</span>
                 </button>
-                <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
-                    <span>Cancel</span>
+                <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">close</span>
+                    <span class="hidden sm:inline">Cancel</span>
                 </button>
-                <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 h-8 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                     <span class="material-symbols-outlined text-[15px]">check</span>
-                    <span>Save Items</span>
+                    <span class="hidden sm:inline">Save Items</span>
                 </button>
             </div>
         </div>
@@ -159,11 +161,8 @@
 <!-- ═══════════════════════════════════════ -->
 <!-- DELETE RECEIPT CONFIRMATION MODAL       -->
 <!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-receipt" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-receipt-content" class="w-full sm:max-w-[400px] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125] pb-8 sm:pb-6">
-        <!-- Mobile drag handle bar -->
-        <div class="w-12 h-1 bg-outline-variant/80 rounded-full mx-auto -mt-1 mb-1 sm:hidden"></div>
-
+<div id="modal-confirm-delete-receipt" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-receipt-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
         <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[22px]">delete</span>
@@ -173,9 +172,9 @@
                 <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The scanned receipt and its transaction will be permanently removed.</p>
             </div>
         </div>
-        <div class="flex items-center justify-end gap-2 pt-2 sm:pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-receipt" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs sm:text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-receipt" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Receipt</button>
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-receipt" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-receipt" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Receipt</button>
         </div>
     </div>
 </div>
@@ -183,11 +182,8 @@
 <!-- ═══════════════════════════════════════ -->
 <!-- REMOVE ITEM CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[130] bg-deep-forest/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-item-content" class="w-full sm:max-w-[400px] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[135] pb-8 sm:pb-6">
-        <!-- Mobile drag handle bar -->
-        <div class="w-12 h-1 bg-outline-variant/80 rounded-full mx-auto -mt-1 mb-1 sm:hidden"></div>
-
+<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[130] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-item-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[135]">
         <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[22px]">delete</span>
@@ -197,9 +193,9 @@
                 <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">Remove <span id="delete-item-name" class="font-bold text-deep-forest">this item</span> from the receipt? Totals will be recalculated when you save.</p>
             </div>
         </div>
-        <div class="flex items-center justify-end gap-2 pt-2 sm:pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs sm:text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Remove Item</button>
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Remove Item</button>
         </div>
     </div>
 </div>
@@ -451,8 +447,8 @@
                 deleteItemModal.classList.remove('opacity-0');
                 deleteItemModal.classList.add('opacity-100');
                 if (deleteItemModalContent) {
-                    deleteItemModalContent.classList.remove('translate-y-full', 'sm:scale-95');
-                    deleteItemModalContent.classList.add('translate-y-0', 'sm:scale-100');
+                    deleteItemModalContent.classList.remove('scale-95');
+                    deleteItemModalContent.classList.add('scale-100');
                 }
                 if (cancelDeleteItemBtn) cancelDeleteItemBtn.focus();
             });
@@ -463,8 +459,8 @@
             deleteItemModal.classList.remove('opacity-100');
             deleteItemModal.classList.add('opacity-0');
             if (deleteItemModalContent) {
-                deleteItemModalContent.classList.remove('translate-y-0', 'sm:scale-100');
-                deleteItemModalContent.classList.add('translate-y-full', 'sm:scale-95');
+                deleteItemModalContent.classList.remove('scale-100');
+                deleteItemModalContent.classList.add('scale-95');
             }
             setTimeout(() => {
                 deleteItemModal.classList.add('hidden');
@@ -511,8 +507,8 @@
                 deleteModal.classList.remove('opacity-0');
                 deleteModal.classList.add('opacity-100');
                 if (deleteModalContent) {
-                    deleteModalContent.classList.remove('translate-y-full', 'sm:scale-95');
-                    deleteModalContent.classList.add('translate-y-0', 'sm:scale-100');
+                    deleteModalContent.classList.remove('scale-95');
+                    deleteModalContent.classList.add('scale-100');
                 }
                 if (cancelDeleteBtn) cancelDeleteBtn.focus();
             });
@@ -523,8 +519,8 @@
             deleteModal.classList.remove('opacity-100');
             deleteModal.classList.add('opacity-0');
             if (deleteModalContent) {
-                deleteModalContent.classList.remove('translate-y-0', 'sm:scale-100');
-                deleteModalContent.classList.add('translate-y-full', 'sm:scale-95');
+                deleteModalContent.classList.remove('scale-100');
+                deleteModalContent.classList.add('scale-95');
             }
             setTimeout(() => deleteModal.classList.add('hidden'), 200);
         }
