@@ -7,100 +7,81 @@
 
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
-    <div class="max-w-7xl mx-auto flex flex-col gap-6">
+    <div class="max-w-6xl mx-auto flex flex-col gap-4">
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- BACK BREADCRUMB & HEADER                -->
+        <!-- TOP COMPACT NAVIGATION & ACTIONS BAR    -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="flex flex-col gap-3">
-            <div>
-                <a href="{% url 'transactions' %}?mode=receipts" class="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs font-bold py-1">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                    Back to History & Receipts
-                </a>
-            </div>
+        <div class="flex items-center justify-between gap-3 pt-1 pb-1">
+            <a href="{% url 'transactions' %}?mode=receipts" class="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-xs font-bold py-1">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                Back to History & Receipts
+            </a>
 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2.5 flex-wrap">
-                        <h1 class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest tracking-tight">Whole Foods Market</h1>
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-expense/15 text-expense font-label-sm text-xs font-bold border border-expense/30">
-                            <span class="material-symbols-outlined text-[14px]">shopping_cart</span>
-                            Groceries
-                        </span>
-                    </div>
-                    <p class="font-body-sm text-xs text-on-surface-variant flex items-center gap-2 mt-0.5 font-medium">
-                        <span class="material-symbols-outlined text-[14px]">calendar_today</span> Oct 24, 2026 
-                        <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                        <span class="material-symbols-outlined text-[14px]">schedule</span> 14:32 PM
-                    </p>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
-                    <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                        <span class="material-symbols-outlined text-[16px]">edit</span>
-                        <span>Edit Items</span>
-                    </button>
-                    <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                        <span>Delete</span>
-                    </button>
-                    <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
-                        <span>Cancel</span>
-                    </button>
-                    <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                        <span class="material-symbols-outlined text-[16px]">check</span>
-                        <span>Save Items</span>
-                    </button>
-                </div>
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">edit</span>
+                    <span>Edit Items</span>
+                </button>
+                <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 h-8 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">delete</span>
+                    <span>Delete</span>
+                </button>
+                <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
+                    <span>Cancel</span>
+                </button>
+                <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-xl bg-primary text-white font-label-md text-xs font-bold hover:bg-primary/90 transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">check</span>
+                    <span>Save Items</span>
+                </button>
             </div>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- BENTO LAYOUT (2 COLUMNS ON DESKTOP)     -->
+        <!-- COMPACT 2-COLUMN RECEIPT DETAIL LAYOUT  -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
             
-            <!-- LEFT COLUMN: VISUAL SCANNED RECEIPT IMAGE -->
-            <div class="lg:col-span-5 flex flex-col gap-4">
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3 shadow-xs flex flex-col relative group overflow-hidden min-h-[320px] sm:min-h-[440px] lg:min-h-[560px]">
-                    <div class="flex-1 rounded-xl overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[300px] cursor-pointer" id="receipt-preview-container">
-                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[600px] opacity-95 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
-                    </div>
-
-                    <!-- Overlay Image Controls -->
-                    <div class="absolute bottom-4 right-4 flex gap-2 opacity-95 group-hover:opacity-100 transition-opacity">
-                        <button id="btn-view-original" class="bg-surface-container-lowest/95 backdrop-blur-md border border-outline-variant/60 text-deep-forest px-3.5 py-2 rounded-xl shadow-xs hover:bg-soft-green/30 transition-all font-label-sm text-xs font-bold flex items-center justify-center gap-1 active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px] text-primary">open_in_new</span>
-                            View Full Scan
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RIGHT COLUMN: EXTRACTED ITEMIZED DATA & METADATA -->
-            <div class="lg:col-span-7 flex flex-col gap-4">
+            <!-- RIGHT COLUMN: EXTRACTED ITEMIZED DATA (Appears first on mobile for immediate reading) -->
+            <div class="lg:col-span-7 flex flex-col gap-4 order-1 lg:order-2">
                 
-                <!-- Itemized Scanned Table Card -->
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-xs flex flex-col">
-                    <div class="flex justify-between items-center mb-4 border-b border-outline-variant/40 pb-3">
-                        <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
-                            Scanned Items
-                        </h2>
-                        <span id="items-count-badge" class="font-label-sm text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 rounded-full border border-primary/30">5 Items Detected</span>
+                <!-- Main Itemized Card with Integrated Receipt Info Header -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 sm:p-5 shadow-xs flex flex-col">
+                    
+                    <!-- Integrated Receipt Header On The List -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 sm:pb-3.5 sm:mb-3.5 border-b border-outline-variant/40">
+                        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                            <!-- Category Icon Avatar -->
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_cart</span>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                    <h1 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest tracking-tight truncate">SM Supermarket BGC</h1>
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-label-sm text-[10px] sm:text-[11px] font-bold border border-emerald-500/20">Groceries</span>
+                                </div>
+                                <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant flex items-center gap-1.5 mt-0.5 font-medium flex-wrap">
+                                    <span class="material-symbols-outlined text-[13px] sm:text-[14px]">event</span>
+                                    <span>Oct 24, 2026 • 2:30 PM</span>
+                                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                                    <span class="text-on-surface-variant/80 text-[10px] sm:text-[11px]">OR #0092-4821</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Detected Items Badge -->
+                        <span id="items-count-badge" class="self-start sm:self-center font-label-sm text-[11px] sm:text-xs text-primary font-bold bg-soft-green px-2.5 py-0.5 sm:py-1 rounded-full border border-primary/30 shrink-0">5 Items Detected</span>
                     </div>
 
                     <!-- Items Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto -mx-1 sm:mx-0">
+                        <table class="w-full text-left border-collapse min-w-full">
                             <thead>
-                                <tr class="border-b border-outline-variant/40 text-deep-forest uppercase tracking-[0.06em] text-[11px] bg-surface-container-low/60">
-                                    <th class="py-2.5 px-3 font-label-md font-bold w-3/5">Item Description</th>
-                                    <th class="py-2.5 px-3 font-label-md font-bold w-1/5 text-right">Qty</th>
-                                    <th class="py-2.5 px-3 font-label-md font-bold w-1/5 text-right">Price</th>
+                                <tr class="border-b border-outline-variant/40 text-deep-forest uppercase tracking-[0.06em] text-[10px] sm:text-[11px] bg-surface-container-low/60">
+                                    <th class="py-2 px-2 sm:px-2.5 font-label-md font-bold w-3/5">Item Description</th>
+                                    <th class="py-2 px-1.5 sm:px-2.5 font-label-md font-bold w-1/5 text-right">Qty</th>
+                                    <th class="py-2 px-2 sm:px-2.5 font-label-md font-bold w-1/5 text-right">Price</th>
                                 </tr>
                             </thead>
                             <tbody id="receipt-items-tbody" class="font-body-md text-xs sm:text-sm text-deep-forest divide-y divide-outline-variant/30"></tbody>
@@ -114,72 +95,87 @@
                     </button>
 
                     <!-- Financial Summary Breakdown -->
-                    <div class="mt-4 pt-4 border-t border-outline-variant/40 flex flex-col gap-2">
+                    <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex flex-col gap-1.5">
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant font-medium">
-                            <span>Subtotal</span>
-                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱29.27</span>
+                            <span>Subtotal (VAT Exclusive)</span>
+                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱1,114.73</span>
                         </div>
                         <div class="flex justify-between items-center font-body-sm text-xs text-on-surface-variant font-medium">
-                            <span>Tax (8.5%)</span>
-                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱2.63</span>
+                            <span>VAT (12%)</span>
+                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱133.77</span>
                         </div>
-                        <div class="border-t border-outline-variant/40 pt-3 mt-1 flex justify-between items-end">
-                            <span class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Total Amount</span>
-                            <span id="receipt-total" class="font-headline-lg text-xl sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">₱31.90</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Metadata Row (Payment Method & Notes) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Payment Method -->
-                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-5 shadow-xs flex flex-col gap-1">
-                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Payment Method</span>
-                        <div class="flex items-center gap-2.5 mt-1">
-                            <div class="w-8 h-8 rounded-xl bg-soft-green text-primary border border-primary/30 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px]">credit_card</span>
+                        <div class="border-t border-outline-variant/40 pt-2.5 mt-1 flex justify-between items-end">
+                            <div>
+                                <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
+                                <span class="font-label-sm text-[10px] text-on-surface-variant font-medium">Philippine Peso (PHP)</span>
                             </div>
-                            <span class="font-body-md text-xs sm:text-sm font-bold text-deep-forest">Visa ending in 1234</span>
+                            <span id="receipt-total" class="font-headline-lg text-lg sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">-₱1,248.50</span>
                         </div>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-5 shadow-xs flex flex-col gap-1">
-                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold flex items-center gap-1">
-                            <span class="material-symbols-outlined text-primary text-[14px]">edit_note</span> Notes
-                        </span>
-                        <p class="font-body-sm text-xs text-on-surface-variant italic mt-1 leading-relaxed font-medium">
-                            "Weekly grocery restock. Need to split the cost of the avocados with Sarah."
-                        </p>
                     </div>
                 </div>
 
             </div>
+
+            <!-- LEFT COLUMN: VISUAL SCANNED RECEIPT IMAGE & METADATA -->
+            <div class="lg:col-span-5 flex flex-col gap-3 order-2 lg:order-1">
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3 shadow-xs flex flex-col relative group overflow-hidden">
+                    <!-- Receipt Image Header Label -->
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-outline-variant/30 text-xs">
+                        <span class="font-label-sm text-[11px] font-bold text-deep-forest flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-primary">receipt</span>
+                            Original Receipt Scan
+                        </span>
+                        <button id="btn-view-original" class="bg-surface-container-low/80 border border-outline-variant/50 text-deep-forest px-2 py-0.5 rounded-lg hover:bg-soft-green/30 transition-all font-label-sm text-[10px] font-bold flex items-center justify-center gap-1 active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[13px] text-primary">zoom_in</span>
+                            Full Scan
+                        </button>
+                    </div>
+
+                    <!-- Receipt Image Container -->
+                    <div class="rounded-xl overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] cursor-pointer" id="receipt-preview-container" title="Tap to enlarge receipt">
+                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+                    </div>
+                </div>
+
+                <!-- Compact Payment & Notes Strip -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 shadow-xs flex flex-col gap-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold">Payment</span>
+                        <span class="font-bold text-deep-forest text-xs">Visa ••4821</span>
+                    </div>
+                    <div class="flex items-start justify-between text-xs border-t border-outline-variant/30 pt-2">
+                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold shrink-0 mr-2">Note</span>
+                        <span class="font-body-sm text-[11px] text-on-surface-variant italic text-right font-medium">"Weekly grocery restock at SM Supermarket BGC."</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
-
-    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
-    <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- DELETE RECEIPT CONFIRMATION MODAL       -->
 <!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-receipt" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-receipt-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
+<div id="modal-confirm-delete-receipt" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-receipt-content" class="w-full sm:max-w-[400px] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125] pb-8 sm:pb-6">
+        <!-- Mobile drag handle bar -->
+        <div class="w-12 h-1 bg-outline-variant/80 rounded-full mx-auto -mt-1 mb-1 sm:hidden"></div>
+
         <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[22px]">delete</span>
             </div>
             <div class="flex flex-col gap-1">
                 <h3 id="modal-delete-receipt-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this receipt?</h3>
-                <p class="font-body-sm text-sm text-on-surface-variant leading-normal">This can't be undone. The scanned receipt and its transaction will be permanently removed.</p>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The scanned receipt and its transaction will be permanently removed.</p>
             </div>
         </div>
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-receipt" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-receipt" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Receipt</button>
+        <div class="flex items-center justify-end gap-2 pt-2 sm:pt-3 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-receipt" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs sm:text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-receipt" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Receipt</button>
         </div>
     </div>
 </div>
@@ -187,20 +183,23 @@
 <!-- ═══════════════════════════════════════ -->
 <!-- REMOVE ITEM CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[130] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-item-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[135]">
+<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[130] bg-deep-forest/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-item-content" class="w-full sm:max-w-[400px] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[135] pb-8 sm:pb-6">
+        <!-- Mobile drag handle bar -->
+        <div class="w-12 h-1 bg-outline-variant/80 rounded-full mx-auto -mt-1 mb-1 sm:hidden"></div>
+
         <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
                 <span class="material-symbols-outlined text-[22px]">delete</span>
             </div>
             <div class="flex flex-col gap-1">
                 <h3 id="modal-delete-item-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Remove this item?</h3>
-                <p class="font-body-sm text-sm text-on-surface-variant leading-normal">Remove <span id="delete-item-name" class="font-bold text-deep-forest">this item</span> from the receipt? Totals will be recalculated when you save.</p>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">Remove <span id="delete-item-name" class="font-bold text-deep-forest">this item</span> from the receipt? Totals will be recalculated when you save.</p>
             </div>
         </div>
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Remove Item</button>
+        <div class="flex items-center justify-end gap-2 pt-2 sm:pt-3 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs sm:text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Remove Item</button>
         </div>
     </div>
 </div>
@@ -216,15 +215,65 @@
 </div>
 {% endblock %}
 
+<!-- ═══════════════════════════════════════ -->
+<!-- REMOVE MOBILE BOTTOM NAV ON THIS VIEW   -->
+<!-- ═══════════════════════════════════════ -->
+{% block mobile_nav %}{% endblock %}
+
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // ─── Initial Data & Variables ───
+        const TAX_RATE = 0.12; // 12% VAT
+        let receiptItems = [
+            { description: 'Organic Hass Avocados (3 pcs)', qty: 1, unitPrice: 285.00 },
+            { description: 'Almond Milk, Unsweetened 1L', qty: 2, unitPrice: 195.00 },
+            { description: 'Free Range Eggs (Dozen)', qty: 1, unitPrice: 220.00 },
+            { description: 'Artisan Sourdough Loaf', qty: 1, unitPrice: 185.00 },
+            { description: 'Organic Baby Spinach 250g', qty: 1, unitPrice: 168.50 },
+        ];
+        let isEditingItems = false;
+
+        // Action Buttons
+        const editBtn = document.getElementById('btn-edit-receipt');
+        const deleteBtn = document.getElementById('btn-delete-receipt');
+        const cancelEditBtn = document.getElementById('btn-cancel-edit-items');
+        const saveEditBtn = document.getElementById('btn-save-edit-items');
+        const addItemBtn = document.getElementById('btn-add-item');
+
+        // Table & Totals Elements
+        const itemsTbody = document.getElementById('receipt-items-tbody');
+        const itemsCountBadge = document.getElementById('items-count-badge');
+        const subtotalEl = document.getElementById('receipt-subtotal');
+        const taxEl = document.getElementById('receipt-tax');
+        const totalEl = document.getElementById('receipt-total');
+
+        // Image Modal Elements
         const imageModal = document.getElementById('image-modal-wrapper');
         const modalImg = document.getElementById('modal-full-img');
         const viewOriginalBtn = document.getElementById('btn-view-original');
         const previewContainer = document.getElementById('receipt-preview-container');
         const closeImageModalBtn = document.getElementById('btn-close-image-modal');
 
+        // Delete Receipt Modal Elements
+        const deleteModal = document.getElementById('modal-confirm-delete-receipt');
+        const deleteModalContent = document.getElementById('modal-confirm-delete-receipt-content');
+        const cancelDeleteBtn = document.getElementById('btn-cancel-delete-receipt');
+        const confirmDeleteBtn = document.getElementById('btn-confirm-delete-receipt');
+
+        // Remove Item Modal Elements
+        const deleteItemModal = document.getElementById('modal-confirm-delete-item');
+        const deleteItemModalContent = document.getElementById('modal-confirm-delete-item-content');
+        const deleteItemNameEl = document.getElementById('delete-item-name');
+        const cancelDeleteItemBtn = document.getElementById('btn-cancel-delete-item');
+        const confirmDeleteItemBtn = document.getElementById('btn-confirm-delete-item');
+        let itemRowPendingDelete = null;
+
+        function money(n) {
+            return `₱${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        // ─── Image Lightbox Logic ───
         function openImageModal() {
             if (!imageModal) return;
             document.body.style.overflow = 'hidden';
@@ -261,68 +310,45 @@
                 if (e.target === imageModal) closeImageModal();
             });
         }
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && imageModal && !imageModal.classList.contains('hidden')) {
                 closeImageModal();
             }
         });
 
-        // ─── Edit Scanned Items (inline, replaces the old whole-transaction sheet) ───
-        const TAX_RATE = 0.085;
-        let receiptItems = [
-            { description: 'Organic Hass Avocados', qty: 2, unitPrice: 4.50 },
-            { description: 'Almond Milk, Unsweetened', qty: 1, unitPrice: 3.99 },
-            { description: 'Free Range Eggs (Dozen)', qty: 1, unitPrice: 6.49 },
-            { description: 'Sourdough Loaf', qty: 1, unitPrice: 5.50 },
-            { description: 'Organic Baby Spinach', qty: 1, unitPrice: 4.29 },
-        ];
-        let isEditingItems = false;
-
-        const editBtn = document.getElementById('btn-edit-receipt');
-        const cancelEditBtn = document.getElementById('btn-cancel-edit-items');
-        const saveEditBtn = document.getElementById('btn-save-edit-items');
-        const addItemBtn = document.getElementById('btn-add-item');
-        const itemsTbody = document.getElementById('receipt-items-tbody');
-        const itemsCountBadge = document.getElementById('items-count-badge');
-        const subtotalEl = document.getElementById('receipt-subtotal');
-        const taxEl = document.getElementById('receipt-tax');
-        const totalEl = document.getElementById('receipt-total');
-
-        function money(n) {
-            return `₱${n.toFixed(2)}`;
-        }
-
+        // ─── Render Functions ───
         function renderReadOnlyRows() {
+            if (!itemsTbody) return;
             itemsTbody.innerHTML = receiptItems.map(item => {
                 const lineTotal = item.qty * item.unitPrice;
-                const subLabel = item.qty > 1 ? `${item.qty} @ ${money(item.unitPrice)}/ea` : '1 item';
+                const subLabel = item.qty > 1 ? `${item.qty} × ${money(item.unitPrice)}` : '1 pc';
                 return `
                     <tr class="hover:bg-soft-green/30 transition-colors">
-                        <td class="py-3 px-3">
-                            <div class="font-bold text-deep-forest">${item.description}</div>
-                            <span class="font-label-sm text-[11px] text-on-surface-variant font-medium">${subLabel}</span>
+                        <td class="py-2.5 sm:py-3 px-2 sm:px-3">
+                            <div class="font-bold text-deep-forest text-xs sm:text-sm tracking-tight">${item.description}</div>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium">${subLabel}</span>
                         </td>
-                        <td class="py-3 px-3 text-right text-on-surface-variant font-semibold tabular-nums">${item.qty}</td>
-                        <td class="py-3 px-3 text-right font-bold text-deep-forest tabular-nums">${money(lineTotal)}</td>
+                        <td class="py-2.5 sm:py-3 px-1.5 sm:px-3 text-right text-on-surface-variant font-semibold tabular-nums text-xs sm:text-sm">${item.qty}</td>
+                        <td class="py-2.5 sm:py-3 px-2 sm:px-3 text-right font-bold text-deep-forest tabular-nums text-xs sm:text-sm">${money(lineTotal)}</td>
                     </tr>`;
             }).join('');
         }
 
         function renderEditableRows() {
+            if (!itemsTbody) return;
             itemsTbody.innerHTML = receiptItems.map((item, i) => `
                 <tr data-editable-row data-index="${i}">
-                    <td class="py-2 px-3">
-                        <input type="text" value="${item.description.replace(/"/g, '&quot;')}" class="item-desc-input w-full px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    <td class="py-2 px-1.5 sm:px-3">
+                        <input type="text" value="${item.description.replace(/"/g, '&quot;')}" placeholder="Item name" class="item-desc-input w-full px-2 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
                     </td>
-                    <td class="py-2 px-3 text-right">
-                        <input type="number" min="1" step="1" value="${item.qty}" class="item-qty-input w-14 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    <td class="py-2 px-1 sm:px-3 text-right">
+                        <input type="number" min="1" step="1" inputmode="numeric" value="${item.qty}" class="item-qty-input w-12 sm:w-14 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
                     </td>
-                    <td class="py-2 px-3">
-                        <div class="flex items-center justify-end gap-1.5">
-                            <input type="number" min="0" step="0.01" value="${item.unitPrice}" class="item-price-input w-20 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                            <button type="button" class="btn-remove-item w-7 h-7 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 transition-colors cursor-pointer" aria-label="Remove item">
-                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                    <td class="py-2 px-1 sm:px-3">
+                        <div class="flex items-center justify-end gap-1">
+                            <input type="number" min="0" step="0.01" inputmode="decimal" value="${item.unitPrice}" class="item-price-input w-16 sm:w-20 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                            <button type="button" class="btn-remove-item w-7 h-7 sm:w-8 sm:h-8 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 active:scale-95 transition-colors cursor-pointer" aria-label="Remove item">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
                             </button>
                         </div>
                     </td>
@@ -330,42 +356,26 @@
         }
 
         function recalcAndRenderTotals() {
-            const subtotal = receiptItems.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
-            const tax = subtotal * TAX_RATE;
-            const total = subtotal + tax;
-            subtotalEl.textContent = money(subtotal);
-            taxEl.textContent = money(tax);
-            totalEl.textContent = money(total);
-            itemsCountBadge.textContent = `${receiptItems.length} Item${receiptItems.length !== 1 ? 's' : ''} Detected`;
-        }
-
-        function enterEditMode() {
-            isEditingItems = true;
-            renderEditableRows();
-            editBtn.classList.add('hidden');
-            deleteBtn.classList.add('hidden');
-            cancelEditBtn.classList.remove('hidden');
-            saveEditBtn.classList.remove('hidden');
-            addItemBtn.classList.remove('hidden');
-        }
-
-        function exitEditMode() {
-            isEditingItems = false;
-            renderReadOnlyRows();
-            editBtn.classList.remove('hidden');
-            deleteBtn.classList.remove('hidden');
-            cancelEditBtn.classList.add('hidden');
-            saveEditBtn.classList.add('hidden');
-            addItemBtn.classList.add('hidden');
+            const total = receiptItems.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
+            const subtotal = total / (1 + TAX_RATE);
+            const tax = total - subtotal;
+            if (subtotalEl) subtotalEl.textContent = money(subtotal);
+            if (taxEl) taxEl.textContent = money(tax);
+            if (totalEl) totalEl.textContent = `-${money(total)}`;
+            if (itemsCountBadge) itemsCountBadge.textContent = `${receiptItems.length} Item${receiptItems.length !== 1 ? 's' : ''} Detected`;
         }
 
         function commitEditsFromDOM() {
+            if (!itemsTbody) return;
             const rows = itemsTbody.querySelectorAll('tr[data-editable-row]');
             const newItems = [];
             rows.forEach(row => {
-                const description = row.querySelector('.item-desc-input').value.trim();
-                const qty = parseFloat(row.querySelector('.item-qty-input').value) || 0;
-                const unitPrice = parseFloat(row.querySelector('.item-price-input').value) || 0;
+                const descInput = row.querySelector('.item-desc-input');
+                const qtyInput = row.querySelector('.item-qty-input');
+                const priceInput = row.querySelector('.item-price-input');
+                const description = descInput ? descInput.value.trim() : '';
+                const qty = qtyInput ? (parseFloat(qtyInput.value) || 0) : 0;
+                const unitPrice = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
                 if (description && qty > 0) {
                     newItems.push({ description, qty, unitPrice });
                 }
@@ -373,8 +383,27 @@
             receiptItems = newItems;
         }
 
-        renderReadOnlyRows();
+        function enterEditMode() {
+            isEditingItems = true;
+            renderEditableRows();
+            if (editBtn) editBtn.classList.add('hidden');
+            if (deleteBtn) deleteBtn.classList.add('hidden');
+            if (cancelEditBtn) cancelEditBtn.classList.remove('hidden');
+            if (saveEditBtn) saveEditBtn.classList.remove('hidden');
+            if (addItemBtn) addItemBtn.classList.remove('hidden');
+        }
 
+        function exitEditMode() {
+            isEditingItems = false;
+            renderReadOnlyRows();
+            if (editBtn) editBtn.classList.remove('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (cancelEditBtn) cancelEditBtn.classList.add('hidden');
+            if (saveEditBtn) saveEditBtn.classList.add('hidden');
+            if (addItemBtn) addItemBtn.classList.add('hidden');
+        }
+
+        // ─── Wire Action Buttons ───
         if (editBtn) editBtn.addEventListener('click', enterEditMode);
         if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
         if (saveEditBtn) {
@@ -386,36 +415,32 @@
         }
         if (addItemBtn) {
             addItemBtn.addEventListener('click', () => {
+                if (!itemsTbody) return;
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-editable-row', '');
                 tr.setAttribute('data-index', itemsTbody.children.length);
                 tr.innerHTML = `
-                    <td class="py-2 px-3">
-                        <input type="text" value="" placeholder="New item" class="item-desc-input w-full px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    <td class="py-2 px-1.5 sm:px-3">
+                        <input type="text" value="" placeholder="New item" class="item-desc-input w-full px-2 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
                     </td>
-                    <td class="py-2 px-3 text-right">
-                        <input type="number" min="1" step="1" value="1" class="item-qty-input w-14 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                    <td class="py-2 px-1 sm:px-3 text-right">
+                        <input type="number" min="1" step="1" inputmode="numeric" value="1" class="item-qty-input w-12 sm:w-14 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
                     </td>
-                    <td class="py-2 px-3">
-                        <div class="flex items-center justify-end gap-1.5">
-                            <input type="number" min="0" step="0.01" value="0.00" class="item-price-input w-20 px-2 py-1.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                            <button type="button" class="btn-remove-item w-7 h-7 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 transition-colors cursor-pointer" aria-label="Remove item">
-                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                    <td class="py-2 px-1 sm:px-3">
+                        <div class="flex items-center justify-end gap-1">
+                            <input type="number" min="0" step="0.01" inputmode="decimal" value="0.00" class="item-price-input w-16 sm:w-20 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                            <button type="button" class="btn-remove-item w-7 h-7 sm:w-8 sm:h-8 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 active:scale-95 transition-colors cursor-pointer" aria-label="Remove item">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
                             </button>
                         </div>
                     </td>`;
                 itemsTbody.appendChild(tr);
-                tr.querySelector('.item-desc-input').focus();
+                const firstInput = tr.querySelector('.item-desc-input');
+                if (firstInput) firstInput.focus();
             });
         }
-        // Remove Item Confirmation Modal
-        const deleteItemModal = document.getElementById('modal-confirm-delete-item');
-        const deleteItemModalContent = document.getElementById('modal-confirm-delete-item-content');
-        const deleteItemNameEl = document.getElementById('delete-item-name');
-        const cancelDeleteItemBtn = document.getElementById('btn-cancel-delete-item');
-        const confirmDeleteItemBtn = document.getElementById('btn-confirm-delete-item');
-        let itemRowPendingDelete = null;
 
+        // ─── Delete Item Confirmation ───
         function openDeleteItemModal(row) {
             if (!deleteItemModal) return;
             itemRowPendingDelete = row;
@@ -426,8 +451,8 @@
                 deleteItemModal.classList.remove('opacity-0');
                 deleteItemModal.classList.add('opacity-100');
                 if (deleteItemModalContent) {
-                    deleteItemModalContent.classList.remove('scale-95');
-                    deleteItemModalContent.classList.add('scale-100');
+                    deleteItemModalContent.classList.remove('translate-y-full', 'sm:scale-95');
+                    deleteItemModalContent.classList.add('translate-y-0', 'sm:scale-100');
                 }
                 if (cancelDeleteItemBtn) cancelDeleteItemBtn.focus();
             });
@@ -438,11 +463,13 @@
             deleteItemModal.classList.remove('opacity-100');
             deleteItemModal.classList.add('opacity-0');
             if (deleteItemModalContent) {
-                deleteItemModalContent.classList.remove('scale-100');
-                deleteItemModalContent.classList.add('scale-95');
+                deleteItemModalContent.classList.remove('translate-y-0', 'sm:scale-100');
+                deleteItemModalContent.classList.add('translate-y-full', 'sm:scale-95');
             }
-            setTimeout(() => deleteItemModal.classList.add('hidden'), 200);
-            itemRowPendingDelete = null;
+            setTimeout(() => {
+                deleteItemModal.classList.add('hidden');
+                itemRowPendingDelete = null;
+            }, 200);
         }
 
         if (itemsTbody) {
@@ -462,7 +489,11 @@
         }
         if (confirmDeleteItemBtn) {
             confirmDeleteItemBtn.addEventListener('click', () => {
-                itemRowPendingDelete?.remove();
+                if (itemRowPendingDelete) {
+                    itemRowPendingDelete.remove();
+                    commitEditsFromDOM();
+                    recalcAndRenderTotals();
+                }
                 closeDeleteItemModal();
             });
         }
@@ -472,14 +503,7 @@
             }
         });
 
-
-        // Delete Receipt Confirmation Modal
-        const deleteBtn = document.getElementById('btn-delete-receipt');
-        const deleteModal = document.getElementById('modal-confirm-delete-receipt');
-        const deleteModalContent = document.getElementById('modal-confirm-delete-receipt-content');
-        const cancelDeleteBtn = document.getElementById('btn-cancel-delete-receipt');
-        const confirmDeleteBtn = document.getElementById('btn-confirm-delete-receipt');
-
+        // ─── Delete Receipt Confirmation ───
         function openDeleteModal() {
             if (!deleteModal) return;
             deleteModal.classList.remove('hidden');
@@ -487,8 +511,8 @@
                 deleteModal.classList.remove('opacity-0');
                 deleteModal.classList.add('opacity-100');
                 if (deleteModalContent) {
-                    deleteModalContent.classList.remove('scale-95');
-                    deleteModalContent.classList.add('scale-100');
+                    deleteModalContent.classList.remove('translate-y-full', 'sm:scale-95');
+                    deleteModalContent.classList.add('translate-y-0', 'sm:scale-100');
                 }
                 if (cancelDeleteBtn) cancelDeleteBtn.focus();
             });
@@ -499,8 +523,8 @@
             deleteModal.classList.remove('opacity-100');
             deleteModal.classList.add('opacity-0');
             if (deleteModalContent) {
-                deleteModalContent.classList.remove('scale-100');
-                deleteModalContent.classList.add('scale-95');
+                deleteModalContent.classList.remove('translate-y-0', 'sm:scale-100');
+                deleteModalContent.classList.add('translate-y-full', 'sm:scale-95');
             }
             setTimeout(() => deleteModal.classList.add('hidden'), 200);
         }
@@ -522,6 +546,9 @@
                 closeDeleteModal();
             }
         });
+
+        // Initial render
+        renderReadOnlyRows();
     });
 </script>
 {% endblock %}
