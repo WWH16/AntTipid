@@ -54,6 +54,9 @@
                 <button type="button" data-quick-filter="cat:Dining" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
                     Dining
                 </button>
+                <button type="button" data-quick-filter="cat:Transportation" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Transportation
+                </button>
                 <button type="button" data-quick-filter="cat:Utilities" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
                     Utilities
                 </button>
@@ -62,6 +65,9 @@
                 </button>
                 <button type="button" data-quick-filter="cat:Healthcare" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
                     Healthcare
+                </button>
+                <button type="button" data-quick-filter="cat:Housing" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    Housing
                 </button>
             </div>
         </div>
@@ -1356,10 +1362,8 @@
         document.addEventListener('click', (e) => {
             if (!openSwipeRow) return;
             if (openSwipeRow.contains(e.target)) return;
-            e.preventDefault();
-            e.stopPropagation();
             closeSwipeRow(openSwipeRow);
-        }, true);
+        });
 
         // Delete Confirmation Modal (mobile swipe-to-delete)
         const deleteTxModal = document.getElementById('modal-confirm-delete-tx');
@@ -1451,12 +1455,6 @@
             });
         }
 
-        // Backward compat: if linked with ?mode=receipts, pre-select Source filter
-        const selectSourceDesktop = document.getElementById('select-source-desktop');
-        if (new URLSearchParams(window.location.search).get('mode') === 'receipts') {
-            if (selectSourceDesktop) selectSourceDesktop.value = 'receipt';
-        }
-
         // ═════════════════════════════════════════════
         // RECEIPT QUICK VIEW LIGHTBOX MODAL HANDLER
         // ═════════════════════════════════════════════
@@ -1532,22 +1530,144 @@
             }
         });
 
-
-
         // ═════════════════════════════════════════════
         // UNIFIED SEARCH & CATEGORY & SOURCE FILTER LOGIC
         // ═════════════════════════════════════════════
         let currentSearchQuery = '';
         let currentCategory = 'all';
         let currentType = 'all';
-        let currentSource = (selectSourceDesktop && selectSourceDesktop.value) || 'all';
+        let currentSource = (new URLSearchParams(window.location.search).get('mode') === 'receipts') ? 'receipt' : 'all';
 
         const searchDesktop = document.getElementById('input-search-desktop');
         const searchMobileInput = document.getElementById('input-search-mobile');
+        const clearBtnMobile = document.getElementById('btn-clear-search-mobile');
         const selectCatDesktop = document.getElementById('select-category-desktop');
         const selectTypeDesktop = document.getElementById('select-type-desktop');
+        const selectSourceDesktop = document.getElementById('select-source-desktop');
         const btnClearFilters = document.getElementById('btn-clear-filters-desktop');
         const btnResetUnifiedFilters = document.getElementById('btn-reset-unified-filters');
+
+        function syncUIState() {
+            // 1. Mobile Search Clear Button
+            if (clearBtnMobile) {
+                if (currentSearchQuery.trim().length > 0) {
+                    clearBtnMobile.classList.remove('hidden');
+                } else {
+                    clearBtnMobile.classList.add('hidden');
+                }
+            }
+
+            // 2. Count Active Non-Default Filters (ignoring search text)
+            let activeFilterCount = 0;
+            if (currentSource !== 'all') activeFilterCount++;
+            if (currentType !== 'all') activeFilterCount++;
+            if (currentCategory !== 'all') activeFilterCount++;
+
+            const badgeActiveMobile = document.getElementById('badge-active-filters-mobile');
+            const btnOpenFilterMobile = document.getElementById('btn-open-filter-mobile');
+            if (badgeActiveMobile) {
+                if (activeFilterCount > 0) {
+                    badgeActiveMobile.textContent = activeFilterCount;
+                    badgeActiveMobile.classList.remove('hidden');
+                    if (btnOpenFilterMobile) {
+                        btnOpenFilterMobile.className = 'h-10 px-3.5 bg-primary-pale text-positive-deep border border-positive/40 rounded-xl flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
+                    }
+                } else {
+                    badgeActiveMobile.classList.add('hidden');
+                    if (btnOpenFilterMobile) {
+                        btnOpenFilterMobile.className = 'h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
+                    }
+                }
+            }
+
+            // 3. Quick Chips Strip Active State
+            document.querySelectorAll('#mobile-quick-filter-strip .quick-chip').forEach(chip => {
+                const filterKey = chip.dataset.quickFilter;
+                let isActive = false;
+                if (filterKey === 'all') {
+                    isActive = (currentSource === 'all' && currentType === 'all' && currentCategory === 'all');
+                } else if (filterKey === 'type:expense') {
+                    isActive = (currentType === 'expense' && currentSource === 'all' && currentCategory === 'all');
+                } else if (filterKey === 'type:income') {
+                    isActive = (currentType === 'income' && currentSource === 'all' && currentCategory === 'all');
+                } else if (filterKey === 'source:receipt') {
+                    isActive = (currentSource === 'receipt' && currentType === 'all' && currentCategory === 'all');
+                } else if (filterKey.startsWith('cat:')) {
+                    const catVal = filterKey.replace('cat:', '');
+                    isActive = (currentCategory.toLowerCase() === catVal.toLowerCase() && currentSource === 'all' && currentType === 'all');
+                }
+
+                chip.className = isActive
+                    ? 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest'
+                    : 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95';
+            });
+
+            // 4. Modal Source Pills
+            document.querySelectorAll('.pill-source').forEach(p => {
+                const isMatch = (p.dataset.source === currentSource);
+                p.className = isMatch
+                    ? 'pill-source py-2 px-2.5 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'pill-source py-2 px-2.5 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+            });
+
+            // 5. Modal Type Pills
+            document.querySelectorAll('.pill-type').forEach(p => {
+                const isMatch = (p.dataset.type === currentType);
+                p.className = isMatch
+                    ? 'pill-type py-2 px-2.5 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'pill-type py-2 px-2.5 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+            });
+
+            // 6. Modal Category Chips
+            document.querySelectorAll('.chip-cat').forEach(c => {
+                const isMatch = (c.dataset.cat.toLowerCase() === currentCategory.toLowerCase());
+                c.className = isMatch
+                    ? 'chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-medium transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+            });
+
+            // 7. Desktop Selects Sync
+            if (selectCatDesktop && selectCatDesktop.value !== currentCategory) selectCatDesktop.value = currentCategory;
+            if (selectTypeDesktop && selectTypeDesktop.value !== currentType) selectTypeDesktop.value = currentType;
+            if (selectSourceDesktop && selectSourceDesktop.value !== currentSource) selectSourceDesktop.value = currentSource;
+        }
+
+        function checkCategoryMatch(itemCat, itemEditCat, targetCategory) {
+            if (targetCategory === 'all') return true;
+            const target = targetCategory.toLowerCase().trim();
+            const cat = (itemCat || '').toLowerCase().trim();
+            const editCat = (itemEditCat || '').toLowerCase().trim();
+
+            if (cat === target || editCat === target) return true;
+            if (cat.includes(target) || editCat.includes(target)) return true;
+
+            // Handle category synonyms and labels
+            if (target === 'dining') {
+                return cat.includes('dining') || cat.includes('food') || editCat.includes('dining') || editCat.includes('food');
+            }
+            if (target === 'income') {
+                return cat.includes('income') || cat.includes('salary') || editCat.includes('income') || editCat.includes('salary');
+            }
+            if (target === 'groceries') {
+                return cat.includes('grocer') || editCat.includes('grocer');
+            }
+            if (target === 'utilities') {
+                return cat.includes('util') || cat.includes('electric') || cat.includes('water') || cat.includes('bill') || editCat.includes('util');
+            }
+            if (target === 'shopping') {
+                return cat.includes('shop') || editCat.includes('shop');
+            }
+            if (target === 'healthcare') {
+                return cat.includes('health') || cat.includes('pharmacy') || cat.includes('med') || editCat.includes('health');
+            }
+            if (target === 'transportation') {
+                return cat.includes('trans') || cat.includes('grab') || cat.includes('fuel') || cat.includes('gas') || editCat.includes('trans');
+            }
+            if (target === 'housing') {
+                return cat.includes('hous') || cat.includes('rent') || editCat.includes('hous') || editCat.includes('rent');
+            }
+            return false;
+        }
 
         function applyAllFilters() {
             const query = currentSearchQuery.toLowerCase().trim();
@@ -1556,15 +1676,17 @@
             const txMobileItems = document.querySelectorAll('#container-mobile-transactions .tx-item');
             let visibleMobileCount = 0;
             txMobileItems.forEach(item => {
-                const title = (item.dataset.editTitle || item.dataset.merchant || '').toLowerCase();
+                const title = (item.dataset.editTitle || item.dataset.merchant || item.querySelector('.tx-name')?.textContent || '').toLowerCase();
                 const cat = (item.dataset.category || '').toLowerCase();
-                const type = (item.dataset.type || 'expense').toLowerCase();
+                const editCat = (item.dataset.editCategory || '').toLowerCase();
+                const type = (item.dataset.type || item.dataset.editType || 'expense').toLowerCase();
                 const source = (item.dataset.source || 'manual').toLowerCase();
+                const amount = (item.dataset.amount || item.dataset.editAmount || '').toLowerCase();
 
-                const matchQuery = !query || title.includes(query) || cat.includes(query);
-                const matchCat = currentCategory === 'all' || cat.includes(currentCategory.toLowerCase());
-                const matchType = currentType === 'all' || type === currentType.toLowerCase();
-                const matchSource = currentSource === 'all' || source === currentSource;
+                const matchQuery = !query || title.includes(query) || cat.includes(query) || editCat.includes(query) || amount.includes(query);
+                const matchCat = checkCategoryMatch(cat, editCat, currentCategory);
+                const matchType = (currentType === 'all') || (type === currentType.toLowerCase());
+                const matchSource = (currentSource === 'all') || (source === currentSource.toLowerCase());
 
                 if (matchQuery && matchCat && matchType && matchSource) {
                     item.classList.remove('hidden');
@@ -1584,15 +1706,17 @@
             const txDesktopRows = document.querySelectorAll('#tbody-desktop-transactions .tx-row');
             let visibleDesktopCount = 0;
             txDesktopRows.forEach(row => {
-                const title = (row.dataset.editTitle || row.dataset.merchant || '').toLowerCase();
+                const title = (row.dataset.editTitle || row.dataset.merchant || row.querySelector('td:first-child p')?.textContent || '').toLowerCase();
                 const cat = (row.dataset.category || '').toLowerCase();
-                const type = (row.dataset.type || 'expense').toLowerCase();
+                const editCat = (row.dataset.editCategory || '').toLowerCase();
+                const type = (row.dataset.type || row.dataset.editType || 'expense').toLowerCase();
                 const source = (row.dataset.source || 'manual').toLowerCase();
+                const amount = (row.dataset.amount || row.dataset.editAmount || '').toLowerCase();
 
-                const matchQuery = !query || title.includes(query) || cat.includes(query);
-                const matchCat = currentCategory === 'all' || cat.includes(currentCategory.toLowerCase());
-                const matchType = currentType === 'all' || type === currentType.toLowerCase();
-                const matchSource = currentSource === 'all' || source === currentSource;
+                const matchQuery = !query || title.includes(query) || cat.includes(query) || editCat.includes(query) || amount.includes(query);
+                const matchCat = checkCategoryMatch(cat, editCat, currentCategory);
+                const matchType = (currentType === 'all') || (type === currentType.toLowerCase());
+                const matchSource = (currentSource === 'all') || (source === currentSource.toLowerCase());
 
                 if (matchQuery && matchCat && matchType && matchSource) {
                     row.classList.remove('hidden');
@@ -1613,7 +1737,6 @@
             // 4. Update unified empty state
             const emptyStateUnified = document.getElementById('empty-state-unified');
             const desktopContainer = document.getElementById('container-desktop-transactions');
-            const mobileContainer = document.getElementById('container-mobile-transactions');
 
             const hasAnyVisible = visibleMobileCount > 0 || visibleDesktopCount > 0;
             if (emptyStateUnified) {
@@ -1627,6 +1750,8 @@
                     if (desktopContainer) desktopContainer.classList.remove('md:hidden');
                 }
             }
+
+            syncUIState();
         }
 
         function handleSearchInput(val) {
@@ -1638,6 +1763,44 @@
 
         if (searchDesktop) searchDesktop.addEventListener('input', (e) => handleSearchInput(e.target.value));
         if (searchMobileInput) searchMobileInput.addEventListener('input', (e) => handleSearchInput(e.target.value));
+
+        if (clearBtnMobile) {
+            clearBtnMobile.addEventListener('click', () => {
+                handleSearchInput('');
+                if (searchMobileInput) searchMobileInput.focus();
+            });
+        }
+
+        // Quick filter chips click handler (with tap-again to reset toggle behavior)
+        document.querySelectorAll('#mobile-quick-filter-strip .quick-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const filterKey = chip.dataset.quickFilter;
+                
+                if (filterKey === 'all') {
+                    currentSource = 'all';
+                    currentType = 'all';
+                    currentCategory = 'all';
+                } else if (filterKey === 'type:expense') {
+                    currentType = (currentType === 'expense' && currentCategory === 'all' && currentSource === 'all') ? 'all' : 'expense';
+                    currentSource = 'all';
+                    currentCategory = 'all';
+                } else if (filterKey === 'type:income') {
+                    currentType = (currentType === 'income' && currentCategory === 'all' && currentSource === 'all') ? 'all' : 'income';
+                    currentSource = 'all';
+                    currentCategory = 'all';
+                } else if (filterKey === 'source:receipt') {
+                    currentSource = (currentSource === 'receipt' && currentType === 'all' && currentCategory === 'all') ? 'all' : 'receipt';
+                    currentType = 'all';
+                    currentCategory = 'all';
+                } else if (filterKey.startsWith('cat:')) {
+                    const catVal = filterKey.replace('cat:', '');
+                    currentCategory = (currentCategory.toLowerCase() === catVal.toLowerCase() && currentType === 'all' && currentSource === 'all') ? 'all' : catVal;
+                    currentSource = 'all';
+                    currentType = 'all';
+                }
+                applyAllFilters();
+            });
+        });
 
         if (selectCatDesktop) {
             selectCatDesktop.addEventListener('change', (e) => {
@@ -1671,23 +1834,6 @@
             if (selectTypeDesktop) selectTypeDesktop.value = 'all';
             if (selectSourceDesktop) selectSourceDesktop.value = 'all';
 
-            // Reset mobile pills/chips
-            document.querySelectorAll('.pill-source').forEach((p, idx) => {
-                p.className = idx === 0 
-                    ? 'pill-source py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center'
-                    : 'pill-source py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center';
-            });
-            document.querySelectorAll('.pill-type').forEach((p, idx) => {
-                p.className = idx === 0 
-                    ? 'pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center'
-                    : 'pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center';
-            });
-            document.querySelectorAll('.chip-cat').forEach((c, idx) => {
-                c.className = idx === 0 
-                    ? 'chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-xs font-semibold shadow-xs transition-all cursor-pointer'
-                    : 'chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer';
-            });
-
             applyAllFilters();
         }
 
@@ -1706,6 +1852,7 @@
         function openModal() {
             document.body.style.overflow = 'hidden';
             if (!filterWrapper) return;
+            syncUIState();
             filterWrapper.classList.remove('hidden');
             requestAnimationFrame(() => {
                 if (filterBackdrop) {
@@ -1738,39 +1885,37 @@
         if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeModal);
         if (filterBackdrop) filterBackdrop.addEventListener('click', closeModal);
 
-        // Mobile source pills
+        // Mobile source pills in modal
         document.querySelectorAll('.pill-source').forEach(pill => {
             pill.addEventListener('click', () => {
-                document.querySelectorAll('.pill-source').forEach(p => {
-                    p.className = 'pill-source py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center';
-                });
-                pill.className = 'pill-source py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all cursor-pointer text-center';
                 currentSource = pill.dataset.source;
-                if (selectSourceDesktop) selectSourceDesktop.value = currentSource;
+                syncUIState();
             });
         });
 
-        // Mobile category chips
+        // Mobile category chips in modal
         document.querySelectorAll('.chip-cat').forEach(chip => {
             chip.addEventListener('click', () => {
-                document.querySelectorAll('.chip-cat').forEach(c => {
-                    c.className = 'chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer';
-                });
-                chip.className = 'chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-xs font-bold shadow-xs transition-all cursor-pointer';
                 currentCategory = chip.dataset.cat;
-                if (selectCatDesktop) selectCatDesktop.value = currentCategory;
+                syncUIState();
             });
         });
 
-        // Mobile type pills
+        // Mobile type pills in modal
         document.querySelectorAll('.pill-type').forEach(pill => {
             pill.addEventListener('click', () => {
-                document.querySelectorAll('.pill-type').forEach(p => {
-                    p.className = 'pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center';
-                });
-                pill.className = 'pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-bold shadow-xs transition-all cursor-pointer text-center';
                 currentType = pill.dataset.type;
-                if (selectTypeDesktop) selectTypeDesktop.value = currentType;
+                syncUIState();
+            });
+        });
+
+        // Mobile date pills in modal
+        document.querySelectorAll('.pill-date').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.pill-date').forEach(p => {
+                    p.className = 'pill-date py-2 px-2 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+                });
+                pill.className = 'pill-date py-2 px-2 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs';
             });
         });
 
@@ -1823,6 +1968,9 @@
                 }
             });
         }
+
+        // Initialize state on load
+        applyAllFilters();
 
         // Edit Transaction Sheet (shared component, see edit-transaction-sheet.js)
         const editSheet = window.initEditTransactionSheet();
