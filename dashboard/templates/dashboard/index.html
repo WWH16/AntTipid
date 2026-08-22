@@ -65,8 +65,8 @@
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱20,000 in · ₱8,450 out</span>
                                 </a>
                             </div>
-                            <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1 bg-primary hover:bg-primary-hover text-on-primary font-bold text-[11px] sm:text-xs px-3 py-1.5 min-h-[34px] rounded-xl shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer">
-                                <span class="material-symbols-outlined text-[15px]">add</span>
+                            <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Transaction">
+                                <span class="material-symbols-outlined text-[15px] text-primary font-bold group-hover/btn:rotate-90 transition-transform">add</span>
                                 <span>Add</span>
                             </a>
                         </div>
@@ -96,8 +96,9 @@
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">1 active income source</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" aria-label="View income transaction history" class="font-label-sm text-xs text-deep-forest hover:text-positive-deep font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
-                                History →
+                            <a href="{% url 'transactions' %}" aria-label="View income transaction history" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Income History">
+                                <span>History</span>
+                                <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                             </a>
                         </div>
                     </div>
@@ -126,8 +127,9 @@
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across 4 categories</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" aria-label="View all expense transactions" class="font-label-sm text-xs text-expense hover:text-expense-dark font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-expense/20">
-                                View →
+                            <a href="{% url 'transactions' %}" aria-label="View all expense transactions" class="inline-flex items-center gap-1.5 bg-expense hover:bg-expense-dark text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Expense Breakdown">
+                                <span>View</span>
+                                <span class="material-symbols-outlined text-[14px] text-white font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                             </a>
                         </div>
                     </div>
