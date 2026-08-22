@@ -21,7 +21,7 @@
                     <p id="page-subheading" class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
                 </div>
             </div>
-            <a href="{% url 'transactions' %}?mode=receipts" id="btn-switch-scan" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 hover:bg-primary hover:text-white transition-all font-label-md text-xs font-semibold cursor-pointer shadow-xs">
+            <a href="{% url 'scan_receipt' %}" id="btn-switch-scan" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-soft-green text-primary border border-primary/30 hover:bg-primary hover:text-white transition-all font-label-md text-xs font-semibold cursor-pointer shadow-xs">
                 <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                 <span class="hidden xs:inline">Scan Receipt</span>
             </a>
@@ -441,11 +441,32 @@
 
                 if (pendingTargetUrl) {
                     window.location.href = pendingTargetUrl;
-                } else {
+                } else if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
                     window.history.back();
+                } else {
+                    window.location.href = "{% url 'transactions' %}";
                 }
             });
         }
+
+        // Smart Back Navigation for Top Back Button and Cancel Button
+        function handleSmartBack(e) {
+            if (isFormDirty) {
+                e.preventDefault();
+                const fallbackUrl = document.referrer && document.referrer.includes(window.location.host) ? document.referrer : "{% url 'transactions' %}";
+                openConfirmModal(fallbackUrl);
+                return;
+            }
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
+                e.preventDefault();
+                window.history.back();
+            }
+        }
+
+        const btnBack = document.getElementById('btn-back');
+        const btnCancel = document.getElementById('btn-cancel');
+        if (btnBack) btnBack.addEventListener('click', handleSmartBack);
+        if (btnCancel) btnCancel.addEventListener('click', handleSmartBack);
 
         if (confirmModal) {
             confirmModal.addEventListener('click', (e) => {
@@ -471,8 +492,41 @@
             });
         }
 
-        // Edit Mode: pre-fill the form when opened from a transaction's edit link
-        (function applyEditPrefill() {
+        // Edit Mode: pre-fill the form when opened from a transaction's edit link or receipt scan
+        (function applyPrefill() {
+            // 1. Check scanned receipt data from AI Scanner
+            const scannedDataRaw = sessionStorage.getItem('scanned_receipt_data');
+            if (scannedDataRaw) {
+                try {
+                    const scanned = JSON.parse(scannedDataRaw);
+                    sessionStorage.removeItem('scanned_receipt_data');
+                    if (scanned.total && inputAmount) inputAmount.value = parseFloat(scanned.total).toFixed(2);
+                    if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
+                    if (scanned.date && inputDate) inputDate.value = scanned.date;
+                    if (scanned.category) {
+                        const catBtn = document.querySelector(`.category-btn[data-category="${scanned.category}"]`);
+                        if (catBtn) catBtn.click();
+                    }
+                    if (scanned.payment_method && selectAccount) {
+                        for (let opt of selectAccount.options) {
+                            if (opt.value.toLowerCase().includes(scanned.payment_method.toLowerCase()) || scanned.payment_method.toLowerCase().includes(opt.value.toLowerCase())) {
+                                selectAccount.value = opt.value;
+                                break;
+                            }
+                        }
+                    }
+                    if (scanned.items && scanned.items.length > 0 && inputNotes) {
+                        const itemSummary = scanned.items.map(i => `${i.description} (${i.quantity}x)`).join(', ');
+                        inputNotes.value = `Scanned items: ${itemSummary}`.slice(0, 200);
+                    }
+                    isFormDirty = true;
+                    return;
+                } catch (e) {
+                    console.error('Failed to parse scanned_receipt_data', e);
+                }
+            }
+
+            // 2. Check query params for edit mode
             const params = new URLSearchParams(window.location.search);
             const editId = params.get('edit');
             if (!editId) return;
