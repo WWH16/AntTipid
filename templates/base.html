@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AntTipid — Personal Finance & Budget Tracker{% endblock %}</title>
+    <title>{% block title %}AntTipid | Personal Finance & Budget Tracker{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}AntTipid is your intelligent personal finance manager — track expenses, set budgets, and archive receipt scans with ease.{% endblock %}">
 
     <!-- PWA & Mobile Web App Meta Tags -->
@@ -223,7 +223,7 @@
             <!-- Left: Current Page Title -->
             <div class="flex items-center gap-3">
                 <h1 class="font-headline-md text-base font-bold text-on-surface tracking-tight">
-                    {% if active_nav == 'dashboard' %}Dashboard Overview{% elif active_nav == 'transactions' %}History & Receipts{% elif active_nav == 'budgets' %}Budget Planner{% elif active_nav == 'reports' %}Financial Insights{% else %}Overview{% endif %}
+                    {% block header_title %}{% if active_nav == 'dashboard' %}Dashboard Overview{% elif active_nav == 'transactions' %}History & Receipts{% elif active_nav == 'budgets' %}Budget Planner{% elif active_nav == 'reports' %}Financial Insights{% elif active_nav == 'scan_receipt' %}Scan Receipt{% elif active_nav == 'add_transaction' %}Add Transaction{% else %}Overview{% endif %}{% endblock %}
                 </h1>
             </div>
 
