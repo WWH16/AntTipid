@@ -26,8 +26,8 @@
                     </button>
                 </div>
                 
-                <!-- Filter Sheet Trigger Button -->
-                <button type="button" id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0">
+                <!-- Filter Action Sheet Trigger Button -->
+                <button type="button" id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0" aria-label="Open filter action sheet">
                     <span class="material-symbols-outlined text-[18px]">tune</span>
                     <span class="font-label-sm text-xs font-bold">Filter</span>
                     <span id="badge-active-filters-mobile" class="hidden min-w-[18px] h-[18px] px-1 bg-deep-forest text-primary rounded-full text-[10px] font-extrabold flex items-center justify-center">0</span>
@@ -84,6 +84,14 @@
 
             <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5">filter_list</span>
             
+            <!-- Filter: Sort (Desktop) -->
+            <select id="select-sort-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                <option value="newest">Sort: Newest</option>
+                <option value="oldest">Sort: Oldest</option>
+                <option value="highest">Sort: Highest Amount</option>
+                <option value="lowest">Sort: Lowest Amount</option>
+            </select>
+
             <!-- Filter: Type -->
             <select id="select-type-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Type: All</option>
@@ -101,13 +109,6 @@
                 <option value="Shopping">Shopping</option>
                 <option value="Income">Salary / Income</option>
                 <option value="Housing">Housing & Rent</option>
-            </select>
-
-            <!-- Filter: Date Range -->
-            <select id="select-date-desktop" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                <option value="30days">Date: Last 30 Days</option>
-                <option value="this-month">Date: This Month</option>
-                <option value="all-time">Date: All Time</option>
             </select>
 
             <!-- Filter: Source -->
@@ -834,95 +835,139 @@
     <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
     <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
-{% endblock %}
 
-<!-- ═══════════════════════════════════════ -->
-<!-- FILTER POPUP MODAL (Quiet Shadcn Dialog) -->
-<!-- ═══════════════════════════════════════ -->
-<div id="filter-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="filter-sheet-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden touch-none">
-    <!-- Backdrop (Tap outside to close) -->
-    <div id="filter-sheet-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-md opacity-0 transition-opacity duration-200 pointer-events-auto"></div>
+<!-- ═════════════════════════════════════════════════ -->
+<!-- MOBILE FILTER & SORT BOTTOM ACTION SHEET -->
+<!-- ═════════════════════════════════════════════════ -->
+<div id="filter-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="filter-sheet-title" class="fixed inset-0 z-[120] flex items-end justify-center p-0 md:hidden hidden">
+    <!-- Backdrop (Tap to close) -->
+    <div id="filter-sheet-backdrop" class="absolute inset-0 bg-deep-forest/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
     
-    <!-- Bottom Sheet / Modal Content -->
-    <div id="filter-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-[400px] rounded-t-2xl sm:rounded-2xl border border-surface-variant/60 p-5 sm:p-6 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+    <!-- Action Sheet Drawer Content (Pops up from below on mobile with rounded-t-2xl radius) -->
+    <div id="filter-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-[440px] rounded-t-2xl sm:rounded-2xl border border-outline-variant/60 shadow-2xl relative z-[125] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[85vh] overflow-hidden">
         
         <!-- Mobile Drag Handle Bar -->
-        <div id="filter-sheet-handle" class="w-full py-1.5 -mt-2 mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none sm:hidden">
-            <div class="w-12 h-1 bg-surface-variant/80 rounded-full"></div>
+        <div id="filter-sheet-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 sm:hidden">
+            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
         </div>
 
         <!-- Header -->
-        <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[20px]">tune</span>
-            </div>
-            <div class="flex flex-col gap-1 min-w-0 flex-1">
-                <div class="flex items-center justify-between">
-                    <h3 id="filter-sheet-title" class="font-headline-md text-sm sm:text-base font-semibold text-on-surface tracking-tight">Filter Activity</h3>
-                    <button id="btn-close-filter-sheet" aria-label="Close filters" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors shrink-0 text-on-surface-variant cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
+        <div class="px-5 pt-1 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">tune</span>
                 </div>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Narrow down activity by transaction type, category, or timeframe.</p>
+                <div>
+                    <h3 id="filter-sheet-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Filters & Sort</h3>
+                    <p class="font-body-sm text-[11px] text-body font-medium">Refine history & receipts</p>
+                </div>
             </div>
+            <button type="button" id="btn-close-filter-sheet" aria-label="Close filters" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
         </div>
 
-        <div class="flex flex-col gap-4 pt-1">
-            <!-- Source Type -->
-            <div class="flex flex-col gap-1.5">
-                <label class="font-label-md text-xs text-on-surface font-semibold">Source</label>
-                <div class="grid grid-cols-3 gap-2" id="group-source-pills">
-                    <button data-source="all" class="pill-source py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center">All Sources</button>
-                    <button data-source="manual" class="pill-source py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Manual</button>
-                    <button data-source="receipt" class="pill-source py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Receipts</button>
+        <!-- Scrollable Action Sheet Body -->
+        <div class="p-5 overflow-y-auto space-y-4 flex-1 overscroll-contain">
+            <!-- 1. Source Selection -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Source</label>
+                <div class="grid grid-cols-3 gap-2" id="action-sheet-source-pills">
+                    <button type="button" data-sheet-source="all" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
+                        All Sources
+                    </button>
+                    <button type="button" data-sheet-source="manual" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Manual
+                    </button>
+                    <button type="button" data-sheet-source="receipt" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Receipts
+                    </button>
                 </div>
             </div>
 
-            <!-- Transaction Type -->
-            <div class="flex flex-col gap-1.5">
-                <label class="font-label-md text-xs text-on-surface font-semibold">Transaction Type</label>
-                <div class="grid grid-cols-3 gap-2" id="group-type-pills">
-                    <button data-type="all" class="pill-type py-2 px-3 rounded-xl border border-primary bg-primary text-on-primary font-label-md text-xs font-semibold shadow-xs transition-all cursor-pointer text-center">All</button>
-                    <button data-type="income" class="pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Income</button>
-                    <button data-type="expense" class="pill-type py-2 px-3 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-md text-xs font-medium transition-all cursor-pointer text-center">Expense</button>
+            <!-- 2. Transaction Type -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Transaction Type</label>
+                <div class="grid grid-cols-3 gap-2" id="action-sheet-type-pills">
+                    <button type="button" data-sheet-type="all" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
+                        All Types
+                    </button>
+                    <button type="button" data-sheet-type="expense" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Expenses
+                    </button>
+                    <button type="button" data-sheet-type="income" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Income
+                    </button>
                 </div>
             </div>
 
-            <!-- Category Quick Picks -->
-            <div class="flex flex-col gap-1.5">
-                <label class="font-label-md text-xs text-on-surface font-semibold">Category</label>
-                <div class="flex flex-wrap gap-1.5" id="group-category-chips">
-                    <button data-cat="all" class="chip-cat px-3 py-1.5 rounded-full border border-primary bg-primary text-on-primary font-label-sm text-xs font-semibold shadow-xs transition-all cursor-pointer">All Categories</button>
-                    <button data-cat="Groceries" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Groceries</button>
-                    <button data-cat="Dining" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Food & Dining</button>
-                    <button data-cat="Transportation" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Transportation</button>
-                    <button data-cat="Utilities" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Utilities</button>
-                    <button data-cat="Shopping" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Shopping</button>
-                    <button data-cat="Healthcare" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Healthcare</button>
-                    <button data-cat="Income" class="chip-cat px-3 py-1.5 rounded-full border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-label-sm text-xs font-medium transition-all cursor-pointer">Salary / Income</button>
-                </div>
-            </div>
-
-            <!-- Date Range -->
-            <div class="flex flex-col gap-1.5">
-                <label class="font-label-md text-xs text-on-surface font-semibold">Timeframe</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <button data-date="this-month" class="btn-date-range py-2 px-3 h-9 rounded-xl border border-primary bg-primary text-on-primary font-body-sm text-xs font-semibold transition-all text-left flex justify-between items-center cursor-pointer shadow-xs">
-                        <span>This Month</span>
+            <!-- 3. Sort Order -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Sort Order</label>
+                <div class="grid grid-cols-2 gap-2" id="action-sheet-sort-pills">
+                    <button type="button" data-sheet-sort="newest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between">
+                        <span>Newest First</span>
                         <span class="material-symbols-outlined text-[16px]">calendar_today</span>
                     </button>
-                    <button data-date="custom" class="btn-date-range py-2 px-3 h-9 rounded-xl border border-surface-variant/60 bg-surface-container-low text-on-surface hover:bg-surface-container-high font-body-sm text-xs font-medium transition-all text-left flex justify-between items-center cursor-pointer">
-                        <span>Custom Range</span>
-                        <span class="material-symbols-outlined text-on-surface-variant text-[16px]">date_range</span>
+                    <button type="button" data-sheet-sort="oldest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Oldest First</span>
+                        <span class="material-symbols-outlined text-[16px]">history</span>
+                    </button>
+                    <button type="button" data-sheet-sort="highest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Highest Amount</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                    </button>
+                    <button type="button" data-sheet-sort="lowest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Lowest Amount</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Category Filter -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Category</label>
+                <div class="flex flex-wrap gap-1.5" id="action-sheet-category-chips">
+                    <button type="button" data-sheet-cat="all" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
+                        All Categories
+                    </button>
+                    <button type="button" data-sheet-cat="Groceries" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Groceries
+                    </button>
+                    <button type="button" data-sheet-cat="Dining" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Food & Dining
+                    </button>
+                    <button type="button" data-sheet-cat="Transportation" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Transportation
+                    </button>
+                    <button type="button" data-sheet-cat="Utilities" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Utilities
+                    </button>
+                    <button type="button" data-sheet-cat="Shopping" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Shopping
+                    </button>
+                    <button type="button" data-sheet-cat="Healthcare" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Healthcare
+                    </button>
+                    <button type="button" data-sheet-cat="Housing" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Housing
+                    </button>
+                    <button type="button" data-sheet-cat="Income" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Salary / Income
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-surface-variant/40 mt-1">
-            <button id="btn-reset-filters-modal" class="px-3.5 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-semibold transition-all cursor-pointer">Clear</button>
-            <button id="btn-apply-filters-modal" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-md text-xs font-semibold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">Apply Filters</button>
+        <!-- Sticky Footer Action Bar -->
+        <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/40 flex items-center gap-3 shrink-0">
+            <button type="button" id="btn-sheet-reset" class="flex-1 py-3 px-4 rounded-2xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer text-center">
+                Clear All
+            </button>
+            <button type="button" id="btn-sheet-apply" class="flex-1 py-3 px-4 rounded-2xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5">
+                <span>Apply Filters</span>
+                <span class="material-symbols-outlined text-[16px]">check</span>
+            </button>
         </div>
     </div>
 </div>
@@ -1028,7 +1073,7 @@
     </div>
 </div>
 
-
+{% endblock %}
 
 {% block extra_scripts %}
 <script src="{% static 'js/edit-transaction-sheet.js' %}"></script>
@@ -1537,6 +1582,7 @@
         let currentCategory = 'all';
         let currentType = 'all';
         let currentSource = (new URLSearchParams(window.location.search).get('mode') === 'receipts') ? 'receipt' : 'all';
+        let currentSort = 'newest';
 
         const searchDesktop = document.getElementById('input-search-desktop');
         const searchMobileInput = document.getElementById('input-search-mobile');
@@ -1544,8 +1590,68 @@
         const selectCatDesktop = document.getElementById('select-category-desktop');
         const selectTypeDesktop = document.getElementById('select-type-desktop');
         const selectSourceDesktop = document.getElementById('select-source-desktop');
+        const selectSortDesktop = document.getElementById('select-sort-desktop');
         const btnClearFilters = document.getElementById('btn-clear-filters-desktop');
         const btnResetUnifiedFilters = document.getElementById('btn-reset-unified-filters');
+        
+        // Mobile Bottom Action Sheet Elements
+        const filterSheetWrapper = document.getElementById('filter-sheet-wrapper');
+        const filterSheetBackdrop = document.getElementById('filter-sheet-backdrop');
+        const filterSheetContent = document.getElementById('filter-sheet-content');
+        const openMobileBtn = document.getElementById('btn-open-filter-mobile');
+        const closeMobileBtn = document.getElementById('btn-close-filter-sheet');
+        const applySheetBtn = document.getElementById('btn-sheet-apply');
+        const resetSheetBtn = document.getElementById('btn-sheet-reset');
+
+        function openFilterSheet() {
+            document.body.style.overflow = 'hidden';
+            if (!filterSheetWrapper) return;
+            syncUIState();
+            filterSheetWrapper.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                if (filterSheetBackdrop) {
+                    filterSheetBackdrop.classList.remove('opacity-0');
+                    filterSheetBackdrop.classList.add('opacity-100');
+                }
+                if (filterSheetContent) {
+                    filterSheetContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
+                    filterSheetContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
+                }
+            });
+        }
+
+        function closeFilterSheet() {
+            if (filterSheetBackdrop) {
+                filterSheetBackdrop.classList.remove('opacity-100');
+                filterSheetBackdrop.classList.add('opacity-0');
+            }
+            if (filterSheetContent) {
+                filterSheetContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
+                filterSheetContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
+            }
+            setTimeout(() => {
+                if (filterSheetWrapper) filterSheetWrapper.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 250);
+        }
+
+        if (openMobileBtn) openMobileBtn.addEventListener('click', openFilterSheet);
+        if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeFilterSheet);
+        if (filterSheetBackdrop) filterSheetBackdrop.addEventListener('click', closeFilterSheet);
+
+        if (applySheetBtn) {
+            applySheetBtn.addEventListener('click', () => {
+                applyAllFilters();
+                closeFilterSheet();
+            });
+        }
+
+        if (resetSheetBtn) {
+            resetSheetBtn.addEventListener('click', () => {
+                resetAllFilterState();
+                closeFilterSheet();
+            });
+        }
 
         function syncUIState() {
             // 1. Mobile Search Clear Button
@@ -1557,25 +1663,25 @@
                 }
             }
 
-            // 2. Count Active Non-Default Filters (ignoring search text)
+            // 2. Count Active Non-Default Filters
             let activeFilterCount = 0;
             if (currentSource !== 'all') activeFilterCount++;
             if (currentType !== 'all') activeFilterCount++;
             if (currentCategory !== 'all') activeFilterCount++;
+            if (currentSort !== 'newest') activeFilterCount++;
 
             const badgeActiveMobile = document.getElementById('badge-active-filters-mobile');
-            const btnOpenFilterMobile = document.getElementById('btn-open-filter-mobile');
             if (badgeActiveMobile) {
                 if (activeFilterCount > 0) {
                     badgeActiveMobile.textContent = activeFilterCount;
                     badgeActiveMobile.classList.remove('hidden');
-                    if (btnOpenFilterMobile) {
-                        btnOpenFilterMobile.className = 'h-10 px-3.5 bg-primary-pale text-positive-deep border border-positive/40 rounded-xl flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
+                    if (openMobileBtn) {
+                        openMobileBtn.className = 'h-10 px-3.5 bg-primary-pale text-positive-deep border border-positive/40 rounded-xl flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
                     }
                 } else {
                     badgeActiveMobile.classList.add('hidden');
-                    if (btnOpenFilterMobile) {
-                        btnOpenFilterMobile.className = 'h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
+                    if (openMobileBtn) {
+                        openMobileBtn.className = 'h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
                     }
                 }
             }
@@ -1602,34 +1708,43 @@
                     : 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95';
             });
 
-            // 4. Modal Source Pills
-            document.querySelectorAll('.pill-source').forEach(p => {
-                const isMatch = (p.dataset.source === currentSource);
+            // 4. Action Sheet Source Pills
+            document.querySelectorAll('.sheet-pill-source').forEach(p => {
+                const isMatch = (p.dataset.sheetSource === currentSource);
                 p.className = isMatch
-                    ? 'pill-source py-2 px-2.5 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'pill-source py-2 px-2.5 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+                    ? 'sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
             });
 
-            // 5. Modal Type Pills
-            document.querySelectorAll('.pill-type').forEach(p => {
-                const isMatch = (p.dataset.type === currentType);
+            // 5. Action Sheet Type Pills
+            document.querySelectorAll('.sheet-pill-type').forEach(p => {
+                const isMatch = (p.dataset.sheetType === currentType);
                 p.className = isMatch
-                    ? 'pill-type py-2 px-2.5 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'pill-type py-2 px-2.5 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+                    ? 'sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
             });
 
-            // 6. Modal Category Chips
-            document.querySelectorAll('.chip-cat').forEach(c => {
-                const isMatch = (c.dataset.cat.toLowerCase() === currentCategory.toLowerCase());
+            // 6. Action Sheet Sort Pills
+            document.querySelectorAll('.sheet-pill-sort').forEach(p => {
+                const isMatch = (p.dataset.sheetSort === currentSort);
+                p.className = isMatch
+                    ? 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between'
+                    : 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between';
+            });
+
+            // 7. Action Sheet Category Chips
+            document.querySelectorAll('.sheet-chip-cat').forEach(c => {
+                const isMatch = (c.dataset.sheetCat.toLowerCase() === currentCategory.toLowerCase());
                 c.className = isMatch
-                    ? 'chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-medium transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+                    ? 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
             });
 
-            // 7. Desktop Selects Sync
+            // 8. Desktop Selects Sync
             if (selectCatDesktop && selectCatDesktop.value !== currentCategory) selectCatDesktop.value = currentCategory;
             if (selectTypeDesktop && selectTypeDesktop.value !== currentType) selectTypeDesktop.value = currentType;
             if (selectSourceDesktop && selectSourceDesktop.value !== currentSource) selectSourceDesktop.value = currentSource;
+            if (selectSortDesktop && selectSortDesktop.value !== currentSort) selectSortDesktop.value = currentSort;
         }
 
         function checkCategoryMatch(itemCat, itemEditCat, targetCategory) {
@@ -1672,7 +1787,25 @@
         function applyAllFilters() {
             const query = currentSearchQuery.toLowerCase().trim();
 
-            // 1. Filter Unified Mobile list items
+            // 1. Sort & Filter Unified Mobile list items
+            document.querySelectorAll('#container-mobile-transactions .transaction-group').forEach(grp => {
+                const itemsList = grp.querySelector('.divide-y');
+                if (!itemsList) return;
+                const items = Array.from(itemsList.querySelectorAll('.tx-item'));
+                items.sort((a, b) => {
+                    const amtA = parseFloat(a.dataset.amount || a.dataset.editAmount || '0') || 0;
+                    const amtB = parseFloat(b.dataset.amount || b.dataset.editAmount || '0') || 0;
+                    const dateA = new Date(a.dataset.date || a.dataset.editDate || '2026-10-01').getTime();
+                    const dateB = new Date(b.dataset.date || b.dataset.editDate || '2026-10-01').getTime();
+
+                    if (currentSort === 'highest') return amtB - amtA;
+                    if (currentSort === 'lowest') return amtA - amtB;
+                    if (currentSort === 'oldest') return dateA - dateB;
+                    return dateB - dateA;
+                });
+                items.forEach(it => itemsList.appendChild(it));
+            });
+
             const txMobileItems = document.querySelectorAll('#container-mobile-transactions .tx-item');
             let visibleMobileCount = 0;
             txMobileItems.forEach(item => {
@@ -1702,7 +1835,24 @@
                 grp.style.display = hasVisible ? '' : 'none';
             });
 
-            // 2. Filter Unified Desktop table rows
+            // 2. Sort & Filter Unified Desktop table rows
+            const tbody = document.getElementById('tbody-desktop-transactions');
+            if (tbody) {
+                const rows = Array.from(tbody.querySelectorAll('.tx-row'));
+                rows.sort((a, b) => {
+                    const amtA = parseFloat(a.dataset.amount || a.dataset.editAmount || '0') || 0;
+                    const amtB = parseFloat(b.dataset.amount || b.dataset.editAmount || '0') || 0;
+                    const dateA = new Date(a.dataset.date || a.dataset.editDate || '2026-10-01').getTime();
+                    const dateB = new Date(b.dataset.date || b.dataset.editDate || '2026-10-01').getTime();
+
+                    if (currentSort === 'highest') return amtB - amtA;
+                    if (currentSort === 'lowest') return amtA - amtB;
+                    if (currentSort === 'oldest') return dateA - dateB;
+                    return dateB - dateA;
+                });
+                rows.forEach(r => tbody.appendChild(r));
+            }
+
             const txDesktopRows = document.querySelectorAll('#tbody-desktop-transactions .tx-row');
             let visibleDesktopCount = 0;
             txDesktopRows.forEach(row => {
@@ -1771,7 +1921,39 @@
             });
         }
 
-        // Quick filter chips click handler (with tap-again to reset toggle behavior)
+        // Action Sheet Source Pills Click Listeners
+        document.querySelectorAll('.sheet-pill-source').forEach(pill => {
+            pill.addEventListener('click', () => {
+                currentSource = pill.dataset.sheetSource;
+                syncUIState();
+            });
+        });
+
+        // Action Sheet Type Pills Click Listeners
+        document.querySelectorAll('.sheet-pill-type').forEach(pill => {
+            pill.addEventListener('click', () => {
+                currentType = pill.dataset.sheetType;
+                syncUIState();
+            });
+        });
+
+        // Action Sheet Sort Pills Click Listeners
+        document.querySelectorAll('.sheet-pill-sort').forEach(pill => {
+            pill.addEventListener('click', () => {
+                currentSort = pill.dataset.sheetSort;
+                syncUIState();
+            });
+        });
+
+        // Action Sheet Category Chips Click Listeners
+        document.querySelectorAll('.sheet-chip-cat').forEach(chip => {
+            chip.addEventListener('click', () => {
+                currentCategory = chip.dataset.sheetCat;
+                syncUIState();
+            });
+        });
+
+        // Quick filter chips click handler (with toggle behavior)
         document.querySelectorAll('#mobile-quick-filter-strip .quick-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const filterKey = chip.dataset.quickFilter;
@@ -1823,16 +2005,25 @@
             });
         }
 
+        if (selectSortDesktop) {
+            selectSortDesktop.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                applyAllFilters();
+            });
+        }
+
         function resetAllFilterState() {
             currentSearchQuery = '';
             currentCategory = 'all';
             currentType = 'all';
             currentSource = 'all';
+            currentSort = 'newest';
             if (searchDesktop) searchDesktop.value = '';
             if (searchMobileInput) searchMobileInput.value = '';
             if (selectCatDesktop) selectCatDesktop.value = 'all';
             if (selectTypeDesktop) selectTypeDesktop.value = 'all';
             if (selectSourceDesktop) selectSourceDesktop.value = 'all';
+            if (selectSortDesktop) selectSortDesktop.value = 'newest';
 
             applyAllFilters();
         }
@@ -1840,100 +2031,7 @@
         if (btnClearFilters) btnClearFilters.addEventListener('click', resetAllFilterState);
         if (btnResetUnifiedFilters) btnResetUnifiedFilters.addEventListener('click', resetAllFilterState);
 
-        // Mobile Filter Sheet
-        const filterWrapper = document.getElementById('filter-sheet-wrapper');
-        const filterBackdrop = document.getElementById('filter-sheet-backdrop');
-        const filterContent = document.getElementById('filter-sheet-content');
-        const openMobileBtn = document.getElementById('btn-open-filter-mobile');
-        const closeMobileBtn = document.getElementById('btn-close-filter-sheet');
-        const applyModalBtn = document.getElementById('btn-apply-filters-modal');
-        const resetModalBtn = document.getElementById('btn-reset-filters-modal');
-
-        function openModal() {
-            document.body.style.overflow = 'hidden';
-            if (!filterWrapper) return;
-            syncUIState();
-            filterWrapper.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                if (filterBackdrop) {
-                    filterBackdrop.classList.remove('opacity-0');
-                    filterBackdrop.classList.add('opacity-100');
-                }
-                if (filterContent) {
-                    filterContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
-                    filterContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
-                }
-            });
-        }
-
-        function closeModal() {
-            if (filterBackdrop) {
-                filterBackdrop.classList.remove('opacity-100');
-                filterBackdrop.classList.add('opacity-0');
-            }
-            if (filterContent) {
-                filterContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
-                filterContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
-            }
-            setTimeout(() => {
-                if (filterWrapper) filterWrapper.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200);
-        }
-
-        if (openMobileBtn) openMobileBtn.addEventListener('click', openModal);
-        if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeModal);
-        if (filterBackdrop) filterBackdrop.addEventListener('click', closeModal);
-
-        // Mobile source pills in modal
-        document.querySelectorAll('.pill-source').forEach(pill => {
-            pill.addEventListener('click', () => {
-                currentSource = pill.dataset.source;
-                syncUIState();
-            });
-        });
-
-        // Mobile category chips in modal
-        document.querySelectorAll('.chip-cat').forEach(chip => {
-            chip.addEventListener('click', () => {
-                currentCategory = chip.dataset.cat;
-                syncUIState();
-            });
-        });
-
-        // Mobile type pills in modal
-        document.querySelectorAll('.pill-type').forEach(pill => {
-            pill.addEventListener('click', () => {
-                currentType = pill.dataset.type;
-                syncUIState();
-            });
-        });
-
-        // Mobile date pills in modal
-        document.querySelectorAll('.pill-date').forEach(pill => {
-            pill.addEventListener('click', () => {
-                document.querySelectorAll('.pill-date').forEach(p => {
-                    p.className = 'pill-date py-2 px-2 rounded-xl font-label-md text-xs font-medium transition-all cursor-pointer text-center border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
-                });
-                pill.className = 'pill-date py-2 px-2 rounded-xl font-label-md text-xs font-bold transition-all cursor-pointer text-center bg-deep-forest text-white border border-deep-forest shadow-xs';
-            });
-        });
-
-        if (applyModalBtn) {
-            applyModalBtn.addEventListener('click', () => {
-                applyAllFilters();
-                closeModal();
-            });
-        }
-
-        if (resetModalBtn) {
-            resetModalBtn.addEventListener('click', () => {
-                resetAllFilterState();
-                closeModal();
-            });
-        }
-
-        // Mobile Drag Down Handle
+        // Mobile Drag Down Handle on Bottom Action Sheet
         const dragHandle = document.getElementById('filter-sheet-handle');
         let startY = 0;
         let currentY = 0;
@@ -1944,27 +2042,27 @@
                 startY = e.touches[0].clientY;
                 currentY = startY;
                 isDragging = true;
-                if (filterContent) filterContent.style.transition = 'none';
+                if (filterSheetContent) filterSheetContent.style.transition = 'none';
             }, { passive: true });
 
             window.addEventListener('touchmove', (e) => {
-                if (!isDragging || !filterContent) return;
+                if (!isDragging || !filterSheetContent) return;
                 currentY = e.touches[0].clientY;
                 const deltaY = currentY - startY;
                 if (deltaY > 0) {
-                    filterContent.style.transform = `translateY(${deltaY}px)`;
+                    filterSheetContent.style.transform = `translateY(${deltaY}px)`;
                 }
             }, { passive: true });
 
             window.addEventListener('touchend', () => {
-                if (!isDragging || !filterContent) return;
+                if (!isDragging || !filterSheetContent) return;
                 isDragging = false;
-                filterContent.style.transition = '';
+                filterSheetContent.style.transition = '';
                 const deltaY = currentY - startY;
                 if (deltaY > 80) {
-                    closeModal();
+                    closeFilterSheet();
                 } else {
-                    filterContent.style.transform = '';
+                    filterSheetContent.style.transform = '';
                 }
             });
         }

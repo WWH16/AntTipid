@@ -14,14 +14,14 @@ Usage:
 <!-- ═══════════════════════════════════════ -->
 <!-- EDIT TRANSACTION SHEET (Bottom sheet on mobile, centered modal on desktop) -->
 <!-- ═══════════════════════════════════════ -->
-<div id="edit-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden touch-none">
-    <div id="edit-sheet-backdrop" class="absolute inset-0 bg-on-surface/40 backdrop-blur-md opacity-0 transition-opacity duration-200 pointer-events-auto"></div>
+<div id="edit-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="edit-sheet-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div id="edit-sheet-backdrop" class="absolute inset-0 bg-deep-forest/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
 
-    <div id="edit-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-surface-variant/60 p-5 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 flex flex-col gap-4 max-h-[88vh] overflow-y-auto">
+    <div id="edit-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-outline-variant/60 p-5 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col gap-4 max-h-[88vh] overflow-y-auto">
 
         <!-- Drag Handle (mobile only) -->
-        <div id="edit-sheet-handle" aria-label="Drag down to close" class="w-full py-3 -mt-2 -mb-1 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none sm:hidden">
-            <span class="w-10 h-[5px] rounded-full bg-outline/70"></span>
+        <div id="edit-sheet-handle" aria-label="Drag down to close" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 sm:hidden">
+            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
         </div>
 
         <!-- Type Indicator (read-only - reflects the transaction's actual type) -->
