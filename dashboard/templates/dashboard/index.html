@@ -160,35 +160,29 @@
 
                 <!-- Monthly Budget & Category Allocation Card -->
                 <section id="card-budget" aria-labelledby="heading-monthly-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-4 sm:gap-5 transition-all hover:shadow-soft">
-                    <div class="flex justify-between items-center gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight whitespace-nowrap">Monthly Budget</h3>
-                            <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] sm:text-xs font-bold border border-positive/30 shrink-0">Active</span>
+                    <!-- Header -->
+                    <div class="flex justify-between items-center gap-3">
+                        <div>
+                            <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight">Monthly Budget</h3>
+                            <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱8,450.00 spent of ₱20,000.00</p>
                         </div>
-                        <span class="font-headline-md text-xs sm:text-base font-extrabold text-amber-900 bg-warning/20 px-2.5 py-1 rounded-xl border border-warning/40 tabular-nums shadow-xs shrink-0">
-                            42% Spent
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs text-body -mt-2">
-                        <p class="font-body-sm font-medium">₱8,450.00 spent of ₱20,000.00 budget</p>
-                        <a href="{% url 'budget' %}" aria-label="Manage budget categories" class="inline-flex text-xs font-bold text-deep-forest hover:text-positive-deep hover:underline items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low">
-                            Manage →
+                        <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
+                            <span>Manage</span>
+                            <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                         </a>
                     </div>
 
-                    <!-- Master Progress Bar & Status -->
-                    <div class="space-y-2 bg-surface-container-low/40 p-3 sm:p-4 rounded-xl border border-outline-variant/40">
-                        <div class="flex justify-between items-center font-label-sm text-xs gap-2">
-                            <span class="text-deep-forest font-semibold flex items-center gap-1.5 truncate">
-                                <span class="w-2 h-2 rounded-full bg-positive animate-pulse shrink-0"></span>
-                                Pace: <strong class="text-positive-deep font-bold">On Track</strong>
-                            </span>
-                            <span class="text-body font-medium shrink-0">
-                                Remaining: <strong class="text-amber-900 font-extrabold tabular-nums">₱11,550.00</strong>
+                    <!-- Progress Bar & Status -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-deep-forest">42% spent <span class="font-normal text-body">· ₱11,550.00 left</span></span>
+                            <span class="font-bold text-positive-deep flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></span>
+                                On Track
                             </span>
                         </div>
-                        <div class="w-full bg-surface-container-low h-3 rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
-                            <div class="bg-warning h-full rounded-full transition-all duration-500 shadow-xs" style="width: 42%"></div>
+                        <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden border border-outline-variant/40">
+                            <div class="bg-warning h-full rounded-full transition-all duration-500" style="width: 42%"></div>
                         </div>
                     </div>
 
