@@ -36,12 +36,12 @@
         <!-- ═══════════════════════════════════════ -->
         <section aria-label="Financial Summary" class="flex flex-col gap-2">
             
-            <!-- Sliding Track on Mobile (Full-bleed gutters) / 3-Column Grid on sm+ -->
+            <!-- Sliding Track on Mobile (Full width, level with bottom cards) / 3-Column Grid on sm+ -->
             <div class="relative w-full" id="summary-carousel-viewport" aria-roledescription="carousel" aria-label="Financial Summary Cards" role="region">
-                <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
+                <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-4 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
                     
                     <!-- Card 1: Net Cash Flow (Primary Anchor) -->
-                    <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-[84vw] max-w-[340px] shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
+                    <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
@@ -66,7 +66,7 @@
                     </div>
 
                     <!-- Card 2: Total Income -->
-                    <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-[84vw] max-w-[340px] shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
+                    <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -90,7 +90,7 @@
                     </div>
 
                     <!-- Card 3: Total Expenses -->
-                    <a href="{% url 'transactions' %}" id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-[84vw] max-w-[340px] shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5 group focus:outline-none focus:ring-2 focus:ring-expense/40">
+                    <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -100,14 +100,18 @@
                             </div>
                             <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/15 px-2 py-0.5 rounded-md tabular-nums">42% of budget</span>
                         </div>
-                        <div class="flex items-end justify-between">
+                        <div class="flex items-end justify-between gap-2">
                             <div>
-                                <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight">₱8,450.00</p>
-                                <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across 4 categories</span>
+                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none">
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱8,450.00</p>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across 4 categories</span>
+                                </a>
                             </div>
-                            <span class="text-xs font-bold text-expense flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">View →</span>
+                            <a href="{% url 'transactions' %}" class="font-label-sm text-xs text-expense hover:text-expense-dark font-bold hover:underline flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-expense/20">
+                                View →
+                            </a>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
 
@@ -401,10 +405,11 @@
             });
         }
 
-        // Smooth scroll to slide by index
+        // Smooth scroll to slide by index without page-jumping
         function scrollToSlide(index) {
             if (window.innerWidth >= 640 || !slides[index]) return;
-            slides[index].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+            const targetLeft = slides[index].offsetLeft;
+            track.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
             updateActiveDot(index);
         }
 
@@ -416,19 +421,21 @@
             });
         });
 
-        // Sync active dot on scroll with requestAnimationFrame
+        // Sync active dot on scroll with center-distance algorithm
         let isTicking = false;
         track.addEventListener('scroll', () => {
             if (window.innerWidth >= 640) return;
             if (!isTicking) {
                 window.requestAnimationFrame(() => {
                     const trackRect = track.getBoundingClientRect();
+                    const trackCenter = trackRect.left + trackRect.width / 2;
                     let closestIndex = 0;
                     let minDistance = Infinity;
                     
                     slides.forEach((slide, idx) => {
                         const slideRect = slide.getBoundingClientRect();
-                        const distance = Math.abs(slideRect.left - trackRect.left);
+                        const slideCenter = slideRect.left + slideRect.width / 2;
+                        const distance = Math.abs(slideCenter - trackCenter);
                         if (distance < minDistance) {
                             minDistance = distance;
                             closestIndex = idx;
@@ -456,46 +463,7 @@
             }
         });
 
-        // Touch Swipe Controller: Enforce discrete 1-card advance on swipe arrival (no velocity skipping)
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let initialTouchIndex = 0;
-        let isTouching = false;
-
-        track.addEventListener('touchstart', (e) => {
-            if (window.innerWidth >= 640) return;
-            isTouching = true;
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            initialTouchIndex = currentIndex;
-        }, { passive: true });
-
-        track.addEventListener('touchend', (e) => {
-            if (!isTouching || window.innerWidth >= 640) return;
-            isTouching = false;
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-
-            // Only act on intentional horizontal swipes
-            if (Math.abs(deltaX) > 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX < 0) {
-                    // Swiped left -> advance strictly to the immediate next card (max +1)
-                    const target = Math.min(totalSlides - 1, initialTouchIndex + 1);
-                    scrollToSlide(target);
-                } else {
-                    // Swiped right -> go strictly to the immediate previous card (max -1)
-                    const target = Math.max(0, initialTouchIndex - 1);
-                    scrollToSlide(target);
-                }
-            } else if (Math.abs(deltaX) <= 28 && Math.abs(deltaX) > Math.abs(deltaY)) {
-                // If swipe distance didn't cross arrival threshold, snap cleanly back to current card
-                scrollToSlide(initialTouchIndex);
-            }
-        }, { passive: true });
-
-        // Mouse Drag-to-Swipe for Desktop/Preview testing (Discrete 1-card step)
+        // Mouse Drag-to-Swipe for Desktop/Preview testing
         let isMouseDown = false;
         let startX = 0;
         let scrollLeftStart = 0;
