@@ -35,19 +35,10 @@
                 </button>
             </div>
 
-            <!-- Horizontal Quick Filter Chips Strip -->
+            <!-- Horizontal Dynamic Category Filter Chips Strip -->
             <div id="mobile-quick-filter-strip" class="flex items-center gap-1.5 pt-2 pb-0.5 overflow-x-auto no-scrollbar -mx-margin-mobile px-margin-mobile">
                 <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
                     All
-                </button>
-                <button type="button" data-quick-filter="type:expense" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Expenses
-                </button>
-                <button type="button" data-quick-filter="type:income" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Income
-                </button>
-                <button type="button" data-quick-filter="source:receipt" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Receipts
                 </button>
                 {% for cat in categories %}
                 <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
@@ -58,53 +49,69 @@
         </div>
 
         <!-- Desktop Filters (md+) -->
-        <div class="hidden md:flex flex-wrap gap-2.5 items-center">
-            <!-- Desktop Search Bar -->
-            <div class="relative flex-1 max-w-xs min-w-[220px] flex items-center">
-                <label for="input-search-desktop" class="sr-only">Search transactions or receipts</label>
-                <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
-                    <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
+        <div class="hidden md:flex flex-col gap-3">
+            <div class="flex flex-wrap gap-2.5 items-center">
+                <!-- Desktop Search Bar -->
+                <div class="relative flex-1 max-w-xs min-w-[220px] flex items-center">
+                    <label for="input-search-desktop" class="sr-only">Search transactions or receipts</label>
+                    <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
+                        <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
+                    </div>
+                    <input id="input-search-desktop" aria-label="Search transactions or receipts" class="w-full pl-10 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
                 </div>
-                <input id="input-search-desktop" aria-label="Search transactions or receipts" class="w-full pl-10 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
+
+                <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5" aria-hidden="true">filter_list</span>
+                
+                <!-- Filter: Sort (Desktop) -->
+                <label for="select-sort-desktop" class="sr-only">Sort transactions</label>
+                <select id="select-sort-desktop" aria-label="Sort transactions" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="newest">Sort: Newest</option>
+                    <option value="oldest">Sort: Oldest</option>
+                    <option value="highest">Sort: Highest Amount</option>
+                    <option value="lowest">Sort: Lowest Amount</option>
+                </select>
+
+                <!-- Filter: Type -->
+                <label for="select-type-desktop" class="sr-only">Filter by transaction type</label>
+                <select id="select-type-desktop" aria-label="Filter by transaction type" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="all">Type: All</option>
+                    <option value="income">Type: Income</option>
+                    <option value="expense">Type: Expense</option>
+                </select>
+
+                <!-- Filter: Category -->
+                <label for="select-category-desktop" class="sr-only">Filter by category</label>
+                <select id="select-category-desktop" aria-label="Filter by category" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="all">Category: All</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.name }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Filter: Source -->
+                <label for="select-source-desktop" class="sr-only">Filter by source</label>
+                <select id="select-source-desktop" aria-label="Filter by source" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="all">Source: All</option>
+                    <option value="manual">Source: Manual</option>
+                    <option value="receipt">Source: Receipt</option>
+                </select>
+
+                <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-deep-forest hover:text-positive-deep hover:underline font-bold cursor-pointer">Clear Filters</button>
             </div>
 
-            <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5" aria-hidden="true">filter_list</span>
-            
-            <!-- Filter: Sort (Desktop) -->
-            <label for="select-sort-desktop" class="sr-only">Sort transactions</label>
-            <select id="select-sort-desktop" aria-label="Sort transactions" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                <option value="newest">Sort: Newest</option>
-                <option value="oldest">Sort: Oldest</option>
-                <option value="highest">Sort: Highest Amount</option>
-                <option value="lowest">Sort: Lowest Amount</option>
-            </select>
-
-            <!-- Filter: Type -->
-            <label for="select-type-desktop" class="sr-only">Filter by transaction type</label>
-            <select id="select-type-desktop" aria-label="Filter by transaction type" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                <option value="all">Type: All</option>
-                <option value="income">Type: Income</option>
-                <option value="expense">Type: Expense</option>
-            </select>
-
-            <!-- Filter: Category -->
-            <label for="select-category-desktop" class="sr-only">Filter by category</label>
-            <select id="select-category-desktop" aria-label="Filter by category" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                <option value="all">Category: All</option>
+            {% if categories %}
+            <!-- Dynamic Category Chips Row (Desktop) -->
+            <div id="desktop-quick-filter-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
+                    All
+                </button>
                 {% for cat in categories %}
-                <option value="{{ cat.name }}">{{ cat.name }}</option>
+                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    {{ cat.name }}
+                </button>
                 {% endfor %}
-            </select>
-
-            <!-- Filter: Source -->
-            <label for="select-source-desktop" class="sr-only">Filter by source</label>
-            <select id="select-source-desktop" aria-label="Filter by source" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                <option value="all">Source: All</option>
-                <option value="manual">Source: Manual</option>
-                <option value="receipt">Source: Receipt</option>
-            </select>
-
-            <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-deep-forest hover:text-positive-deep hover:underline font-bold cursor-pointer">Clear Filters</button>
+            </div>
+            {% endif %}
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -1113,20 +1120,14 @@
             }
 
             // 3. Quick Chips Strip Active State
-            document.querySelectorAll('#mobile-quick-filter-strip .quick-chip').forEach(chip => {
+            document.querySelectorAll('.quick-chip').forEach(chip => {
                 const filterKey = chip.dataset.quickFilter;
                 let isActive = false;
                 if (filterKey === 'all') {
-                    isActive = (currentSource === 'all' && currentType === 'all' && currentCategory === 'all');
-                } else if (filterKey === 'type:expense') {
-                    isActive = (currentType === 'expense' && currentSource === 'all' && currentCategory === 'all');
-                } else if (filterKey === 'type:income') {
-                    isActive = (currentType === 'income' && currentSource === 'all' && currentCategory === 'all');
-                } else if (filterKey === 'source:receipt') {
-                    isActive = (currentSource === 'receipt' && currentType === 'all' && currentCategory === 'all');
-                } else if (filterKey.startsWith('cat:')) {
+                    isActive = (currentCategory === 'all');
+                } else if (filterKey && filterKey.startsWith('cat:')) {
                     const catVal = filterKey.replace('cat:', '');
-                    isActive = (currentCategory.toLowerCase() === catVal.toLowerCase() && currentSource === 'all' && currentType === 'all');
+                    isActive = (currentCategory.toLowerCase() === catVal.toLowerCase());
                 }
 
                 chip.className = isActive
@@ -1356,31 +1357,15 @@
         });
 
         // Quick filter chips click handler (with toggle behavior)
-        document.querySelectorAll('#mobile-quick-filter-strip .quick-chip').forEach(chip => {
+        document.querySelectorAll('.quick-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const filterKey = chip.dataset.quickFilter;
                 
                 if (filterKey === 'all') {
-                    currentSource = 'all';
-                    currentType = 'all';
                     currentCategory = 'all';
-                } else if (filterKey === 'type:expense') {
-                    currentType = (currentType === 'expense' && currentCategory === 'all' && currentSource === 'all') ? 'all' : 'expense';
-                    currentSource = 'all';
-                    currentCategory = 'all';
-                } else if (filterKey === 'type:income') {
-                    currentType = (currentType === 'income' && currentCategory === 'all' && currentSource === 'all') ? 'all' : 'income';
-                    currentSource = 'all';
-                    currentCategory = 'all';
-                } else if (filterKey === 'source:receipt') {
-                    currentSource = (currentSource === 'receipt' && currentType === 'all' && currentCategory === 'all') ? 'all' : 'receipt';
-                    currentType = 'all';
-                    currentCategory = 'all';
-                } else if (filterKey.startsWith('cat:')) {
+                } else if (filterKey && filterKey.startsWith('cat:')) {
                     const catVal = filterKey.replace('cat:', '');
-                    currentCategory = (currentCategory.toLowerCase() === catVal.toLowerCase() && currentType === 'all' && currentSource === 'all') ? 'all' : catVal;
-                    currentSource = 'all';
-                    currentType = 'all';
+                    currentCategory = (currentCategory.toLowerCase() === catVal.toLowerCase()) ? 'all' : catVal;
                 }
                 applyAllFilters();
             });
