@@ -1,73 +1,99 @@
 {% extends 'base.html' %}
 
 {% block title %}Add Transaction | AntTipid{% endblock %}
+{% block meta_description %}Record a new income, expense, or account transfer with quick category presets.{% endblock %}
 
-{% block meta_description %}Record a new income, expense, or transfer transaction manually in AntTipid.{% endblock %}
-
-{% block mobile_nav %}{% endblock %}
+{% block extra_head %}
+<style>
+/* Custom animations & transitions for interactive elements */
+.type-tab {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.category-btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.category-btn:active {
+    transform: scale(0.96);
+}
+.cat-preset-chip {
+    transition: all 0.15s ease;
+}
+.icon-picker-btn.active {
+    border-color: #163300;
+    background-color: #E2F4D0;
+    color: #163300;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
-    <div class="max-w-2xl mx-auto flex flex-col gap-5 sm:gap-6">
+<div class="px-3 sm:px-5 md:px-6 pt-4 pb-24 md:pb-8 max-w-4xl mx-auto w-full">
+    <div class="flex flex-col gap-4 sm:gap-6">
 
-        <!-- ─── Top Header & Back Navigation ─── -->
-        <div class="flex items-center justify-between">
+        <!-- ═══════════════════════════════════════ -->
+        <!-- TOP APP BAR & DISCARD ACTION            -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <a href="{% url 'transactions' %}" id="btn-back" aria-label="Go back" class="w-9 h-9 rounded-xl border border-surface-variant/60 bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all active:scale-95 shadow-xs cursor-pointer">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                </a>
+                <button type="button" id="btn-back" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low border border-outline-variant/60 text-ink hover:bg-surface-container transition-all cursor-pointer shadow-2xs active:scale-95">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                </button>
                 <div>
-                    <h1 id="page-heading" class="font-headline-lg text-xl sm:text-2xl font-extrabold text-deep-forest tracking-tight">Manual Entry</h1>
-                    <p id="page-subheading" class="font-body-sm text-xs text-on-surface-variant mt-0.5">Log an income, expense, or transfer</p>
+                    <h1 id="page-heading" class="font-headline-md text-lg sm:text-xl font-extrabold text-deep-forest tracking-tight">Add Transaction</h1>
+                    <p id="page-subheading" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant">Log an expense, income, or transfer</p>
                 </div>
             </div>
-            <a href="{% url 'scan_receipt' %}" id="btn-switch-scan" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 hover:bg-primary hover:text-on-primary transition-all font-label-md text-xs font-bold cursor-pointer shadow-xs">
-                <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                <span class="hidden xs:inline">Scan Receipt</span>
+
+            <!-- Quick Scan Receipt Link -->
+            <a href="{% url 'scan_receipt' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary bg-primary-pale text-positive-deep font-sans text-xs font-bold hover:bg-primary/20 transition-all shadow-2xs active:scale-[0.98]">
+                <span class="material-symbols-outlined text-[16px]">document_scanner</span>
+                <span class="hidden sm:inline">Scan Receipt</span>
+                <span class="sm:hidden">Scan</span>
             </a>
         </div>
 
-        <!-- ─── Form Card Container (Shadcn Surface) ─── -->
-        <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col gap-5">
+        <!-- ═══════════════════════════════════════ -->
+        <!-- MAIN TRANSACTION FORM CARD              -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-5">
 
-            <!-- ─── Segmented Type Switcher (Expense / Income / Transfer) ─── -->
-            <div class="w-full bg-surface-container-low p-1 rounded-xl flex items-center gap-1 border border-outline-variant/60">
-                <button type="button" id="tab-type-expense" class="type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 bg-expense/15 text-expense border border-expense/30 shadow-xs cursor-pointer" data-type="expense">
-                    <span class="material-symbols-outlined text-[18px] text-expense">arrow_downward</span>
-                    Expense
+            <!-- ─── Segmented Type Tabs (Expense, Income, Transfer) ─── -->
+            <div class="inline-flex bg-surface-container-low/60 p-1 rounded-2xl border border-outline-variant/50 w-full" id="type-tabs-container">
+                <button type="button" data-type="expense" id="tab-type-expense" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-expense/15 text-expense border border-expense/30 shadow-xs" aria-pressed="true">
+                    <span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+                    <span>Expense</span>
                 </button>
-                <button type="button" id="tab-type-income" class="type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 text-body hover:text-positive-deep cursor-pointer" data-type="income">
-                    <span class="material-symbols-outlined text-[18px] text-positive">arrow_upward</span>
-                    Income
+                <button type="button" data-type="income" id="tab-type-income" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold text-body hover:text-ink transition-all flex items-center justify-center gap-1.5 cursor-pointer" aria-pressed="false">
+                    <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                    <span>Income</span>
                 </button>
-                <button type="button" id="tab-type-transfer" class="type-tab flex-1 py-1.5 rounded-lg font-label-md text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 text-body hover:text-amber-800 cursor-pointer" data-type="transfer">
-                    <span class="material-symbols-outlined text-[18px] text-amber-800">swap_horiz</span>
-                    Transfer
+                <button type="button" data-type="transfer" id="tab-type-transfer" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold text-body hover:text-ink transition-all flex items-center justify-center gap-1.5 cursor-pointer" aria-pressed="false">
+                    <span class="material-symbols-outlined text-[16px]">sync_alt</span>
+                    <span>Transfer</span>
                 </button>
             </div>
 
-            <form id="form-manual-entry" class="flex flex-col gap-5" onsubmit="return false;">
-
-                <!-- ─── Hero Amount Display Input ─── -->
-                <div class="flex flex-col items-center justify-center py-5 px-4 bg-surface-container-low/40 rounded-xl border border-outline-variant/40 relative">
-                    <label for="input-amount" class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.06em] font-bold mb-1">Enter Amount</label>
-                    <div class="flex items-center gap-1">
-                        <span id="currency-symbol" class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
-                        <input type="number" id="input-amount" aria-label="Enter Amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-headline-lg text-3xl sm:4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight" required autofocus>
-                    </div>
-
-                    <!-- Quick Amount Preset Chips -->
-                    <div class="flex items-center gap-1.5 mt-3 flex-wrap justify-center">
-                        <button type="button" class="btn-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="100">+₱100</button>
-                        <button type="button" class="btn-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="500">+₱500</button>
-                        <button type="button" class="btn-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="1000">+₱1,000</button>
-                        <button type="button" class="btn-preset-chip px-3 py-1 rounded-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep text-deep-forest font-label-sm text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer" data-add="5000">+₱5,000</button>
+            <form id="form-transaction" class="flex flex-col gap-5" onsubmit="return false;">
+                
+                <!-- ─── Big Amount Hero Input ─── -->
+                <div class="flex flex-col items-center justify-center py-4 bg-surface-container-low/30 rounded-2xl border border-outline-variant/40">
+                    <span class="font-label-sm text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Transaction Amount</span>
+                    <div class="flex items-center justify-center gap-1">
+                        <span class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
+                        <input type="number" id="input-amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-60 text-center font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest bg-transparent outline-none border-b-2 border-transparent focus:border-primary transition-all tabular-nums" required autofocus>
                     </div>
                 </div>
 
                 <!-- ─── Category Selection Grid ─── -->
                 <div class="flex flex-col gap-2">
-                    <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
+                    <div class="flex items-center justify-between">
+                        <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
+                        <button type="button" id="btn-open-manage-categories" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
+                            <span class="material-symbols-outlined text-[14px]">tune</span>
+                            <span>Manage Categories</span>
+                        </button>
+                    </div>
+                    
                     <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
                         {% for cat in categories %}
                         <button type="button" class="category-btn {% if forloop.first %}active border-deep-forest bg-primary-pale text-deep-forest{% else %}border-surface-variant/60 bg-surface-container-low/40 text-on-surface-variant{% endif %} flex flex-col items-center gap-1.5 p-2.5 rounded-xl border shadow-xs transition-all text-center group cursor-pointer" data-category="{{ cat.name }}" data-type="{{ cat.category_type }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
@@ -77,11 +103,11 @@
                             <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">{{ cat.name }}</span>
                         </button>
                         {% empty %}
-                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="General" data-type="EXPENSE" aria-pressed="true">
+                        <button type="button" id="btn-empty-add-cat" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-dashed border-deep-forest/40 bg-surface-container-low/40 text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="General" data-type="EXPENSE" aria-pressed="true">
                             <div class="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                                <span class="material-symbols-outlined text-[20px]">payments</span>
+                                <span class="material-symbols-outlined text-[20px]">add</span>
                             </div>
-                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">General</span>
+                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">+ Add Category</span>
                         </button>
                         {% endfor %}
                     </div>
@@ -131,126 +157,254 @@
                         </div>
                     </div>
 
-                    <!-- Notes / Remarks -->
+                    <!-- Notes / Description -->
                     <div class="flex flex-col gap-1.5">
                         <label for="input-notes" class="font-label-sm text-xs font-bold text-deep-forest">Notes (Optional)</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">notes</span>
-                            <input type="text" id="input-notes" placeholder="e.g. Shared with team, reimbursed" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all">
+                            <input type="text" id="input-notes" placeholder="e.g. Split with Alex, Tax deductible" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all">
                         </div>
                     </div>
 
                 </div>
 
-                <!-- ─── Submit / Action Buttons (Reusable Floating Component) ─── -->
-                {% url 'transactions' as cancel_target %}
-                {% include 'dashboard/components/form_action_bar.html' with cancel_url=cancel_target cancel_label="Cancel" submit_label="Save Expense" submit_id="btn-save-transaction" %}
+                <!-- ─── Action Buttons ─── -->
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" id="btn-discard" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-surface-container-lowest text-ink font-sans text-xs sm:text-sm font-bold hover:bg-surface-container-low transition-all cursor-pointer">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btn-save-transaction" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-sans text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-2xs active:scale-[0.98] transition-all cursor-pointer">
+                        Save Transaction
+                    </button>
+                </div>
 
             </form>
         </div>
-    </div>
-</div>
-
-<!-- Mobile Bottom Navigation Spacer -->
-<div class="h-20 md:hidden" aria-hidden="true"></div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
-        
-        <!-- Header -->
-        <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[20px]">drafts</span>
-            </div>
-            <div class="flex flex-col gap-1">
-                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Discard manual entry?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Entered amounts and transaction details will not be saved.</p>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
-            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-expense hover:bg-expense/10 font-label-md text-xs font-bold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer">
-                Discard Entry
-            </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary-hover font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
-                Keep Editing
-            </button>
-        </div>
 
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MANAGE PAYMENT METHODS / WALLETS MODAL      -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="modal-manage-accounts" role="dialog" aria-modal="true" aria-labelledby="modal-accounts-title" class="fixed inset-0 z-[110] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-accounts-content" class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[115] max-h-[90vh] overflow-y-auto">
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODAL: MANAGE CATEGORIES (WITH INEVITABLE / NO BUDGET OPTION) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="modal-manage-categories" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-manage-categories-content" class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
         
         <!-- Header -->
-        <div class="flex items-center justify-between gap-2 border-b border-outline-variant/40 pb-3">
+        <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40 shrink-0">
             <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">category</span>
                 </div>
                 <div>
-                    <h3 id="modal-accounts-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Payment Methods</h3>
-                    <p class="font-body-sm text-[11px] text-on-surface-variant">Add, rename, or delete payment wallets</p>
+                    <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Manage Categories</h3>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant">Create and manage spending categories with optional budget limits</p>
                 </div>
             </div>
-            <button type="button" id="btn-close-manage-accounts" class="w-8 h-8 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low flex items-center justify-center transition-colors cursor-pointer">
+            <button type="button" id="btn-close-manage-categories" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
 
-        <!-- Current Accounts List -->
-        <div class="flex flex-col gap-2">
-            <label class="font-label-sm text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Your Wallets & Accounts</label>
-            <div id="accounts-list-container" class="flex flex-col gap-2">
-                <div class="text-center py-4 text-xs text-on-surface-variant">Loading accounts...</div>
-            </div>
-        </div>
-
-        <!-- Add New Payment Method Box -->
-        <div class="border-t border-outline-variant/40 pt-3 flex flex-col gap-2.5">
-            <div class="flex items-center justify-between">
-                <label class="font-label-sm text-xs font-bold text-deep-forest">Add New Payment Method</label>
-                <!-- Quick Preset Chips -->
-                <div class="flex items-center gap-1">
-                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Maya" data-type="E_WALLET" data-icon="wallet">+ Maya</button>
-                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Bank Account" data-type="BANK_ACCOUNT" data-icon="account_balance">+ Bank</button>
-                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Credit Card" data-type="CREDIT_CARD" data-icon="credit_card">+ Card</button>
+        <!-- Scrollable Body -->
+        <div class="overflow-y-auto pr-1 flex flex-col gap-4 flex-1">
+            
+            <!-- Existing Categories List -->
+            <div class="flex flex-col gap-2">
+                <label class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Your Categories</label>
+                <div id="categories-list-container" class="flex flex-col gap-2">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <input type="text" id="input-new-account-name" placeholder="Name (e.g. Maya, BPI)" class="flex-1 px-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
-                
-                <select id="select-new-account-type" class="px-2.5 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer">
-                    <option value="CASH">Cash</option>
-                    <option value="E_WALLET" selected>E-Wallet</option>
-                    <option value="BANK_ACCOUNT">Bank Account</option>
-                    <option value="CREDIT_CARD">Credit Card</option>
-                    <option value="OTHER">Other</option>
-                </select>
+            <!-- Add Category Form -->
+            <div class="flex flex-col gap-3 pt-3 border-t border-outline-variant/40 bg-surface-container-low/20 p-3.5 rounded-2xl border border-outline-variant/50">
+                <span class="font-label-sm text-xs font-bold text-deep-forest flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
+                    <span>Add New Category</span>
+                </span>
 
-                <button type="button" id="btn-add-account-submit" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[15px]">add</span>
-                    <span>Add</span>
+                <!-- Quick Presets -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Groceries" data-icon="local_grocery_store">Groceries</button>
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Food & Dining" data-icon="restaurant">Dining</button>
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Transportation" data-icon="directions_car">Transport</button>
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Emergency / Medical" data-icon="local_hospital">Medical (Inevitable)</button>
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Utilities" data-icon="bolt">Utilities</button>
+                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Shopping" data-icon="shopping_bag">Shopping</button>
+                </div>
+
+                <!-- Category Name Input -->
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Category Name</label>
+                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health & Meds, Grab, Coffee" class="w-full px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                </div>
+
+                <!-- Icon Selector -->
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Select Icon</label>
+                    <div id="new-cat-icon-picker" class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
+                        <button type="button" data-icon="restaurant" class="icon-picker-btn active w-8 h-8 rounded-xl border border-primary bg-primary-pale text-deep-forest flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">restaurant</span></button>
+                        <button type="button" data-icon="local_grocery_store" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">local_grocery_store</span></button>
+                        <button type="button" data-icon="shopping_bag" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">shopping_bag</span></button>
+                        <button type="button" data-icon="local_hospital" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">local_hospital</span></button>
+                        <button type="button" data-icon="directions_car" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">directions_car</span></button>
+                        <button type="button" data-icon="bolt" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">bolt</span></button>
+                        <button type="button" data-icon="home" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">home</span></button>
+                        <button type="button" data-icon="movie" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">movie</span></button>
+                        <button type="button" data-icon="fitness_center" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">fitness_center</span></button>
+                        <button type="button" data-icon="pets" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">pets</span></button>
+                        <button type="button" data-icon="school" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">school</span></button>
+                        <button type="button" data-icon="receipt_long" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">receipt_long</span></button>
+                        <button type="button" data-icon="category" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">category</span></button>
+                    </div>
+                </div>
+
+                <!-- Budget Limit Strategy Selector (Inevitable vs Budgeted) -->
+                <div class="flex flex-col gap-1.5 pt-1">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Monthly Budget Strategy</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
+                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-positive-deep">track_changes</span> Track Only</span>
+                            <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">No limit (for inevitable, variable, or emergency costs)</span>
+                        </button>
+                        <button type="button" id="btn-strategy-budget" class="strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
+                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">speed</span> Set Limit</span>
+                            <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">Alerts when spending exceeds monthly cap</span>
+                        </button>
+                    </div>
+
+                    <!-- Target Limit Input (Hidden when Track Only) -->
+                    <div id="group-new-cat-limit" class="hidden flex flex-col gap-1 mt-1.5">
+                        <label for="input-new-cat-limit" class="text-[10px] font-bold text-deep-forest uppercase">Monthly Budget Limit (₱)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 font-bold text-xs text-deep-forest">₱</span>
+                            <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-7 pr-3 py-1.5 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="btn-add-cat-submit" class="w-full py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-hover transition-all shadow-2xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 mt-1">
+                    <span class="material-symbols-outlined text-[16px]">add</span>
+                    <span>Save Category</span>
                 </button>
             </div>
+
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center justify-end pt-2 border-t border-outline-variant/40">
-            <button type="button" id="btn-done-manage-accounts" class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-deep-forest font-label-md text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer">
+        <div class="pt-2 border-t border-outline-variant/40 shrink-0">
+            <button type="button" id="btn-done-manage-categories" class="w-full py-2.5 rounded-full bg-surface-container-low text-deep-forest text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
                 Done
             </button>
         </div>
+    </div>
+</div>
 
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODAL: MANAGE PAYMENT METHODS / WALLETS                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="modal-manage-accounts" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-manage-accounts-content" class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Payment Methods</h3>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant">Add, rename, or remove payment methods</p>
+                </div>
+            </div>
+            <button type="button" id="btn-close-manage-accounts" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="overflow-y-auto pr-1 flex flex-col gap-4 flex-1">
+            
+            <!-- Existing Accounts List -->
+            <div class="flex flex-col gap-2">
+                <label class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Your Payment Methods</label>
+                <div id="accounts-list-container" class="flex flex-col gap-2">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Add Account Form -->
+            <div class="flex flex-col gap-3 pt-3 border-t border-outline-variant/40 bg-surface-container-low/20 p-3.5 rounded-2xl border border-outline-variant/50">
+                <span class="font-label-sm text-xs font-bold text-deep-forest flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
+                    <span>Add Payment Method</span>
+                </span>
+
+                <!-- Quick Presets -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="GCash" data-type="E_WALLET">GCash</button>
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Maya" data-type="E_WALLET">Maya</button>
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Cash" data-type="CASH">Cash</button>
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="BPI Bank" data-type="BANK_ACCOUNT">BPI</button>
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="BDO Bank" data-type="BANK_ACCOUNT">BDO</button>
+                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Credit Card" data-type="CREDIT_CARD">Credit Card</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase">Method Name</label>
+                        <input type="text" id="input-new-acc-name" placeholder="e.g. UnionBank, GrabPay" class="px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase">Type</label>
+                        <select id="select-new-acc-type" class="px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary cursor-pointer">
+                            <option value="E_WALLET">E-Wallet</option>
+                            <option value="CASH">Cash</option>
+                            <option value="BANK_ACCOUNT">Bank Account</option>
+                            <option value="CREDIT_CARD">Credit Card</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" id="btn-add-acc-submit" class="w-full py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-hover transition-all shadow-2xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 mt-1">
+                    <span class="material-symbols-outlined text-[16px]">add</span>
+                    <span>Add Method</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="pt-2 border-t border-outline-variant/40 shrink-0">
+            <button type="button" id="btn-done-manage-accounts" class="w-full py-2.5 rounded-full bg-surface-container-low text-deep-forest text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODAL: CONFIRM DISCARD CHANGES                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="modal-confirm-discard" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-confirm-content" class="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-expense/15 text-expense flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-[24px]">warning</span>
+        </div>
+        <div>
+            <h3 class="font-headline-sm text-base font-extrabold text-deep-forest">Discard Changes?</h3>
+            <p class="font-body-sm text-xs text-on-surface-variant mt-1">You have unsaved details in this transaction. Leaving now will discard them.</p>
+        </div>
+        <div class="flex items-center gap-2.5 pt-2">
+            <button type="button" id="btn-keep-editing" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-surface-container-lowest text-ink font-sans text-xs font-bold hover:bg-surface-container-low transition-all cursor-pointer">
+                Keep Editing
+            </button>
+            <button type="button" id="btn-confirm-discard" class="flex-1 py-2.5 rounded-full bg-expense text-on-error font-sans text-xs font-bold hover:bg-expense/90 shadow-2xs active:scale-[0.98] transition-all cursor-pointer">
+                Discard
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -258,233 +412,419 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Set today's default date
-        const inputDate = document.getElementById('input-date');
-        if (inputDate && !inputDate.value) {
-            const today = new Date().toISOString().split('T')[0];
-            inputDate.value = today;
-        }
-
         let isFormDirty = false;
         let pendingTargetUrl = null;
-        let lastFocusedElement = null;
         let isEditMode = false;
+        let userAccountsCache = [];
+        let userCategoriesCache = [];
 
-        function markDirty() {
-            isFormDirty = true;
-        }
+        function markDirty() { isFormDirty = true; }
 
-        // Amount Presets
         const inputAmount = document.getElementById('input-amount');
-        const presetChips = document.querySelectorAll('.btn-preset-chip');
-        presetChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                const addVal = parseFloat(chip.dataset.add) || 0;
-                const currentVal = parseFloat(inputAmount.value) || 0;
-                inputAmount.value = (currentVal + addVal).toFixed(2);
-                inputAmount.focus();
-                markDirty();
-            });
-        });
-
-        // Category Buttons
-        const categoryBtns = document.querySelectorAll('.category-btn');
-
-        function updateCategoryGridForType(selectedType) {
-            const upperType = selectedType.toUpperCase();
-            let firstVisible = null;
-            categoryBtns.forEach(btn => {
-                const btnType = (btn.dataset.type || 'EXPENSE').toUpperCase();
-                if (btnType === upperType || (upperType === 'TRANSFER' && btnType === 'EXPENSE')) {
-                    btn.classList.remove('hidden');
-                    if (!firstVisible) firstVisible = btn;
-                } else {
-                    btn.classList.add('hidden');
-                }
-            });
-
-            // Activate first visible category
-            const currentlyActive = document.querySelector('.category-btn.active:not(.hidden)');
-            if (!currentlyActive && firstVisible) {
-                categoryBtns.forEach(b => {
-                    b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-                    b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-                    b.setAttribute('aria-pressed', 'false');
-                    const iconBox = b.querySelector('div');
-                    if (iconBox) {
-                        iconBox.classList.remove('bg-primary', 'text-on-primary');
-                        iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
-                    }
-                });
-                firstVisible.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-                firstVisible.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-                firstVisible.setAttribute('aria-pressed', 'true');
-                const firstIconBox = firstVisible.querySelector('div');
-                if (firstIconBox) {
-                    firstIconBox.classList.add('bg-primary', 'text-on-primary');
-                    firstIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
-                }
-            }
-        }
-
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                categoryBtns.forEach(b => {
-                    b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-                    b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-                    b.setAttribute('aria-pressed', 'false');
-                    const iconBox = b.querySelector('div');
-                    if (iconBox) {
-                        iconBox.classList.remove('bg-primary', 'text-on-primary');
-                        iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
-                    }
-                });
-                btn.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-                btn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-                btn.setAttribute('aria-pressed', 'true');
-                const activeIconBox = btn.querySelector('div');
-                if (activeIconBox) {
-                    activeIconBox.classList.add('bg-primary', 'text-on-primary');
-                    activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
-                }
-                markDirty();
-            });
-        });
-
-        // Type Tabs
-        const typeTabs = document.querySelectorAll('.type-tab');
-        typeTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                typeTabs.forEach(t => {
-                    t.classList.remove('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs',
-                                       'bg-positive/15', 'text-positive-deep', 'border-positive/30',
-                                       'bg-amber-800/15', 'border-amber-800/30', 'text-amber-800');
-                    t.classList.add('text-body');
-                    t.setAttribute('aria-pressed', 'false');
-                });
-
-                const type = tab.dataset.type;
-                tab.classList.remove('text-body');
-                tab.setAttribute('aria-pressed', 'true');
-
-                if (type === 'expense') {
-                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs');
-                } else if (type === 'income') {
-                    tab.classList.add('bg-positive/15', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs');
-                } else if (type === 'transfer') {
-                    tab.classList.add('bg-amber-800/15', 'text-amber-800', 'border', 'border-amber-800/30', 'shadow-xs');
-                }
-
-                updateCategoryGridForType(type);
-                markDirty();
-            });
-        });
-
         const inputTitle = document.getElementById('input-title');
+        const inputDate = document.getElementById('input-date');
         const selectAccount = document.getElementById('select-account');
         const inputNotes = document.getElementById('input-notes');
+        const categoryGrid = document.getElementById('category-grid');
 
-        if (inputAmount) inputAmount.addEventListener('input', markDirty);
-        if (inputTitle) inputTitle.addEventListener('input', markDirty);
-        if (inputDate) inputDate.addEventListener('change', markDirty);
-        if (selectAccount) selectAccount.addEventListener('change', markDirty);
-        if (inputNotes) inputNotes.addEventListener('input', markDirty);
+        // Set default date to today
+        if (inputDate && !inputDate.value) {
+            inputDate.value = new Date().toISOString().split('T')[0];
+        }
 
-        // Modal Elements
-        const confirmModal = document.getElementById('modal-confirm-discard');
-        const confirmContent = document.getElementById('modal-confirm-content');
-        const btnKeepEditing = document.getElementById('btn-keep-editing');
-        const btnConfirmDiscard = document.getElementById('btn-confirm-discard');
+        // ═══════════════════════════════════════════════════════════
+        // CATEGORY SELECTION & MANAGEMENT ENGINE
+        // ═══════════════════════════════════════════════════════════
 
-        function openConfirmModal(targetUrl) {
-            pendingTargetUrl = targetUrl;
-            if (!confirmModal) return;
+        const manageCatModal = document.getElementById('modal-manage-categories');
+        const manageCatContent = document.getElementById('modal-manage-categories-content');
+        const openManageCatBtn = document.getElementById('btn-open-manage-categories');
+        const closeManageCatBtn = document.getElementById('btn-close-manage-categories');
+        const doneManageCatBtn = document.getElementById('btn-done-manage-categories');
+        const catListContainer = document.getElementById('categories-list-container');
+        const inputNewCatName = document.getElementById('input-new-cat-name');
+        const inputNewCatLimit = document.getElementById('input-new-cat-limit');
+        const groupNewCatLimit = document.getElementById('group-new-cat-limit');
+        const btnAddCatSubmit = document.getElementById('btn-add-cat-submit');
+        const btnStrategyNoBudget = document.getElementById('btn-strategy-nobudget');
+        const btnStrategyBudget = document.getElementById('btn-strategy-budget');
+        let selectedCatIcon = 'restaurant';
+        let newCatHasBudget = false;
 
-            lastFocusedElement = document.activeElement;
-            document.body.style.overflow = 'hidden';
+        function getApiUrl(path) {
+            const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
+            return `${path}${previewParam}`;
+        }
 
-            confirmModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                confirmModal.classList.remove('opacity-0');
-                confirmModal.classList.add('opacity-100');
-                if (confirmContent) {
-                    confirmContent.classList.remove('scale-95');
-                    confirmContent.classList.add('scale-100');
+        // Budget strategy switcher in Modal
+        if (btnStrategyNoBudget && btnStrategyBudget) {
+            btnStrategyNoBudget.addEventListener('click', () => {
+                newCatHasBudget = false;
+                btnStrategyNoBudget.className = 'strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyBudget.className = 'strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
+                if (groupNewCatLimit) groupNewCatLimit.classList.add('hidden');
+            });
+
+            btnStrategyBudget.addEventListener('click', () => {
+                newCatHasBudget = true;
+                btnStrategyBudget.className = 'strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyNoBudget.className = 'strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
+                if (groupNewCatLimit) {
+                    groupNewCatLimit.classList.remove('hidden');
+                    if (inputNewCatLimit) inputNewCatLimit.focus();
                 }
-                if (btnKeepEditing) btnKeepEditing.focus();
             });
         }
 
-        function closeConfirmModal() {
-            if (!confirmModal) return;
+        // Icon picker buttons
+        const iconPickerButtons = document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn');
+        iconPickerButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                iconPickerButtons.forEach(b => {
+                    b.className = 'icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer';
+                });
+                btn.className = 'icon-picker-btn active w-8 h-8 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex items-center justify-center shrink-0 cursor-pointer';
+                selectedCatIcon = btn.dataset.icon || 'category';
+            });
+        });
 
-            confirmModal.classList.remove('opacity-100');
-            confirmModal.classList.add('opacity-0');
-            if (confirmContent) {
-                confirmContent.classList.remove('scale-100');
-                confirmContent.classList.add('scale-95');
-            }
+        // Preset category chips
+        document.querySelectorAll('.cat-preset-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                if (inputNewCatName) inputNewCatName.value = chip.dataset.name || '';
+                const targetIcon = chip.dataset.icon || 'category';
+                const matchingBtn = Array.from(iconPickerButtons).find(b => b.dataset.icon === targetIcon);
+                if (matchingBtn) matchingBtn.click();
+            });
+        });
 
-            setTimeout(() => {
-                confirmModal.classList.add('hidden');
-                document.body.style.overflow = '';
-                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
-                    lastFocusedElement.focus();
+        function openManageCategoriesModal() {
+            if (!manageCatModal) return;
+            document.body.style.overflow = 'hidden';
+            manageCatModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                manageCatModal.classList.remove('opacity-0');
+                manageCatModal.classList.add('opacity-100');
+                if (manageCatContent) {
+                    manageCatContent.classList.remove('scale-95');
+                    manageCatContent.classList.add('scale-100');
                 }
+            });
+            fetchAndRenderCategories();
+        }
+
+        function closeManageCategoriesModal() {
+            if (!manageCatModal) return;
+            manageCatModal.classList.remove('opacity-100');
+            manageCatModal.classList.add('opacity-0');
+            if (manageCatContent) {
+                manageCatContent.classList.remove('scale-100');
+                manageCatContent.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                manageCatModal.classList.add('hidden');
+                document.body.style.overflow = '';
             }, 200);
         }
 
-        if (btnKeepEditing) btnKeepEditing.addEventListener('click', closeConfirmModal);
-        if (btnConfirmDiscard) {
-            btnConfirmDiscard.addEventListener('click', () => {
-                isFormDirty = false;
-                if (pendingTargetUrl) {
-                    window.location.href = pendingTargetUrl;
-                } else {
-                    window.location.href = "{% url 'transactions' %}";
+        if (openManageCatBtn) openManageCatBtn.addEventListener('click', openManageCategoriesModal);
+        if (closeManageCatBtn) closeManageCatBtn.addEventListener('click', closeManageCategoriesModal);
+        if (doneManageCatBtn) doneManageCatBtn.addEventListener('click', closeManageCategoriesModal);
+
+        async function fetchAndRenderCategories() {
+            if (!catListContainer) return;
+            try {
+                const res = await fetch(getApiUrl('/api/categories/'));
+                const data = await res.json();
+                if (data.categories) {
+                    userCategoriesCache = data.categories;
+                    renderCategoriesModalList(userCategoriesCache);
+                    renderCategoryGrid(userCategoriesCache);
+                }
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+            }
+        }
+
+        function renderCategoryGrid(categories) {
+            if (!categoryGrid) return;
+            const currentSelected = document.querySelector('.category-btn.active')?.dataset?.category;
+            categoryGrid.innerHTML = '';
+
+            if (!categories || categories.length === 0) {
+                categoryGrid.innerHTML = `
+                    <button type="button" id="btn-empty-add-cat" class="category-btn active col-span-4 flex flex-row items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-deep-forest/40 bg-surface-container-low/40 text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="" aria-pressed="true">
+                        <div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center transition-colors shadow-xs">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                        </div>
+                        <span class="font-label-sm text-xs font-bold">No categories yet. Click to create one</span>
+                    </button>
+                `;
+                document.getElementById('btn-empty-add-cat')?.addEventListener('click', openManageCategoriesModal);
+                return;
+            }
+
+            categories.forEach((cat, idx) => {
+                const isFirstOrSelected = (currentSelected ? cat.name === currentSelected : idx === 0);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `category-btn ${isFirstOrSelected ? 'active border-deep-forest bg-primary-pale text-deep-forest' : 'border-surface-variant/60 bg-surface-container-low/40 text-on-surface-variant'} flex flex-col items-center gap-1.5 p-2.5 rounded-xl border shadow-xs transition-all text-center group cursor-pointer`;
+                btn.dataset.category = cat.name;
+                btn.dataset.type = cat.category_type || 'EXPENSE';
+                btn.setAttribute('aria-pressed', isFirstOrSelected ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="w-9 h-9 rounded-xl ${isFirstOrSelected ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high'} flex items-center justify-center transition-colors shadow-xs">
+                        <span class="material-symbols-outlined text-[20px]">${cat.icon_name || 'category'}</span>
+                    </div>
+                    <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">${escapeHtml(cat.name)}</span>
+                `;
+                btn.addEventListener('click', () => {
+                    selectCategoryBtn(btn);
+                });
+                categoryGrid.appendChild(btn);
+            });
+
+            // Add persistent "+ Add" tile at end of grid
+            const addTile = document.createElement('button');
+            addTile.type = 'button';
+            addTile.className = 'flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer';
+            addTile.innerHTML = `
+                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
+                    <span class="material-symbols-outlined text-[20px]">add</span>
+                </div>
+                <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">+ Add</span>
+            `;
+            addTile.addEventListener('click', openManageCategoriesModal);
+            categoryGrid.appendChild(addTile);
+        }
+
+        function selectCategoryBtn(btn) {
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
+                b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+                b.setAttribute('aria-pressed', 'false');
+                const iconBox = b.querySelector('div');
+                if (iconBox) {
+                    iconBox.classList.remove('bg-primary', 'text-on-primary');
+                    iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
+                }
+            });
+            btn.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
+            btn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+            btn.setAttribute('aria-pressed', 'true');
+            const activeIconBox = btn.querySelector('div');
+            if (activeIconBox) {
+                activeIconBox.classList.add('bg-primary', 'text-on-primary');
+                activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
+            }
+            markDirty();
+        }
+
+        function renderCategoriesModalList(categories) {
+            if (!catListContainer) return;
+            catListContainer.innerHTML = '';
+            if (categories.length === 0) {
+                catListContainer.innerHTML = `
+                    <div class="text-center py-3 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-xl">
+                        No categories found. Create your first category below.
+                    </div>
+                `;
+                return;
+            }
+
+            categories.forEach(cat => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant transition-all gap-2";
+                row.id = `cat-row-${cat.id}`;
+
+                const badgeHtml = cat.has_budget
+                    ? `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-pale text-positive-deep border border-positive/30">Limit: ${cat.limit_formatted}</span>`
+                    : `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40">Track Only (No Limit)</span>`;
+
+                row.innerHTML = `
+                    <!-- Display Mode -->
+                    <div class="cat-display flex items-center justify-between w-full gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
+                                <span class="material-symbols-outlined text-[17px] text-positive-deep">${cat.icon_name || 'category'}</span>
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-label-md text-xs font-bold text-deep-forest truncate">${escapeHtml(cat.name)}</span>
+                                <div class="mt-0.5">${badgeHtml}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" class="btn-edit-cat w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Rename">
+                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                            </button>
+                            <button type="button" class="btn-delete-cat w-7 h-7 rounded-lg text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Delete">
+                                <span class="material-symbols-outlined text-[15px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Inline Edit Mode -->
+                    <div class="cat-edit hidden items-center gap-1.5 w-full">
+                        <input type="text" class="input-edit-cat-name flex-1 px-2.5 py-1.5 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(cat.name)}" placeholder="Category name" />
+                        <button type="button" class="btn-save-cat-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${cat.id}" title="Save">
+                            <span class="material-symbols-outlined text-[14px]">check</span>
+                        </button>
+                        <button type="button" class="btn-cancel-cat-edit w-7 h-7 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${cat.id}" title="Cancel">
+                            <span class="material-symbols-outlined text-[14px]">close</span>
+                        </button>
+                    </div>
+                `;
+                catListContainer.appendChild(row);
+            });
+
+            attachCategoryRowListeners();
+        }
+
+        function attachCategoryRowListeners() {
+            // Edit trigger
+            document.querySelectorAll('.btn-edit-cat').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = document.getElementById(`cat-row-${btn.dataset.id}`);
+                    if (!row) return;
+                    row.querySelector('.cat-display').classList.add('hidden');
+                    const editMode = row.querySelector('.cat-edit');
+                    editMode.classList.remove('hidden');
+                    editMode.classList.add('flex');
+                    const input = editMode.querySelector('.input-edit-cat-name');
+                    if (input) { input.focus(); input.select(); }
+                });
+            });
+
+            // Cancel Edit
+            document.querySelectorAll('.btn-cancel-cat-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = document.getElementById(`cat-row-${btn.dataset.id}`);
+                    if (!row) return;
+                    row.querySelector('.cat-display').classList.remove('hidden');
+                    const editMode = row.querySelector('.cat-edit');
+                    editMode.classList.add('hidden');
+                    editMode.classList.remove('flex');
+                });
+            });
+
+            // Save Edit (Rename)
+            document.querySelectorAll('.btn-save-cat-edit').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const catId = btn.dataset.id;
+                    const row = document.getElementById(`cat-row-${catId}`);
+                    if (!row) return;
+
+                    const nameInput = row.querySelector('.input-edit-cat-name');
+                    const newName = nameInput ? nameInput.value.trim() : '';
+
+                    if (!newName) {
+                        alert("Category name is required.");
+                        return;
+                    }
+
+                    try {
+                        btn.disabled = true;
+                        const res = await fetch(getApiUrl(`/api/categories/${catId}/update/`), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newName })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            await fetchAndRenderCategories();
+                        } else {
+                            alert(data.error || 'Failed to update category.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            });
+
+            // Delete Category
+            document.querySelectorAll('.btn-delete-cat').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const catId = btn.dataset.id;
+                    if (!confirm("Are you sure you want to delete this category?")) return;
+
+                    try {
+                        btn.disabled = true;
+                        const res = await fetch(getApiUrl(`/api/categories/${catId}/delete/`), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            await fetchAndRenderCategories();
+                        } else {
+                            alert(data.error || 'Failed to delete category.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            });
+        }
+
+        // Add Category Submit
+        if (btnAddCatSubmit) {
+            btnAddCatSubmit.addEventListener('click', async () => {
+                const name = inputNewCatName ? inputNewCatName.value.trim() : '';
+                if (!name) {
+                    if (inputNewCatName) inputNewCatName.focus();
+                    return;
+                }
+
+                const limitVal = newCatHasBudget && inputNewCatLimit ? parseFloat(inputNewCatLimit.value) : null;
+
+                try {
+                    btnAddCatSubmit.disabled = true;
+                    const res = await fetch(getApiUrl('/api/categories/create/'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name,
+                            icon_name: selectedCatIcon,
+                            has_budget: newCatHasBudget,
+                            amount_limit: limitVal
+                        })
+                    });
+                    const data = await res.json();
+                    btnAddCatSubmit.disabled = false;
+                    if (data.success) {
+                        if (inputNewCatName) inputNewCatName.value = '';
+                        if (inputNewCatLimit) inputNewCatLimit.value = '';
+                        await fetchAndRenderCategories();
+                        // Select newly created category on form
+                        if (data.category) {
+                            const newBtn = document.querySelector(`.category-btn[data-category="${data.category.name}"]`);
+                            if (newBtn) selectCategoryBtn(newBtn);
+                        }
+                        closeManageCategoriesModal();
+                    } else {
+                        alert(data.error || 'Failed to create category.');
+                    }
+                } catch (e) {
+                    btnAddCatSubmit.disabled = false;
+                    console.error(e);
                 }
             });
         }
 
-        // Intercept top back button
-        const backBtn = document.getElementById('btn-back');
-        if (backBtn) {
-            backBtn.addEventListener('click', (e) => {
-                if (isFormDirty) {
-                    e.preventDefault();
-                    openConfirmModal(backBtn.getAttribute('href'));
-                }
-            });
-        }
+        // ═══════════════════════════════════════════════════════════
+        // PAYMENT METHOD / ACCOUNT MANAGEMENT ENGINE
+        // ═══════════════════════════════════════════════════════════
 
-        // Intercept Scan Receipt switch button
-        const switchScanBtn = document.getElementById('btn-switch-scan');
-        if (switchScanBtn) {
-            switchScanBtn.addEventListener('click', (e) => {
-                if (isFormDirty) {
-                    e.preventDefault();
-                    openConfirmModal(switchScanBtn.getAttribute('href'));
-                }
-            });
-        }
-
-        // ══════════════════════════════════════════════════
-        // MANAGE PAYMENT METHODS / ACCOUNTS MODAL LOGIC
-        // ══════════════════════════════════════════════════
         const manageAccountsModal = document.getElementById('modal-manage-accounts');
-        const manageAccountsContent = document.getElementById('modal-accounts-content');
+        const manageAccountsContent = document.getElementById('modal-manage-accounts-content');
         const openManageAccountsBtn = document.getElementById('btn-open-manage-accounts');
         const closeManageAccountsBtn = document.getElementById('btn-close-manage-accounts');
         const doneManageAccountsBtn = document.getElementById('btn-done-manage-accounts');
         const accountsListContainer = document.getElementById('accounts-list-container');
-
-        const inputNewAccName = document.getElementById('input-new-account-name');
-        const selectNewAccType = document.getElementById('select-new-account-type');
-        const inputNewAccBalance = document.getElementById('input-new-account-balance');
-        const btnAddAccSubmit = document.getElementById('btn-add-account-submit');
-        const presetAccButtons = document.querySelectorAll('.btn-account-preset');
-
-        let userAccountsCache = [];
+        const inputNewAccName = document.getElementById('input-new-acc-name');
+        const selectNewAccType = document.getElementById('select-new-acc-type');
+        const btnAddAccSubmit = document.getElementById('btn-add-acc-submit');
+        const presetAccButtons = document.querySelectorAll('.acc-preset-chip');
 
         function openManageAccountsModal() {
             if (!manageAccountsModal) return;
@@ -519,24 +859,17 @@
         if (closeManageAccountsBtn) closeManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
         if (doneManageAccountsBtn) doneManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
 
-        // Account presets
         presetAccButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (inputNewAccName) inputNewAccName.value = btn.dataset.name || '';
                 if (selectNewAccType) selectNewAccType.value = btn.dataset.type || 'E_WALLET';
-                if (inputNewAccBalance) inputNewAccBalance.focus();
             });
         });
-
-        function getAccountApiUrl(path) {
-            const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
-            return `${path}${previewParam}`;
-        }
 
         async function fetchAndRenderAccounts() {
             if (!accountsListContainer) return;
             try {
-                const res = await fetch(getAccountApiUrl('/api/accounts/'));
+                const res = await fetch(getApiUrl('/api/accounts/'));
                 const data = await res.json();
                 if (data.accounts) {
                     userAccountsCache = data.accounts;
@@ -614,7 +947,7 @@
                         </div>
                     </div>
 
-                    <!-- Inline Edit Mode (Hidden initially) -->
+                    <!-- Inline Edit Mode -->
                     <div class="acc-edit hidden items-center gap-1.5 w-full">
                         <input type="text" class="input-edit-acc-name flex-1 px-2.5 py-1.5 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(acc.name)}" placeholder="Payment method name" />
                         <button type="button" class="btn-save-acc-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${acc.id}" title="Save">
@@ -632,7 +965,6 @@
         }
 
         function attachAccountRowListeners() {
-            // Edit trigger
             document.querySelectorAll('.btn-edit-account').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const row = document.getElementById(`account-row-${btn.dataset.id}`);
@@ -646,7 +978,6 @@
                 });
             });
 
-            // Cancel Edit
             document.querySelectorAll('.btn-cancel-acc-edit').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const row = document.getElementById(`account-row-${btn.dataset.id}`);
@@ -658,7 +989,6 @@
                 });
             });
 
-            // Save Edit (Rename)
             document.querySelectorAll('.btn-save-acc-edit').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const accId = btn.dataset.id;
@@ -675,7 +1005,7 @@
 
                     try {
                         btn.disabled = true;
-                        const res = await fetch(getAccountApiUrl(`/api/accounts/${accId}/update/`), {
+                        const res = await fetch(getApiUrl(`/api/accounts/${accId}/update/`), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ name: newName })
@@ -692,7 +1022,6 @@
                 });
             });
 
-            // Delete Account
             document.querySelectorAll('.btn-delete-account').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const accId = btn.dataset.id;
@@ -700,7 +1029,7 @@
 
                     try {
                         btn.disabled = true;
-                        const res = await fetch(getAccountApiUrl(`/api/accounts/${accId}/delete/`), {
+                        const res = await fetch(getApiUrl(`/api/accounts/${accId}/delete/`), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' }
                         });
@@ -717,14 +1046,13 @@
             });
         }
 
-        // Add Account Submit
         if (btnAddAccSubmit) {
             btnAddAccSubmit.addEventListener('click', async () => {
                 const name = inputNewAccName ? inputNewAccName.value.trim() : '';
                 const type = selectNewAccType ? selectNewAccType.value : 'E_WALLET';
 
                 if (!name) {
-                    inputNewAccName.focus();
+                    if (inputNewAccName) inputNewAccName.focus();
                     return;
                 }
 
@@ -735,21 +1063,16 @@
 
                 try {
                     btnAddAccSubmit.disabled = true;
-                    const res = await fetch(getAccountApiUrl('/api/accounts/create/'), {
+                    const res = await fetch(getApiUrl('/api/accounts/create/'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name,
-                            account_type: type,
-                            icon: icon
-                        })
+                        body: JSON.stringify({ name, account_type: type, icon })
                     });
                     const data = await res.json();
                     btnAddAccSubmit.disabled = false;
                     if (data.success) {
                         if (inputNewAccName) inputNewAccName.value = '';
                         await fetchAndRenderAccounts();
-                        // Select newly created account
                         if (selectAccount && data.account) {
                             selectAccount.value = data.account.name;
                         }
@@ -763,7 +1086,107 @@
             });
         }
 
-        // Check for receipt scan pre-fill in sessionStorage
+        // ─── Type Tabs (Expense, Income, Transfer) ───
+        const typeTabs = document.querySelectorAll('.type-tab');
+        typeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                typeTabs.forEach(t => {
+                    t.classList.remove('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs',
+                                       'bg-positive/15', 'text-positive-deep', 'border-positive/30',
+                                       'bg-amber-800/15', 'border-amber-800/30', 'text-amber-800');
+                    t.classList.add('text-body');
+                    t.setAttribute('aria-pressed', 'false');
+                });
+
+                const type = tab.dataset.type;
+                tab.classList.remove('text-body');
+                tab.setAttribute('aria-pressed', 'true');
+
+                if (type === 'expense') {
+                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs');
+                } else if (type === 'income') {
+                    tab.classList.add('bg-positive/15', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs');
+                } else if (type === 'transfer') {
+                    tab.classList.add('bg-amber-800/15', 'text-amber-800', 'border', 'border-amber-800/30', 'shadow-xs');
+                }
+                markDirty();
+            });
+        });
+
+        // ─── Input Dirty Tracking ───
+        if (inputAmount) inputAmount.addEventListener('input', markDirty);
+        if (inputTitle) inputTitle.addEventListener('input', markDirty);
+        if (inputDate) inputDate.addEventListener('change', markDirty);
+        if (selectAccount) selectAccount.addEventListener('change', markDirty);
+        if (inputNotes) inputNotes.addEventListener('input', markDirty);
+
+        // ─── Confirm Discard Modal ───
+        const confirmModal = document.getElementById('modal-confirm-discard');
+        const confirmContent = document.getElementById('modal-confirm-content');
+        const btnKeepEditing = document.getElementById('btn-keep-editing');
+        const btnConfirmDiscard = document.getElementById('btn-confirm-discard');
+
+        function openConfirmModal(targetUrl) {
+            pendingTargetUrl = targetUrl;
+            if (!confirmModal) return;
+            document.body.style.overflow = 'hidden';
+            confirmModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                confirmModal.classList.remove('opacity-0');
+                confirmModal.classList.add('opacity-100');
+                if (confirmContent) {
+                    confirmContent.classList.remove('scale-95');
+                    confirmContent.classList.add('scale-100');
+                }
+            });
+        }
+
+        function closeConfirmModal() {
+            if (!confirmModal) return;
+            confirmModal.classList.remove('opacity-100');
+            confirmModal.classList.add('opacity-0');
+            if (confirmContent) {
+                confirmContent.classList.remove('scale-100');
+                confirmContent.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        if (btnKeepEditing) btnKeepEditing.addEventListener('click', closeConfirmModal);
+        if (btnConfirmDiscard) {
+            btnConfirmDiscard.addEventListener('click', () => {
+                isFormDirty = false;
+                window.location.href = pendingTargetUrl || "{% url 'transactions' %}";
+            });
+        }
+
+        const backBtn = document.getElementById('btn-back');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                if (isFormDirty) {
+                    e.preventDefault();
+                    openConfirmModal("{% url 'transactions' %}");
+                } else {
+                    window.location.href = "{% url 'transactions' %}";
+                }
+            });
+        }
+
+        const discardBtn = document.getElementById('btn-discard');
+        if (discardBtn) {
+            discardBtn.addEventListener('click', () => {
+                if (isFormDirty) {
+                    openConfirmModal("{% url 'transactions' %}");
+                } else {
+                    window.location.href = "{% url 'transactions' %}";
+                }
+            });
+        }
+
+        // ─── Scanned Receipt Pre-Fill ───
         (function checkScannedReceiptPreFill() {
             const rawData = sessionStorage.getItem('scanned_receipt_data');
             if (rawData) {
@@ -796,7 +1219,7 @@
             }
         })();
 
-        // Check for URL query params (for editing transactions)
+        // ─── Edit Transaction Pre-Fill ───
         (function checkEditUrlParams() {
             const params = new URLSearchParams(window.location.search);
             const editId = params.get('edit');
@@ -835,7 +1258,7 @@
             isFormDirty = false;
         })();
 
-        // Handle Save Transaction Form Submission to Backend API
+        // ─── Save Transaction Submit ───
         const saveBtn = document.getElementById('btn-save-transaction');
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
@@ -896,9 +1319,12 @@
             });
         }
 
+        // Keyboard Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (manageAccountsModal && !manageAccountsModal.classList.contains('hidden')) {
+                if (manageCatModal && !manageCatModal.classList.contains('hidden')) {
+                    closeManageCategoriesModal();
+                } else if (manageAccountsModal && !manageAccountsModal.classList.contains('hidden')) {
                     closeManageAccountsModal();
                 } else if (confirmModal && !confirmModal.classList.contains('hidden')) {
                     closeConfirmModal();

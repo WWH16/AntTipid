@@ -292,8 +292,35 @@ def get_budget_data(profile, selected_month=None):
             'is_over': is_over,
             'is_exceeded': is_over,
             'is_warning': is_warning,
+            'is_unbudgeted': False,
             'status_label': status_label,
             'status_color': status_color,
+        })
+
+    # Include unbudgeted categories (inevitable expenses / tracking only)
+    budgeted_cat_ids = set(b.category_id for b in category_budgets if b.category_id)
+    unbudgeted_categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE).exclude(id__in=budgeted_cat_ids)
+
+    for cat in unbudgeted_categories:
+        cat_spent = expense_txs.filter(category=cat).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+        budget_cards.append({
+            'id': f"unbudgeted-{cat.id}",
+            'name': cat.name,
+            'category_name': cat.name,
+            'category_id': str(cat.id),
+            'icon_name': cat.icon_name or 'category',
+            'icon': cat.icon_name or 'category',
+            'color': cat.color_hex or '#5C8F3A',
+            'limit': None,
+            'spent': cat_spent,
+            'left': Decimal('0.00'),
+            'percentage': 0,
+            'is_over': False,
+            'is_exceeded': False,
+            'is_warning': False,
+            'is_unbudgeted': True,
+            'status_label': 'Tracking Only (No Limit)',
+            'status_color': 'neutral',
         })
 
     exceeded_count = sum(1 for c in budget_cards if c['is_exceeded'])

@@ -4,9 +4,9 @@ import base64
 from decimal import Decimal
 from datetime import datetime, date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction as db_transaction
 
 from .models import (
@@ -328,6 +328,15 @@ def api_save_budget(request):
                 category.save()
         else:
             category = None
+
+        has_budget = data.get('has_budget')
+        if has_budget is None:
+            has_budget = (amount_limit > 0)
+
+        if not has_budget or amount_limit <= 0:
+            if category:
+                Budget.objects.filter(user=profile, category=category).delete()
+            return JsonResponse({'success': True, 'unbudgeted': True})
 
         budget, created = Budget.objects.update_or_create(
             user=profile,
@@ -704,3 +713,194 @@ def api_delete_account(request, pk):
     account.save()
 
     return JsonResponse({'success': True, 'deleted_id': str(pk)})
+
+
+@csrf_exempt
+@require_GET
+def api_list_categories(request):
+    """
+    List all categories for current user with their budget limit status.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    today = date.today()
+    start_of_month = today.replace(day=1)
+
+    categories = Category.objects.filter(user=profile).order_by('name')
+    cats_data = []
+    for cat in categories:
+        budget = Budget.objects.filter(user=profile, category=cat, is_active=True).first()
+        cats_data.append({
+            'id': str(cat.id),
+            'name': cat.name,
+            'category_type': cat.category_type,
+            'category_type_display': cat.get_category_type_display(),
+            'icon_name': cat.icon_name,
+            'color_hex': cat.color_hex,
+            'has_budget': bool(budget and budget.amount_limit > 0),
+            'amount_limit': float(budget.amount_limit) if budget else None,
+            'limit_formatted': f"₱{budget.amount_limit:,.2f}" if budget and budget.amount_limit > 0 else "No Limit (Track only)",
+        })
+
+    return JsonResponse({'categories': cats_data})
+
+
+@csrf_exempt
+@require_POST
+def api_create_category(request):
+    """
+    Create a new Category with optional Budget limit (support for inevitable / unbudgeted tracking).
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        name = (data.get('name') or '').strip()
+        if not name:
+            return JsonResponse({'error': 'Category name is required.'}, status=400)
+
+        category_type = data.get('category_type') or Category.CategoryType.EXPENSE
+        icon_name = data.get('icon_name') or data.get('icon') or 'category'
+        color_hex = data.get('color_hex') or data.get('color') or '#5C8F3A'
+        has_budget = bool(data.get('has_budget', False))
+        raw_limit = data.get('amount_limit') or data.get('amount')
+
+        category = Category.objects.create(
+            user=profile,
+            name=name,
+            category_type=category_type,
+            icon_name=icon_name,
+            color_hex=color_hex
+        )
+
+        budget_id = None
+        if has_budget and raw_limit:
+            try:
+                limit_val = Decimal(str(raw_limit))
+                if limit_val > 0:
+                    today = date.today()
+                    start_of_month = today.replace(day=1)
+                    if today.month == 12:
+                        end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+                    else:
+                        end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+
+                    budget = Budget.objects.create(
+                        user=profile,
+                        category=category,
+                        name=f"{category.name} Budget",
+                        period_type=Budget.PeriodType.MONTHLY,
+                        amount_limit=limit_val,
+                        start_date=start_of_month,
+                        end_date=end_of_month,
+                        is_active=True
+                    )
+                    budget_id = str(budget.id)
+            except Exception:
+                pass
+
+        return JsonResponse({
+            'success': True,
+            'category': {
+                'id': str(category.id),
+                'name': category.name,
+                'category_type': category.category_type,
+                'icon_name': category.icon_name,
+                'color_hex': category.color_hex,
+                'has_budget': has_budget and bool(budget_id),
+                'amount_limit': float(raw_limit) if (has_budget and raw_limit) else None,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@require_POST
+def api_update_category(request, pk):
+    """
+    Update category name, icon, color, and optional budget limit.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        category = get_object_or_404(Category, id=pk, user=profile)
+
+        if 'name' in data and data['name'].strip():
+            category.name = data['name'].strip()
+        if 'icon_name' in data and data['icon_name']:
+            category.icon_name = data['icon_name']
+        if 'color_hex' in data and data['color_hex']:
+            category.color_hex = data['color_hex']
+        if 'category_type' in data and data['category_type']:
+            category.category_type = data['category_type']
+
+        category.save()
+
+        # Handle optional budget limit toggle
+        if 'has_budget' in data:
+            has_budget = bool(data['has_budget'])
+            raw_limit = data.get('amount_limit') or data.get('amount')
+
+            if not has_budget or not raw_limit or Decimal(str(raw_limit)) <= 0:
+                # Remove budget constraint (Inevitable / Tracking Only)
+                Budget.objects.filter(user=profile, category=category).delete()
+            else:
+                limit_val = Decimal(str(raw_limit))
+                today = date.today()
+                start_of_month = today.replace(day=1)
+                if today.month == 12:
+                    end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+                else:
+                    end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+
+                Budget.objects.update_or_create(
+                    user=profile,
+                    category=category,
+                    period_type=Budget.PeriodType.MONTHLY,
+                    defaults={
+                        'name': f"{category.name} Budget",
+                        'amount_limit': limit_val,
+                        'start_date': start_of_month,
+                        'end_date': end_of_month,
+                        'is_active': True
+                    }
+                )
+
+        return JsonResponse({
+            'success': True,
+            'category': {
+                'id': str(category.id),
+                'name': category.name,
+                'icon_name': category.icon_name,
+                'color_hex': category.color_hex,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(['POST', 'DELETE'])
+def api_delete_category(request, pk):
+    """
+    Delete a Category and its associated Budget.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    category = get_object_or_404(Category, id=pk, user=profile)
+    # Delete associated budgets
+    Budget.objects.filter(user=profile, category=category).delete()
+    category.delete()
+
+    return JsonResponse({'success': True, 'deleted_id': str(pk)})
+

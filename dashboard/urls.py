@@ -27,4 +27,10 @@ urlpatterns = [
     path('api/accounts/create/', views.api_create_account, name='api_create_account'),
     path('api/accounts/<uuid:pk>/update/', views.api_update_account, name='api_update_account'),
     path('api/accounts/<uuid:pk>/delete/', views.api_delete_account, name='api_delete_account'),
+
+    # Category Management APIs
+    path('api/categories/', views.api_list_categories, name='api_list_categories'),
+    path('api/categories/create/', views.api_create_category, name='api_create_category'),
+    path('api/categories/<uuid:pk>/update/', views.api_update_category, name='api_update_category'),
+    path('api/categories/<uuid:pk>/delete/', views.api_delete_category, name='api_delete_category'),
 ]
