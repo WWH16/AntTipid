@@ -18,16 +18,16 @@
 
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
-    <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:gap-5">
+    <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:gap-6">
         
         <!-- ═══════════════════════════════════════ -->
         <!-- TOP CONTROLS & ACTIONS                  -->
         <!-- ═══════════════════════════════════════ -->
         <div class="flex items-center justify-between gap-3">
             <!-- Month Selector Pill / Controls -->
-            <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-canvas border border-outline-variant/60 rounded-full shadow-2xs">
+            <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-container-lowest border border-outline-variant/60 rounded-full shadow-xs">
                 {% if has_prev_month %}
-                <a href="?month={{ prev_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Previous month ({{ prev_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                <a href="?month={{ prev_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Previous month ({{ prev_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">chevron_left</span>
                 </a>
                 {% else %}
@@ -36,80 +36,80 @@
                 </span>
                 {% endif %}
 
-                <span id="current-month-label" class="font-sans text-xs font-bold text-ink px-1.5 select-none">{{ current_month_label }}</span>
+                <span id="current-month-label" class="font-label-md text-xs font-bold text-deep-forest px-1.5 select-none">{{ current_month_label }}</span>
 
                 {% if has_next_month %}
-                <a href="?month={{ next_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Next month ({{ next_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                <a href="?month={{ next_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Next month ({{ next_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </a>
                 {% endif %}
             </div>
 
-            <!-- New Category Action (button-primary pill per DESIGN.md) -->
-            <button id="btn-add-category" class="px-4 py-2 rounded-full bg-primary text-on-primary font-sans text-xs font-bold flex items-center gap-1.5 hover:bg-primary-hover shadow-2xs transition-all active:scale-95 cursor-pointer shrink-0">
+            <!-- New Category Action -->
+            <button type="button" id="btn-add-category" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold flex items-center gap-1.5 hover:bg-primary-hover shadow-xs transition-all active:scale-95 cursor-pointer shrink-0">
                 <span class="material-symbols-outlined text-[16px]">add</span>
                 <span>New Category</span>
             </button>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- BUDGET OVERVIEW BENTO GRID (DESIGN.md)  -->
+        <!-- BUDGET OVERVIEW BENTO GRID              -->
         <!-- ═══════════════════════════════════════ -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
             <!-- Overall Budget Ring (Hero Bento Card) -->
-            <div class="sm:col-span-2 bg-canvas border border-outline-variant/60 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex items-center gap-4 relative overflow-hidden group">
+            <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex items-center gap-4 relative overflow-hidden group">
                 <div class="absolute -right-6 -top-6 w-28 h-28 bg-warning/10 rounded-full blur-xl pointer-events-none"></div>
                 
                 <!-- SVG Ring with Gold Stroke -->
                 <div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
                     <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-canvas-soft stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
-                        <circle class="text-warning stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="{{ overall_dashoffset|default:'62.8' }}" stroke-linecap="round"></circle>
+                        <circle class="text-surface-container-low stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+                        <circle class="text-warning stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="{{ overall_dashoffset|default:'251.2' }}" stroke-linecap="round"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">{{ overall_percentage }}%</span>
-                        <span class="font-sans text-[8px] sm:text-[9px] text-mute font-medium">spent</span>
+                        <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest tabular-nums">{{ overall_percentage }}%</span>
+                        <span class="font-body-sm text-[8px] sm:text-[9px] text-on-surface-variant font-medium">spent</span>
                     </div>
                 </div>
 
                 <!-- Summary Metrics -->
                 <div class="flex flex-col min-w-0 z-10 flex-1">
                     <div class="flex items-center gap-1 mb-1">
-                        <span class="px-2 py-0.5 rounded-full bg-warning/15 text-warning-content font-sans text-[10px] font-bold border border-warning/30">Remaining</span>
+                        <span class="px-2 py-0.5 rounded-full bg-warning/15 text-warning-deep font-label-sm text-[10px] font-bold border border-warning/30">Remaining</span>
                     </div>
-                    <span class="font-sans text-base sm:text-lg font-bold text-ink tracking-tight tabular-nums truncate">₱{{ overall_remaining|floatformat:2 }}</span>
-                    <p class="font-sans text-[11px] text-body font-medium truncate">of <span class="font-bold text-ink">₱{{ total_limit|floatformat:2 }}</span> monthly limit</p>
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight tabular-nums truncate">₱{{ overall_remaining|floatformat:2 }}</span>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant font-medium truncate">of <span class="font-bold text-deep-forest">₱{{ total_limit|floatformat:2 }}</span> monthly limit</p>
                 </div>
             </div>
 
             <!-- Total Spent Metric -->
-            <div class="col-span-1 bg-canvas border border-outline-variant/60 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between gap-2.5 group">
+            <div class="col-span-1 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between gap-2.5 group">
                 <div class="flex items-center justify-between">
-                    <span class="font-sans text-[11px] text-body font-bold">Total Spent</span>
-                    <div class="w-7 h-7 rounded-full bg-negative/10 text-negative flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <span class="font-label-sm text-[11px] text-body font-bold">Total Spent</span>
+                    <div class="w-7 h-7 rounded-full bg-expense/15 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                         <span class="material-symbols-outlined text-[15px]">trending_down</span>
                     </div>
                 </div>
                 <div>
-                    <span class="font-sans text-base sm:text-lg font-bold text-ink tabular-nums truncate block">₱{{ overall_spent|floatformat:2 }}</span>
-                    <span class="font-sans text-[10px] sm:text-[11px] text-mute font-medium">{{ overall_percentage }}% of allocated budget</span>
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tabular-nums truncate block">₱{{ overall_spent|floatformat:2 }}</span>
+                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium">{{ overall_percentage }}% of allocated budget</span>
                 </div>
             </div>
 
             <!-- Over Budget Alert Card -->
-            <div class="col-span-1 {% if exceeded_count > 0 %}bg-negative/10 border border-negative/25{% else %}bg-primary-pale/30 border border-positive/30{% endif %} rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between gap-2.5 relative overflow-hidden group">
+            <div class="col-span-1 {% if exceeded_count > 0 %}bg-expense/10 border border-expense/30{% else %}bg-primary-pale/40 border border-positive/30{% endif %} rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between gap-2.5 relative overflow-hidden group">
                 <div class="flex items-center justify-between relative">
-                    <span class="font-sans text-[11px] {% if exceeded_count > 0 %}text-negative{% else %}text-positive-deep{% endif %} font-bold uppercase tracking-wider">Status Alert</span>
-                    <div class="w-7 h-7 rounded-full {% if exceeded_count > 0 %}bg-negative/15 text-negative{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <span class="font-label-sm text-[11px] {% if exceeded_count > 0 %}text-expense{% else %}text-positive-deep{% endif %} font-bold uppercase tracking-wider">Status Alert</span>
+                    <div class="w-7 h-7 rounded-full {% if exceeded_count > 0 %}bg-expense/20 text-expense{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                         <span class="material-symbols-outlined text-[15px]">{% if exceeded_count > 0 %}warning{% else %}check_circle{% endif %}</span>
                     </div>
                 </div>
                 <div class="relative">
-                    <span class="font-sans text-base sm:text-lg font-bold {% if exceeded_count > 0 %}text-negative{% else %}text-positive-deep{% endif %} truncate block">
+                    <span class="font-headline-md text-base sm:text-lg font-bold {% if exceeded_count > 0 %}text-expense{% else %}text-positive-deep{% endif %} truncate block">
                         {% if exceeded_count > 0 %}{{ exceeded_count }} Exceeded{% else %}All On Track{% endif %}
                     </span>
-                    <span class="font-sans text-[10px] sm:text-[11px] {% if exceeded_count > 0 %}text-negative{% else %}text-body{% endif %} font-medium">
+                    <span class="font-body-sm text-[10px] sm:text-[11px] {% if exceeded_count > 0 %}text-expense{% else %}text-body{% endif %} font-medium">
                         {% if exceeded_count > 0 %}Review categories over limit{% else %}Spending within monthly budget{% endif %}
                     </span>
                 </div>
@@ -118,30 +118,99 @@
         </section>
 
         <!-- ═══════════════════════════════════════ -->
+        <!-- FILTER BAR                              -->
+        <!-- ═══════════════════════════════════════ -->
+        <!-- Mobile Filter Bar (<md) -->
+        <div class="md:hidden sticky top-[56px] z-30 pt-2 pb-2.5 bg-background/95 backdrop-blur-md -mx-margin-mobile px-margin-mobile border-b border-outline-variant/40 flex items-center justify-between gap-2">
+            <!-- Horizontal Dynamic Category Filter Chips Strip -->
+            <div id="mobile-quick-filter-strip" class="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
+                    All
+                </button>
+                {% for cat in categories %}
+                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    {{ cat.name }}
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Filter Action Sheet Trigger Button -->
+            <button type="button" id="btn-open-filter-mobile" class="h-8 px-3 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0" aria-label="Open filter action sheet">
+                <span class="material-symbols-outlined text-[16px]">tune</span>
+                <span class="font-label-sm text-xs font-bold">Filter</span>
+                <span id="badge-active-filters-mobile" class="hidden min-w-[16px] h-[16px] px-1 bg-deep-forest text-primary rounded-full text-[9px] font-extrabold flex items-center justify-center">0</span>
+            </button>
+        </div>
+
+        <!-- Desktop Filters (md+) -->
+        <div class="hidden md:flex flex-wrap gap-2.5 items-center justify-between">
+            {% if categories %}
+            <!-- Dynamic Category Chips Row (Desktop) -->
+            <div id="desktop-quick-filter-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
+                    All
+                </button>
+                {% for cat in categories %}
+                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    {{ cat.name }}
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="flex items-center gap-2.5 ml-auto">
+                <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5" aria-hidden="true">filter_list</span>
+                
+                <!-- Filter: Sort (Desktop) -->
+                <label for="select-sort-desktop" class="sr-only">Sort categories</label>
+                <select id="select-sort-desktop" aria-label="Sort categories" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="default">Sort: Default</option>
+                    <option value="name">Sort: Name (A-Z)</option>
+                    <option value="highest-spent">Sort: Highest Spent</option>
+                    <option value="lowest-spent">Sort: Lowest Spent</option>
+                    <option value="highest-limit">Sort: Highest Limit</option>
+                    <option value="highest-pct">Sort: Highest % Spent</option>
+                </select>
+
+                <!-- Filter: Status -->
+                <label for="select-status-desktop" class="sr-only">Filter by status</label>
+                <select id="select-status-desktop" aria-label="Filter by status" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
+                    <option value="all">Status: All</option>
+                    <option value="ontrack">Status: On Track</option>
+                    <option value="warning">Status: Nearing Limit</option>
+                    <option value="exceeded">Status: Over Budget</option>
+                    <option value="unbudgeted">Status: Track Only</option>
+                </select>
+
+                <button id="btn-clear-filters-desktop" class="font-label-sm text-xs text-deep-forest hover:text-positive-deep hover:underline font-bold cursor-pointer">Clear Filters</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
         <!-- CATEGORY BUDGETS SECTION                -->
         <!-- ═══════════════════════════════════════ -->
         <section class="flex flex-col gap-3">
             <div class="flex justify-between items-center px-0.5">
-                <h2 class="font-sans text-xs sm:text-sm font-bold text-ink">Categories</h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-canvas border border-outline-variant/60 text-ink font-sans text-[10px] sm:text-[11px] font-semibold">{{ budget_cards|length }} Categories</span>
+                <h2 class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest">Categories</h2>
+                <span id="label-category-count" class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest border border-outline-variant/60 text-deep-forest font-label-sm text-[10px] sm:text-[11px] font-bold shadow-xs">{{ budget_cards|length }} Categories</span>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="category-cards-grid">
                 {% for card in budget_cards %}
-                <div class="category-budget-card {% if card.is_exceeded %}bg-negative/10 border border-negative/25 hover:border-negative/50{% elif card.is_unbudgeted %}bg-canvas border border-outline-variant/60 hover:border-outline-variant{% else %}bg-canvas border border-outline-variant/60 hover:border-positive/40{% endif %} rounded-xl p-4 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-3 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for {{ card.name }}" data-category="{{ card.name }}" data-spent="{{ card.spent }}" data-target="{{ card.limit|default:'' }}" data-unbudgeted="{{ card.is_unbudgeted|yesno:'true,false' }}">
+                <div class="category-budget-card {% if card.is_exceeded %}bg-expense/5 border border-expense/30 hover:border-expense/60{% elif card.is_unbudgeted %}bg-surface-container-lowest border border-outline-variant/60 hover:border-outline-variant{% else %}bg-surface-container-lowest border border-outline-variant/60 hover:border-positive/40{% endif %} rounded-2xl p-4 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-3 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for {{ card.name }}" data-category="{{ card.name }}" data-spent="{{ card.spent|floatformat:2 }}" data-target="{{ card.limit|default:'' }}" data-unbudgeted="{{ card.is_unbudgeted|yesno:'true,false' }}" data-percentage="{{ card.percentage }}" data-status="{% if card.is_exceeded %}exceeded{% elif card.is_warning %}warning{% elif card.is_unbudgeted %}unbudgeted{% else %}ontrack{% endif %}">
                     <div class="flex justify-between items-start relative">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl {% if card.is_exceeded %}bg-negative/15 text-negative{% elif card.is_warning %}bg-warning/15 text-warning-deep border border-warning/30{% elif card.is_unbudgeted %}bg-surface-container text-on-surface-variant border border-outline-variant/60{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+                            <div class="w-9 h-9 rounded-xl {% if card.is_exceeded %}bg-expense/15 text-expense{% elif card.is_warning %}bg-warning/15 text-warning-deep border border-warning/30{% elif card.is_unbudgeted %}bg-surface-container text-on-surface-variant border border-outline-variant/60{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-[18px]">{{ card.icon_name|default:'category' }}</span>
                             </div>
-                            <div>
-                                <h3 class="font-sans text-xs sm:text-sm text-ink font-bold">{{ card.name }}</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full {% if card.is_exceeded %}bg-negative/15 text-negative border border-negative/30{% elif card.is_warning %}bg-warning/15 text-warning-content border border-warning/30{% elif card.is_unbudgeted %}bg-surface-container text-on-surface-variant border border-outline-variant/40{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} font-sans text-[9px] font-bold mt-0.5">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-headline-md text-xs sm:text-sm text-deep-forest font-bold truncate">{{ card.name }}</h3>
+                                <span class="inline-block px-2 py-0.5 rounded-full {% if card.is_exceeded %}bg-expense/15 text-expense border border-expense/30{% elif card.is_warning %}bg-warning/15 text-warning-deep border border-warning/30{% elif card.is_unbudgeted %}bg-surface-container text-on-surface-variant border border-outline-variant/40{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} font-label-sm text-[9px] font-bold mt-0.5">
                                     {{ card.status_label }}
                                 </span>
                             </div>
                         </div>
-                        <span class="text-body group-hover:text-ink font-sans text-[11px] font-bold px-2 py-0.5 rounded-full bg-canvas-soft hover:bg-primary-pale hover:text-positive-deep flex items-center gap-0.5 shrink-0 transition-colors">
+                        <span class="text-body group-hover:text-deep-forest font-label-sm text-[11px] font-bold px-2.5 py-1 rounded-xl bg-surface-container-low hover:bg-primary-pale hover:text-positive-deep flex items-center gap-0.5 shrink-0 transition-colors">
                             Adjust
                             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
                         </span>
@@ -150,45 +219,59 @@
                     <div class="relative">
                         {% if card.is_unbudgeted %}
                         <div class="flex justify-between items-baseline mb-1">
-                            <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
-                            <span class="font-sans text-[10px] text-mute">No limit set</span>
+                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
+                            <span class="font-body-sm text-[10px] text-on-surface-variant">No limit set</span>
                         </div>
-                        <span class="font-sans text-[10px] text-body font-medium block">Inevitable / variable tracking</span>
+                        <span class="font-body-sm text-[10px] text-on-surface-variant font-medium block">Inevitable / variable tracking</span>
                         {% else %}
                         <div class="flex justify-between items-baseline mb-1.5">
                             <div>
-                                <span class="font-sans text-xs sm:text-sm font-bold {% if card.is_exceeded %}text-negative{% else %}text-ink{% endif %} tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
-                                <span class="font-sans text-[10px] sm:text-[11px] text-mute ml-1 font-normal tabular-nums">/ ₱{{ card.limit|floatformat:2 }}</span>
+                                <span class="font-label-md text-xs sm:text-sm font-bold {% if card.is_exceeded %}text-expense{% else %}text-deep-forest{% endif %} tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
+                                <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant ml-1 font-normal tabular-nums">/ ₱{{ card.limit|floatformat:2 }}</span>
                             </div>
-                            <span class="font-sans text-[11px] {% if card.is_exceeded %}text-negative{% elif card.is_warning %}text-warning-deep{% else %}text-positive-deep{% endif %} font-bold tabular-nums">{{ card.percentage }}%</span>
+                            <span class="font-label-md text-[11px] {% if card.is_exceeded %}text-expense{% elif card.is_warning %}text-warning-deep{% else %}text-positive-deep{% endif %} font-bold tabular-nums">{{ card.percentage }}%</span>
                         </div>
-                        <div class="w-full h-1.5 {% if card.is_exceeded %}bg-negative/20{% else %}bg-canvas-soft{% endif %} rounded-full overflow-hidden">
-                            <div class="h-full {% if card.is_exceeded %}bg-negative{% elif card.is_warning %}bg-warning{% else %}bg-positive{% endif %} rounded-full transition-all duration-500" style="width: {% if card.percentage > 100 %}100{% else %}{{ card.percentage }}{% endif %}%;"></div>
+                        <div class="w-full h-1.5 {% if card.is_exceeded %}bg-expense/20{% else %}bg-surface-container-low{% endif %} rounded-full overflow-hidden">
+                            <div class="h-full {% if card.is_exceeded %}bg-expense{% elif card.is_warning %}bg-warning-deep{% else %}bg-positive-deep{% endif %} rounded-full transition-all duration-500" style="width: {% if card.percentage > 100 %}100{% else %}{{ card.percentage }}{% endif %}%;"></div>
                         </div>
                         {% if card.is_exceeded %}
-                        <div class="flex items-center gap-1 text-negative mt-1">
+                        <div class="flex items-center gap-1 text-expense mt-1">
                             <span class="material-symbols-outlined text-[13px]">error</span>
-                            <span class="font-sans text-[10px] sm:text-[11px] font-bold">Over limit</span>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">Over limit</span>
                         </div>
                         {% else %}
-                        <span class="font-sans text-[10px] sm:text-[11px] text-body font-medium mt-1 block">₱{{ card.left|floatformat:2 }} left</span>
+                        <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium mt-1 block">₱{{ card.left|floatformat:2 }} left</span>
                         {% endif %}
                         {% endif %}
                     </div>
                 </div>
                 {% empty %}
-                <div class="sm:col-span-2 lg:col-span-3 bg-canvas border border-outline-variant/60 rounded-xl p-8 text-center text-xs text-body font-medium">
-                    No budget limits set yet. Click "Add Category" to set your monthly targets.
+                <div class="sm:col-span-2 lg:col-span-3 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-8 text-center text-xs text-body font-medium shadow-xs">
+                    No budget limits set yet. Click "New Category" to set your monthly targets.
                 </div>
                 {% endfor %}
 
+                <!-- Dynamic Empty State for Filters -->
+                <div id="category-filter-empty-state" class="hidden sm:col-span-2 lg:col-span-3 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-8 text-center flex flex-col items-center justify-center gap-3 shadow-xs">
+                    <div class="w-12 h-12 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[24px]">search_off</span>
+                    </div>
+                    <div>
+                        <p class="font-headline-md text-sm font-bold text-deep-forest">No matching categories</p>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Try a different search term or reset your active filters.</p>
+                    </div>
+                    <button type="button" id="btn-reset-empty-filters" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-sm text-xs font-bold shadow-xs hover:bg-primary-hover active:scale-95 transition-all cursor-pointer">
+                        Reset Filters
+                    </button>
+                </div>
+
                 <!-- Add New Category Dashed Card -->
-                <button type="button" id="card-add-category-trigger" class="rounded-xl border-2 border-dashed border-outline-variant/70 hover:border-primary hover:bg-primary-pale/20 p-4 flex flex-col items-center justify-center gap-1.5 text-body hover:text-ink transition-all group cursor-pointer min-h-[110px]">
-                    <div class="w-8 h-8 rounded-full bg-canvas-soft group-hover:bg-primary group-hover:text-on-primary text-ink flex items-center justify-center transition-colors shadow-2xs">
+                <button type="button" id="card-add-category-trigger" class="rounded-2xl border-2 border-dashed border-outline-variant/70 hover:border-primary hover:bg-primary-pale/20 p-4 flex flex-col items-center justify-center gap-1.5 text-body hover:text-deep-forest transition-all group cursor-pointer min-h-[110px]">
+                    <div class="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-primary group-hover:text-on-primary text-deep-forest flex items-center justify-center transition-colors shadow-2xs">
                         <span class="material-symbols-outlined text-[18px]">add</span>
                     </div>
-                    <span class="font-sans text-xs font-bold">Add Category</span>
-                    <span class="font-sans text-[10px] text-mute">Set custom or tracking limit</span>
+                    <span class="font-label-md text-xs font-bold">Add Category</span>
+                    <span class="font-body-sm text-[10px] text-on-surface-variant">Set custom or tracking limit</span>
                 </button>
 
             </div>
@@ -201,17 +284,128 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MOBILE FILTER & SORT ACTION SHEET                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="action-sheet-filter-mobile" role="dialog" aria-modal="true" aria-labelledby="sheet-filter-title" class="fixed inset-0 z-[100] flex items-end justify-center p-0 md:hidden hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <!-- Backdrop -->
+    <div id="action-sheet-filter-backdrop" class="absolute inset-0 bg-deep-forest/40 backdrop-blur-xs opacity-0 transition-opacity duration-200"></div>
+
+    <!-- Action Sheet Drawer Content -->
+    <div id="action-sheet-filter-content" class="w-full bg-surface-container-lowest rounded-t-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-200 ease-out flex flex-col max-h-[85vh] overflow-hidden">
+        
+        <!-- Drag Handle -->
+        <div id="filter-sheet-handle" class="w-full pt-3 pb-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0">
+            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full shadow-2xs"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="px-5 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">tune</span>
+                </div>
+                <div>
+                    <h3 id="sheet-filter-title" class="font-headline-md text-base font-bold text-deep-forest">Filter & Sort Budgets</h3>
+                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Customize your categories view</p>
+                </div>
+            </div>
+            <button type="button" id="btn-close-filter-sheet" aria-label="Close filters" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <!-- Scrollable Action Sheet Body -->
+        <div class="p-5 overflow-y-auto space-y-4 flex-1 overscroll-contain">
+            <!-- 1. Status Filter -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Status</label>
+                <div class="grid grid-cols-3 gap-2" id="action-sheet-status-pills">
+                    <button type="button" data-sheet-status="all" class="sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
+                        All
+                    </button>
+                    <button type="button" data-sheet-status="ontrack" class="sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        On Track
+                    </button>
+                    <button type="button" data-sheet-status="warning" class="sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Nearing Limit
+                    </button>
+                    <button type="button" data-sheet-status="exceeded" class="sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Over Budget
+                    </button>
+                    <button type="button" data-sheet-status="unbudgeted" class="sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        Track Only
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Sort Order -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Sort Order</label>
+                <div class="grid grid-cols-2 gap-2" id="action-sheet-sort-pills">
+                    <button type="button" data-sheet-sort="default" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between">
+                        <span>Default</span>
+                        <span class="material-symbols-outlined text-[16px]">tune</span>
+                    </button>
+                    <button type="button" data-sheet-sort="name" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Name (A-Z)</span>
+                        <span class="material-symbols-outlined text-[16px]">sort_by_alpha</span>
+                    </button>
+                    <button type="button" data-sheet-sort="highest-spent" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Highest Spent</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                    </button>
+                    <button type="button" data-sheet-sort="highest-limit" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Highest Limit</span>
+                        <span class="material-symbols-outlined text-[16px]">account_balance</span>
+                    </button>
+                    <button type="button" data-sheet-sort="highest-pct" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
+                        <span>Highest % Spent</span>
+                        <span class="material-symbols-outlined text-[16px]">percent</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Category Filter -->
+            <div class="space-y-1.5">
+                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Category</label>
+                <div class="flex flex-wrap gap-1.5" id="action-sheet-category-chips">
+                    <button type="button" data-sheet-cat="all" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
+                        All Categories
+                    </button>
+                    {% for cat in categories %}
+                    <button type="button" data-sheet-cat="{{ cat.name }}" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        {{ cat.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Footer Action Bar -->
+        <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/40 flex items-center gap-3 shrink-0">
+            <button type="button" id="btn-sheet-reset" class="flex-1 py-3 px-4 rounded-xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer text-center">
+                Clear All
+            </button>
+            <button type="button" id="btn-sheet-apply" class="flex-1 py-3 px-4 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+                <span>Apply Filters</span>
+                <span class="material-symbols-outlined text-[16px]">check</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
 <!-- UNIFIED ADJUST / NEW CATEGORY MODAL DIALOGUE                -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="adjust-modal-wrapper" aria-labelledby="modal-category-title" aria-modal="true" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 hidden opacity-0" role="dialog">
+<div id="adjust-modal-wrapper" aria-labelledby="modal-category-title" aria-modal="true" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 hidden opacity-0 pointer-events-auto" role="dialog">
     <!-- Backdrop with AntTipid Dark Forest Tint -->
     <div id="adjust-modal-backdrop" class="fixed inset-0 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 opacity-0"></div>
 
-    <!-- Modal Content Panel (DESIGN.md Surface Lowest Container) -->
-    <div id="adjust-modal-content" class="relative z-10 w-full max-w-md bg-canvas rounded-t-3xl sm:rounded-3xl shadow-elevated border border-outline-variant/60 overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 max-h-[90vh] flex flex-col">
+    <!-- Modal Content Panel -->
+    <div id="adjust-modal-content" class="relative z-[105] w-full max-w-md bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl shadow-2xl border border-outline-variant/60 overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 max-h-[90vh] flex flex-col">
         <!-- Drag Handle for Mobile Dismissal -->
-        <div id="adjust-modal-handle" class="w-full flex justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none">
-            <div class="w-12 h-1.5 bg-outline-variant/60 rounded-full"></div>
+        <div id="adjust-modal-handle" class="w-full flex justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none select-none">
+            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
         </div>
 
         <div class="p-0 flex flex-col flex-1 overflow-hidden">
@@ -221,72 +415,72 @@
                         <span id="modal-header-icon" class="material-symbols-outlined text-[18px]">tune</span>
                     </div>
                     <div>
-                        <h3 class="font-sans text-base font-bold text-ink" id="modal-category-title">Adjust Budget</h3>
-                        <p id="modal-category-subtitle" class="font-sans text-xs text-body">Update monthly allocation</p>
+                        <h3 class="font-headline-md text-base font-bold text-deep-forest" id="modal-category-title">Adjust Budget</h3>
+                        <p id="modal-category-subtitle" class="font-body-sm text-xs text-on-surface-variant">Update monthly allocation</p>
                     </div>
                 </div>
-                <button id="btn-close-adjust-modal" aria-label="Close modal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-canvas-soft transition-colors text-body hover:text-ink cursor-pointer">
+                <button type="button" id="btn-close-adjust-modal" aria-label="Close modal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-body hover:text-deep-forest cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
 
-            <form id="form-adjust-budget" class="p-5 sm:p-6 flex flex-col gap-4 overflow-y-auto">
+            <form id="form-adjust-budget" class="p-5 sm:p-6 pb-6 sm:pb-6 flex flex-col gap-4 overflow-y-auto">
                 <!-- Category Name (Shown for new category mode) -->
                 <div id="group-category-name" class="flex flex-col gap-1.5 hidden">
-                    <label for="input-category-name" class="font-sans text-xs text-ink font-bold">Category Name</label>
+                    <label for="input-category-name" class="font-label-sm text-xs text-deep-forest font-bold">Category Name</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
-                        <input id="input-category-name" class="w-full pl-9 pr-3 py-2.5 bg-canvas-soft/50 border border-outline-variant/80 rounded-xl font-sans text-sm font-bold text-ink outline-none focus:bg-canvas focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="e.g. Subscriptions, Fitness, Pets" type="text">
+                        <input id="input-category-name" class="w-full pl-9 pr-3 py-2.5 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="e.g. Subscriptions, Fitness, Pets" type="text">
                     </div>
                 </div>
 
                 <!-- Icon Selection (Shown for new category mode) -->
                 <div id="group-category-icon" class="flex flex-col gap-1.5 hidden">
-                    <label class="font-sans text-xs text-ink font-bold">Select Icon</label>
+                    <label class="font-label-sm text-xs text-deep-forest font-bold">Select Icon</label>
                     <div id="icon-picker-grid" class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
                         <button type="button" data-icon="restaurant" class="icon-chip w-9 h-9 rounded-xl border border-primary bg-primary-pale text-positive-deep flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">restaurant</span></button>
-                        <button type="button" data-icon="local_grocery_store" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">local_grocery_store</span></button>
-                        <button type="button" data-icon="shopping_bag" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">shopping_bag</span></button>
-                        <button type="button" data-icon="local_hospital" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">local_hospital</span></button>
-                        <button type="button" data-icon="bolt" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">bolt</span></button>
-                        <button type="button" data-icon="directions_car" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">directions_car</span></button>
-                        <button type="button" data-icon="home" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">home</span></button>
-                        <button type="button" data-icon="movie" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">movie</span></button>
-                        <button type="button" data-icon="fitness_center" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">fitness_center</span></button>
-                        <button type="button" data-icon="pets" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">pets</span></button>
-                        <button type="button" data-icon="school" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">school</span></button>
-                        <button type="button" data-icon="receipt_long" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">receipt_long</span></button>
-                        <button type="button" data-icon="category" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">category</span></button>
+                        <button type="button" data-icon="local_grocery_store" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">local_grocery_store</span></button>
+                        <button type="button" data-icon="shopping_bag" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">shopping_bag</span></button>
+                        <button type="button" data-icon="local_hospital" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">local_hospital</span></button>
+                        <button type="button" data-icon="bolt" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">bolt</span></button>
+                        <button type="button" data-icon="directions_car" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">directions_car</span></button>
+                        <button type="button" data-icon="home" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">home</span></button>
+                        <button type="button" data-icon="movie" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">movie</span></button>
+                        <button type="button" data-icon="fitness_center" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">fitness_center</span></button>
+                        <button type="button" data-icon="pets" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">pets</span></button>
+                        <button type="button" data-icon="school" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">school</span></button>
+                        <button type="button" data-icon="receipt_long" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">receipt_long</span></button>
+                        <button type="button" data-icon="category" class="icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">category</span></button>
                     </div>
                 </div>
 
                 <!-- Budget Strategy Selector (Track Only vs Set Limit) -->
                 <div class="flex flex-col gap-1.5">
-                    <label class="font-sans text-xs text-ink font-bold">Budget Strategy</label>
+                    <label class="font-label-sm text-xs text-deep-forest font-bold">Budget Strategy</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="modal-strat-nobudget" class="p-2 rounded-xl border border-outline-variant/60 bg-canvas-soft/50 text-body flex flex-col items-start text-left cursor-pointer transition-all">
+                        <button type="button" id="modal-strat-nobudget" class="p-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/50 text-body flex flex-col items-start text-left cursor-pointer transition-all">
                             <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">track_changes</span> Track Only</span>
-                            <span class="text-[9px] text-mute leading-tight mt-0.5">No cap (inevitable/variable)</span>
+                            <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">No cap (inevitable/variable)</span>
                         </button>
                         <button type="button" id="modal-strat-budget" class="p-2 rounded-xl border border-primary bg-primary-pale text-positive-deep flex flex-col items-start text-left cursor-pointer transition-all">
                             <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> Set Limit</span>
-                            <span class="text-[9px] text-mute leading-tight mt-0.5">Fixed monthly budget cap</span>
+                            <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">Fixed monthly budget cap</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Monthly Budget Target -->
                 <div id="group-adjust-target">
-                    <label for="input-adjust-target" class="font-sans text-xs text-ink block mb-1.5 font-bold">Monthly Budget Target (₱)</label>
+                    <label for="input-adjust-target" class="font-label-sm text-xs text-deep-forest block mb-1.5 font-bold">Monthly Budget Target (₱)</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-sans text-base text-ink font-bold">₱</span>
-                        <input id="input-adjust-target" class="w-full pl-8 pr-4 py-2.5 bg-canvas-soft/50 border border-outline-variant/80 rounded-xl font-sans text-sm font-bold text-ink outline-none focus:bg-canvas focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="5000" type="number" step="100" min="0">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-label-md text-base text-deep-forest font-bold">₱</span>
+                        <input id="input-adjust-target" class="w-full pl-8 pr-4 py-2.5 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5000" type="number" step="100" min="0">
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2.5 pt-2">
-                    <button type="button" id="btn-cancel-adjust" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-canvas text-ink font-sans text-xs sm:text-sm font-bold hover:bg-canvas-soft active:scale-[0.98] transition-all cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-submit-budget" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-sans text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-2xs active:scale-[0.98] transition-all cursor-pointer">Save Changes</button>
+                <div class="flex items-center gap-2.5 pt-2 border-t border-surface-variant/40">
+                    <button type="button" id="btn-cancel-adjust" class="flex-1 px-4 py-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer">Cancel</button>
+                    <button type="submit" id="btn-submit-budget" class="flex-1 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-xs active:scale-[0.98] transition-all cursor-pointer">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -297,6 +491,35 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // ─── Filter State ───
+        let currentSearchQuery = '';
+        let currentCategory = 'all';
+        let currentStatus = 'all';
+        let currentSort = 'default';
+
+        // ─── DOM Elements ───
+        const searchDesktop = document.getElementById('input-search-desktop');
+        const searchMobile = document.getElementById('input-search-mobile');
+        const btnClearSearchMobile = document.getElementById('btn-clear-search-mobile');
+        const selectSortDesktop = document.getElementById('select-sort-desktop');
+        const selectStatusDesktop = document.getElementById('select-status-desktop');
+        const btnClearFiltersDesktop = document.getElementById('btn-clear-filters-desktop');
+        const badgeActiveFiltersMobile = document.getElementById('badge-active-filters-mobile');
+        const categoryCountLabel = document.getElementById('label-category-count');
+        const emptyStateEl = document.getElementById('category-filter-empty-state');
+        const btnResetEmptyFilters = document.getElementById('btn-reset-empty-filters');
+        const cardsGrid = document.getElementById('category-cards-grid');
+
+        // Action Sheet Filter Elements
+        const btnOpenFilterMobile = document.getElementById('btn-open-filter-mobile');
+        const filterSheetWrapper = document.getElementById('action-sheet-filter-mobile');
+        const filterSheetBackdrop = document.getElementById('action-sheet-filter-backdrop');
+        const filterSheetContent = document.getElementById('action-sheet-filter-content');
+        const btnCloseFilterSheet = document.getElementById('btn-close-filter-sheet');
+        const btnSheetReset = document.getElementById('btn-sheet-reset');
+        const btnSheetApply = document.getElementById('btn-sheet-apply');
+
+        // Adjust / New Category Modal Elements
         const modalWrapper = document.getElementById('adjust-modal-wrapper');
         const modalBackdrop = document.getElementById('adjust-modal-backdrop');
         const modalContent = document.getElementById('adjust-modal-content');
@@ -319,16 +542,349 @@
         let selectedIcon = 'category';
         let modalHasBudget = true;
 
+        // ═══════════════════════════════════════
+        // FILTER & SORT ENGINE
+        // ═══════════════════════════════════════
+        function syncUIState() {
+            // 1. Search Inputs Sync
+            if (searchDesktop && searchDesktop.value !== currentSearchQuery) searchDesktop.value = currentSearchQuery;
+            if (searchMobile && searchMobile.value !== currentSearchQuery) searchMobile.value = currentSearchQuery;
+            if (btnClearSearchMobile) {
+                btnClearSearchMobile.classList.toggle('hidden', !currentSearchQuery);
+            }
+
+            // 2. Active Filter Badge Count
+            let activeCount = 0;
+            if (currentCategory !== 'all') activeCount++;
+            if (currentStatus !== 'all') activeCount++;
+            if (currentSort !== 'default') activeCount++;
+            if (currentSearchQuery) activeCount++;
+
+            if (badgeActiveFiltersMobile) {
+                if (activeCount > 0) {
+                    badgeActiveFiltersMobile.textContent = activeCount;
+                    badgeActiveFiltersMobile.classList.remove('hidden');
+                } else {
+                    badgeActiveFiltersMobile.classList.add('hidden');
+                }
+            }
+
+            // 3. Quick Chips Strip Active State
+            document.querySelectorAll('.quick-chip').forEach(chip => {
+                const filterKey = chip.dataset.quickFilter;
+                let isActive = false;
+                if (filterKey === 'all') {
+                    isActive = (currentCategory === 'all');
+                } else if (filterKey && filterKey.startsWith('cat:')) {
+                    const catVal = filterKey.replace('cat:', '');
+                    isActive = (currentCategory.toLowerCase() === catVal.toLowerCase());
+                }
+
+                chip.className = isActive
+                    ? 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest'
+                    : 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95';
+            });
+
+            // 4. Action Sheet Status Pills
+            document.querySelectorAll('.sheet-pill-status').forEach(p => {
+                const isMatch = (p.dataset.sheetStatus === currentStatus);
+                p.className = isMatch
+                    ? 'sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'sheet-pill-status py-2 px-2 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+            });
+
+            // 5. Action Sheet Sort Pills
+            document.querySelectorAll('.sheet-pill-sort').forEach(p => {
+                const isMatch = (p.dataset.sheetSort === currentSort);
+                p.className = isMatch
+                    ? 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between'
+                    : 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between';
+            });
+
+            // 6. Action Sheet Category Chips
+            document.querySelectorAll('.sheet-chip-cat').forEach(c => {
+                const isMatch = (c.dataset.sheetCat.toLowerCase() === currentCategory.toLowerCase());
+                c.className = isMatch
+                    ? 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
+                    : 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
+            });
+
+            // 7. Desktop Selects Sync
+            if (selectSortDesktop && selectSortDesktop.value !== currentSort) selectSortDesktop.value = currentSort;
+            if (selectStatusDesktop && selectStatusDesktop.value !== currentStatus) selectStatusDesktop.value = currentStatus;
+        }
+
+        function applyAllFilters() {
+            const query = currentSearchQuery.toLowerCase().trim();
+            const cards = Array.from(document.querySelectorAll('.category-budget-card'));
+            const addCard = document.getElementById('card-add-category-trigger');
+
+            // Sort cards in DOM
+            cards.sort((a, b) => {
+                const nameA = (a.dataset.category || '').toLowerCase();
+                const nameB = (b.dataset.category || '').toLowerCase();
+                const spentA = parseFloat(a.dataset.spent || '0') || 0;
+                const spentB = parseFloat(b.dataset.spent || '0') || 0;
+                const limitA = parseFloat(a.dataset.target || '0') || 0;
+                const limitB = parseFloat(b.dataset.target || '0') || 0;
+                const pctA = parseFloat(a.dataset.percentage || '0') || 0;
+                const pctB = parseFloat(b.dataset.percentage || '0') || 0;
+
+                if (currentSort === 'name') return nameA.localeCompare(nameB);
+                if (currentSort === 'highest-spent') return spentB - spentA;
+                if (currentSort === 'lowest-spent') return spentA - spentB;
+                if (currentSort === 'highest-limit') return limitB - limitA;
+                if (currentSort === 'highest-pct') return pctB - pctA;
+                return 0; // Default
+            });
+
+            if (cardsGrid) {
+                cards.forEach(card => cardsGrid.appendChild(card));
+                if (addCard) cardsGrid.appendChild(addCard);
+            }
+
+            // Filter cards
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const name = (card.dataset.category || '').toLowerCase();
+                const status = (card.dataset.status || 'ontrack').toLowerCase();
+                const unbudgeted = card.dataset.unbudgeted === 'true';
+
+                const matchQuery = !query || name.includes(query);
+                const matchCat = (currentCategory === 'all') || (name === currentCategory.toLowerCase()) || name.includes(currentCategory.toLowerCase());
+                
+                let matchStatus = true;
+                if (currentStatus === 'ontrack') matchStatus = (status === 'ontrack' && !unbudgeted);
+                else if (currentStatus === 'warning') matchStatus = (status === 'warning');
+                else if (currentStatus === 'exceeded') matchStatus = (status === 'exceeded');
+                else if (currentStatus === 'unbudgeted') matchStatus = unbudgeted;
+
+                if (matchQuery && matchCat && matchStatus) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Update visible category count label
+            if (categoryCountLabel) {
+                categoryCountLabel.textContent = (cards.length > 0)
+                    ? `Showing ${visibleCount} of ${cards.length} Categories`
+                    : '0 Categories';
+            }
+
+            // Show empty state if no matching categories
+            if (emptyStateEl) {
+                if (visibleCount === 0 && cards.length > 0) {
+                    emptyStateEl.classList.remove('hidden');
+                } else {
+                    emptyStateEl.classList.add('hidden');
+                }
+            }
+
+            syncUIState();
+        }
+
+        // Search inputs listeners
+        if (searchDesktop) {
+            searchDesktop.addEventListener('input', (e) => {
+                currentSearchQuery = e.target.value;
+                applyAllFilters();
+            });
+        }
+        if (searchMobile) {
+            searchMobile.addEventListener('input', (e) => {
+                currentSearchQuery = e.target.value;
+                applyAllFilters();
+            });
+        }
+        if (btnClearSearchMobile) {
+            btnClearSearchMobile.addEventListener('click', () => {
+                currentSearchQuery = '';
+                if (searchMobile) searchMobile.value = '';
+                if (searchDesktop) searchDesktop.value = '';
+                applyAllFilters();
+            });
+        }
+
+        // Quick filter chips click handler
+        document.querySelectorAll('.quick-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const filterKey = chip.dataset.quickFilter;
+                if (filterKey === 'all') {
+                    currentCategory = 'all';
+                } else if (filterKey && filterKey.startsWith('cat:')) {
+                    const catVal = filterKey.replace('cat:', '');
+                    currentCategory = (currentCategory.toLowerCase() === catVal.toLowerCase()) ? 'all' : catVal;
+                }
+                applyAllFilters();
+            });
+        });
+
+        // Desktop Selects Listeners
+        if (selectSortDesktop) {
+            selectSortDesktop.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                applyAllFilters();
+            });
+        }
+        if (selectStatusDesktop) {
+            selectStatusDesktop.addEventListener('change', (e) => {
+                currentStatus = e.target.value;
+                applyAllFilters();
+            });
+        }
+
+        function resetAllFilters() {
+            currentSearchQuery = '';
+            currentCategory = 'all';
+            currentStatus = 'all';
+            currentSort = 'default';
+            if (searchDesktop) searchDesktop.value = '';
+            if (searchMobile) searchMobile.value = '';
+            if (selectSortDesktop) selectSortDesktop.value = 'default';
+            if (selectStatusDesktop) selectStatusDesktop.value = 'all';
+            applyAllFilters();
+        }
+
+        if (btnClearFiltersDesktop) btnClearFiltersDesktop.addEventListener('click', resetAllFilters);
+        if (btnResetEmptyFilters) btnResetEmptyFilters.addEventListener('click', resetAllFilters);
+
+        // ═══════════════════════════════════════
+        // MOBILE FILTER ACTION SHEET CONTROLLER
+        // ═══════════════════════════════════════
+        function openFilterSheet() {
+            if (!filterSheetWrapper) return;
+            document.body.style.overflow = 'hidden';
+            filterSheetWrapper.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                if (filterSheetBackdrop) {
+                    filterSheetBackdrop.classList.remove('opacity-0');
+                    filterSheetBackdrop.classList.add('opacity-100');
+                }
+                filterSheetWrapper.classList.remove('opacity-0');
+                filterSheetWrapper.classList.add('opacity-100');
+                if (filterSheetContent) {
+                    filterSheetContent.classList.remove('translate-y-full', 'opacity-0');
+                    filterSheetContent.classList.add('translate-y-0', 'opacity-100');
+                }
+            });
+        }
+
+        function closeFilterSheet() {
+            if (!filterSheetWrapper) return;
+            if (filterSheetBackdrop) {
+                filterSheetBackdrop.classList.remove('opacity-100');
+                filterSheetBackdrop.classList.add('opacity-0');
+            }
+            filterSheetWrapper.classList.remove('opacity-100');
+            filterSheetWrapper.classList.add('opacity-0');
+            if (filterSheetContent) {
+                filterSheetContent.classList.remove('translate-y-0', 'opacity-100');
+                filterSheetContent.classList.add('translate-y-full', 'opacity-0');
+            }
+            setTimeout(() => {
+                filterSheetWrapper.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        if (btnOpenFilterMobile) btnOpenFilterMobile.addEventListener('click', openFilterSheet);
+        if (btnCloseFilterSheet) btnCloseFilterSheet.addEventListener('click', closeFilterSheet);
+        if (filterSheetBackdrop) filterSheetBackdrop.addEventListener('click', closeFilterSheet);
+        if (filterSheetWrapper) {
+            filterSheetWrapper.addEventListener('click', (e) => {
+                if (e.target === filterSheetWrapper) closeFilterSheet();
+            });
+        }
+
+        // Action sheet status pills listener
+        document.querySelectorAll('.sheet-pill-status').forEach(p => {
+            p.addEventListener('click', () => {
+                currentStatus = p.dataset.sheetStatus || 'all';
+                syncUIState();
+            });
+        });
+
+        // Action sheet sort pills listener
+        document.querySelectorAll('.sheet-pill-sort').forEach(p => {
+            p.addEventListener('click', () => {
+                currentSort = p.dataset.sheetSort || 'default';
+                syncUIState();
+            });
+        });
+
+        // Action sheet category chips listener
+        document.querySelectorAll('.sheet-chip-cat').forEach(c => {
+            c.addEventListener('click', () => {
+                currentCategory = c.dataset.sheetCat || 'all';
+                syncUIState();
+            });
+        });
+
+        if (btnSheetReset) {
+            btnSheetReset.addEventListener('click', () => {
+                resetAllFilters();
+                closeFilterSheet();
+            });
+        }
+        if (btnSheetApply) {
+            btnSheetApply.addEventListener('click', () => {
+                applyAllFilters();
+                closeFilterSheet();
+            });
+        }
+
+        // Action Sheet Mobile Drag Down Gesture
+        const filterDragHandle = document.getElementById('filter-sheet-handle');
+        let filterStartY = 0;
+        let filterCurrentY = 0;
+        let isDraggingFilter = false;
+
+        if (filterDragHandle && filterSheetContent) {
+            filterDragHandle.addEventListener('touchstart', (e) => {
+                filterStartY = e.touches[0].clientY;
+                filterCurrentY = filterStartY;
+                isDraggingFilter = true;
+                filterSheetContent.style.transition = 'none';
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDraggingFilter) return;
+                filterCurrentY = e.touches[0].clientY;
+                const deltaY = filterCurrentY - filterStartY;
+                if (deltaY > 0) {
+                    filterSheetContent.style.transform = `translateY(${deltaY}px)`;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                if (!isDraggingFilter) return;
+                isDraggingFilter = false;
+                filterSheetContent.style.transition = '';
+                const deltaY = filterCurrentY - filterStartY;
+                if (deltaY > 80) {
+                    closeFilterSheet();
+                } else {
+                    filterSheetContent.style.transform = '';
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════
+        // ADJUST & NEW CATEGORY MODAL CONTROLLER
+        // ═══════════════════════════════════════
         function setModalBudgetStrategy(hasBudget) {
             modalHasBudget = hasBudget;
             if (hasBudget) {
                 if (btnStratBudget) btnStratBudget.className = 'p-2 rounded-xl border border-primary bg-primary-pale text-positive-deep flex flex-col items-start text-left cursor-pointer transition-all';
-                if (btnStratNoBudget) btnStratNoBudget.className = 'p-2 rounded-xl border border-outline-variant/60 bg-canvas-soft/50 text-body flex flex-col items-start text-left cursor-pointer transition-all';
+                if (btnStratNoBudget) btnStratNoBudget.className = 'p-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/50 text-body flex flex-col items-start text-left cursor-pointer transition-all';
                 if (groupAdjustTarget) groupAdjustTarget.classList.remove('hidden');
                 if (inputTarget) inputTarget.required = true;
             } else {
                 if (btnStratNoBudget) btnStratNoBudget.className = 'p-2 rounded-xl border border-primary bg-primary-pale text-positive-deep flex flex-col items-start text-left cursor-pointer transition-all';
-                if (btnStratBudget) btnStratBudget.className = 'p-2 rounded-xl border border-outline-variant/60 bg-canvas-soft/50 text-body flex flex-col items-start text-left cursor-pointer transition-all';
+                if (btnStratBudget) btnStratBudget.className = 'p-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/50 text-body flex flex-col items-start text-left cursor-pointer transition-all';
                 if (groupAdjustTarget) groupAdjustTarget.classList.add('hidden');
                 if (inputTarget) inputTarget.required = false;
             }
@@ -342,7 +898,7 @@
         iconChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 iconChips.forEach(c => {
-                    c.className = 'icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-canvas-soft text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all';
+                    c.className = 'icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all';
                 });
                 chip.className = 'icon-chip w-9 h-9 rounded-xl border border-primary bg-primary-pale text-positive-deep flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all';
                 selectedIcon = chip.dataset.icon || 'category';
@@ -357,6 +913,14 @@
 
             const isUnbudgeted = options.unbudgeted === true || options.unbudgeted === 'true' || !options.target;
             setModalBudgetStrategy(!isUnbudgeted);
+
+            // Update icon chip active states
+            iconChips.forEach(c => {
+                const isSelected = (c.dataset.icon === selectedIcon);
+                c.className = isSelected
+                    ? 'icon-chip w-9 h-9 rounded-xl border border-primary bg-primary-pale text-positive-deep flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all'
+                    : 'icon-chip w-9 h-9 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-all';
+            });
 
             if (isNewCategoryMode) {
                 if (modalTitle) modalTitle.textContent = 'New Category';
@@ -459,8 +1023,9 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalWrapper && !modalWrapper.classList.contains('hidden')) {
-                closeModal();
+            if (e.key === 'Escape') {
+                if (modalWrapper && !modalWrapper.classList.contains('hidden')) closeModal();
+                if (filterSheetWrapper && !filterSheetWrapper.classList.contains('hidden')) closeFilterSheet();
             }
         });
 
@@ -505,13 +1070,13 @@
             closeModal();
         });
 
-        // Mobile Drag Down to Dismiss Gesture
+        // Mobile Drag Down to Dismiss Gesture for Adjust Modal
         const adjustDragHandle = document.getElementById('adjust-modal-handle');
         let adjustStartY = 0;
         let adjustCurrentY = 0;
         let isDraggingAdjust = false;
 
-        if (adjustDragHandle) {
+        if (adjustDragHandle && modalContent) {
             adjustDragHandle.addEventListener('touchstart', (e) => {
                 adjustStartY = e.touches[0].clientY;
                 adjustCurrentY = adjustStartY;
@@ -534,7 +1099,7 @@
                 modalContent.style.transition = '';
                 const deltaY = adjustCurrentY - adjustStartY;
                 if (deltaY > 80) {
-                    closeAdjustModal();
+                    closeModal();
                 } else {
                     modalContent.style.transform = '';
                 }
