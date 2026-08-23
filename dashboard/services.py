@@ -31,10 +31,10 @@ def get_current_user_profile(request):
     profile, created = UserProfile.objects.get_or_create(
         clerk_user_id=clerk_id,
         defaults={
-            'first_name': 'Juan',
-            'last_name': 'Dela Cruz',
-            'email': 'juan.delacruz@anttipid.ph',
-            'monthly_income_target': Decimal('50000.00'),
+            'first_name': '',
+            'last_name': '',
+            'email': '',
+            'monthly_income_target': Decimal('0.00'),
         }
     )
 
@@ -98,7 +98,7 @@ def get_dashboard_data(profile):
 
     # 2. Monthly Budget stats
     overall_budget = Budget.objects.filter(user=profile, category=None, is_active=True).first()
-    budget_limit = overall_budget.amount_limit if overall_budget else Decimal('20000.00')
+    budget_limit = overall_budget.amount_limit if overall_budget else Decimal('0.00')
     budget_percent = 0
     if budget_limit > 0:
         budget_percent = min(100, int((total_expenses / budget_limit) * 100))
@@ -283,7 +283,7 @@ def get_budget_data(profile, selected_month=None):
     )
 
     total_spent = expense_txs.aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
-    overall_limit = overall_budget.amount_limit if overall_budget else Decimal('20000.00')
+    overall_limit = overall_budget.amount_limit if overall_budget else Decimal('0.00')
     overall_pct = min(100, int((total_spent / overall_limit) * 100)) if overall_limit > 0 else 0
     overall_left = max(Decimal('0.00'), overall_limit - total_spent)
 
@@ -441,7 +441,7 @@ def get_reports_data(profile):
 
         # Y-axis ticks
         if total_exp == 0 and total_inc == 0:
-            y_ticks = ["₱1,000", "₱750", "₱500", "₱0"]
+            y_ticks = ["₱0", "₱0", "₱0", "₱0"]
         else:
             y_step = max_bar / 3.0
             y_ticks = [
@@ -523,8 +523,8 @@ def get_reports_data(profile):
         trend_all_vals = [v for tc in trend_categories for v in tc['values']]
         max_trend_y = max(trend_all_vals + [1.0])
         if total_exp == 0 or not trend_all_vals or max_trend_y <= 1.0:
-            max_trend_y = 1000.0
-            trend_y_ticks = ["₱1,000", "₱750", "₱500", "₱0"]
+            max_trend_y = 1.0
+            trend_y_ticks = ["₱0", "₱0", "₱0", "₱0"]
         else:
             trend_step = max_trend_y / 3.0
             trend_y_ticks = [

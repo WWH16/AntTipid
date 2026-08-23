@@ -101,11 +101,16 @@ def receipt_detail_view(request, pk=None):
     elif profile:
         receipt = Receipt.objects.filter(user=profile).prefetch_related('items').first()
 
+    categories = Category.objects.filter(user=profile).order_by('name') if profile else []
+    accounts = Account.objects.filter(user=profile, is_active=True).order_by('name') if profile else []
+
     context = {
         'active_nav': 'transactions',
         'profile': profile,
         'receipt': receipt,
         'items': receipt.items.all() if receipt else [],
+        'categories': categories,
+        'accounts': accounts,
     }
     return render(request, 'dashboard/receipt_detail.html', context)
 
@@ -135,7 +140,15 @@ def add_transaction_view(request):
             # Resolve Category
             category = None
             if category_name:
-                category = Category.objects.filter(user=profile, name__icontains=category_name).first()
+                category = Category.objects.filter(user=profile, name__iexact=category_name).first()
+                if not category:
+                    category = Category.objects.create(
+                        user=profile,
+                        name=category_name,
+                        category_type=Category.CategoryType.INCOME if tx_type == 'INCOME' else Category.CategoryType.EXPENSE,
+                        icon_name='payments' if tx_type == 'INCOME' else 'shopping_bag',
+                        color_hex='#5C8F3A'
+                    )
 
             with db_transaction.atomic():
                 tx = Transaction.objects.create(
@@ -172,8 +185,15 @@ def add_transaction_view(request):
 
 def scan_receipt_view(request):
     """Render the AI Receipt Scanner & Editor screen."""
+    profile = get_current_user_profile(request)
+    categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE).order_by('name') if profile else []
+    accounts = Account.objects.filter(user=profile, is_active=True).order_by('name') if profile else []
+
     context = {
         'active_nav': 'scan_receipt',
+        'profile': profile,
+        'categories': categories,
+        'accounts': accounts,
         'has_gemini_key': bool(os.getenv('GEMINI_API_KEY')),
     }
     return render(request, 'dashboard/scan_receipt.html', context)
@@ -250,9 +270,17 @@ def api_update_transaction(request, pk):
             tx.transaction_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
 
         if 'category' in data and data['category']:
-            cat = Category.objects.filter(user=profile, name__icontains=data['category']).first()
-            if cat:
-                tx.category = cat
+            cat_name = data['category'].strip()
+            cat = Category.objects.filter(user=profile, name__iexact=cat_name).first()
+            if not cat:
+                cat = Category.objects.create(
+                    user=profile,
+                    name=cat_name,
+                    category_type=Category.CategoryType.INCOME if tx.transaction_type == 'INCOME' else Category.CategoryType.EXPENSE,
+                    icon_name='payments' if tx.transaction_type == 'INCOME' else 'shopping_bag',
+                    color_hex='#5C8F3A'
+                )
+            tx.category = cat
 
         if 'account' in data and data['account']:
             acc = Account.objects.filter(user=profile, name__icontains=data['account'].split()[0]).first()

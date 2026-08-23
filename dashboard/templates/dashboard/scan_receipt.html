@@ -270,7 +270,7 @@
                         </label>
                         <div class="relative flex items-center">
                             <span class="material-symbols-outlined text-[17px] sm:text-[18px] text-on-surface-variant/60 absolute left-3 pointer-events-none">storefront</span>
-                            <input type="text" id="input-review-merchant" class="w-full font-headline-md text-sm sm:text-base font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-9 sm:pl-10 pr-3.5 py-2 sm:py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value="SM Supermarket" placeholder="e.g. SM Supermarket" />
+                            <input type="text" id="input-review-merchant" class="w-full font-headline-md text-sm sm:text-base font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-9 sm:pl-10 pr-3.5 py-2 sm:py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value="" placeholder="e.g. Store or Merchant Name" />
                         </div>
                     </div>
 
@@ -314,16 +314,11 @@
                             <div class="relative flex items-center">
                                 <span class="material-symbols-outlined text-[15px] text-on-surface-variant/60 absolute left-2.5 pointer-events-none">category</span>
                                 <select id="select-review-category" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8 pr-6 py-1.5 sm:py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none min-h-[36px]">
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Food & Dining">Food & Dining</option>
-                                    <option value="Transportation">Transportation</option>
-                                    <option value="Utilities">Utilities</option>
-                                    <option value="Shopping">Shopping</option>
-                                    <option value="Healthcare">Healthcare</option>
-                                    <option value="Housing">Housing & Rent</option>
-                                    <option value="Entertainment">Entertainment</option>
-                                    <option value="Services">Services</option>
-                                    <option value="Other">Other</option>
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                    {% empty %}
+                                    <option value="General">General</option>
+                                    {% endfor %}
                                 </select>
                                 <span class="material-symbols-outlined text-on-surface-variant/60 text-[15px] absolute right-2 pointer-events-none">unfold_more</span>
                             </div>
@@ -568,10 +563,10 @@
         }
 
         let reviewData = {
-            merchant: 'SM Supermarket',
+            merchant: '',
             date: getNowIsoDate(),
             time: getNowIsoTime(),
-            category: 'Groceries',
+            category: '',
             tax: 0.00,
             total: 0.00,
             cash_tendered: 0.00,
@@ -920,7 +915,6 @@
         function populateReviewData(data) {
             // Merchant
             if (data.merchant) merchantInput.value = data.merchant;
-            else if (!merchantInput.value) merchantInput.value = 'SM Supermarket';
 
             // Date: detect from receipt or fallback to current date (editable)
             if (data.date && data.date.trim()) {

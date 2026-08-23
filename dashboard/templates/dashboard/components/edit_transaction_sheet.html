@@ -50,54 +50,18 @@ Usage:
         <div class="flex flex-col gap-2">
             <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
             <div id="edit-category-grid" class="grid grid-cols-4 gap-2">
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Food &amp; Dining">
+                {% for cat in categories %}
+                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="{{ cat.name }}">
                     <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">restaurant</span>
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">{{ cat.icon_name|default:'category' }}</span>
                     </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Food</span>
+                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">{{ cat.name }}</span>
                 </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Transportation">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">directions_car</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Transport</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Shopping">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shopping_bag</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Shopping</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Utilities">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">bolt</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Utilities</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Entertainment">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">movie</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Entertainment</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Groceries">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">local_grocery_store</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Groceries</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Salary">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">payments</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Salary</span>
-                </button>
-                <button type="button" class="edit-category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Others">
-                    <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">category</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Others</span>
-                </button>
+                {% empty %}
+                <div class="col-span-4 text-center py-3 text-xs text-on-surface-variant font-medium bg-surface-container-low/30 rounded-xl border border-outline-variant/40">
+                    No categories created yet.
+                </div>
+                {% endfor %}
             </div>
         </div>
 

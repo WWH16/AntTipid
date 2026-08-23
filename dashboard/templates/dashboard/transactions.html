@@ -49,27 +49,11 @@
                 <button type="button" data-quick-filter="source:receipt" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
                     Receipts
                 </button>
-                <button type="button" data-quick-filter="cat:Groceries" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Groceries
+                {% for cat in categories %}
+                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
+                    {{ cat.name }}
                 </button>
-                <button type="button" data-quick-filter="cat:Dining" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Dining
-                </button>
-                <button type="button" data-quick-filter="cat:Transportation" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Transportation
-                </button>
-                <button type="button" data-quick-filter="cat:Utilities" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Utilities
-                </button>
-                <button type="button" data-quick-filter="cat:Shopping" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Shopping
-                </button>
-                <button type="button" data-quick-filter="cat:Healthcare" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Healthcare
-                </button>
-                <button type="button" data-quick-filter="cat:Housing" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    Housing
-                </button>
+                {% endfor %}
             </div>
         </div>
 
@@ -107,13 +91,9 @@
             <label for="select-category-desktop" class="sr-only">Filter by category</label>
             <select id="select-category-desktop" aria-label="Filter by category" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
                 <option value="all">Category: All</option>
-                <option value="Groceries">Groceries</option>
-                <option value="Dining">Dining</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Income">Salary / Income</option>
-                <option value="Housing">Housing & Rent</option>
+                {% for cat in categories %}
+                <option value="{{ cat.name }}">{{ cat.name }}</option>
+                {% endfor %}
             </select>
 
             <!-- Filter: Source -->
@@ -139,7 +119,7 @@
                         {% for tx in tx_list %}
                         {% if tx.receipt %}
                         <!-- Receipt Item -->
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="{{ tx.category.name|default:'Groceries' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}" data-edit-id="{{ tx.id }}" data-edit-type="expense" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="{{ tx.category.name|default:'Uncategorized' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}" data-edit-id="{{ tx.id }}" data-edit-type="expense" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}">
                             <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
@@ -151,7 +131,7 @@
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:'Groceries' }} • {{ tx.account.name }}</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:'Uncategorized' }} • {{ tx.account.name }}</p>
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
@@ -164,7 +144,7 @@
                         </div>
                         {% else %}
                         <!-- Manual / Transfer Transaction -->
-                        <div class="tx-item relative overflow-hidden" data-source="manual" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
+                        <div class="tx-item relative overflow-hidden" data-source="manual" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:tx.get_transaction_type_display }}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
                             <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
@@ -264,7 +244,7 @@
 
                 <!-- Pagination Footer -->
                 <div class="border-t border-outline-variant/40 p-4 flex items-center justify-between bg-surface-container-lowest">
-                    <span id="tx-pagination-status" class="font-body-sm text-xs text-on-surface-variant font-semibold">Showing 1-11 of 11 items</span>
+                    <span id="tx-pagination-status" class="font-body-sm text-xs text-on-surface-variant font-semibold">{% if transactions %}Showing 1-{{ transactions|length }} of {{ transactions|length }} items{% else %}0 items{% endif %}</span>
                     <div class="flex gap-2">
                         <button class="p-1.5 rounded-lg border border-outline-variant/60 text-on-surface-variant disabled:opacity-40 cursor-pointer" disabled>
                             <span class="material-symbols-outlined text-[18px]">chevron_left</span>
@@ -389,30 +369,11 @@
                     <button type="button" data-sheet-cat="all" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
                         All Categories
                     </button>
-                    <button type="button" data-sheet-cat="Groceries" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Groceries
+                    {% for cat in categories %}
+                    <button type="button" data-sheet-cat="{{ cat.name }}" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
+                        {{ cat.name }}
                     </button>
-                    <button type="button" data-sheet-cat="Dining" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Food & Dining
-                    </button>
-                    <button type="button" data-sheet-cat="Transportation" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Transportation
-                    </button>
-                    <button type="button" data-sheet-cat="Utilities" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Utilities
-                    </button>
-                    <button type="button" data-sheet-cat="Shopping" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Shopping
-                    </button>
-                    <button type="button" data-sheet-cat="Healthcare" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Healthcare
-                    </button>
-                    <button type="button" data-sheet-cat="Housing" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Housing
-                    </button>
-                    <button type="button" data-sheet-cat="Income" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Salary / Income
-                    </button>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -1219,33 +1180,9 @@
             const editCat = (itemEditCat || '').toLowerCase().trim();
 
             if (cat === target || editCat === target) return true;
-            if (cat.includes(target) || editCat.includes(target)) return true;
+            if (cat && target && (cat.includes(target) || target.includes(cat))) return true;
+            if (editCat && target && (editCat.includes(target) || target.includes(editCat))) return true;
 
-            // Handle category synonyms and labels
-            if (target === 'dining') {
-                return cat.includes('dining') || cat.includes('food') || editCat.includes('dining') || editCat.includes('food');
-            }
-            if (target === 'income') {
-                return cat.includes('income') || cat.includes('salary') || editCat.includes('income') || editCat.includes('salary');
-            }
-            if (target === 'groceries') {
-                return cat.includes('grocer') || editCat.includes('grocer');
-            }
-            if (target === 'utilities') {
-                return cat.includes('util') || cat.includes('electric') || cat.includes('water') || cat.includes('bill') || editCat.includes('util');
-            }
-            if (target === 'shopping') {
-                return cat.includes('shop') || editCat.includes('shop');
-            }
-            if (target === 'healthcare') {
-                return cat.includes('health') || cat.includes('pharmacy') || cat.includes('med') || editCat.includes('health');
-            }
-            if (target === 'transportation') {
-                return cat.includes('trans') || cat.includes('grab') || cat.includes('fuel') || cat.includes('gas') || editCat.includes('trans');
-            }
-            if (target === 'housing') {
-                return cat.includes('hous') || cat.includes('rent') || editCat.includes('hous') || editCat.includes('rent');
-            }
             return false;
         }
 

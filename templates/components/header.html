@@ -24,7 +24,7 @@
             <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
         </button>
         <div id="user-avatar" class="hidden md:flex w-9 h-9 rounded-full border border-surface-variant bg-secondary-container items-center justify-center cursor-pointer hover:opacity-90 transition-opacity text-on-secondary-container font-label-md text-xs font-semibold ml-1">
-            JR
+            {% if profile and profile.first_name %}{{ profile.first_name|first|upper }}{% if profile.last_name %}{{ profile.last_name|first|upper }}{% endif %}{% else %}<span class="material-symbols-outlined text-[18px]">person</span>{% endif %}
         </div>
     </div>
 </header>

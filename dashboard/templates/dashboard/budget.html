@@ -368,7 +368,7 @@
                     inputCatName.value = '';
                 }
                 if (groupCatIcon) groupCatIcon.classList.remove('hidden');
-                if (inputTarget) inputTarget.value = options.target || '5000';
+                if (inputTarget) inputTarget.value = options.target || '';
                 if (submitBtn) submitBtn.textContent = 'Create Category';
             } else {
                 if (modalTitle) modalTitle.textContent = `Adjust: ${activeCategoryName}`;
@@ -440,7 +440,7 @@
         const handleNewCategory = () => {
             openModal({
                 isNew: true,
-                target: '5000',
+                target: '',
                 icon: 'shopping_bag',
                 unbudgeted: false
             });
