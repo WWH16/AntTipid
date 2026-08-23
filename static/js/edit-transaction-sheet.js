@@ -153,14 +153,14 @@
             setTimeout(() => {
                 toast.classList.remove('hidden');
                 requestAnimationFrame(() => {
-                    toast.classList.remove('opacity-0');
-                    toast.classList.add('opacity-100');
+                    toast.classList.remove('opacity-0', 'translate-y-2');
+                    toast.classList.add('opacity-100', 'translate-y-0');
                 });
                 setTimeout(() => {
-                    toast.classList.remove('opacity-100');
-                    toast.classList.add('opacity-0');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-2');
                     setTimeout(() => toast.classList.add('hidden'), 300);
-                }, 1600);
+                }, 2200);
             }, 220);
         }
 

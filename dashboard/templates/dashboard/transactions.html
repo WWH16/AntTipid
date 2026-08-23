@@ -433,11 +433,11 @@
 {% include 'dashboard/components/edit_transaction_sheet.html' %}
 
 <!-- Page-load Success Toast (after returning from the Manual Entry / Edit page) -->
-<div id="nav-toast-success" class="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 md:left-auto md:bottom-auto md:top-8 md:right-8 md:translate-x-0 lg:top-10 lg:right-10 z-[110] bg-deep-forest text-white px-4 py-3 md:px-5 md:py-4 md:min-w-[300px] rounded-2xl shadow-2xl flex items-center gap-2 md:gap-3 hidden opacity-0 transition-all duration-300 font-label-sm text-xs md:text-sm border border-surface-variant/40 md:border-primary/30 md:shadow-[0_10px_30px_rgba(35,69,42,0.32)]">
-    <span class="material-symbols-outlined text-soft-green text-[18px] md:text-[24px] shrink-0">check_circle</span>
-    <span id="nav-toast-msg" class="flex-1">Transaction saved</span>
+<div id="nav-toast-success" class="fixed bottom-20 left-1/2 -translate-x-1/2 sm:bottom-auto sm:top-6 sm:right-6 md:top-8 md:right-8 sm:left-auto sm:translate-x-0 z-[130] bg-deep-forest text-white px-4 py-3 md:px-5 md:py-3.5 min-w-[280px] md:min-w-[320px] rounded-2xl shadow-2xl flex items-center gap-2.5 md:gap-3 hidden opacity-0 transition-all duration-300 font-label-sm text-xs md:text-sm border border-surface-variant/40 md:border-primary/30 pointer-events-auto">
+    <span class="material-symbols-outlined text-soft-green text-[18px] md:text-[22px] shrink-0">check_circle</span>
+    <span id="nav-toast-msg" class="flex-1 font-medium">Transaction saved</span>
     <button type="button" id="btn-close-nav-toast" aria-label="Dismiss notification" class="shrink-0 -mr-1 w-6 h-6 md:w-7 md:h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer">
-        <span class="material-symbols-outlined text-[16px] md:text-[19px]">close</span>
+        <span class="material-symbols-outlined text-[16px] md:text-[18px]">close</span>
     </button>
 </div>
 
@@ -559,19 +559,26 @@
             }
             navToast.classList.remove('opacity-100', 'translate-y-0');
             navToast.classList.add('opacity-0', 'translate-y-2');
-            setTimeout(() => navToast.classList.add('hidden'), 300);
+            setTimeout(() => {
+                navToast.classList.add('hidden');
+            }, 300);
         }
 
         function showPageToast(kind) {
             if (!navToast || !navToastMsg) return;
             navToastMsg.textContent = toastMessages[kind] || toastMessages.saved;
 
+            if (navToastHideTimer) {
+                clearTimeout(navToastHideTimer);
+                navToastHideTimer = null;
+            }
+
             navToast.classList.remove('hidden');
             requestAnimationFrame(() => {
-                navToast.classList.remove('opacity-0');
-                navToast.classList.add('opacity-100');
+                navToast.classList.remove('opacity-0', 'translate-y-2');
+                navToast.classList.add('opacity-100', 'translate-y-0');
             });
-            navToastHideTimer = setTimeout(dismissPageToast, 3000);
+            navToastHideTimer = setTimeout(dismissPageToast, 3500);
         }
 
         if (btnCloseNavToast) btnCloseNavToast.addEventListener('click', dismissPageToast);
