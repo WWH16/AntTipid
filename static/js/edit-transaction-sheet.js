@@ -44,7 +44,12 @@
             }
         }
 
+        let currentEditId = null;
+        let currentEditType = 'expense';
+        let currentEditCategory = '';
+
         function setCategory(category) {
+            currentEditCategory = category;
             categoryBtns.forEach(b => {
                 b.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'shadow-xs');
                 b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
@@ -98,6 +103,10 @@
 
         function open(data) {
             data = data || {};
+            currentEditId = data.editId || null;
+            currentEditType = data.editType || 'expense';
+            currentEditCategory = data.editCategory || '';
+
             if (hideTimer) {
                 clearTimeout(hideTimer);
                 hideTimer = null;
@@ -110,8 +119,8 @@
             if (inputDate) inputDate.value = data.editDate || '';
             if (selectAccount && data.editAccount) selectAccount.value = data.editAccount;
             if (inputNotes) inputNotes.value = data.editNotes || '';
-            setType(data.editType || 'expense');
-            setCategory(data.editCategory || '');
+            setType(currentEditType);
+            setCategory(currentEditCategory);
 
             document.body.style.overflow = 'hidden';
             wrapper.classList.remove('hidden');
@@ -161,10 +170,36 @@
         let onSaveCallback = null;
 
         if (saveBtn) {
-            saveBtn.addEventListener('click', () => {
+            saveBtn.addEventListener('click', async () => {
+                const updatedData = {
+                    amount: parseFloat(inputAmount.value) || 0,
+                    title: inputTitle ? inputTitle.value.trim() : '',
+                    type: currentEditType,
+                    category: currentEditCategory,
+                    account: selectAccount ? selectAccount.value : '',
+                    date: inputDate ? inputDate.value : '',
+                    notes: inputNotes ? inputNotes.value.trim() : '',
+                };
+
+                if (currentEditId) {
+                    try {
+                        await fetch(`/api/transactions/${currentEditId}/update/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify(updatedData)
+                        });
+                    } catch (err) {
+                        console.error('Update transaction error:', err);
+                    }
+                }
+
                 close();
-                if (onSaveCallback) onSaveCallback();
-                showToast();
+                if (onSaveCallback) onSaveCallback(updatedData);
+                showToast('Transaction updated');
+                setTimeout(() => window.location.reload(), 500);
             });
         }
 

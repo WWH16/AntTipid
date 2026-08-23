@@ -53,7 +53,7 @@
                     <label for="input-amount" class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.06em] font-bold mb-1">Enter Amount</label>
                     <div class="flex items-center gap-1">
                         <span id="currency-symbol" class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
-                        <input type="number" id="input-amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight" required autofocus>
+                        <input type="number" id="input-amount" aria-label="Enter Amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight" required autofocus>
                     </div>
 
                     <!-- Quick Amount Preset Chips -->
@@ -69,69 +69,21 @@
                 <div class="flex flex-col gap-2">
                     <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
                     <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
-                        <!-- Food & Dining -->
-                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="Food & Dining" aria-pressed="true">
+                        {% for cat in categories %}
+                        <button type="button" class="category-btn {% if forloop.first %}active border-deep-forest bg-primary-pale text-deep-forest{% else %}border-surface-variant/60 bg-surface-container-low/40 text-on-surface-variant{% endif %} flex flex-col items-center gap-1.5 p-2.5 rounded-xl border shadow-xs transition-all text-center group cursor-pointer" data-category="{{ cat.name }}" data-type="{{ cat.category_type }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+                            <div class="w-9 h-9 rounded-xl {% if forloop.first %}bg-primary text-on-primary{% else %}bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high{% endif %} flex items-center justify-center transition-colors shadow-xs">
+                                <span class="material-symbols-outlined text-[20px]">{{ cat.icon_name }}</span>
+                            </div>
+                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">{{ cat.name }}</span>
+                        </button>
+                        {% empty %}
+                        <button type="button" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="General" data-type="EXPENSE" aria-pressed="true">
                             <div class="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;">restaurant</span>
+                                <span class="material-symbols-outlined text-[20px]">payments</span>
                             </div>
-                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">Food</span>
+                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">General</span>
                         </button>
-
-                        <!-- Transportation -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Transportation" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">directions_car</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Transport</span>
-                        </button>
-
-                        <!-- Shopping -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Shopping" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shopping_bag</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Shopping</span>
-                        </button>
-
-                        <!-- Utilities -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Utilities" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">bolt</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Utilities</span>
-                        </button>
-
-                        <!-- Entertainment -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Entertainment" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">movie</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Entertainment</span>
-                        </button>
-
-                        <!-- Groceries -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Groceries" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">local_grocery_store</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Groceries</span>
-                        </button>
-
-                        <!-- Salary / Income -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Salary" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">payments</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Salary</span>
-                        </button>
-
-                        <!-- Others -->
-                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-surface-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all text-center group cursor-pointer" data-category="Others" aria-pressed="false">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-surface-container-high transition-colors">
-                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">category</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-medium leading-tight truncate w-full">Others</span>
-                        </button>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -162,11 +114,11 @@
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
                             <select id="select-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
-                                <option value="Cash">Cash Wallet</option>
-                                <option value="GCash">GCash</option>
-                                <option value="Maya">Maya</option>
-                                <option value="Bank Account">BPI Bank Account</option>
-                                <option value="Credit Card">BDO Credit Card</option>
+                                {% for acc in accounts %}
+                                <option value="{{ acc.name }}">{{ acc.name }} (₱{{ acc.current_balance|floatformat:2 }})</option>
+                                {% empty %}
+                                <option value="Cash Wallet">Cash Wallet</option>
+                                {% endfor %}
                             </select>
                             <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[18px] pointer-events-none">expand_more</span>
                         </div>
@@ -259,24 +211,61 @@
             });
         });
 
+        // Category Buttons
+        const categoryBtns = document.querySelectorAll('.category-btn');
+
+        function updateCategoryGridForType(selectedType) {
+            const upperType = selectedType.toUpperCase();
+            let firstVisible = null;
+            categoryBtns.forEach(btn => {
+                const btnType = (btn.dataset.type || 'EXPENSE').toUpperCase();
+                if (upperType === 'TRANSFER' || btnType === upperType) {
+                    btn.classList.remove('hidden');
+                    if (!firstVisible) firstVisible = btn;
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+            const currentActive = document.querySelector('.category-btn.active:not(.hidden)');
+            if (!currentActive && firstVisible) {
+                firstVisible.click();
+            }
+        }
+
         // Segmented Type Tabs (Expense / Income / Transfer)
         const typeTabs = document.querySelectorAll('.type-tab');
         typeTabs.forEach(tab => {
             tab.addEventListener('click', () => {
+                const selectedType = tab.dataset.type || 'expense';
                 typeTabs.forEach(t => {
-                    t.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant/60', 'shadow-xs', 'font-semibold');
-                    t.classList.add('text-on-surface-variant', 'font-medium');
+                    t.classList.remove('bg-expense/15', 'text-expense', 'border-expense/30', 'bg-primary-pale', 'text-positive-deep', 'border-positive/30', 'bg-warning/15', 'text-amber-800', 'border-warning/30', 'font-bold', 'border', 'shadow-xs');
+                    t.classList.add('text-body', 'font-medium');
                     t.setAttribute('aria-pressed', 'false');
                 });
-                tab.classList.add('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant/60', 'shadow-xs', 'font-semibold');
-                tab.classList.remove('text-on-surface-variant', 'font-medium');
+
+                if (selectedType === 'expense') {
+                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs', 'font-bold');
+                } else if (selectedType === 'income') {
+                    tab.classList.add('bg-primary-pale', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs', 'font-bold');
+                } else {
+                    tab.classList.add('bg-warning/15', 'text-amber-800', 'border', 'border-warning/30', 'shadow-xs', 'font-bold');
+                }
+                tab.classList.remove('text-body', 'font-medium');
                 tab.setAttribute('aria-pressed', 'true');
+
+                const submitBtn = document.getElementById('btn-save-transaction');
+                if (submitBtn) {
+                    const label = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+                    submitBtn.textContent = `Save ${label}`;
+                }
+
+                updateCategoryGridForType(selectedType);
                 markDirty();
             });
         });
 
-        // Category Buttons
-        const categoryBtns = document.querySelectorAll('.category-btn');
+        // Initialize category grid for default type
+        updateCategoryGridForType('expense');
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 categoryBtns.forEach(b => {
@@ -561,12 +550,70 @@
                 if (catBtn) catBtn.click();
             }
 
-            const submitLabel = document.querySelector('#btn-save-transaction span:last-child');
-            if (submitLabel) submitLabel.textContent = 'Save Changes';
-
             // Pre-filling existing data shouldn't count as an unsaved edit
             isFormDirty = false;
         })();
+
+        // Handle Save Transaction Form Submission to Backend API
+        const saveBtn = document.getElementById('btn-save-transaction');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                const amount = parseFloat(inputAmount.value);
+                if (isNaN(amount) || amount <= 0) {
+                    inputAmount.focus();
+                    return;
+                }
+
+                const title = inputTitle.value.trim() || 'Untitled Transaction';
+                const activeTypeTab = document.querySelector('.type-tab[aria-pressed="true"]');
+                const txType = activeTypeTab ? activeTypeTab.dataset.type : 'expense';
+                const activeCatBtn = document.querySelector('.category-btn[aria-pressed="true"]');
+                const category = activeCatBtn ? activeCatBtn.dataset.category : '';
+                const account = selectAccount ? selectAccount.value : 'Cash Wallet';
+                const dateVal = inputDate && inputDate.value ? inputDate.value : new Date().toISOString().split('T')[0];
+                const notes = inputNotes ? inputNotes.value.trim() : '';
+
+                try {
+                    saveBtn.disabled = true;
+                    saveBtn.classList.add('opacity-70', 'cursor-wait');
+
+                    const params = new URLSearchParams(window.location.search);
+                    const editId = params.get('edit');
+                    const endpoint = isEditMode && editId ? `/api/transactions/${editId}/update/` : '{% url "api_create_transaction" %}';
+
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({
+                            amount,
+                            title,
+                            type: txType,
+                            category,
+                            account,
+                            date: dateVal,
+                            notes,
+                        }),
+                    });
+
+                    const result = await response.json();
+                    if (result.success || response.ok) {
+                        isFormDirty = false;
+                        window.location.href = "{% url 'transactions' %}";
+                    } else {
+                        alert(result.error || 'Failed to save transaction.');
+                        saveBtn.disabled = false;
+                        saveBtn.classList.remove('opacity-70', 'cursor-wait');
+                    }
+                } catch (err) {
+                    console.error('Save transaction error:', err);
+                    isFormDirty = false;
+                    window.location.href = "{% url 'transactions' %}";
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

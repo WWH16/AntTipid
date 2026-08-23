@@ -56,24 +56,26 @@
                         <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                             <!-- Category Icon Avatar -->
                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_cart</span>
+                                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">{{ receipt.category.icon_name|default:'shopping_cart' }}</span>
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                    <h1 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest tracking-tight truncate">SM Supermarket BGC</h1>
-                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-label-sm text-[10px] sm:text-[11px] font-bold border border-emerald-500/20">Groceries</span>
+                                    <h1 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest tracking-tight truncate">{{ receipt.merchant_name }}</h1>
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-label-sm text-[10px] sm:text-[11px] font-bold border border-emerald-500/20">{{ receipt.category.name|default:'Groceries' }}</span>
                                 </div>
                                 <p class="font-body-sm text-[11px] sm:text-xs text-body flex items-center gap-1.5 mt-0.5 font-medium flex-wrap">
                                     <span class="material-symbols-outlined text-[13px] sm:text-[14px]">event</span>
-                                    <span>Oct 24, 2026 • 2:30 PM</span>
+                                    <span>{{ receipt.receipt_date|date:"M d, Y" }}</span>
+                                    {% if receipt.tax_number %}
                                     <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                                    <span class="text-body/80 text-[10px] sm:text-[11px]">OR #0092-4821</span>
+                                    <span class="text-body/80 text-[10px] sm:text-[11px]">TIN: {{ receipt.tax_number }}</span>
+                                    {% endif %}
                                 </p>
                             </div>
                         </div>
 
                         <!-- Detected Items Badge -->
-                        <span id="items-count-badge" class="self-start sm:self-center font-label-sm text-[11px] sm:text-xs text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 sm:py-1 rounded-full border border-positive/30 shrink-0">5 Items Detected</span>
+                        <span id="items-count-badge" class="self-start sm:self-center font-label-sm text-[11px] sm:text-xs text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 sm:py-1 rounded-full border border-positive/30 shrink-0">{{ items|length }} Items Detected</span>
                     </div>
 
                     <!-- Items Table -->
@@ -100,18 +102,18 @@
                     <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex flex-col gap-1.5">
                         <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
                             <span>Subtotal (VAT Exclusive)</span>
-                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱1,114.73</span>
+                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱{{ receipt.subtotal_amount|default:receipt.total_amount|floatformat:2 }}</span>
                         </div>
                         <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
                             <span>VAT (12%)</span>
-                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱133.77</span>
+                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱{{ receipt.tax_amount|default:"0.00"|floatformat:2 }}</span>
                         </div>
                         <div class="border-t border-outline-variant/40 pt-2.5 mt-1 flex justify-between items-end">
                             <div>
                                 <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
                                 <span class="font-label-sm text-[10px] text-body font-medium">Philippine Peso (PHP)</span>
                             </div>
-                            <span id="receipt-total" class="font-headline-lg text-lg sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">-₱1,248.50</span>
+                            <span id="receipt-total" class="font-headline-lg text-lg sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">-₱{{ receipt.total_amount|floatformat:2 }}</span>
                         </div>
                     </div>
                 </div>
@@ -135,7 +137,7 @@
 
                     <!-- Receipt Image Container -->
                     <div class="rounded-xl overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] cursor-pointer" id="receipt-preview-container" title="Tap to enlarge receipt">
-                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80"/>
+                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="{% if receipt.image %}{{ receipt.image.url }}{% elif receipt.image_url %}{{ receipt.image_url }}{% else %}https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80{% endif %}"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                 </div>
@@ -144,12 +146,14 @@
                 <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 shadow-xs flex flex-col gap-2">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold">Payment</span>
-                        <span class="font-bold text-deep-forest text-xs">Visa ••4821</span>
+                        <span class="font-bold text-deep-forest text-xs">{{ receipt.payment_method|default:'Cash Wallet' }}</span>
                     </div>
+                    {% if receipt.note %}
                     <div class="flex items-start justify-between text-xs border-t border-outline-variant/30 pt-2">
                         <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold shrink-0 mr-2">Note</span>
-                        <span class="font-body-sm text-[11px] text-on-surface-variant italic text-right font-medium">"Weekly grocery restock at SM Supermarket BGC."</span>
+                        <span class="font-body-sm text-[11px] text-on-surface-variant italic text-right font-medium">"{{ receipt.note }}"</span>
                     </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -221,13 +225,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         // ─── Initial Data & Variables ───
         const TAX_RATE = 0.12; // 12% VAT
-        let receiptItems = [
-            { description: 'Organic Hass Avocados (3 pcs)', qty: 1, unitPrice: 285.00 },
-            { description: 'Almond Milk, Unsweetened 1L', qty: 2, unitPrice: 195.00 },
-            { description: 'Free Range Eggs (Dozen)', qty: 1, unitPrice: 220.00 },
-            { description: 'Artisan Sourdough Loaf', qty: 1, unitPrice: 185.00 },
-            { description: 'Organic Baby Spinach 250g', qty: 1, unitPrice: 168.50 },
-        ];
+        let receiptItems = {{ items_json|safe|default:"[]" }};
+        if (!receiptItems || receiptItems.length === 0) {
+            receiptItems = [
+                { description: '{{ receipt.merchant_name|default:"General Item" }}', qty: 1, unitPrice: {{ receipt.total_amount|default:"0.00" }} }
+            ];
+        }
         let isEditingItems = false;
 
         // Action Buttons
@@ -403,10 +406,23 @@
         if (editBtn) editBtn.addEventListener('click', enterEditMode);
         if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
         if (saveEditBtn) {
-            saveEditBtn.addEventListener('click', () => {
+            saveEditBtn.addEventListener('click', async () => {
                 commitEditsFromDOM();
                 recalcAndRenderTotals();
                 exitEditMode();
+
+                try {
+                    await fetch('{% url "api_update_receipt_items" receipt.id %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ items: receiptItems })
+                    });
+                } catch (err) {
+                    console.error('Update receipt items error:', err);
+                }
             });
         }
         if (addItemBtn) {
@@ -533,8 +549,18 @@
             });
         }
         if (confirmDeleteBtn) {
-            confirmDeleteBtn.addEventListener('click', () => {
-                window.location.href = "{% url 'transactions' %}?mode=receipts";
+            confirmDeleteBtn.addEventListener('click', async () => {
+                try {
+                    await fetch('{% url "api_delete_receipt" receipt.id %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+                } catch (err) {
+                    console.error('Delete receipt error:', err);
+                }
+                window.location.href = "{% url 'transactions' %}";
             });
         }
         document.addEventListener('keydown', (e) => {

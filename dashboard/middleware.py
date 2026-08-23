@@ -65,7 +65,7 @@ class ClerkAuthenticationMiddleware:
         if not is_exempt and not request.clerk_user_id:
             # ⚠️ TODO (DEPLOYMENT REMINDER): Remove or disable this preview bypass before deploying to production.
             # Used only for local UI testing / headless browser developer tool inspection.
-            if settings.DEBUG and request.GET.get('preview') == 'true':
+            if settings.DEBUG and (request.GET.get('preview') == 'true' or 'preview=true' in request.META.get('HTTP_REFERER', '')):
                 return self.get_response(request)
 
             # If AJAX or API request, return HTTP 401 Unauthorized

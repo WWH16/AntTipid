@@ -14,11 +14,11 @@
         <div class="flex justify-between items-center gap-3">
             <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h2 id="dashboard-user-greeting" class="font-headline-lg text-lg sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight leading-tight truncate" title="Good morning!">
-                        Good morning! 👋
+                    <h2 id="dashboard-user-greeting" class="font-headline-lg text-lg sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight leading-tight truncate" title="Welcome back!">
+                        {% if profile and profile.first_name %}Hello, {{ profile.first_name }}! 👋{% else %}Good day! 👋{% endif %}
                     </h2>
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-low border border-outline-variant/60 text-[10px] sm:text-[11px] font-bold text-body shrink-0">
-                        Aug 2026
+                        {{ current_month_name|default:"This Month" }}
                     </span>
                 </div>
             </div>
@@ -37,18 +37,17 @@
         <!-- ═══════════════════════════════════════ -->
         <section aria-label="Financial Summary Overview" class="flex flex-col gap-2">
             
-            <!-- Sliding Track on Mobile (Full width, level with bottom cards) / 3-Column Grid on sm+ -->
+            <!-- Sliding Track on Mobile / 3-Column Grid on sm+ -->
             <div class="relative w-full" id="summary-carousel-viewport" aria-roledescription="carousel" aria-label="Financial Summary Cards" role="region">
                 <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-4 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
                     
                     <!-- Card 1: Net Cash Flow (Primary Anchor) -->
                     <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <!-- Logo Silhouette Watermark (Upper Right) -->
                         <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.09] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.14]" aria-hidden="true" />
 
                         <!-- Attached Right Border Badge -->
                         <div class="absolute top-3.5 sm:top-4 right-0 z-20">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-white/95 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-positive/30 shadow-xs whitespace-nowrap inline-flex items-center">+58% saved</span>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-white/95 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-positive/30 shadow-xs whitespace-nowrap inline-flex items-center">+{{ saved_percent }}% saved</span>
                         </div>
 
                         <!-- Card Header / Title -->
@@ -61,8 +60,10 @@
                         <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
                                 <a href="{% url 'reports' %}" class="block group/link focus:outline-none" aria-label="View Net Cash Flow reports">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">+₱11,550.00</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱20,000 in · ₱8,450 out</span>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">
+                                        {% if net_cash_flow >= 0 %}+₱{{ net_cash_flow|floatformat:2 }}{% else %}-₱{{ net_cash_flow|floatformat:2 }}{% endif %}
+                                    </p>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱{{ total_income|floatformat:0 }} in · ₱{{ total_expenses|floatformat:0 }} out</span>
                                 </a>
                             </div>
                             <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Transaction">
@@ -74,15 +75,8 @@
 
                     <!-- Card 2: Total Income -->
                     <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <!-- Logo Silhouette Watermark (Upper Right) -->
                         <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
 
-                        <!-- Attached Right Border Badge -->
-                        <div class="absolute top-3.5 sm:top-4 right-0 z-20">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-positive/30 shadow-xs whitespace-nowrap inline-flex items-center">+₱5,000 vs last mo</span>
-                        </div>
-
-                        <!-- Card Header / Title -->
                         <div class="flex items-center gap-2.5 relative z-10 pr-28 sm:pr-32">
                             <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-[18px]">payments</span>
@@ -91,12 +85,12 @@
                         </div>
                         <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
-                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none" aria-label="View Income history">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱20,000.00</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">1 active income source</span>
+                                <a href="{% url 'transactions' %}?type=income" class="block group/link focus:outline-none" aria-label="View Income history">
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱{{ total_income|floatformat:2 }}</p>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Recorded this month</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" aria-label="View income transaction history" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Income History">
+                            <a href="{% url 'transactions' %}?type=income" aria-label="View income transaction history" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Income History">
                                 <span>History</span>
                                 <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                             </a>
@@ -105,15 +99,12 @@
 
                     <!-- Card 3: Total Expenses -->
                     <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40 relative overflow-hidden">
-                        <!-- Logo Silhouette Watermark (Upper Right) -->
                         <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
 
-                        <!-- Attached Right Border Badge -->
                         <div class="absolute top-3.5 sm:top-4 right-0 z-20">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/20 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-expense/30 shadow-xs whitespace-nowrap inline-flex items-center">42% of budget</span>
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/20 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-expense/30 shadow-xs whitespace-nowrap inline-flex items-center">{{ budget_percent }}% of budget</span>
                         </div>
 
-                        <!-- Card Header / Title -->
                         <div class="flex items-center gap-2.5 relative z-10 pr-24 sm:pr-28">
                             <div class="w-8 h-8 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
@@ -122,12 +113,12 @@
                         </div>
                         <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
-                                <a href="{% url 'transactions' %}" class="block group/link focus:outline-none" aria-label="View expense breakdown">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱8,450.00</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across 4 categories</span>
+                                <a href="{% url 'transactions' %}?type=expense" class="block group/link focus:outline-none" aria-label="View expense breakdown">
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱{{ total_expenses|floatformat:2 }}</p>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across active categories</span>
                                 </a>
                             </div>
-                            <a href="{% url 'transactions' %}" aria-label="View all expense transactions" class="inline-flex items-center gap-1.5 bg-expense hover:bg-expense-dark text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Expense Breakdown">
+                            <a href="{% url 'transactions' %}?type=expense" aria-label="View all expense transactions" class="inline-flex items-center gap-1.5 bg-expense hover:bg-expense-dark text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Expense Breakdown">
                                 <span>View</span>
                                 <span class="material-symbols-outlined text-[14px] text-white font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                             </a>
@@ -164,7 +155,7 @@
                     <div class="flex justify-between items-center gap-3">
                         <div>
                             <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight">Monthly Budget</h3>
-                            <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱8,450.00 spent of ₱20,000.00</p>
+                            <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_spent|floatformat:2 }} spent of ₱{{ budget_limit|floatformat:2 }}</p>
                         </div>
                         <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
                             <span>Manage</span>
@@ -175,14 +166,14 @@
                     <!-- Progress Bar & Status -->
                     <div class="space-y-2">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-deep-forest">42% spent <span class="font-normal text-body">· ₱11,550.00 left</span></span>
-                            <span class="font-bold text-positive-deep flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></span>
-                                On Track
+                            <span class="font-bold text-deep-forest">{{ budget_percent }}% spent <span class="font-normal text-body">· ₱{{ budget_left|floatformat:2 }} left</span></span>
+                            <span class="font-bold {% if budget_on_track %}text-positive-deep{% else %}text-expense{% endif %} flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full {% if budget_on_track %}bg-positive{% else %}bg-expense{% endif %} animate-pulse"></span>
+                                {% if budget_on_track %}On Track{% else %}Over Limit{% endif %}
                             </span>
                         </div>
                         <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden border border-outline-variant/40">
-                            <div class="bg-warning h-full rounded-full transition-all duration-500" style="width: 42%"></div>
+                            <div class="{% if budget_on_track %}bg-warning{% else %}bg-expense{% endif %} h-full rounded-full transition-all duration-500" style="width: {{ budget_percent }}%"></div>
                         </div>
                     </div>
 
@@ -190,72 +181,27 @@
                     <div class="space-y-2.5 sm:space-y-3.5 border-t border-outline-variant/40 pt-3.5 sm:pt-4">
                         <div class="flex justify-between items-center">
                             <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Category Spending Breakdown</h4>
-                            <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱8,450.00 Total</span>
+                            <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱{{ total_expenses|floatformat:2 }} Total</span>
                         </div>
                         
-                        <!-- Food & Dining -->
+                        {% for cat in category_breakdown %}
                         <div class="flex items-center gap-3 group p-2 -mx-2 rounded-xl hover:bg-surface-container-low/50 active:bg-surface-container-low transition-colors">
-                            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">restaurant</span>
+                            <div class="w-9 h-9 rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform" style="color: {{ cat.color }};">
+                                <span class="material-symbols-outlined text-[18px]">{{ cat.icon }}</span>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between font-label-sm text-xs mb-1.5">
-                                    <span class="text-deep-forest font-bold">Food & Dining</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱4,500.00 <span class="text-body font-medium text-[11px]">(53%)</span></span>
+                                    <span class="text-deep-forest font-bold">{{ cat.name }}</span>
+                                    <span class="text-deep-forest font-extrabold tabular-nums">₱{{ cat.spent|floatformat:2 }} <span class="text-body font-medium text-[11px]">({{ cat.percentage }}%)</span></span>
                                 </div>
                                 <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-                                    <div class="h-full bg-expense rounded-full transition-all duration-500" style="width: 53%"></div>
+                                    <div class="h-full rounded-full transition-all duration-500" style="width: {{ cat.percentage }}%; background-color: {{ cat.color }};"></div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Transportation -->
-                        <div class="flex items-center gap-3 group p-2 -mx-2 rounded-xl hover:bg-surface-container-low/50 active:bg-surface-container-low transition-colors">
-                            <div class="w-9 h-9 rounded-xl bg-warning/15 text-amber-800 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">directions_car</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between font-label-sm text-xs mb-1.5">
-                                    <span class="text-deep-forest font-bold">Transportation</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱1,800.00 <span class="text-body font-medium text-[11px]">(21%)</span></span>
-                                </div>
-                                <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-                                    <div class="h-full bg-warning rounded-full transition-all duration-500" style="width: 21%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Shopping -->
-                        <div class="flex items-center gap-3 group p-2 -mx-2 rounded-xl hover:bg-surface-container-low/50 active:bg-surface-container-low transition-colors">
-                            <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-700 border border-rose-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between font-label-sm text-xs mb-1.5">
-                                    <span class="text-deep-forest font-bold">Shopping</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱1,200.00 <span class="text-body font-medium text-[11px]">(14%)</span></span>
-                                </div>
-                                <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-                                    <div class="h-full bg-rose-600 rounded-full transition-all duration-500" style="width: 14%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bills & Utilities -->
-                        <div class="flex items-center gap-3 group p-2 -mx-2 rounded-xl hover:bg-surface-container-low/50 active:bg-surface-container-low transition-colors">
-                            <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">bolt</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between font-label-sm text-xs mb-1.5">
-                                    <span class="text-deep-forest font-bold">Bills & Utilities</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱950.00 <span class="text-body font-medium text-[11px]">(11%)</span></span>
-                                </div>
-                                <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-                                    <div class="h-full bg-sky-600 rounded-full transition-all duration-500" style="width: 11%"></div>
-                                </div>
-                            </div>
-                        </div>
+                        {% empty %}
+                        <p class="text-xs text-body font-medium py-3 text-center">No category spending recorded this month yet.</p>
+                        {% endfor %}
                     </div>
                 </section>
             </div>
@@ -270,47 +216,25 @@
                             <h3 id="heading-weekly-spending" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Weekly Spending</h3>
                             <p class="font-body-sm text-[11px] text-body">Spending by calendar week</p>
                         </div>
-                        <select id="select-chart-period" aria-label="Select spending period" class="bg-surface-container-low border border-outline-variant/60 rounded-xl font-label-sm text-xs text-deep-forest py-1.5 px-2.5 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer font-bold">
-                            <option>This Month</option>
-                            <option>Last Month</option>
-                        </select>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-surface-container-low font-label-sm text-[11px] text-deep-forest font-bold">This Month</span>
                     </div>
 
                     <!-- Bar Chart Visualizer -->
                     <div class="flex items-end justify-between gap-3 pt-3 border-t border-outline-variant/40 h-28 sm:h-32" role="img" aria-label="Bar chart showing weekly spending for the month">
+                        {% for w in weekly_spending %}
                         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
-                            <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱4.0k</span>
-                            <div class="w-full bg-primary/30 hover:bg-primary/60 rounded-t-lg h-10 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 1 spending: ₱4,000">
-                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 1: ₱4,000</div>
+                            <span class="text-[10px] text-body font-medium md:hidden tabular-nums">{{ w.amount_k }}</span>
+                            <div class="w-full bg-primary/40 hover:bg-primary/80 rounded-t-lg transition-all cursor-pointer relative group" style="height: {{ w.height_pct }}%;" tabindex="0" aria-label="{{ w.week_label }} spending: ₱{{ w.amount|floatformat:2 }}">
+                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">{{ w.week_label }}: ₱{{ w.amount|floatformat:2 }}</div>
                             </div>
-                            <span class="font-label-sm text-xs text-deep-forest font-bold">W1</span>
+                            <span class="font-label-sm text-xs text-deep-forest font-bold">{{ w.week_label }}</span>
                         </div>
-                        <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
-                            <span class="text-[10px] text-deep-forest font-bold md:hidden tabular-nums">₱8.5k</span>
-                            <div class="w-full bg-primary rounded-t-lg h-20 hover:bg-primary/90 transition-colors cursor-pointer relative group shadow-xs" tabindex="0" aria-label="Week 2 spending: ₱8,500">
-                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 2: ₱8,500</div>
-                            </div>
-                            <span class="font-label-sm text-xs text-deep-forest font-bold">W2</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
-                            <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱6.0k</span>
-                            <div class="w-full bg-primary/60 hover:bg-primary/80 rounded-t-lg h-14 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 3 spending: ₱6,000">
-                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 3: ₱6,000</div>
-                            </div>
-                            <span class="font-label-sm text-xs text-deep-forest font-bold">W3</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
-                            <span class="text-[10px] text-body font-medium md:hidden tabular-nums">₱5.0k</span>
-                            <div class="w-full bg-primary/40 hover:bg-primary/60 rounded-t-lg h-12 transition-colors cursor-pointer relative group" tabindex="0" aria-label="Week 4 spending: ₱5,000">
-                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">Week 4: ₱5,000</div>
-                            </div>
-                            <span class="font-label-sm text-xs text-deep-forest font-bold">W4</span>
-                        </div>
+                        {% endfor %}
                     </div>
 
                     <div class="flex justify-between items-center text-[11px] text-body pt-2 border-t border-outline-variant/30 font-medium">
-                        <span>Average: <strong class="text-deep-forest font-bold">₱5,875 / week</strong></span>
-                        <span class="text-positive-deep font-bold">4 weeks logged</span>
+                        <span>Total: <strong class="text-deep-forest font-bold">₱{{ total_expenses|floatformat:2 }}</strong></span>
+                        <span class="text-positive-deep font-bold">Active Month</span>
                     </div>
                 </section>
 
@@ -326,61 +250,30 @@
                         </a>
                     </div>
                     <div class="flex flex-col divide-y divide-outline-variant/30">
-                        <!-- Transaction 1: Salary Deposit (Income) -->
-                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Salary Deposit, Income, plus 35,000 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        {% for tx in recent_transactions %}
+                        <a href="{% url 'transactions' %}" aria-label="Transaction details for {{ tx.title }}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                                <div class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-[18px]">
+                                        {% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'shopping_bag' }}{% endif %}
+                                    </span>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">Salary Deposit</p>
-                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">Income · Today</p>
+                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
+                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">
+                                        {{ tx.category.name|default:tx.get_transaction_type_display }} · {{ tx.transaction_date|date:"M d" }}
+                                    </p>
                                 </div>
                             </div>
-                            <span class="font-label-md text-xs sm:text-sm text-positive-deep font-extrabold whitespace-nowrap ml-2 tabular-nums">+₱35,000.00</span>
+                            <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap ml-2 tabular-nums">
+                                {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
+                            </span>
                         </a>
-
-                        <!-- Transaction 2: Meralco Electric (Expense) -->
-                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Meralco Electric, Utilities, minus 1,205 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">bolt</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-expense transition-colors">Meralco Electric</p>
-                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">Utilities · Yesterday</p>
-                                </div>
-                            </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱1,205.00</span>
-                        </a>
-
-                        <!-- Transaction 3: Jollibee (Expense) -->
-                        <a href="{% url 'transactions' %}" aria-label="Transaction details for Jollibee, Food, minus 250 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">restaurant</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-expense transition-colors">Jollibee</p>
-                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">Food · Aug 13</p>
-                                </div>
-                            </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱250.00</span>
-                        </a>
-
-                        <!-- Transaction 4: SM Supermarket (Expense) -->
-                        <a href="{% url 'transactions' %}" aria-label="Transaction details for SM Supermarket, Groceries, minus 842 pesos" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-expense transition-colors">SM Supermarket</p>
-                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">Groceries · Aug 12</p>
-                                </div>
-                            </div>
-                            <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱842.00</span>
-                        </a>
+                        {% empty %}
+                        <div class="p-6 text-center text-xs text-body font-medium">
+                            No transactions recorded yet. <a href="{% url 'add_transaction' %}" class="text-positive-deep font-bold underline">Add your first transaction</a>!
+                        </div>
+                        {% endfor %}
                     </div>
                 </section>
             </div>
@@ -420,7 +313,6 @@
             });
         }
 
-        // Smooth scroll to slide by index without page-jumping
         function scrollToSlide(index) {
             if (window.innerWidth >= 640 || !slides[index]) return;
             const targetLeft = slides[index].offsetLeft;
@@ -428,7 +320,6 @@
             updateActiveDot(index);
         }
 
-        // Indicator dot clicks
         dots.forEach((dot) => {
             dot.addEventListener('click', () => {
                 const index = parseInt(dot.getAttribute('data-slide-index'), 10);
@@ -436,7 +327,6 @@
             });
         });
 
-        // Sync active dot on scroll with center-distance algorithm
         let isTicking = false;
         track.addEventListener('scroll', () => {
             if (window.innerWidth >= 640) return;
@@ -450,98 +340,19 @@
                     slides.forEach((slide, idx) => {
                         const slideRect = slide.getBoundingClientRect();
                         const slideCenter = slideRect.left + slideRect.width / 2;
-                        const distance = Math.abs(slideCenter - trackCenter);
-                        if (distance < minDistance) {
-                            minDistance = distance;
+                        const dist = Math.abs(trackCenter - slideCenter);
+                        if (dist < minDistance) {
+                            minDistance = dist;
                             closestIndex = idx;
                         }
                     });
-
+                    
                     updateActiveDot(closestIndex);
                     isTicking = false;
                 });
                 isTicking = true;
             }
         }, { passive: true });
-
-        // Keyboard arrow navigation when track is focused
-        track.addEventListener('keydown', (e) => {
-            if (window.innerWidth >= 640) return;
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                const nextIdx = Math.max(0, currentIndex - 1);
-                scrollToSlide(nextIdx);
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                const nextIdx = Math.min(totalSlides - 1, currentIndex + 1);
-                scrollToSlide(nextIdx);
-            }
-        });
-
-        // Mouse Drag-to-Swipe for Desktop/Preview testing
-        let isMouseDown = false;
-        let startX = 0;
-        let scrollLeftStart = 0;
-        let initialMouseIndex = 0;
-        let hasDragged = false;
-
-        track.addEventListener('mousedown', (e) => {
-            if (window.innerWidth >= 640) return;
-            isMouseDown = true;
-            hasDragged = false;
-            startX = e.pageX - track.offsetLeft;
-            scrollLeftStart = track.scrollLeft;
-            initialMouseIndex = currentIndex;
-            track.classList.remove('scroll-smooth');
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (!isMouseDown) return;
-            const x = e.pageX - track.offsetLeft;
-            const walk = (x - startX);
-            if (Math.abs(walk) > 6) {
-                hasDragged = true;
-            }
-            track.scrollLeft = scrollLeftStart - walk;
-        });
-
-        window.addEventListener('mouseup', (e) => {
-            if (!isMouseDown) return;
-            isMouseDown = false;
-            track.classList.add('scroll-smooth');
-            if (hasDragged && window.innerWidth < 640) {
-                const deltaX = (e.pageX - track.offsetLeft) - startX;
-                if (deltaX < -30) {
-                    const target = Math.min(totalSlides - 1, initialMouseIndex + 1);
-                    scrollToSlide(target);
-                } else if (deltaX > 30) {
-                    const target = Math.max(0, initialMouseIndex - 1);
-                    scrollToSlide(target);
-                } else {
-                    scrollToSlide(initialMouseIndex);
-                }
-            }
-        });
-
-        // Prevent accidental link clicks when dragging
-        slides.forEach((slide) => {
-            slide.addEventListener('click', (e) => {
-                if (hasDragged) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    hasDragged = false;
-                }
-            });
-        });
-
-        // Handle window resize cleanly
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 640) {
-                track.scrollLeft = 0;
-            }
-        });
     });
 </script>
 {% endblock %}
-
-

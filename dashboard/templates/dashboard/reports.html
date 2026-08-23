@@ -130,7 +130,7 @@
                     <div class="flex-1 flex gap-2 sm:gap-4 relative min-h-[180px] sm:min-h-[200px] lg:min-h-[230px]">
                         
                         <!-- Y-Axis Labels Column -->
-                        <div class="flex flex-col justify-between py-0 text-right shrink-0 w-10 sm:w-12 pointer-events-none font-label-sm text-[10px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums">
+                        <div class="flex flex-col justify-between py-0 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums whitespace-nowrap">
                             <span id="y-tick-4">₱30.0k</span>
                             <span id="y-tick-3">₱20.0k</span>
                             <span id="y-tick-2">₱10.0k</span>
@@ -155,7 +155,7 @@
 
                     <!-- X-Axis Column Labels Row -->
                     <div class="flex gap-2 sm:gap-4 pt-3">
-                        <div class="w-10 sm:w-12 shrink-0 pointer-events-none"></div>
+                        <div class="w-12 sm:w-16 shrink-0 pointer-events-none"></div>
                         <div id="income-expense-labels-container" class="flex-1 grid px-2 sm:px-4 font-label-sm text-[10px] sm:text-xs lg:text-sm text-deep-forest font-semibold"></div>
                     </div>
                 </div>
@@ -275,7 +275,7 @@
             <div class="relative w-full">
                 <div class="flex gap-2 sm:gap-4 relative min-h-[220px] sm:min-h-[260px]">
                     <!-- Y-Axis Labels -->
-                    <div class="flex flex-col justify-between py-1 text-right shrink-0 w-10 sm:w-14 pointer-events-none font-label-sm text-[10px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums select-none" id="trends-y-axis">
+                    <div class="flex flex-col justify-between py-1 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums select-none whitespace-nowrap" id="trends-y-axis">
                         <span class="text-[9px] font-bold text-on-surface-variant/60 tracking-wider">₱ PHP</span>
                         <span id="trends-y-3">₱6.0k</span>
                         <span id="trends-y-2">₱4.0k</span>
@@ -370,9 +370,11 @@
     document.addEventListener('DOMContentLoaded', () => {
         const C = 2 * Math.PI * 40; // ~251.3274
 
+        const backendPeriodData = {{ period_data_json|safe|default:"{}" }};
+
         // Data sets for period switching with exact breakdown items & smart insights
         const periodData = {
-            week: {
+            week: Object.assign({
                 total: '₱18,550.00',
                 totalSub: '<span class="text-positive-deep font-bold">-4%</span> from previous week',
                 highest: 'Food & Dining',
@@ -456,8 +458,8 @@
                         iconBg: 'bg-expense/15 text-expense'
                     }
                 ]
-            },
-            month: {
+            }, backendPeriodData.week || {}),
+            month: Object.assign({
                 total: '₱42,500.00',
                 totalSub: '<span class="text-negative font-bold">+12%</span> from previous period',
                 highest: 'Housing & Rent',
@@ -541,8 +543,8 @@
                         iconBg: 'bg-expense/15 text-expense'
                     }
                 ]
-            },
-            year: {
+            }, backendPeriodData.month || {}),
+            year: Object.assign({
                 total: '₱485,000.00',
                 totalSub: '<span class="text-positive-deep font-bold">-8%</span> from last year',
                 highest: 'Housing & Rent',
@@ -626,7 +628,7 @@
                         iconBg: 'bg-expense/15 text-expense'
                     }
                 ]
-            }
+            }, backendPeriodData.year || {})
         };
 
         const periodButtons = document.querySelectorAll('#period-selector-group .btn-period');
@@ -791,33 +793,72 @@
         // COMBINED CATEGORY TRENDS CHART ENGINE (ENHANCED LEGIBILITY)
         // ═══════════════════════════════════════════════════════════════
 
-        function getCurvePath(pts) {
-            if (!pts || pts.length === 0) return '';
-            if (pts.length === 1) return `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+        function clampVal(val, min, max) {
+            return Math.max(min, Math.min(max, val));
+        }
 
-            let path = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+        function getCurvePath(pts, topLimit = 12, bottomLimit = 175) {
+            if (!pts || pts.length === 0) return '';
+            if (pts.length === 1) return `M ${pts[0].x.toFixed(1)} ${clampVal(pts[0].y, topLimit, bottomLimit).toFixed(1)}`;
+
+            let path = `M ${pts[0].x.toFixed(1)} ${clampVal(pts[0].y, topLimit, bottomLimit).toFixed(1)}`;
             for (let i = 0; i < pts.length - 1; i++) {
                 const p0 = pts[i === 0 ? i : i - 1];
                 const p1 = pts[i];
                 const p2 = pts[i + 1];
                 const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
 
-                const cp1x = p1.x + (p2.x - p0.x) / 5;
-                const cp1y = p1.y + (p2.y - p0.y) / 5;
-                const cp2x = p2.x - (p3.x - p1.x) / 5;
-                const cp2y = p2.y - (p3.y - p1.y) / 5;
+                let cp1x = p1.x + (p2.x - p0.x) / 5;
+                let cp1y = p1.y + (p2.y - p0.y) / 5;
+                let cp2x = p2.x - (p3.x - p1.x) / 5;
+                let cp2y = p2.y - (p3.y - p1.y) / 5;
 
-                path += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+                // Clamp control points within chart limits so bezier curve never balloons outside bounds
+                cp1y = clampVal(cp1y, topLimit, bottomLimit);
+                cp2y = clampVal(cp2y, topLimit, bottomLimit);
+                const endY = clampVal(p2.y, topLimit, bottomLimit);
+
+                path += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${endY.toFixed(1)}`;
             }
             return path;
         }
 
-        function getAreaPath(pts, bottomY) {
+        function getAreaPath(pts, bottomY, topLimit = 12) {
             if (!pts || pts.length === 0) return '';
-            const curve = getCurvePath(pts);
+            const curve = getCurvePath(pts, topLimit, bottomY);
             const first = pts[0];
             const last = pts[pts.length - 1];
             return `${curve} L ${last.x.toFixed(1)} ${bottomY.toFixed(1)} L ${first.x.toFixed(1)} ${bottomY.toFixed(1)} Z`;
+        }
+
+        function getNiceCeiling(val) {
+            if (val <= 100) return 100;
+            const magnitude = Math.pow(10, Math.floor(Math.log10(val)));
+            const normalized = val / magnitude;
+            let ceilNorm = 1;
+            if (normalized <= 1) ceilNorm = 1;
+            else if (normalized <= 1.25) ceilNorm = 1.25;
+            else if (normalized <= 1.5) ceilNorm = 1.5;
+            else if (normalized <= 2) ceilNorm = 2;
+            else if (normalized <= 2.5) ceilNorm = 2.5;
+            else if (normalized <= 3) ceilNorm = 3;
+            else if (normalized <= 4) ceilNorm = 4;
+            else if (normalized <= 5) ceilNorm = 5;
+            else if (normalized <= 6) ceilNorm = 6;
+            else if (normalized <= 7.5) ceilNorm = 7.5;
+            else if (normalized <= 8) ceilNorm = 8;
+            else ceilNorm = 10;
+            return ceilNorm * magnitude;
+        }
+
+        function formatYLabel(val) {
+            if (val >= 1000000) return `₱${(val / 1000000).toFixed(1)}M`;
+            if (val >= 10000) return `₱${Math.round(val / 1000)}k`;
+            if (val >= 1000) {
+                const k = val / 1000;
+                return k % 1 === 0 ? `₱${k.toFixed(0)}k` : `₱${k.toFixed(1)}k`;
+            }
+            return `₱${Math.round(val)}`;
         }
 
         function renderCombinedTrendsChart(periodKey, filterSelection) {
@@ -830,12 +871,31 @@
             if (badge) badge.textContent = data.trendPeriod;
             if (subtext) subtext.textContent = data.trendSubtext;
 
-            // Y-Axis labels
-            if (data.trendYTicks && data.trendYTicks.length === 4) {
-                for (let i = 0; i < 4; i++) {
-                    const yEl = document.getElementById(`trends-y-${3 - i}`);
-                    if (yEl) yEl.textContent = data.trendYTicks[i];
-                }
+            // Dynamically calculate maximum value across all categories to guarantee no line ever overflows
+            let maxVal = 0;
+            if (data.trendCategories && data.trendCategories.length > 0) {
+                data.trendCategories.forEach(cat => {
+                    if (cat.values && cat.values.length > 0) {
+                        cat.values.forEach(v => {
+                            if (typeof v === 'number' && v > maxVal) maxVal = v;
+                        });
+                    }
+                });
+            }
+            if (maxVal <= 0) maxVal = 1000;
+
+            const effectiveMaxY = getNiceCeiling(maxVal * 1.18);
+
+            // Populate responsive Y-Axis Labels
+            const computedYTicks = [
+                formatYLabel(effectiveMaxY),
+                formatYLabel(effectiveMaxY * 0.666),
+                formatYLabel(effectiveMaxY * 0.333),
+                '₱0'
+            ];
+            for (let i = 0; i < 4; i++) {
+                const yEl = document.getElementById(`trends-y-${3 - i}`);
+                if (yEl) yEl.textContent = computedYTicks[i];
             }
 
             // SVG Coordinate Math
@@ -844,7 +904,7 @@
             const rightMargin = 35;
             const usableWidth = svgWidth - leftMargin - rightMargin;
             const numCols = data.cols.length;
-            const xPos = (idx) => leftMargin + (idx / (numCols - 1)) * usableWidth;
+            const xPos = (idx) => leftMargin + (idx / Math.max(1, numCols - 1)) * usableWidth;
 
             // X-Axis labels (Mathematically positioned directly below SVG curve points)
             const trendsXAxis = document.getElementById('trends-x-axis');
@@ -855,11 +915,14 @@
                 }).join('');
             }
 
-            const topMargin = 20;
+            const topMargin = 16;
             const bottomMargin = 25;
             const bottomY = 200 - bottomMargin; // 175
             const usableHeight = bottomY - topMargin;
-            const yPos = (val) => bottomY - (Math.max(0, val) / data.trendMaxY) * usableHeight;
+            const yPos = (val) => {
+                const normalized = clampVal(val, 0, effectiveMaxY);
+                return bottomY - (normalized / effectiveMaxY) * usableHeight;
+            };
 
             const pointsGroup = document.getElementById('trend-points-group');
             if (pointsGroup) pointsGroup.innerHTML = '';
@@ -876,8 +939,8 @@
                     formatted: cat.formattedValues[colIdx]
                 }));
 
-                const linePathD = getCurvePath(pts);
-                const areaPathD = getAreaPath(pts, bottomY);
+                const linePathD = getCurvePath(pts, topMargin, bottomY);
+                const areaPathD = getAreaPath(pts, bottomY, topMargin);
 
                 const isTarget = (filterSelection === 'all' || filterSelection === catIdx || filterSelection === String(catIdx));
                 const isSingleSelected = (filterSelection !== 'all' && isTarget);
