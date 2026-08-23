@@ -495,6 +495,37 @@
 
     </div>
 </div>
+
+<!-- Delete Single Line Item Confirmation Modal -->
+<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[115] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-delete-item-content" class="w-full max-w-[380px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[110]">
+        
+        <!-- Header -->
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[22px]">delete</span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <h3 id="modal-delete-item-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Remove line item?</h3>
+                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">
+                    Are you sure you want to remove <span id="label-delete-item-name" class="font-bold text-deep-forest">this item</span> from the scanned list?
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                Keep Item
+            </button>
+            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+                <span>Remove Item</span>
+            </button>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -1102,6 +1133,66 @@
             attachItemListeners();
         }
 
+        // Delete Single Line Item Modal logic
+        let pendingDeleteItemIndex = null;
+        const deleteItemModal = document.getElementById('modal-confirm-delete-item');
+        const deleteItemNameLabel = document.getElementById('label-delete-item-name');
+        const confirmDeleteItemBtn = document.getElementById('btn-confirm-delete-item');
+        const cancelDeleteItemBtn = document.getElementById('btn-cancel-delete-item');
+
+        function showDeleteItemModal(index) {
+            pendingDeleteItemIndex = index;
+            const item = reviewData.items[index];
+            const desc = item && item.description && item.description.trim() ? item.description.trim() : 'this item';
+            if (deleteItemNameLabel) {
+                deleteItemNameLabel.textContent = `"${desc}"`;
+            }
+            if (!deleteItemModal) return;
+            deleteItemModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                deleteItemModal.classList.remove('opacity-0');
+                deleteItemModal.classList.add('opacity-100');
+                const modalCard = deleteItemModal.firstElementChild;
+                if (modalCard) {
+                    modalCard.classList.remove('scale-95');
+                    modalCard.classList.add('scale-100');
+                }
+            });
+        }
+
+        function hideDeleteItemModal() {
+            if (!deleteItemModal) return;
+            deleteItemModal.classList.remove('opacity-100');
+            deleteItemModal.classList.add('opacity-0');
+            const modalCard = deleteItemModal.firstElementChild;
+            if (modalCard) {
+                modalCard.classList.remove('scale-100');
+                modalCard.classList.add('scale-95');
+            }
+            setTimeout(() => {
+                deleteItemModal.classList.add('hidden');
+                pendingDeleteItemIndex = null;
+            }, 200);
+        }
+
+        if (cancelDeleteItemBtn) cancelDeleteItemBtn.addEventListener('click', hideDeleteItemModal);
+        if (confirmDeleteItemBtn) {
+            confirmDeleteItemBtn.addEventListener('click', () => {
+                if (pendingDeleteItemIndex !== null && pendingDeleteItemIndex >= 0 && pendingDeleteItemIndex < reviewData.items.length) {
+                    reviewData.items.splice(pendingDeleteItemIndex, 1);
+                    renderItems();
+                    saveActiveState();
+                }
+                hideDeleteItemModal();
+            });
+        }
+
+        if (deleteItemModal) {
+            deleteItemModal.addEventListener('click', (e) => {
+                if (e.target === deleteItemModal) hideDeleteItemModal();
+            });
+        }
+
         function attachItemListeners() {
             document.querySelectorAll('.input-item-desc').forEach(input => {
                 input.addEventListener('input', (e) => {
@@ -1139,9 +1230,7 @@
             document.querySelectorAll('.btn-delete-item').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const idx = parseInt(btn.dataset.idx);
-                    reviewData.items.splice(idx, 1);
-                    renderItems();
-                    saveActiveState();
+                    showDeleteItemModal(idx);
                 });
             });
 
@@ -1278,8 +1367,14 @@
             });
         }
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && zoomModal && !zoomModal.classList.contains('hidden')) {
-                closeZoomModal();
+            if (e.key === 'Escape') {
+                if (zoomModal && !zoomModal.classList.contains('hidden')) {
+                    closeZoomModal();
+                } else if (deleteItemModal && !deleteItemModal.classList.contains('hidden')) {
+                    hideDeleteItemModal();
+                } else if (discardModal && !discardModal.classList.contains('hidden')) {
+                    hideDiscardModal();
+                }
             }
         });
     });
