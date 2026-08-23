@@ -18,8 +18,17 @@
 .chart-bar-grow {
     transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.trend-line {
+    transition: d 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, stroke-width 0.25s ease;
+}
+.trend-area {
+    transition: d 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+.trend-point {
+    transition: cx 0.5s cubic-bezier(0.16, 1, 0.3, 1), cy 0.5s cubic-bezier(0.16, 1, 0.3, 1), r 0.2s ease, opacity 0.25s ease;
+}
 @media (prefers-reduced-motion: reduce) {
-    .chart-bar-grow, .progress-bar-fill { transition: none !important; }
+    .chart-bar-grow, .progress-bar-fill, .trend-line, .trend-area, .trend-point { transition: none !important; }
 }
 </style>
 {% endblock %}
@@ -289,91 +298,118 @@
         </section>
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- BOTTOM ROW: MONTHLY TRENDS LIST         -->
+        <!-- BOTTOM ROW: COMBINED CATEGORY TRENDS    -->
         <!-- ═══════════════════════════════════════ -->
-        <section class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3.5 sm:gap-4">
-            <div class="flex justify-between items-center border-b border-outline-variant/40 pb-3">
-                <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
-                <span class="font-label-sm text-[11px] sm:text-xs text-on-surface-variant font-semibold">vs previous period</span>
+        <section class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 sm:gap-6">
+            <!-- Header with Title & Interactive Category Filter Pills -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/40 pb-3 sm:pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
+                        <span id="trends-period-badge" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 sm:px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
+                    </div>
+                    <p id="trends-subtext" class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant mt-0.5">Multi-category spending trajectory vs previous period</p>
+                </div>
+
+                <!-- Interactive Category Filter Chips (Clean Name Buttons without dot colors) -->
+                <div class="flex items-center flex-wrap gap-1 sm:gap-2" id="category-filter-group" role="tablist" aria-label="Filter categories">
+                    <button id="cat-filter-all" data-cat="all" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all bg-deep-forest text-white shadow-2xs cursor-pointer active:scale-95 shrink-0"><span class="sm:hidden">All</span><span class="hidden sm:inline">All Categories</span></button>
+                    <button id="cat-filter-0" data-cat="0" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Housing</button>
+                    <button id="cat-filter-1" data-cat="1" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Food</button>
+                    <button id="cat-filter-2" data-cat="2" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Transport</button>
+                    <button id="cat-filter-3" data-cat="3" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Other</button>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
 
-                <!-- Trend Item 1 (Dining Out) -->
-                <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">restaurant</span>
+            <!-- Main Chart Area -->
+            <div class="relative w-full">
+                <div class="flex gap-2 sm:gap-4 relative min-h-[220px] sm:min-h-[260px]">
+                    <!-- Y-Axis Labels -->
+                    <div class="flex flex-col justify-between py-1 text-right shrink-0 w-10 sm:w-14 pointer-events-none font-label-sm text-[10px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums select-none" id="trends-y-axis">
+                        <span class="text-[9px] font-bold text-on-surface-variant/60 tracking-wider">₱ PHP</span>
+                        <span id="trends-y-3">₱6.0k</span>
+                        <span id="trends-y-2">₱4.0k</span>
+                        <span id="trends-y-1">₱2.0k</span>
+                        <span id="trends-y-0">₱0</span>
+                    </div>
+
+                    <!-- Plot Area -->
+                    <div class="flex-1 relative flex flex-col justify-between" id="trends-chart-wrapper">
+                        <!-- Horizontal Grid Lines -->
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-7 pt-4">
+                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
+                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
+                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
+                            <div class="border-b border-surface-variant/60 w-full h-0"></div>
                         </div>
-                        <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Dining Out</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-expense">
-                                <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_up</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">+14%</span>
+
+                        <!-- SVG Multi-Line Chart Canvas -->
+                        <div class="relative flex-1 w-full h-[180px] sm:h-[220px] z-10">
+                            <svg id="trends-svg" class="w-full h-full overflow-visible select-none" viewBox="0 0 700 200" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="grad-trend-0" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#163300" stop-opacity="0.25"></stop>
+                                        <stop offset="100%" stop-color="#163300" stop-opacity="0.0"></stop>
+                                    </linearGradient>
+                                    <linearGradient id="grad-trend-1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#5C8F3A" stop-opacity="0.25"></stop>
+                                        <stop offset="100%" stop-color="#5C8F3A" stop-opacity="0.0"></stop>
+                                    </linearGradient>
+                                    <linearGradient id="grad-trend-2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#D97706" stop-opacity="0.25"></stop>
+                                        <stop offset="100%" stop-color="#D97706" stop-opacity="0.0"></stop>
+                                    </linearGradient>
+                                    <linearGradient id="grad-trend-3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#D03238" stop-opacity="0.25"></stop>
+                                        <stop offset="100%" stop-color="#D03238" stop-opacity="0.0"></stop>
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- Column Highlight Band -->
+                                <rect id="trend-column-highlight" x="0" y="5" width="80" height="170" rx="8" fill="#163300" opacity="0" class="transition-all duration-150 pointer-events-none"></rect>
+
+                                <!-- Area Fills -->
+                                <path id="trend-area-0" class="trend-area" fill="url(#grad-trend-0)" opacity="0.08" d=""></path>
+                                <path id="trend-area-1" class="trend-area" fill="url(#grad-trend-1)" opacity="0.08" d=""></path>
+                                <path id="trend-area-2" class="trend-area" fill="url(#grad-trend-2)" opacity="0.08" d=""></path>
+                                <path id="trend-area-3" class="trend-area" fill="url(#grad-trend-3)" opacity="0.08" d=""></path>
+
+                                <!-- Multi-Category Trend Lines -->
+                                <path id="trend-line-0" class="trend-line" stroke="#163300" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+                                <path id="trend-line-1" class="trend-line" stroke="#5C8F3A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+                                <path id="trend-line-2" class="trend-line" stroke="#D97706" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+                                <path id="trend-line-3" class="trend-line" stroke="#D03238" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+
+                                <!-- Interactive Vertical Crosshair -->
+                                <line id="trend-crosshair" x1="0" y1="10" x2="0" y2="190" stroke="#868685" stroke-width="1.5" stroke-dasharray="3,3" opacity="0" class="transition-all duration-150 pointer-events-none"></line>
+
+                                <!-- Data Point Circles -->
+                                <g id="trend-points-group" class="pointer-events-none"></g>
+                            </svg>
+
+                            <!-- Hover Overlay Zones -->
+                            <div id="trend-hover-zones" class="absolute inset-0 flex z-20"></div>
+
+                            <!-- Interactive Floating Tooltip -->
+                            <div id="trend-floating-tooltip" class="absolute hidden z-30 pointer-events-none bg-deep-forest text-white rounded-xl p-3 shadow-elevated border border-white/15 text-xs font-sans transition-all duration-150 min-w-[175px] sm:min-w-[205px] max-w-[250px]">
+                                <div id="tooltip-period-title" class="font-bold text-white/90 pb-1.5 mb-1.5 border-b border-white/15 text-[11px] sm:text-xs">Week 1 Breakdown</div>
+                                <div id="tooltip-items-list" class="flex flex-col gap-1.5"></div>
+                                <div id="tooltip-total-row" class="pt-1.5 mt-1.5 border-t border-white/15 flex justify-between font-bold text-[11px] sm:text-xs text-primary-active">
+                                    <span>Total Spent</span>
+                                    <span id="tooltip-total-val" class="tabular-nums">₱11,200</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Sparkline -->
-                    <div class="w-14 sm:w-20 h-7 sm:h-8 shrink-0">
-                        <svg class="w-full h-full" viewBox="0 0 100 30">
-                            <path class="sparkline-path up-error" d="M0,25 L20,20 L40,22 L60,15 L80,18 L100,5"></path>
-                        </svg>
-                    </div>
-                    <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-1" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱4,500.00</p>
-                    </div>
-                </a>
 
-                <!-- Trend Item 2 (Groceries) -->
-                <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-positive/30 hover:bg-primary-pale/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">shopping_bag</span>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Groceries</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-positive-deep">
-                                <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_down</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">-5%</span>
-                            </div>
+                        <!-- X-Axis Labels Row -->
+                        <div class="flex justify-between items-center pt-2 font-label-sm text-xs sm:text-sm text-deep-forest font-semibold select-none px-2 sm:px-4" id="trends-x-axis">
+                            <span id="trends-x-0" class="text-center truncate">Week 1</span>
+                            <span id="trends-x-1" class="text-center truncate">Week 2</span>
+                            <span id="trends-x-2" class="text-center truncate">Week 3</span>
+                            <span id="trends-x-3" class="text-center truncate">Week 4</span>
                         </div>
                     </div>
-                    <!-- Sparkline -->
-                    <div class="w-14 sm:w-20 h-7 sm:h-8 shrink-0">
-                        <svg class="w-full h-full" viewBox="0 0 100 30">
-                            <path class="sparkline-path" d="M0,5 L20,12 L40,8 L60,20 L80,15 L100,25"></path>
-                        </svg>
-                    </div>
-                    <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-2" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱3,200.00</p>
-                    </div>
-                </a>
-
-                <!-- Trend Item 3 (Transport - Gold Accent) -->
-                <a href="{% url 'transactions' %}" class="flex items-center justify-between p-3 sm:p-4 border border-outline-variant/60 rounded-xl hover:border-primary/30 hover:bg-soft-green/20 hover:-translate-y-0.5 transition-all cursor-pointer group">
-                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">directions_car</span>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate">Transport</p>
-                            <div class="flex items-center gap-1 mt-0.5 text-expense">
-                                <span class="material-symbols-outlined text-[13px] sm:text-[14px]">trending_up</span>
-                                <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">+8%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sparkline -->
-                    <div class="w-14 sm:w-20 h-7 sm:h-8 shrink-0">
-                        <svg class="w-full h-full" viewBox="0 0 100 30">
-                            <path class="sparkline-path up-error" d="M0,20 L20,22 L40,18 L60,15 L80,12 L100,5"></path>
-                        </svg>
-                    </div>
-                    <div class="text-right shrink-0 ml-1.5 sm:ml-2">
-                        <p id="trend-val-3" class="font-label-md text-xs sm:text-sm text-deep-forest font-extrabold tabular-nums">₱1,800.00</p>
-                    </div>
-                </a>
-
+                </div>
             </div>
         </section>
 
@@ -389,7 +425,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const C = 2 * Math.PI * 40; // ~251.3274
 
-        // Data sets for period switching with exact breakdown items
+        // Data sets for period switching with exact breakdown items & smart insights
         const periodData = {
             week: {
                 total: '₱9,850.00',
@@ -401,7 +437,7 @@
                 savingsBar: '92%',
                 chartSubtext: 'Daily breakdown for current week',
                 cols: ['Mon', 'Tue', 'Wed', 'Thu'],
-                yTicks: ['₱6.0k', '₱4.0k', '₱2.0k', '₱0'],
+                yTicks: ['₱1.5k', '₱1.0k', '₱500', '₱0'],
                 expHeights: ['30%', '55%', '40%', '25%'],
                 incHeights: ['70%', '40%', '85%', '60%'],
                 expVals: ['₱2.1k', '₱3.2k', '₱2.8k', '₱1.7k'],
@@ -414,9 +450,67 @@
                     { name: 'Transport', pct: 22, amount: '₱2,167.00' },
                     { name: 'Other', pct: 20, amount: '₱1,970.00' }
                 ],
-                trend1: '₱1,200.00',
-                trend2: '₱850.00',
-                trend3: '₱420.00'
+                trendPeriod: 'This Week',
+                trendSubtext: 'Daily spending trajectory for current week',
+                trendYTicks: ['₱1.5k', '₱1.0k', '₱500', '₱0'],
+                trendMaxY: 1500,
+                insights: {
+                    all: 'Food & Dining was your highest daily expense (₱3,743 / 38%), peaking on Tuesday at ₱1,100.',
+                    0: 'Housing stayed constant at ~₱470–₱520/day (-2% overall vs last week).',
+                    1: 'Food & Dining spiked on Tuesday to ₱1,100, totaling ₱3,743 (+14% trend).',
+                    2: 'Transport peaked on Wednesday at ₱620 and totaled ₱2,167 (+8% trend).',
+                    3: 'Groceries & Other stayed balanced under budget at ₱1,970 (-5% savings).'
+                },
+                trendCategories: [
+                    {
+                        name: 'Housing',
+                        icon: 'home',
+                        color: '#163300',
+                        gradId: 'grad-trend-0',
+                        values: [480, 520, 470, 500],
+                        formattedValues: ['₱480', '₱520', '₱470', '₱500'],
+                        total: '₱1,970.00',
+                        trend: '-2%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-deep-forest/15 text-deep-forest'
+                    },
+                    {
+                        name: 'Food & Dining',
+                        icon: 'restaurant',
+                        color: '#5C8F3A',
+                        gradId: 'grad-trend-1',
+                        values: [850, 1100, 920, 873],
+                        formattedValues: ['₱850', '₱1,100', '₱920', '₱873'],
+                        total: '₱3,743.00',
+                        trend: '+14%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
+                    },
+                    {
+                        name: 'Transport',
+                        icon: 'directions_car',
+                        color: '#D97706',
+                        gradId: 'grad-trend-2',
+                        values: [450, 580, 620, 517],
+                        formattedValues: ['₱450', '₱580', '₱620', '₱517'],
+                        total: '₱2,167.00',
+                        trend: '+8%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
+                    },
+                    {
+                        name: 'Groceries & Other',
+                        icon: 'shopping_bag',
+                        color: '#D03238',
+                        gradId: 'grad-trend-3',
+                        values: [400, 480, 550, 540],
+                        formattedValues: ['₱400', '₱480', '₱550', '₱540'],
+                        total: '₱1,970.00',
+                        trend: '-5%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-expense/15 text-expense'
+                    }
+                ]
             },
             month: {
                 total: '₱42,500.00',
@@ -441,9 +535,67 @@
                     { name: 'Transport', pct: 15, amount: '₱6,375.00' },
                     { name: 'Other', pct: 18, amount: '₱7,650.00' }
                 ],
-                trend1: '₱4,500.00',
-                trend2: '₱3,200.00',
-                trend3: '₱1,800.00'
+                trendPeriod: 'November',
+                trendSubtext: 'Weekly multi-category trajectory vs previous period',
+                trendYTicks: ['₱6.0k', '₱4.0k', '₱2.0k', '₱0'],
+                trendMaxY: 6000,
+                insights: {
+                    all: 'Housing is your largest steady expense (₱17,850 / 42%), while Food rose +14% (peaking in Week 3 at ₱3,100).',
+                    0: 'Housing stayed constant at ~₱4.3k–₱4.8k/week, accounting for 42% of your monthly spend.',
+                    1: 'Food & Dining climbed from ₱2,400 to a peak of ₱3,100 in Week 3 (+14% overall).',
+                    2: 'Transport peaked in Week 3 at ₱1,825 and settled back to ₱1,500 in Week 4 (+8% overall).',
+                    3: 'Groceries & Other remained predictable at ~₱1.9k/week, totaling ₱7,650 (-5% savings).'
+                },
+                trendCategories: [
+                    {
+                        name: 'Housing',
+                        icon: 'home',
+                        color: '#163300',
+                        gradId: 'grad-trend-0',
+                        values: [4500, 4800, 4300, 4250],
+                        formattedValues: ['₱4,500', '₱4,800', '₱4,300', '₱4,250'],
+                        total: '₱17,850.00',
+                        trend: '-1%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-deep-forest/15 text-deep-forest'
+                    },
+                    {
+                        name: 'Food & Dining',
+                        icon: 'restaurant',
+                        color: '#5C8F3A',
+                        gradId: 'grad-trend-1',
+                        values: [2400, 2900, 3100, 2225],
+                        formattedValues: ['₱2,400', '₱2,900', '₱3,100', '₱2,225'],
+                        total: '₱10,625.00',
+                        trend: '+14%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
+                    },
+                    {
+                        name: 'Transport',
+                        icon: 'directions_car',
+                        color: '#D97706',
+                        gradId: 'grad-trend-2',
+                        values: [1400, 1650, 1825, 1500],
+                        formattedValues: ['₱1,400', '₱1,650', '₱1,825', '₱1,500'],
+                        total: '₱6,375.00',
+                        trend: '+8%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
+                    },
+                    {
+                        name: 'Groceries & Other',
+                        icon: 'shopping_bag',
+                        color: '#D03238',
+                        gradId: 'grad-trend-3',
+                        values: [1900, 1850, 2050, 1850],
+                        formattedValues: ['₱1,900', '₱1,850', '₱2,050', '₱1,850'],
+                        total: '₱7,650.00',
+                        trend: '-5%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-expense/15 text-expense'
+                    }
+                ]
             },
             year: {
                 total: '₱485,000.00',
@@ -468,15 +620,74 @@
                     { name: 'Transport', pct: 16, amount: '₱77,600.00' },
                     { name: 'Other', pct: 16, amount: '₱77,600.00' }
                 ],
-                trend1: '₱54,000.00',
-                trend2: '₱38,400.00',
-                trend3: '₱21,600.00'
+                trendPeriod: '2023 Year',
+                trendSubtext: 'Quarterly multi-category trajectory for 2023',
+                trendYTicks: ['₱60k', '₱40k', '₱20k', '₱0'],
+                trendMaxY: 60000,
+                insights: {
+                    all: 'Annual spending peaked in Q3 at ₱130k, driven by higher Food (₱34.4k) and Transport expenses.',
+                    0: 'Housing remained predictable at ~₱50k–₱52k/quarter, totaling ₱203,700 (-3% annual change).',
+                    1: 'Food spending peaked in Q3 at ₱34.4k before dropping in Q4 (+10% annual trend).',
+                    2: 'Transport costs peaked in Q3 at ₱21.2k and totaled ₱77,600 (+6% trend).',
+                    3: 'Groceries & Other averaged ~₱19k–₱20k/quarter, totaling ₱77,600 (-4% savings).'
+                },
+                trendCategories: [
+                    {
+                        name: 'Housing',
+                        icon: 'home',
+                        color: '#163300',
+                        gradId: 'grad-trend-0',
+                        values: [51000, 50500, 52200, 50000],
+                        formattedValues: ['₱51.0k', '₱50.5k', '₱52.2k', '₱50.0k'],
+                        total: '₱203,700.00',
+                        trend: '-3%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-deep-forest/15 text-deep-forest'
+                    },
+                    {
+                        name: 'Food & Dining',
+                        icon: 'restaurant',
+                        color: '#5C8F3A',
+                        gradId: 'grad-trend-1',
+                        values: [29500, 33200, 34400, 29000],
+                        formattedValues: ['₱29.5k', '₱33.2k', '₱34.4k', '₱29.0k'],
+                        total: '₱126,100.00',
+                        trend: '+10%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
+                    },
+                    {
+                        name: 'Transport',
+                        icon: 'directions_car',
+                        color: '#D97706',
+                        gradId: 'grad-trend-2',
+                        values: [18000, 19500, 21200, 18900],
+                        formattedValues: ['₱18.0k', '₱19.5k', '₱21.2k', '₱18.9k'],
+                        total: '₱77,600.00',
+                        trend: '+6%',
+                        isExpenseUp: true,
+                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
+                    },
+                    {
+                        name: 'Groceries & Other',
+                        icon: 'shopping_bag',
+                        color: '#D03238',
+                        gradId: 'grad-trend-3',
+                        values: [20000, 19200, 19800, 18600],
+                        formattedValues: ['₱20.0k', '₱19.2k', '₱19.8k', '₱18.6k'],
+                        total: '₱77,600.00',
+                        trend: '-4%',
+                        isExpenseUp: false,
+                        iconBg: 'bg-expense/15 text-expense'
+                    }
+                ]
             }
         };
 
         const periodButtons = document.querySelectorAll('#period-selector-group .btn-period');
         let currentPeriod = 'month';
         let lockedCategoryIndex = null;
+        let activeTrendCategory = 'all'; // 'all' or 0, 1, 2, 3
 
         const centerLabel = document.getElementById('donut-center-label');
         const centerValue = document.getElementById('donut-center-value');
@@ -490,7 +701,6 @@
                 const legendValEl = document.getElementById(`legend-val-${index + 1}`);
 
                 if (segEl) {
-                    // Gapless mathematical calculation: length = (pct / 100) * circumference
                     const segLength = (cat.pct / 100) * C;
                     segEl.setAttribute('stroke-dasharray', `${segLength.toFixed(2)} ${C.toFixed(2)}`);
                     segEl.setAttribute('stroke-dashoffset', `${(-runningOffset).toFixed(2)}`);
@@ -511,7 +721,6 @@
             const cat = data.categories[index];
             if (!cat) return;
 
-            // Highlight corresponding SVG slice & dim others
             data.categories.forEach((_, i) => {
                 const seg = document.getElementById(`donut-seg-${i + 1}`);
                 const leg = document.getElementById(`legend-item-${i + 1}`);
@@ -539,7 +748,6 @@
                 }
             });
 
-            // Update center label with full category details
             if (centerLabel) centerLabel.textContent = cat.name;
             if (centerValue) centerValue.textContent = cat.amount;
             if (centerPct) {
@@ -584,7 +792,6 @@
             }
         }
 
-        // Attach listeners to both Donut Segments and Legend Items
         for (let i = 0; i < 4; i++) {
             const seg = document.getElementById(`donut-seg-${i + 1}`);
             const leg = document.getElementById(`legend-item-${i + 1}`);
@@ -625,7 +832,6 @@
             }
         }
 
-        // Clicking outside the donut card resets selection
         document.addEventListener('click', (e) => {
             const donutCard = document.getElementById('category-donut-card');
             if (donutCard && !donutCard.contains(e.target)) {
@@ -635,6 +841,288 @@
                 }
             }
         });
+
+        // ═══════════════════════════════════════════════════════════════
+        // COMBINED CATEGORY TRENDS CHART ENGINE (ENHANCED LEGIBILITY)
+        // ═══════════════════════════════════════════════════════════════
+
+        function getCurvePath(pts) {
+            if (!pts || pts.length === 0) return '';
+            if (pts.length === 1) return `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+
+            let path = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+            for (let i = 0; i < pts.length - 1; i++) {
+                const p0 = pts[i === 0 ? i : i - 1];
+                const p1 = pts[i];
+                const p2 = pts[i + 1];
+                const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+
+                const cp1x = p1.x + (p2.x - p0.x) / 5;
+                const cp1y = p1.y + (p2.y - p0.y) / 5;
+                const cp2x = p2.x - (p3.x - p1.x) / 5;
+                const cp2y = p2.y - (p3.y - p1.y) / 5;
+
+                path += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+            }
+            return path;
+        }
+
+        function getAreaPath(pts, bottomY) {
+            if (!pts || pts.length === 0) return '';
+            const curve = getCurvePath(pts);
+            const first = pts[0];
+            const last = pts[pts.length - 1];
+            return `${curve} L ${last.x.toFixed(1)} ${bottomY.toFixed(1)} L ${first.x.toFixed(1)} ${bottomY.toFixed(1)} Z`;
+        }
+
+        function renderCombinedTrendsChart(periodKey, filterSelection) {
+            const data = periodData[periodKey];
+            if (!data) return;
+
+            const badge = document.getElementById('trends-period-badge');
+            const subtext = document.getElementById('trends-subtext');
+
+            if (badge) badge.textContent = data.trendPeriod;
+            if (subtext) subtext.textContent = data.trendSubtext;
+
+            // Y-Axis labels
+            if (data.trendYTicks && data.trendYTicks.length === 4) {
+                for (let i = 0; i < 4; i++) {
+                    const yEl = document.getElementById(`trends-y-${3 - i}`);
+                    if (yEl) yEl.textContent = data.trendYTicks[i];
+                }
+            }
+
+            // X-Axis labels
+            for (let i = 0; i < 4; i++) {
+                const xEl = document.getElementById(`trends-x-${i}`);
+                if (xEl) xEl.textContent = data.cols[i] || '';
+            }
+
+            // SVG Coordinate Math
+            const svgWidth = 700;
+            const leftMargin = 35;
+            const rightMargin = 35;
+            const usableWidth = svgWidth - leftMargin - rightMargin;
+            const numCols = data.cols.length;
+            const xPos = (idx) => leftMargin + (idx / (numCols - 1)) * usableWidth;
+
+            const topMargin = 20;
+            const bottomMargin = 25;
+            const bottomY = 200 - bottomMargin; // 175
+            const usableHeight = bottomY - topMargin;
+            const yPos = (val) => bottomY - (Math.max(0, val) / data.trendMaxY) * usableHeight;
+
+            const pointsGroup = document.getElementById('trend-points-group');
+            if (pointsGroup) pointsGroup.innerHTML = '';
+
+            // Render 4 category lines, areas, and points
+            data.trendCategories.forEach((cat, catIdx) => {
+                const lineEl = document.getElementById(`trend-line-${catIdx}`);
+                const areaEl = document.getElementById(`trend-area-${catIdx}`);
+
+                const pts = cat.values.map((v, colIdx) => ({
+                    x: xPos(colIdx),
+                    y: yPos(v),
+                    val: v,
+                    formatted: cat.formattedValues[colIdx]
+                }));
+
+                const linePathD = getCurvePath(pts);
+                const areaPathD = getAreaPath(pts, bottomY);
+
+                const isTarget = (filterSelection === 'all' || filterSelection === catIdx || filterSelection === String(catIdx));
+                const isSingleSelected = (filterSelection !== 'all' && isTarget);
+
+                if (lineEl) {
+                    lineEl.setAttribute('d', linePathD);
+                    if (isTarget) {
+                        lineEl.setAttribute('stroke-width', filterSelection === 'all' ? '2.5' : '3.5');
+                        lineEl.style.opacity = '1';
+                        lineEl.style.filter = filterSelection === 'all' ? 'none' : 'drop-shadow(0 3px 6px rgba(0,0,0,0.2))';
+                    } else {
+                        lineEl.setAttribute('stroke-width', '1.5');
+                        lineEl.style.opacity = '0.15';
+                        lineEl.style.filter = 'none';
+                    }
+                }
+
+                if (areaEl) {
+                    areaEl.setAttribute('d', areaPathD);
+                    if (isTarget) {
+                        areaEl.style.opacity = filterSelection === 'all' ? '0.08' : '0.28';
+                    } else {
+                        areaEl.style.opacity = '0';
+                    }
+                }
+
+                // Render SVG point dots (Enlarged on mobile for touch clarity)
+                const isMobile = window.innerWidth < 640;
+                const baseDotRadius = isMobile ? (isSingleSelected ? '6.5' : '5') : (isSingleSelected ? '5' : '3.5');
+                const dotStrokeWidth = isMobile ? '2.5' : '2';
+
+                if (pointsGroup) {
+                    pts.forEach((pt, colIdx) => {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('class', 'trend-point');
+                        circle.setAttribute('cx', pt.x.toFixed(1));
+                        circle.setAttribute('cy', pt.y.toFixed(1));
+                        circle.setAttribute('r', baseDotRadius);
+                        circle.setAttribute('fill', cat.color);
+                        circle.setAttribute('stroke', '#FFFFFF');
+                        circle.setAttribute('stroke-width', dotStrokeWidth);
+                        circle.setAttribute('data-cat', catIdx);
+                        circle.setAttribute('data-col', colIdx);
+                        circle.style.opacity = isTarget ? '1' : '0.15';
+                        pointsGroup.appendChild(circle);
+                    });
+                }
+            });
+
+            // Update Filter Pills Style (Clean name buttons without dot colors)
+            const filterButtons = document.querySelectorAll('#category-filter-group .cat-filter-pill');
+            filterButtons.forEach(btn => {
+                const btnCat = btn.dataset.cat;
+                const isActive = (btnCat === String(filterSelection));
+
+                if (isActive) {
+                    btn.className = 'cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all bg-deep-forest text-white shadow-2xs cursor-pointer active:scale-95 shrink-0';
+                } else {
+                    btn.className = 'cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0';
+                }
+            });
+
+            // Update Interactive Hover Columns and Tooltip
+            const hoverZonesContainer = document.getElementById('trend-hover-zones');
+            const crosshair = document.getElementById('trend-crosshair');
+            const colHighlight = document.getElementById('trend-column-highlight');
+            const tooltip = document.getElementById('trend-floating-tooltip');
+            const tooltipTitle = document.getElementById('tooltip-period-title');
+            const tooltipList = document.getElementById('tooltip-items-list');
+            const tooltipTotal = document.getElementById('tooltip-total-val');
+
+            if (hoverZonesContainer) {
+                hoverZonesContainer.innerHTML = '';
+                for (let c = 0; c < numCols; c++) {
+                    const zone = document.createElement('div');
+                    zone.className = 'flex-1 h-full cursor-pointer';
+                    zone.setAttribute('data-col-index', c);
+
+                    const onEnterCol = () => {
+                        const targetX = xPos(c);
+                        const colWidth = usableWidth / numCols;
+                        const isMob = window.innerWidth < 640;
+
+                        // Highlight vertical column band
+                        if (colHighlight) {
+                            colHighlight.setAttribute('x', (targetX - colWidth / 2).toFixed(1));
+                            colHighlight.setAttribute('width', colWidth.toFixed(1));
+                            colHighlight.style.opacity = '0.06';
+                        }
+
+                        // Position Crosshair
+                        if (crosshair) {
+                            crosshair.setAttribute('x1', targetX.toFixed(1));
+                            crosshair.setAttribute('x2', targetX.toFixed(1));
+                            crosshair.style.opacity = '0.7';
+                        }
+
+                        // Enlarge point circles in this column
+                        const circles = document.querySelectorAll('#trend-points-group circle');
+                        circles.forEach(cir => {
+                            if (parseInt(cir.getAttribute('data-col'), 10) === c) {
+                                cir.setAttribute('r', isMob ? '8' : '6.5');
+                                cir.setAttribute('stroke-width', isMob ? '3' : '2.5');
+                            } else {
+                                const isSingular = filterSelection !== 'all';
+                                cir.setAttribute('r', isMob ? (isSingular ? '6.5' : '5') : (isSingular ? '5' : '3.5'));
+                                cir.setAttribute('stroke-width', isMob ? '2.5' : '2');
+                            }
+                        });
+
+                        // Calculate column total and category percentages
+                        let colTotal = 0;
+                        data.trendCategories.forEach(cat => {
+                            colTotal += cat.values[c];
+                        });
+
+                        // Populate and position tooltip
+                        if (tooltip && tooltipTitle && tooltipList && tooltipTotal) {
+                            tooltipTitle.textContent = `${data.cols[c]} Detailed Breakdown`;
+                            let listHtml = '';
+
+                            data.trendCategories.forEach((cat, idx) => {
+                                const val = cat.values[c];
+                                const sharePct = colTotal > 0 ? Math.round((val / colTotal) * 100) : 0;
+                                const isDimmed = (filterSelection !== 'all' && filterSelection !== idx && filterSelection !== String(idx));
+                                
+                                listHtml += `
+                                    <div class="flex items-center justify-between gap-3 text-[11px] ${isDimmed ? 'opacity-35' : 'opacity-100'}">
+                                        <div class="flex items-center gap-1.5 min-w-0">
+                                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${cat.color}"></span>
+                                            <span class="text-white/90 truncate">${cat.name}</span>
+                                            <span class="text-white/50 text-[10px]">(${sharePct}%)</span>
+                                        </div>
+                                        <span class="font-bold tabular-nums text-white shrink-0">${cat.formattedValues[c]}</span>
+                                    </div>
+                                `;
+                            });
+
+                            tooltipList.innerHTML = listHtml;
+                            tooltipTotal.textContent = `₱${colTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                            const pctLeft = (targetX / svgWidth) * 100;
+                            tooltip.style.left = `${pctLeft}%`;
+                            tooltip.style.top = '10px';
+
+                            if (c === 0) {
+                                tooltip.style.transform = 'translate(6px, 0)';
+                            } else if (c === numCols - 1) {
+                                tooltip.style.transform = 'translate(calc(-100% - 6px), 0)';
+                            } else {
+                                tooltip.style.transform = 'translate(-50%, 0)';
+                            }
+
+                            tooltip.classList.remove('hidden');
+                        }
+                    };
+
+                    const onLeaveCol = () => {
+                        const isMob = window.innerWidth < 640;
+                        const isSingular = filterSelection !== 'all';
+                        if (colHighlight) colHighlight.style.opacity = '0';
+                        if (crosshair) crosshair.style.opacity = '0';
+                        if (tooltip) tooltip.classList.add('hidden');
+                        const circles = document.querySelectorAll('#trend-points-group circle');
+                        circles.forEach(cir => {
+                            cir.setAttribute('r', isMob ? (isSingular ? '6.5' : '5') : (isSingular ? '5' : '3.5'));
+                            cir.setAttribute('stroke-width', isMob ? '2.5' : '2');
+                        });
+                    };
+
+                    zone.addEventListener('mouseenter', onEnterCol);
+                    zone.addEventListener('mouseleave', onLeaveCol);
+                    zone.addEventListener('click', onEnterCol);
+                    hoverZonesContainer.appendChild(zone);
+                }
+            }
+        }
+
+        // Attach category filter button listeners
+        const categoryFilterGroup = document.getElementById('category-filter-group');
+        if (categoryFilterGroup) {
+            categoryFilterGroup.addEventListener('click', (e) => {
+                const btn = e.target.closest('.cat-filter-pill');
+                if (!btn) return;
+                const cat = btn.dataset.cat;
+                if (activeTrendCategory === cat && cat !== 'all') {
+                    activeTrendCategory = 'all';
+                } else {
+                    activeTrendCategory = cat;
+                }
+                renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+            });
+        }
 
         function updatePeriod(periodKey) {
             currentPeriod = periodKey;
@@ -654,7 +1142,7 @@
             // Update chart text
             document.getElementById('chart-subtext').textContent = data.chartSubtext;
 
-            // Update Y-Axis Ticks
+            // Update Y-Axis Ticks for Income vs Expenses Bar Chart
             if (data.yTicks && data.yTicks.length === 4) {
                 document.getElementById('y-tick-4').textContent = data.yTicks[0];
                 document.getElementById('y-tick-3').textContent = data.yTicks[1];
@@ -681,10 +1169,8 @@
             document.getElementById('donut-period-label').textContent = data.donutPeriod;
             renderDonut(data.categories, data.donutTotal);
 
-            // Update Trends
-            document.getElementById('trend-val-1').textContent = data.trend1;
-            document.getElementById('trend-val-2').textContent = data.trend2;
-            document.getElementById('trend-val-3').textContent = data.trend3;
+            // Render Combined Category Trends Chart with Smart Insights
+            renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
         }
 
         periodButtons.forEach(btn => {
@@ -697,8 +1183,18 @@
             });
         });
 
-        // Initialize Month Donut
+        // Initialize Month Donut & Combined Trends Chart
         renderDonut(periodData.month.categories, periodData.month.donutTotal);
+        renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+
+        // Window resize handler for responsive chart dot sizing
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+            }, 100);
+        });
 
         // Export Report action
         document.getElementById('btn-export-report')?.addEventListener('click', () => {
