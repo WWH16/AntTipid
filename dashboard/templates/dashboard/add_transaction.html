@@ -121,7 +121,7 @@
                             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
                             <select id="select-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
                                 {% for acc in accounts %}
-                                <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }} (₱{{ acc.current_balance|floatformat:2 }})</option>
+                                <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }}</option>
                                 {% empty %}
                                 <option value="Cash">Cash</option>
                                 <option value="GCash">GCash</option>
@@ -226,23 +226,17 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <input type="text" id="input-new-account-name" placeholder="Name (e.g. Maya, BPI)" class="w-full px-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
+            <div class="flex items-center gap-2">
+                <input type="text" id="input-new-account-name" placeholder="Name (e.g. Maya, BPI)" class="flex-1 px-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
                 
-                <select id="select-new-account-type" class="w-full px-2.5 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer">
-                    <option value="CASH">Cash Wallet</option>
-                    <option value="E_WALLET" selected>E-Wallet (GCash / Maya)</option>
+                <select id="select-new-account-type" class="px-2.5 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer">
+                    <option value="CASH">Cash</option>
+                    <option value="E_WALLET" selected>E-Wallet</option>
                     <option value="BANK_ACCOUNT">Bank Account</option>
                     <option value="CREDIT_CARD">Credit Card</option>
                     <option value="OTHER">Other</option>
                 </select>
-            </div>
 
-            <div class="flex items-center gap-2">
-                <div class="relative flex-1">
-                    <span class="text-xs text-on-surface-variant font-bold absolute left-3 top-2 pointer-events-none">₱</span>
-                    <input type="number" step="0.01" min="0" id="input-new-account-balance" placeholder="Starting balance (0.00)" class="w-full pl-6 pr-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
-                </div>
                 <button type="button" id="btn-add-account-submit" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 flex items-center gap-1">
                     <span class="material-symbols-outlined text-[15px]">add</span>
                     <span>Add</span>
@@ -563,7 +557,7 @@
                 const opt = document.createElement('option');
                 opt.value = acc.name;
                 opt.dataset.id = acc.id;
-                opt.textContent = `${acc.name} (₱${parseFloat(acc.current_balance).toFixed(2)})`;
+                opt.textContent = acc.name;
                 selectAccount.appendChild(opt);
             });
 
@@ -582,7 +576,7 @@
             if (accounts.length === 0) {
                 accountsListContainer.innerHTML = `
                     <div class="text-center py-3 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-xl">
-                        No payment accounts found. Add one below.
+                        No payment methods found. Add one below.
                     </div>
                 `;
                 return;
@@ -607,11 +601,11 @@
                             </div>
                             <div class="flex flex-col min-w-0">
                                 <span class="font-label-md text-xs font-bold text-deep-forest truncate">${escapeHtml(acc.name)}</span>
-                                <span class="text-[10px] text-on-surface-variant font-medium">₱${parseFloat(acc.current_balance).toFixed(2)} • ${escapeHtml(acc.account_type_display || 'Wallet')}</span>
+                                <span class="text-[10px] text-on-surface-variant font-medium">${escapeHtml(acc.account_type_display || 'Payment Method')}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" class="btn-edit-account w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${acc.id}" title="Rename / Edit">
+                            <button type="button" class="btn-edit-account w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${acc.id}" title="Rename">
                                 <span class="material-symbols-outlined text-[15px]">edit</span>
                             </button>
                             <button type="button" class="btn-delete-account w-7 h-7 rounded-lg text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer ${accounts.length <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" data-id="${acc.id}" ${accounts.length <= 1 ? 'disabled' : ''} title="Delete">
@@ -622,11 +616,7 @@
 
                     <!-- Inline Edit Mode (Hidden initially) -->
                     <div class="acc-edit hidden items-center gap-1.5 w-full">
-                        <input type="text" class="input-edit-acc-name flex-1 px-2.5 py-1 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(acc.name)}" placeholder="Wallet name" />
-                        <div class="relative w-24">
-                            <span class="text-[10px] text-on-surface-variant font-bold absolute left-2 top-1.5 pointer-events-none">₱</span>
-                            <input type="number" step="0.01" class="input-edit-acc-balance w-full pl-4 pr-1.5 py-1 rounded-lg border border-outline-variant text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none tabular-nums text-right" value="${parseFloat(acc.current_balance).toFixed(2)}" placeholder="0.00" />
-                        </div>
+                        <input type="text" class="input-edit-acc-name flex-1 px-2.5 py-1.5 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(acc.name)}" placeholder="Payment method name" />
                         <button type="button" class="btn-save-acc-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${acc.id}" title="Save">
                             <span class="material-symbols-outlined text-[14px]">check</span>
                         </button>
@@ -668,7 +658,7 @@
                 });
             });
 
-            // Save Edit (Rename/Balance)
+            // Save Edit (Rename)
             document.querySelectorAll('.btn-save-acc-edit').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const accId = btn.dataset.id;
@@ -676,12 +666,10 @@
                     if (!row) return;
 
                     const nameInput = row.querySelector('.input-edit-acc-name');
-                    const balInput = row.querySelector('.input-edit-acc-balance');
                     const newName = nameInput ? nameInput.value.trim() : '';
-                    const newBal = balInput ? parseFloat(balInput.value) || 0 : 0;
 
                     if (!newName) {
-                        alert("Account name is required.");
+                        alert("Payment method name is required.");
                         return;
                     }
 
@@ -690,13 +678,13 @@
                         const res = await fetch(getAccountApiUrl(`/api/accounts/${accId}/update/`), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: newName, current_balance: newBal })
+                            body: JSON.stringify({ name: newName })
                         });
                         const data = await res.json();
                         if (data.success) {
                             await fetchAndRenderAccounts();
                         } else {
-                            alert(data.error || 'Failed to update account.');
+                            alert(data.error || 'Failed to update payment method.');
                         }
                     } catch (e) {
                         console.error(e);
@@ -720,7 +708,7 @@
                         if (data.success) {
                             await fetchAndRenderAccounts();
                         } else {
-                            alert(data.error || 'Failed to delete account.');
+                            alert(data.error || 'Failed to delete payment method.');
                         }
                     } catch (e) {
                         console.error(e);
@@ -734,7 +722,6 @@
             btnAddAccSubmit.addEventListener('click', async () => {
                 const name = inputNewAccName ? inputNewAccName.value.trim() : '';
                 const type = selectNewAccType ? selectNewAccType.value : 'E_WALLET';
-                const bal = inputNewAccBalance ? parseFloat(inputNewAccBalance.value) || 0 : 0;
 
                 if (!name) {
                     inputNewAccName.focus();
@@ -754,7 +741,6 @@
                         body: JSON.stringify({
                             name,
                             account_type: type,
-                            current_balance: bal,
                             icon: icon
                         })
                     });
@@ -762,14 +748,13 @@
                     btnAddAccSubmit.disabled = false;
                     if (data.success) {
                         if (inputNewAccName) inputNewAccName.value = '';
-                        if (inputNewAccBalance) inputNewAccBalance.value = '';
                         await fetchAndRenderAccounts();
                         // Select newly created account
                         if (selectAccount && data.account) {
                             selectAccount.value = data.account.name;
                         }
                     } else {
-                        alert(data.error || 'Failed to create account.');
+                        alert(data.error || 'Failed to create payment method.');
                     }
                 } catch (e) {
                     btnAddAccSubmit.disabled = false;

@@ -123,15 +123,16 @@ Usage:
                     </div>
                 </div>
                 <div class="flex flex-col gap-1.5">
-                    <label for="edit-select-account" class="font-label-sm text-xs font-bold text-deep-forest">Account</label>
+                    <label for="edit-select-account" class="font-label-sm text-xs font-bold text-deep-forest">Payment Method</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
                         <select id="edit-select-account" class="w-full pl-9 pr-6 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer appearance-none">
-                            <option value="Cash">Cash Wallet</option>
+                            {% for acc in accounts %}
+                            <option value="{{ acc.name }}">{{ acc.name }}</option>
+                            {% empty %}
+                            <option value="Cash">Cash</option>
                             <option value="GCash">GCash</option>
-                            <option value="Maya">Maya</option>
-                            <option value="Bank Account">BPI Bank Account</option>
-                            <option value="Credit Card">BDO Credit Card</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>

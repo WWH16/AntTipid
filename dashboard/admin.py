@@ -13,15 +13,15 @@ from .models import (
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'clerk_user_id', 'email', 'first_name', 'last_name', 'currency_code', 'created_at')
+    list_display = ('id', 'clerk_user_id', 'email', 'first_name', 'last_name', 'created_at')
     search_fields = ('clerk_user_id', 'email', 'first_name', 'last_name')
-    list_filter = ('currency_code', 'created_at')
+    list_filter = ('created_at',)
 
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'account_type', 'current_balance', 'currency', 'is_active', 'created_at')
-    list_filter = ('account_type', 'is_active', 'currency')
+    list_display = ('name', 'user', 'account_type', 'is_active', 'created_at')
+    list_filter = ('account_type', 'is_active')
     search_fields = ('name', 'institution_name', 'user__email', 'user__clerk_user_id')
 
 

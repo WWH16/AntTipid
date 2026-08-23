@@ -35,7 +35,6 @@ def get_current_user_profile(request):
             'last_name': 'Dela Cruz',
             'email': 'juan.delacruz@anttipid.ph',
             'monthly_income_target': Decimal('50000.00'),
-            'currency_code': 'PHP',
         }
     )
 
@@ -56,7 +55,6 @@ def seed_default_user_data(profile):
         name='Cash',
         account_type=Account.AccountType.CASH,
         institution_name='Cash',
-        current_balance=Decimal('4500.00'),
         color_hex='#163300',
         icon='payments',
     )
@@ -65,7 +63,6 @@ def seed_default_user_data(profile):
         name='GCash',
         account_type=Account.AccountType.E_WALLET,
         institution_name='GCash',
-        current_balance=Decimal('8250.00'),
         color_hex='#005CEE',
         icon='account_balance_wallet',
     )

@@ -12,7 +12,6 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=150, blank=True, default='')
     last_name = models.CharField(max_length=150, blank=True, default='')
     avatar_url = models.URLField(max_length=1000, blank=True, null=True)
-    currency_code = models.CharField(max_length=10, default='PHP')
     monthly_income_target = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     theme_preference = models.CharField(max_length=20, default='system')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -46,8 +45,6 @@ class Account(models.Model):
     account_type = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.CASH)
     institution_name = models.CharField(max_length=100, blank=True, default='', help_text="e.g. GCash, Maya, BPI, BDO, Cash")
     account_number_mask = models.CharField(max_length=30, blank=True, default='', help_text="e.g. •••• 4210")
-    current_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    currency = models.CharField(max_length=10, default='PHP')
     color_hex = models.CharField(max_length=10, default='#163300')
     icon = models.CharField(max_length=50, default='account_balance_wallet')
     is_active = models.BooleanField(default=True)
@@ -60,7 +57,7 @@ class Account(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self.name} ({self.get_account_type_display()}) - ₱{self.current_balance:,.2f}"
+        return f"{self.name} ({self.get_account_type_display()})"
 
 
 class Category(models.Model):
@@ -175,7 +172,6 @@ class Transaction(models.Model):
     receipt = models.OneToOneField(Receipt, on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_transaction')
     transaction_type = models.CharField(max_length=15, choices=TransactionType.choices, default=TransactionType.EXPENSE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    currency = models.CharField(max_length=10, default='PHP')
     title = models.CharField(max_length=200, help_text="Merchant name or transaction description")
     transaction_date = models.DateField(db_index=True)
     notes = models.TextField(blank=True, default='')

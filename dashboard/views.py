@@ -149,13 +149,6 @@ def add_transaction_view(request):
                     source=Transaction.SourceType.MANUAL,
                 )
 
-                # Update balance
-                if tx.transaction_type == Transaction.TransactionType.EXPENSE:
-                    account.current_balance -= amount
-                elif tx.transaction_type == Transaction.TransactionType.INCOME:
-                    account.current_balance += amount
-                account.save(update_fields=['current_balance', 'updated_at'])
-
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': True, 'id': str(tx.id)})
             return redirect('transactions')
@@ -203,7 +196,7 @@ def api_create_transaction(request):
         title = data.get('title', '').strip() or 'Untitled Transaction'
         tx_type = data.get('type', 'expense').upper()
         category_name = data.get('category', '').strip()
-        account_name = data.get('account', 'Cash Wallet').strip()
+        account_name = data.get('account', 'Cash').strip()
         tx_date_str = data.get('date', '').strip()
         notes = data.get('notes', '').strip()
 
@@ -228,12 +221,6 @@ def api_create_transaction(request):
                 source=Transaction.SourceType.MANUAL,
             )
 
-            if tx.transaction_type == Transaction.TransactionType.EXPENSE:
-                account.current_balance -= amount
-            elif tx.transaction_type == Transaction.TransactionType.INCOME:
-                account.current_balance += amount
-            account.save(update_fields=['current_balance', 'updated_at'])
-
         return JsonResponse({'success': True, 'id': str(tx.id)})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -252,15 +239,7 @@ def api_update_transaction(request, pk):
     try:
         data = json.loads(request.body.decode('utf-8'))
         if 'amount' in data:
-            new_amount = Decimal(str(data['amount']))
-            # Adjust account balance difference
-            diff = new_amount - tx.amount
-            if tx.transaction_type == Transaction.TransactionType.EXPENSE:
-                tx.account.current_balance -= diff
-            elif tx.transaction_type == Transaction.TransactionType.INCOME:
-                tx.account.current_balance += diff
-            tx.account.save(update_fields=['current_balance', 'updated_at'])
-            tx.amount = new_amount
+            tx.amount = Decimal(str(data['amount']))
 
         if 'title' in data:
             tx.title = data['title'].strip()
@@ -294,16 +273,7 @@ def api_delete_transaction(request, pk):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
     tx = get_object_or_404(Transaction, id=pk, user=profile)
-
-    with db_transaction.atomic():
-        # Revert account balance
-        if tx.transaction_type == Transaction.TransactionType.EXPENSE:
-            tx.account.current_balance += tx.amount
-        elif tx.transaction_type == Transaction.TransactionType.INCOME:
-            tx.account.current_balance -= tx.amount
-        tx.account.save(update_fields=['current_balance', 'updated_at'])
-
-        tx.delete()
+    tx.delete()
 
     return JsonResponse({'success': True})
 
@@ -616,7 +586,6 @@ def api_list_accounts(request):
             'name': acc.name,
             'account_type': acc.account_type,
             'account_type_display': acc.get_account_type_display(),
-            'current_balance': float(acc.current_balance),
             'icon': acc.icon or 'payments',
             'color_hex': acc.color_hex or '#163300',
         })
@@ -643,7 +612,6 @@ def api_create_account(request):
         if account_type not in dict(Account.AccountType.choices):
             account_type = Account.AccountType.CASH
 
-        balance = Decimal(str(data.get('current_balance', 0.00)))
         icon = data.get('icon', 'payments').strip() or 'payments'
         color = data.get('color_hex', '#163300').strip() or '#163300'
 
@@ -652,7 +620,6 @@ def api_create_account(request):
             name=name,
             account_type=account_type,
             institution_name=name,
-            current_balance=balance,
             icon=icon,
             color_hex=color,
             is_active=True
@@ -665,7 +632,6 @@ def api_create_account(request):
                 'name': account.name,
                 'account_type': account.account_type,
                 'account_type_display': account.get_account_type_display(),
-                'current_balance': float(account.current_balance),
                 'icon': account.icon,
                 'color_hex': account.color_hex,
             }
@@ -693,9 +659,6 @@ def api_update_account(request, pk):
             account.name = name
             account.institution_name = name
 
-        if 'current_balance' in data:
-            account.current_balance = Decimal(str(data['current_balance']))
-
         if 'account_type' in data and data['account_type'] in dict(Account.AccountType.choices):
             account.account_type = data['account_type']
 
@@ -714,7 +677,6 @@ def api_update_account(request, pk):
                 'name': account.name,
                 'account_type': account.account_type,
                 'account_type_display': account.get_account_type_display(),
-                'current_balance': float(account.current_balance),
                 'icon': account.icon,
                 'color_hex': account.color_hex,
             }
