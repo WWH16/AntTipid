@@ -29,28 +29,21 @@
     <div class="flex flex-col gap-4 sm:gap-6">
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- PAGE HEADER & ACTIONS                   -->
+        <!-- TOP CONTROLS & ACTIONS                  -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-            <div>
-                <h1 class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight">Financial Insights</h1>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant mt-0.5">Comprehensive analytics, spending trends, and category breakdowns.</p>
+        <div class="flex items-center justify-between gap-3">
+            <!-- Time Period Selector Pill Group -->
+            <div class="inline-flex bg-canvas rounded-full p-1 border border-outline-variant/60 shadow-2xs" id="period-selector-group">
+                <button data-period="week" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold">Week</button>
+                <button data-period="month" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-primary text-on-primary shadow-2xs font-sans text-xs font-bold transition-all cursor-pointer">Month</button>
+                <button data-period="year" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold">Year</button>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
-                <!-- Time Period Selector Pill Group -->
-                <div class="flex bg-surface-container-low rounded-full p-1 border border-outline-variant/60 shadow-xs" id="period-selector-group">
-                    <button data-period="week" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Week</button>
-                    <button data-period="month" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-primary text-on-primary shadow-xs font-label-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Month</button>
-                    <button data-period="year" class="btn-period px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-label-md text-[11px] sm:text-xs text-on-surface-variant hover:text-deep-forest transition-all cursor-pointer font-bold">Year</button>
-                </div>
-
-                <!-- Export Report Button -->
-                <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-8 sm:h-9 rounded-xl border border-positive/30 bg-primary-pale text-positive-deep font-label-md text-xs font-bold hover:bg-primary hover:text-on-primary transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[16px]">download</span>
-                    <span class="hidden sm:inline">Export</span>
-                </button>
-            </div>
+            <!-- Export Report Button (DESIGN.md button-secondary / tertiary pill) -->
+            <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-full border border-outline-variant/60 bg-canvas text-ink font-sans text-xs font-bold hover:bg-canvas-soft transition-all shadow-2xs active:scale-[0.98] cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">download</span>
+                <span>Export</span>
+            </button>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -221,66 +214,74 @@
                 </div>
             </div>
 
-            <!-- Spending by Category Donut Chart (Right 5 Cols) -->
-            <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
-                <div class="flex justify-between items-center border-b border-surface-variant/40 pb-3">
-                    <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
+            <!-- Spending by Category Donut Chart (Right 5 Cols - DESIGN.md) -->
+            <div id="category-donut-card" class="lg:col-span-5 bg-canvas border border-outline-variant/60 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
+                <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3">
+                    <h2 class="font-sans text-xs sm:text-sm font-bold text-ink">Category Breakdown</h2>
+                    <span id="donut-period-label" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
                 </div>
 
-                <!-- Donut SVG Area -->
-                <div class="flex-1 flex flex-col justify-center items-center py-1 sm:py-2">
-                    <div class="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
-                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            <circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
-                            <!-- Housing 42% (Deep Forest) -->
-                            <circle id="donut-seg-1" class="text-deep-forest stroke-current transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="105 251" stroke-dashoffset="0" stroke-width="16"></circle>
-                            <!-- Food 25% (Ant Green) -->
-                            <circle id="donut-seg-2" class="text-primary stroke-current transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="62 251" stroke-dashoffset="-105" stroke-width="16"></circle>
-                            <!-- Transport 15% (Gold Budget) -->
-                            <circle id="donut-seg-3" class="text-warning stroke-current transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="37 251" stroke-dashoffset="-167" stroke-width="16"></circle>
-                            <!-- Other 18% (Expense Red) -->
-                            <circle id="donut-seg-4" class="text-expense stroke-current transition-all duration-300 cursor-pointer hover:stroke-[18px]" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="45 251" stroke-dashoffset="-204" stroke-width="16"></circle>
+                <!-- Donut SVG Interactive Area -->
+                <div class="flex-1 flex flex-col justify-center items-center py-2 relative">
+                    <div class="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90 select-none" viewBox="0 0 100 100" id="category-donut-svg">
+                            <!-- Background Track -->
+                            <circle class="text-canvas-soft stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
+                            
+                            <!-- Housing Segment (Deep Forest) -->
+                            <circle id="donut-seg-1" tabindex="0" role="button" aria-label="Housing: 42%" class="donut-segment text-deep-forest stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
+                            
+                            <!-- Food Segment (Primary Lime / Ant Green) -->
+                            <circle id="donut-seg-2" tabindex="0" role="button" aria-label="Food: 25%" class="donut-segment text-primary stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
+                            
+                            <!-- Transport Segment (Warning Gold) -->
+                            <circle id="donut-seg-3" tabindex="0" role="button" aria-label="Transport: 15%" class="donut-segment text-warning stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
+                            
+                            <!-- Other Segment (Negative Red) - Closes the gap seamlessly -->
+                            <circle id="donut-seg-4" tabindex="0" role="button" aria-label="Other: 18%" class="donut-segment text-negative stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
                         </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span id="donut-center-label" class="font-label-sm text-[9px] sm:text-[10px] text-deep-forest uppercase tracking-wider font-bold">Total</span>
-                            <span id="donut-center-value" class="font-headline-md text-base sm:text-lg font-extrabold text-deep-forest tabular-nums">₱42.5k</span>
+
+                        <!-- Center Info Display -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4 transition-all duration-200">
+                            <span id="donut-center-label" class="font-sans text-[9px] sm:text-[10px] text-mute uppercase tracking-wider font-bold truncate max-w-[100px]">Total</span>
+                            <span id="donut-center-value" class="font-sans text-sm sm:text-base md:text-lg font-bold text-ink tabular-nums truncate">₱42.5k</span>
+                            <span id="donut-center-pct" class="font-sans text-[10px] font-bold text-positive-deep hidden">42%</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Donut Legend Grid -->
-                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/40">
-                    <div id="legend-item-1" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
-                        <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-deep-forest shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Housing</span>
+                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/40" id="donut-legend-grid">
+                    <div id="legend-item-1" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-deep-forest shrink-0"></div>
+                            <span class="font-sans text-xs text-ink font-bold truncate">Housing</span>
                         </div>
-                        <span id="legend-val-1" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">42%</span>
+                        <span id="legend-val-1" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">42%</span>
                     </div>
 
-                    <div id="legend-item-2" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
-                        <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-primary shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Food</span>
+                    <div id="legend-item-2" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
+                            <span class="font-sans text-xs text-ink font-bold truncate">Food</span>
                         </div>
-                        <span id="legend-val-2" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">25%</span>
+                        <span id="legend-val-2" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">25%</span>
                     </div>
 
-                    <div id="legend-item-3" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
-                        <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-warning shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Transport</span>
+                    <div id="legend-item-3" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-warning shrink-0"></div>
+                            <span class="font-sans text-xs text-ink font-bold truncate">Transport</span>
                         </div>
-                        <span id="legend-val-3" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">15%</span>
+                        <span id="legend-val-3" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">15%</span>
                     </div>
 
-                    <div id="legend-item-4" class="flex items-center justify-between p-1.5 sm:p-2 rounded-xl border border-transparent hover:border-outline-variant/40 hover:bg-soft-green/20 transition-all cursor-pointer">
-                        <div class="flex items-center gap-1.5 sm:gap-2">
-                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-expense shrink-0"></div>
-                            <span class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-bold truncate">Other</span>
+                    <div id="legend-item-4" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-negative shrink-0"></div>
+                            <span class="font-sans text-xs text-ink font-bold truncate">Other</span>
                         </div>
-                        <span id="legend-val-4" class="font-label-sm text-[11px] sm:text-xs text-deep-forest font-extrabold tabular-nums ml-1">18%</span>
+                        <span id="legend-val-4" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">18%</span>
                     </div>
                 </div>
             </div>
@@ -386,14 +387,16 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Data sets for period switching
+        const C = 2 * Math.PI * 40; // ~251.3274
+
+        // Data sets for period switching with exact breakdown items
         const periodData = {
             week: {
                 total: '₱9,850.00',
-                totalSub: '<span class="text-primary font-semibold">-4%</span> from previous week',
+                totalSub: '<span class="text-positive-deep font-bold">-4%</span> from previous week',
                 highest: 'Food & Dining',
                 highestIcon: 'restaurant',
-                highestSub: '₱3,450.00 (35% of total)',
+                highestSub: '₱3,743.00 (38% of total)',
                 savings: '32.0%',
                 savingsBar: '92%',
                 chartSubtext: 'Daily breakdown for current week',
@@ -403,15 +406,21 @@
                 incHeights: ['70%', '40%', '85%', '60%'],
                 expVals: ['₱2.1k', '₱3.2k', '₱2.8k', '₱1.7k'],
                 incVals: ['₱4.5k', '₱2.5k', '₱5.8k', '₱3.9k'],
-                donutTotal: '₱9.8k',
+                donutTotal: '₱9.85k',
                 donutPeriod: 'This Week',
+                categories: [
+                    { name: 'Housing', pct: 20, amount: '₱1,970.00' },
+                    { name: 'Food', pct: 38, amount: '₱3,743.00' },
+                    { name: 'Transport', pct: 22, amount: '₱2,167.00' },
+                    { name: 'Other', pct: 20, amount: '₱1,970.00' }
+                ],
                 trend1: '₱1,200.00',
                 trend2: '₱850.00',
                 trend3: '₱420.00'
             },
             month: {
                 total: '₱42,500.00',
-                totalSub: '<span class="text-expense font-bold">+12%</span> from previous period',
+                totalSub: '<span class="text-negative font-bold">+12%</span> from previous period',
                 highest: 'Housing & Rent',
                 highestIcon: 'home',
                 highestSub: '₱17,850.00 (42% of total)',
@@ -426,16 +435,22 @@
                 incVals: ['₱18.0k', '₱24.0k', '₱9.0k', '₱12.0k'],
                 donutTotal: '₱42.5k',
                 donutPeriod: 'November',
+                categories: [
+                    { name: 'Housing', pct: 42, amount: '₱17,850.00' },
+                    { name: 'Food', pct: 25, amount: '₱10,625.00' },
+                    { name: 'Transport', pct: 15, amount: '₱6,375.00' },
+                    { name: 'Other', pct: 18, amount: '₱7,650.00' }
+                ],
                 trend1: '₱4,500.00',
                 trend2: '₱3,200.00',
                 trend3: '₱1,800.00'
             },
             year: {
                 total: '₱485,000.00',
-                totalSub: '<span class="text-primary font-bold">-8%</span> from last year',
+                totalSub: '<span class="text-positive-deep font-bold">-8%</span> from last year',
                 highest: 'Housing & Rent',
                 highestIcon: 'home',
-                highestSub: '₱204,000.00 (42% of total)',
+                highestSub: '₱203,700.00 (42% of total)',
                 savings: '31.2%',
                 savingsBar: '88%',
                 chartSubtext: 'Quarterly breakdown for 2023',
@@ -447,6 +462,12 @@
                 incVals: ['₱160k', '₱135k', '₱145k', '₱175k'],
                 donutTotal: '₱485k',
                 donutPeriod: '2023 Year',
+                categories: [
+                    { name: 'Housing', pct: 42, amount: '₱203,700.00' },
+                    { name: 'Food', pct: 26, amount: '₱126,100.00' },
+                    { name: 'Transport', pct: 16, amount: '₱77,600.00' },
+                    { name: 'Other', pct: 16, amount: '₱77,600.00' }
+                ],
                 trend1: '₱54,000.00',
                 trend2: '₱38,400.00',
                 trend3: '₱21,600.00'
@@ -454,8 +475,170 @@
         };
 
         const periodButtons = document.querySelectorAll('#period-selector-group .btn-period');
+        let currentPeriod = 'month';
+        let lockedCategoryIndex = null;
+
+        const centerLabel = document.getElementById('donut-center-label');
+        const centerValue = document.getElementById('donut-center-value');
+        const centerPct = document.getElementById('donut-center-pct');
+
+        function renderDonut(categories, defaultTotalText) {
+            let runningOffset = 0;
+
+            categories.forEach((cat, index) => {
+                const segEl = document.getElementById(`donut-seg-${index + 1}`);
+                const legendValEl = document.getElementById(`legend-val-${index + 1}`);
+
+                if (segEl) {
+                    // Gapless mathematical calculation: length = (pct / 100) * circumference
+                    const segLength = (cat.pct / 100) * C;
+                    segEl.setAttribute('stroke-dasharray', `${segLength.toFixed(2)} ${C.toFixed(2)}`);
+                    segEl.setAttribute('stroke-dashoffset', `${(-runningOffset).toFixed(2)}`);
+                    segEl.setAttribute('aria-label', `${cat.name}: ${cat.pct}% (${cat.amount})`);
+                    runningOffset += segLength;
+                }
+
+                if (legendValEl) {
+                    legendValEl.textContent = `${cat.pct}%`;
+                }
+            });
+
+            resetDonutSelection(defaultTotalText);
+        }
+
+        function highlightCategory(index) {
+            const data = periodData[currentPeriod];
+            const cat = data.categories[index];
+            if (!cat) return;
+
+            // Highlight corresponding SVG slice & dim others
+            data.categories.forEach((_, i) => {
+                const seg = document.getElementById(`donut-seg-${i + 1}`);
+                const leg = document.getElementById(`legend-item-${i + 1}`);
+
+                if (i === index) {
+                    if (seg) {
+                        seg.setAttribute('stroke-width', '21');
+                        seg.style.opacity = '1';
+                        seg.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))';
+                    }
+                    if (leg) {
+                        leg.classList.add('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs');
+                        leg.classList.remove('opacity-40');
+                    }
+                } else {
+                    if (seg) {
+                        seg.setAttribute('stroke-width', '15');
+                        seg.style.opacity = '0.35';
+                        seg.style.filter = 'none';
+                    }
+                    if (leg) {
+                        leg.classList.remove('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs');
+                        leg.classList.add('opacity-40');
+                    }
+                }
+            });
+
+            // Update center label with full category details
+            if (centerLabel) centerLabel.textContent = cat.name;
+            if (centerValue) centerValue.textContent = cat.amount;
+            if (centerPct) {
+                centerPct.textContent = `${cat.pct}% of total`;
+                centerPct.classList.remove('hidden');
+            }
+        }
+
+        function resetDonutSelection(defaultTotalText) {
+            if (lockedCategoryIndex !== null) {
+                highlightCategory(lockedCategoryIndex);
+                return;
+            }
+
+            const data = periodData[currentPeriod];
+            data.categories.forEach((_, i) => {
+                const seg = document.getElementById(`donut-seg-${i + 1}`);
+                const leg = document.getElementById(`legend-item-${i + 1}`);
+
+                if (seg) {
+                    seg.setAttribute('stroke-width', '16');
+                    seg.style.opacity = '1';
+                    seg.style.filter = 'none';
+                }
+                if (leg) {
+                    leg.classList.remove('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs', 'opacity-40');
+                }
+            });
+
+            if (centerLabel) centerLabel.textContent = 'Total';
+            if (centerValue) centerValue.textContent = defaultTotalText || data.donutTotal;
+            if (centerPct) centerPct.classList.add('hidden');
+        }
+
+        function toggleCategoryLock(index) {
+            if (lockedCategoryIndex === index) {
+                lockedCategoryIndex = null;
+                resetDonutSelection();
+            } else {
+                lockedCategoryIndex = index;
+                highlightCategory(index);
+            }
+        }
+
+        // Attach listeners to both Donut Segments and Legend Items
+        for (let i = 0; i < 4; i++) {
+            const seg = document.getElementById(`donut-seg-${i + 1}`);
+            const leg = document.getElementById(`legend-item-${i + 1}`);
+
+            const onEnter = () => {
+                if (lockedCategoryIndex === null) highlightCategory(i);
+            };
+            const onLeave = () => {
+                if (lockedCategoryIndex === null) resetDonutSelection();
+            };
+            const onClick = (e) => {
+                e.stopPropagation();
+                toggleCategoryLock(i);
+            };
+
+            if (seg) {
+                seg.addEventListener('mouseenter', onEnter);
+                seg.addEventListener('mouseleave', onLeave);
+                seg.addEventListener('click', onClick);
+                seg.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCategoryLock(i);
+                    }
+                });
+            }
+
+            if (leg) {
+                leg.addEventListener('mouseenter', onEnter);
+                leg.addEventListener('mouseleave', onLeave);
+                leg.addEventListener('click', onClick);
+                leg.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCategoryLock(i);
+                    }
+                });
+            }
+        }
+
+        // Clicking outside the donut card resets selection
+        document.addEventListener('click', (e) => {
+            const donutCard = document.getElementById('category-donut-card');
+            if (donutCard && !donutCard.contains(e.target)) {
+                if (lockedCategoryIndex !== null) {
+                    lockedCategoryIndex = null;
+                    resetDonutSelection();
+                }
+            }
+        });
 
         function updatePeriod(periodKey) {
+            currentPeriod = periodKey;
+            lockedCategoryIndex = null;
             const data = periodData[periodKey];
             if (!data) return;
 
@@ -494,9 +677,9 @@
                 if (incTooltip) incTooltip.textContent = data.incVals[i - 1];
             }
 
-            // Update Donut
-            document.getElementById('donut-center-value').textContent = data.donutTotal;
+            // Update Donut with exact gapless math & new period data
             document.getElementById('donut-period-label').textContent = data.donutPeriod;
+            renderDonut(data.categories, data.donutTotal);
 
             // Update Trends
             document.getElementById('trend-val-1').textContent = data.trend1;
@@ -507,50 +690,15 @@
         periodButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 periodButtons.forEach(b => {
-                    b.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-label-md text-xs lg:text-sm text-on-surface-variant hover:text-on-surface transition-all cursor-pointer';
+                    b.className = 'btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold';
                 });
-                btn.className = 'btn-period px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary text-on-primary font-bold shadow-xs font-label-md text-xs lg:text-sm transition-all cursor-pointer';
+                btn.className = 'btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-primary text-on-primary shadow-2xs font-sans text-xs font-bold transition-all cursor-pointer';
                 updatePeriod(btn.dataset.period);
             });
         });
 
-        // Donut hover interactivity with Legend
-        const segments = [
-            { seg: 'donut-seg-1', item: 'legend-item-1', name: 'Housing', pct: '42%' },
-            { seg: 'donut-seg-2', item: 'legend-item-2', name: 'Food', pct: '25%' },
-            { seg: 'donut-seg-3', item: 'legend-item-3', name: 'Transport', pct: '15%' },
-            { seg: 'donut-seg-4', item: 'legend-item-4', name: 'Other', pct: '18%' }
-        ];
-
-        const centerLabel = document.getElementById('donut-center-label');
-        const centerValue = document.getElementById('donut-center-value');
-        const originalValue = centerValue.textContent;
-
-        segments.forEach(({ seg, item, name, pct }) => {
-            const segEl = document.getElementById(seg);
-            const itemEl = document.getElementById(item);
-
-            const highlight = () => {
-                if (itemEl) itemEl.classList.add('bg-surface-container-high');
-                if (centerLabel) centerLabel.textContent = name;
-                if (centerValue) centerValue.textContent = pct;
-            };
-
-            const reset = () => {
-                if (itemEl) itemEl.classList.remove('bg-surface-container-high');
-                if (centerLabel) centerLabel.textContent = 'Total';
-                if (centerValue) centerValue.textContent = originalValue;
-            };
-
-            if (segEl) {
-                segEl.addEventListener('mouseenter', highlight);
-                segEl.addEventListener('mouseleave', reset);
-            }
-            if (itemEl) {
-                itemEl.addEventListener('mouseenter', highlight);
-                itemEl.addEventListener('mouseleave', reset);
-            }
-        });
+        // Initialize Month Donut
+        renderDonut(periodData.month.categories, periodData.month.donutTotal);
 
         // Export Report action
         document.getElementById('btn-export-report')?.addEventListener('click', () => {
