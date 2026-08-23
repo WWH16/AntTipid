@@ -505,7 +505,10 @@
                     }
                     if (scanned.items && scanned.items.length > 0 && inputNotes) {
                         const itemSummary = scanned.items.map(i => `${i.description} (${i.quantity}x)`).join(', ');
-                        inputNotes.value = `Scanned items: ${itemSummary}`.slice(0, 200);
+                        const timePrefix = scanned.time ? `[Time: ${scanned.time}] ` : '';
+                        inputNotes.value = `${timePrefix}Scanned items: ${itemSummary}`.slice(0, 250);
+                    } else if (scanned.time && inputNotes) {
+                        inputNotes.value = `[Time: ${scanned.time}]`;
                     }
                     isFormDirty = true;
                     return;

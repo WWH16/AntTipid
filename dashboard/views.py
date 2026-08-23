@@ -474,44 +474,59 @@ def api_scan_receipt_view(request):
         except Exception:
             pass
 
-    if gemini_key and (image_base64 or 'image_bytes' in locals()):
+    if not gemini_key:
+        return JsonResponse({
+            'error': 'Gemini API key is not configured. Please configure GEMINI_API_KEY in your environment or record the transaction manually.',
+            'error_type': 'missing_api_key'
+        }, status=400)
+
+    if not image_base64 and 'image_bytes' not in locals():
+        return JsonResponse({
+            'error': 'No receipt image provided. Please upload or capture an image.',
+            'error_type': 'missing_image'
+        }, status=400)
+
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(
+            api_key=gemini_key,
+            http_options=types.HttpOptions(timeout=25_000),
+        )
+        prompt_text = (
+            "You are an expert receipt OCR assistant for a Philippine personal finance app (AntTipid). "
+            "Analyze this receipt image and return ONLY a valid JSON object matching this exact schema without markdown wrap:\n"
+            "{\n"
+            '  "merchant": "Store Name",\n'
+            '  "date": "YYYY-MM-DD",\n'
+            '  "time": "HH:MM",\n'
+            '  "category": "Groceries",\n'
+            '  "payment_method": "Cash | GCash | Maya | Credit Card | Debit Card | Bank Transfer",\n'
+            '  "subtotal": 0.00,\n'
+            '  "tax": 0.00,\n'
+            '  "total": 0.00,\n'
+            '  "cash_tendered": 0.00,\n'
+            '  "change": 0.00,\n'
+            '  "items": [\n'
+            '    {"description": "Item description", "quantity": 1, "price": 0.00}\n'
+            '  ]\n'
+            "}\n"
+            "Important guidelines:\n"
+            "1. Date and Time: Extract the exact transaction date (YYYY-MM-DD) and time (24-hour HH:MM format e.g. 14:35 or 09:15) printed on the receipt. If date or time is not printed or cannot be clearly read, return null for that field.\n"
+            "2. Total/Grand Total: Read the exact grand total printed on the receipt.\n"
+            "3. Tax: Do NOT calculate or guess tax on your own. Only extract tax if it is explicitly printed on the receipt image; otherwise return 0.00.\n"
+            "4. Cash & Change: If payment method is Cash, extract the cash tendered and change stated on the receipt; otherwise return 0.00 for both.\n"
+            "5. Category must be one of: Groceries, Food & Dining, Transportation, Utilities, Shopping, Healthcare, Housing & Rent, Entertainment, Services, Other."
+        )
+
+        raw_bytes = image_bytes if 'image_bytes' in locals() else base64.b64decode(image_base64)
+
+        # Try gemini-2.5-flash or fallback
+        model_name = "gemini-2.5-flash"
         try:
-            from google import genai
-            from google.genai import types
-
-            client = genai.Client(
-                api_key=gemini_key,
-                http_options=types.HttpOptions(timeout=20_000),
-            )
-            prompt_text = (
-                "You are an expert receipt OCR assistant for a Philippine personal finance app (AntTipid). "
-                "Analyze this receipt image and return ONLY a valid JSON object matching this exact schema without markdown wrap:\n"
-                "{\n"
-                '  "merchant": "Store Name",\n'
-                '  "date": "YYYY-MM-DD",\n'
-                '  "time": "HH:MM",\n'
-                '  "category": "Groceries",\n'
-                '  "payment_method": "Cash | GCash | Maya | Credit Card | Debit Card | Bank Transfer",\n'
-                '  "subtotal": 0.00,\n'
-                '  "tax": 0.00,\n'
-                '  "total": 0.00,\n'
-                '  "cash_tendered": 0.00,\n'
-                '  "change": 0.00,\n'
-                '  "items": [\n'
-                '    {"description": "Item description", "quantity": 1, "price": 0.00}\n'
-                '  ]\n'
-                "}\n"
-                "Important guidelines:\n"
-                "1. Total/Grand Total: Read the exact grand total printed on the receipt.\n"
-                "2. Tax: Do NOT calculate or guess tax on your own. Only extract tax if it is explicitly printed on the receipt image; otherwise return 0.00.\n"
-                "3. Cash & Change: If payment method is Cash, extract the cash tendered / amount paid and change stated on the receipt; otherwise return 0.00 for both.\n"
-                "Category must be one of: Groceries, Dining, Transportation, Utilities, Shopping, Healthcare, Entertainment, Services, Other."
-            )
-
-            raw_bytes = image_bytes if 'image_bytes' in locals() else base64.b64decode(image_base64)
-
             response = client.models.generate_content(
-                model="gemini-3.6-flash",
+                model=model_name,
                 contents=[
                     types.Part.from_bytes(
                         data=raw_bytes,
@@ -524,18 +539,56 @@ def api_scan_receipt_view(request):
                     response_mime_type="application/json"
                 )
             )
+        except Exception as model_err:
+            # If 2.5 is unavailable, try gemini-1.5-flash or gemini-2.0-flash
+            err_lower = str(model_err).lower()
+            if 'not found' in err_lower or 'unsupported' in err_lower:
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[
+                        types.Part.from_bytes(
+                            data=raw_bytes,
+                            mime_type=mime_type
+                        ),
+                        prompt_text
+                    ],
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        response_mime_type="application/json"
+                    )
+                )
+            else:
+                raise model_err
 
-            raw_text = response.text.strip()
-            if raw_text.startswith('```'):
-                raw_text = raw_text.split('```')[1]
-                if raw_text.startswith('json'):
-                    raw_text = raw_text[4:]
-                raw_text = raw_text.strip()
+        raw_text = response.text.strip()
+        if raw_text.startswith('```'):
+            raw_text = raw_text.split('```')[1]
+            if raw_text.startswith('json'):
+                raw_text = raw_text[4:]
+            raw_text = raw_text.strip()
 
-            extracted = json.loads(raw_text)
-            extracted['source'] = 'gemini_api'
-            return JsonResponse(extracted)
-        except Exception as e:
-            return JsonResponse({'error': f'Gemini OCR failed: {str(e)}'}, status=500)
+        extracted = json.loads(raw_text)
+        extracted['source'] = 'gemini_api'
+        return JsonResponse(extracted)
 
-    return JsonResponse({'error': 'Failed to process receipt image with Gemini API'}, status=400)
+    except Exception as e:
+        err_str = str(e)
+        err_lower = err_str.lower()
+        if 'resource_exhausted' in err_lower or 'quota' in err_lower or '429' in err_lower or 'rate limit' in err_lower or 'exhausted' in err_lower:
+            return JsonResponse({
+                'error': 'Gemini API quota has been exhausted. You have reached your rate limit or free tier quota for receipt scanning. You can still enter or edit transaction details manually.',
+                'error_type': 'quota_exceeded',
+                'detail': err_str
+            }, status=429)
+        elif 'api_key_invalid' in err_lower or 'invalid api key' in err_lower or 'permission_denied' in err_lower or 'unauthorized' in err_lower or 'forbidden' in err_lower:
+            return JsonResponse({
+                'error': 'Gemini API key is invalid or unauthorized. Please verify your GEMINI_API_KEY configuration.',
+                'error_type': 'auth_error',
+                'detail': err_str
+            }, status=401)
+        else:
+            return JsonResponse({
+                'error': f'Receipt scanning error: {err_str}',
+                'error_type': 'ocr_error',
+                'detail': err_str
+            }, status=500)

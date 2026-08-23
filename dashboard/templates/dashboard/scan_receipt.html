@@ -2,7 +2,7 @@
 
 {% block title %}Scan Receipt | AntTipid{% endblock %}
 {% block header_title %}Scan Receipt{% endblock %}
-{% block meta_description %}Scan receipts using AI OCR to automatically extract merchant, line items, and totals into your AntTipid expense tracker.{% endblock %}
+{% block meta_description %}Scan receipts using AI OCR to automatically extract merchant, line items, date, time, and totals into your AntTipid expense tracker.{% endblock %}
 
 {% block mobile_nav %}{% endblock %}
 
@@ -54,7 +54,7 @@
                 </a>
                 <div>
                     <h1 class="font-headline-lg text-xl sm:text-2xl font-extrabold text-deep-forest tracking-tight">Scan Receipt</h1>
-                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Extract merchant, line items, and totals with AI OCR</p>
+                    <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Extract merchant, line items, date, and totals with AI OCR</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -66,6 +66,42 @@
                     <span class="material-symbols-outlined text-[18px]">edit_note</span>
                     <span class="hidden sm:inline">Manual Entry</span>
                 </a>
+            </div>
+        </div>
+
+        <!-- ─── ERROR & QUOTA EXCEEDED ALERT BANNER ─── -->
+        <div id="ocr-error-banner" class="hidden w-full bg-expense/10 border-2 border-expense/30 rounded-2xl p-4 sm:p-5 shadow-xs transition-all duration-300">
+            <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
+                    <span class="material-symbols-outlined text-[22px]" id="ocr-error-icon">warning</span>
+                </div>
+                <div class="flex-1 flex flex-col gap-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 id="ocr-error-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">
+                            Scan Quota Exceeded
+                        </h3>
+                        <button type="button" id="btn-dismiss-error" class="text-on-surface-variant/70 hover:text-deep-forest text-xs font-bold p-1 rounded-lg hover:bg-expense/15 transition-all cursor-pointer">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                    </div>
+                    <p id="ocr-error-message" class="font-body-sm text-xs text-body leading-relaxed">
+                        The AI OCR API quota limit for receipt scanning has been reached. You can record this transaction via Manual Entry or fill in the details manually.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2.5 pt-2 mt-0.5">
+                        <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-error-manual-entry" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-expense text-white font-label-md text-xs font-bold shadow-xs hover:bg-expense/90 transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px]">edit_note</span>
+                            <span>Switch to Manual Entry</span>
+                        </a>
+                        <button type="button" id="btn-error-fill-manual" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px] text-positive-deep">edit</span>
+                            <span>Edit Details Manually</span>
+                        </button>
+                        <button type="button" id="btn-error-retry" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px]">refresh</span>
+                            <span>Try Again</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -97,7 +133,7 @@
                             Scan Paper Receipt
                         </h2>
                         <p class="font-body-md text-xs sm:text-sm text-body leading-relaxed font-medium">
-                            Snap a receipt photo or drag and drop an image. AI OCR extracts the merchant, items, date, and total automatically.
+                            Snap a receipt photo or drag and drop an image. AI OCR extracts the merchant, items, date, time, and total automatically.
                         </p>
                     </div>
 
@@ -123,7 +159,7 @@
                         <span class="material-symbols-outlined text-[16px]">lightbulb</span>
                     </div>
                     <p class="font-body-sm text-xs text-body leading-relaxed font-medium">
-                        <strong class="text-deep-forest font-bold">Quick Tip:</strong> For the most accurate extraction, flatten the receipt, avoid strong shadows, and ensure all corners are in frame.
+                        <strong class="text-deep-forest font-bold">Quick Tip:</strong> For the most accurate extraction, flatten the receipt, avoid strong shadows, and ensure all corners and date/time stamps are in frame.
                     </p>
                 </div>
 
@@ -203,7 +239,7 @@
             <div class="flex items-center justify-between gap-3 px-0.5">
                 <div class="flex flex-col gap-0.5">
                     <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight">Verify Extracted Details</h2>
-                    <p class="font-body-sm text-xs text-body">Compare against the photo and correct anything the scan missed before saving.</p>
+                    <p class="font-body-sm text-xs text-body">Compare against the photo. All detected and auto-filled fields are fully editable.</p>
                 </div>
                 <span class="hidden sm:inline-flex shrink-0 items-center gap-1.5 px-3 py-1 rounded-full bg-primary-pale text-positive-deep font-label-sm text-xs font-bold border border-positive/30">
                     <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
@@ -269,16 +305,33 @@
                         </div>
                     </div>
 
-                    <!-- Date & Category Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Date, Time & Category 3-Column Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-3.5">
                         <!-- Date -->
                         <div class="flex flex-col gap-1.5">
-                            <label for="input-review-date" class="font-label-sm text-[11px] uppercase tracking-wider font-extrabold text-on-surface-variant">
-                                Transaction Date
-                            </label>
+                            <div class="flex items-center justify-between">
+                                <label for="input-review-date" class="font-label-sm text-[11px] uppercase tracking-wider font-extrabold text-on-surface-variant">
+                                    Date
+                                </label>
+                                <span id="label-date-source" class="text-[10px] font-bold text-positive-deep">Detected</span>
+                            </div>
                             <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-[18px] text-on-surface-variant/60 absolute left-3.5 pointer-events-none">calendar_today</span>
-                                <input type="date" id="input-review-date" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer" value="2026-08-23" />
+                                <span class="material-symbols-outlined text-[17px] text-on-surface-variant/60 absolute left-3 pointer-events-none">calendar_today</span>
+                                <input type="date" id="input-review-date" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8.5 pr-2.5 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer" value="" />
+                            </div>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between">
+                                <label for="input-review-time" class="font-label-sm text-[11px] uppercase tracking-wider font-extrabold text-on-surface-variant">
+                                    Time
+                                </label>
+                                <span id="label-time-source" class="text-[10px] font-bold text-positive-deep">Detected</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-[17px] text-on-surface-variant/60 absolute left-3 pointer-events-none">schedule</span>
+                                <input type="time" id="input-review-time" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8.5 pr-2.5 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer" value="" />
                             </div>
                         </div>
 
@@ -288,8 +341,8 @@
                                 Category
                             </label>
                             <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-[18px] text-on-surface-variant/60 absolute left-3.5 pointer-events-none">category</span>
-                                <select id="select-review-category" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-10 pr-9 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none">
+                                <span class="material-symbols-outlined text-[17px] text-on-surface-variant/60 absolute left-3 pointer-events-none">category</span>
+                                <select id="select-review-category" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8.5 pr-7 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none">
                                     <option value="Groceries">Groceries</option>
                                     <option value="Food & Dining">Food & Dining</option>
                                     <option value="Transportation">Transportation</option>
@@ -301,7 +354,7 @@
                                     <option value="Services">Services</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <span class="material-symbols-outlined text-on-surface-variant/60 text-[18px] absolute right-3 pointer-events-none">unfold_more</span>
+                                <span class="material-symbols-outlined text-on-surface-variant/60 text-[16px] absolute right-2.5 pointer-events-none">unfold_more</span>
                             </div>
                         </div>
                     </div>
@@ -452,6 +505,14 @@
         const ocrReviewScreen = document.getElementById('section-ocr-review');
         const dropZoneContainer = document.getElementById('drop-zone-container');
 
+        // Error banner elements
+        const errorBanner = document.getElementById('ocr-error-banner');
+        const errorTitle = document.getElementById('ocr-error-title');
+        const errorMessage = document.getElementById('ocr-error-message');
+        const dismissErrorBtn = document.getElementById('btn-dismiss-error');
+        const errorFillManualBtn = document.getElementById('btn-error-fill-manual');
+        const errorRetryBtn = document.getElementById('btn-error-retry');
+
         const fileInput = document.getElementById('input-receipt-camera');
         const selectBtn = document.getElementById('btn-select-file');
         const tryDemoBtn = document.getElementById('btn-try-demo');
@@ -467,6 +528,9 @@
 
         const merchantInput = document.getElementById('input-review-merchant');
         const dateInput = document.getElementById('input-review-date');
+        const timeInput = document.getElementById('input-review-time');
+        const dateSourceLabel = document.getElementById('label-date-source');
+        const timeSourceLabel = document.getElementById('label-time-source');
         const categorySelect = document.getElementById('select-review-category');
         const subtotalLabel = document.getElementById('label-review-subtotal');
         const taxInput = document.getElementById('input-review-tax');
@@ -493,9 +557,21 @@
         const zoomModal = document.getElementById('modal-image-zoom');
         const closeZoomBtn = document.getElementById('btn-close-zoom');
 
+        let lastUploadedFile = null;
+
+        function getNowIsoDate() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getNowIsoTime() {
+            const now = new Date();
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
         let reviewData = {
             merchant: 'SM Supermarket',
-            date: new Date().toISOString().split('T')[0],
+            date: getNowIsoDate(),
+            time: getNowIsoTime(),
             category: 'Groceries',
             tax: 0.00,
             total: 0.00,
@@ -511,7 +587,7 @@
 
         const statusTexts = [
             "Reading receipt...",
-            "Extracting line items...",
+            "Extracting date, time & items...",
             "Identifying category...",
             "Calculating totals..."
         ];
@@ -522,6 +598,42 @@
             { text: statusTexts[2], percent: 75 },
             { text: statusTexts[3], percent: 95 }
         ];
+
+        // Error Banner Functions
+        function showErrorBanner(title, message, isQuota = false) {
+            if (!errorBanner) return;
+            if (errorTitle) errorTitle.textContent = title;
+            if (errorMessage) errorMessage.textContent = message;
+            errorBanner.classList.remove('hidden');
+            errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideErrorBanner() {
+            if (!errorBanner) return;
+            errorBanner.classList.add('hidden');
+        }
+
+        if (dismissErrorBtn) dismissErrorBtn.addEventListener('click', hideErrorBanner);
+        if (errorRetryBtn) {
+            errorRetryBtn.addEventListener('click', () => {
+                hideErrorBanner();
+                if (lastUploadedFile) {
+                    startScanningProcess(lastUploadedFile);
+                } else if (fileInput) {
+                    fileInput.click();
+                }
+            });
+        }
+        if (errorFillManualBtn) {
+            errorFillManualBtn.addEventListener('click', () => {
+                hideErrorBanner();
+                uploadZone.classList.add('hidden');
+                processingCanvas.classList.add('hidden');
+                ocrReviewScreen.classList.remove('hidden');
+                ocrReviewScreen.classList.add('flex');
+                populateReviewData({});
+            });
+        }
 
         // Modal triggers
         function showDiscardModal() {
@@ -618,8 +730,7 @@
         if (reuploadBtnTop) reuploadBtnTop.addEventListener('click', () => fileInput.click());
         if (reuploadBtnMobile) reuploadBtnMobile.addEventListener('click', () => fileInput.click());
         if (uploadZone) uploadZone.addEventListener('click', (e) => {
-            // Avoid double trigger if clicking buttons directly
-            if (e.target.closest('button')) return;
+            if (e.target.closest('button') || e.target.closest('a')) return;
             fileInput.click();
         });
 
@@ -675,6 +786,9 @@
                     if (progressEl) progressEl.style.width = '100%';
                     if (stepCountText) stepCountText.textContent = `Step 4 of 4`;
                     if (onComplete) setTimeout(onComplete, 300);
+                },
+                cancel: () => {
+                    clearInterval(interval);
                 }
             };
         }
@@ -682,6 +796,7 @@
         if (tryDemoBtn) {
             tryDemoBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                hideErrorBanner();
                 uploadZone.classList.add('hidden');
                 processingCanvas.classList.remove('hidden');
                 ocrReviewScreen.classList.add('hidden');
@@ -693,7 +808,8 @@
                     ocrReviewScreen.classList.add('flex');
                     populateReviewData({
                         merchant: 'SM Supermarket Manila',
-                        date: new Date().toISOString().split('T')[0],
+                        date: '2026-08-23',
+                        time: '14:28',
                         category: 'Groceries',
                         tax: 48.50,
                         total: 452.50,
@@ -715,6 +831,8 @@
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
+                    lastUploadedFile = file;
+                    hideErrorBanner();
                     const reader = new FileReader();
                     reader.onload = (evt) => {
                         const base64Data = evt.target.result;
@@ -748,10 +866,17 @@
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
+            .then(async res => {
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw { status: res.status, data: data };
+                }
+                return data;
+            })
             .then(data => {
                 anim.finish();
                 setTimeout(() => {
+                    hideErrorBanner();
                     processingCanvas.classList.add('hidden');
                     ocrReviewScreen.classList.remove('hidden');
                     ocrReviewScreen.classList.add('flex');
@@ -760,19 +885,80 @@
             })
             .catch(err => {
                 console.error("OCR scanning error:", err);
-                anim.finish();
-                setTimeout(() => {
-                    processingCanvas.classList.add('hidden');
-                    ocrReviewScreen.classList.remove('hidden');
-                    ocrReviewScreen.classList.add('flex');
-                    populateReviewData({});
-                }, 400);
+                anim.cancel();
+                processingCanvas.classList.add('hidden');
+                uploadZone.classList.remove('hidden');
+
+                let title = "Receipt Scan Failed";
+                let message = "Unable to process receipt image automatically. You can switch to Manual Entry or edit the details manually.";
+                let isQuota = false;
+
+                if (err && err.data) {
+                    if (err.data.error_type === 'quota_exceeded' || err.status === 429) {
+                        title = "AI Scan Quota Exceeded";
+                        message = err.data.error || "The Gemini AI model quota for receipt scanning has been exhausted. You can record this transaction via Manual Entry or fill in the details manually.";
+                        isQuota = true;
+                    } else if (err.data.error_type === 'missing_api_key' || err.data.error_type === 'auth_error' || err.status === 401) {
+                        title = "API Key Configuration Notice";
+                        message = err.data.error || "Gemini API key is not configured or unauthorized. Please verify your GEMINI_API_KEY in your environment or use Manual Entry.";
+                    } else if (err.data.error) {
+                        message = err.data.error;
+                    }
+                } else if (err && err.message) {
+                    message = err.message;
+                }
+
+                showErrorBanner(title, message, isQuota);
             });
         }
 
         function populateReviewData(data) {
+            // Merchant
             if (data.merchant) merchantInput.value = data.merchant;
-            if (data.date) dateInput.value = data.date;
+            else if (!merchantInput.value) merchantInput.value = 'SM Supermarket';
+
+            // Date: detect from receipt or fallback to current date (editable)
+            if (data.date && data.date.trim()) {
+                dateInput.value = data.date.trim();
+                if (dateSourceLabel) {
+                    dateSourceLabel.textContent = "From Receipt";
+                    dateSourceLabel.className = "text-[10px] font-bold text-positive-deep";
+                }
+            } else {
+                dateInput.value = getNowIsoDate();
+                if (dateSourceLabel) {
+                    dateSourceLabel.textContent = "Auto-filled";
+                    dateSourceLabel.className = "text-[10px] font-medium text-on-surface-variant";
+                }
+            }
+
+            // Time: detect from receipt or fallback to current time (editable)
+            if (data.time && data.time.trim()) {
+                let t = data.time.trim();
+                if (/am|pm/i.test(t)) {
+                    const parts = t.match(/(\d+):(\d+)\s*(am|pm)/i);
+                    if (parts) {
+                        let hours = parseInt(parts[1], 10);
+                        const minutes = parts[2];
+                        const isPm = parts[3].toLowerCase() === 'pm';
+                        if (isPm && hours < 12) hours += 12;
+                        if (!isPm && hours === 12) hours = 0;
+                        t = `${String(hours).padStart(2, '0')}:${minutes}`;
+                    }
+                }
+                timeInput.value = t.slice(0, 5);
+                if (timeSourceLabel) {
+                    timeSourceLabel.textContent = "From Receipt";
+                    timeSourceLabel.className = "text-[10px] font-bold text-positive-deep";
+                }
+            } else {
+                timeInput.value = getNowIsoTime();
+                if (timeSourceLabel) {
+                    timeSourceLabel.textContent = "Auto-filled";
+                    timeSourceLabel.className = "text-[10px] font-medium text-on-surface-variant";
+                }
+            }
+
             if (data.category) categorySelect.value = data.category;
             taxInput.value = (data.tax || 0.00).toFixed(2);
             if (data.total) totalInput.value = parseFloat(data.total).toFixed(2);
@@ -787,6 +973,7 @@
 
             reviewData.merchant = merchantInput.value;
             reviewData.date = dateInput.value;
+            reviewData.time = timeInput.value;
             reviewData.category = categorySelect.value;
             reviewData.tax = parseFloat(taxInput.value) || 0;
             reviewData.total = parseFloat(totalInput.value) || 0;
@@ -805,6 +992,7 @@
             sessionStorage.setItem('active_ocr_review_data', JSON.stringify({
                 merchant: merchantInput.value,
                 date: dateInput.value,
+                time: timeInput.value,
                 category: categorySelect.value,
                 tax: parseFloat(taxInput.value) || 0.00,
                 total: parseFloat(totalInput.value) || 0.00,
@@ -822,14 +1010,37 @@
             if (badgeItemsPill) badgeItemsPill.textContent = itemCountLabel;
         }
 
-        [merchantInput, dateInput, categorySelect, taxInput, totalInput, cashInput, changeInput].forEach(el => {
-            if (el) el.addEventListener('change', saveActiveState);
+        [merchantInput, dateInput, timeInput, categorySelect, taxInput, totalInput, cashInput, changeInput].forEach(el => {
+            if (el) {
+                el.addEventListener('change', saveActiveState);
+                el.addEventListener('input', saveActiveState);
+            }
         });
+
+        // Update labels on user manual edit
+        if (dateInput) {
+            dateInput.addEventListener('input', () => {
+                if (dateSourceLabel) {
+                    dateSourceLabel.textContent = "Edited";
+                    dateSourceLabel.className = "text-[10px] font-medium text-deep-forest";
+                }
+            });
+        }
+
+        if (timeInput) {
+            timeInput.addEventListener('input', () => {
+                if (timeSourceLabel) {
+                    timeSourceLabel.textContent = "Edited";
+                    timeSourceLabel.className = "text-[10px] font-medium text-deep-forest";
+                }
+            });
+        }
 
         function handleSaveExpense() {
             const finalData = {
                 merchant: merchantInput.value,
                 date: dateInput.value,
+                time: timeInput.value,
                 category: categorySelect.value,
                 tax: parseFloat(taxInput.value) || 0.00,
                 total: parseFloat(totalInput.value) || 0.00,
