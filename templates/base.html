@@ -253,82 +253,134 @@
     {% endblock %}
 
     <!-- ═══════════════════════════════════════════ -->
-    <!-- ADD CHOICE MODAL & ACTION SHEET             -->
-    <!-- (Mobile Action Bar <sm / Desktop Modal sm+) -->
+    <!-- DESKTOP ADD TRANSACTION MODAL (BIG SCREENS) -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="modal-add-choice" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-        <!-- Backdrop -->
-        <div id="modal-add-choice-backdrop" class="absolute inset-0 bg-deep-forest/40 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+    <div id="modal-add-choice-desktop" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-desktop-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+        <div id="modal-add-choice-desktop-content" class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-5 relative z-[125]">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[22px]">add</span>
+                    </div>
+                    <div>
+                        <h3 id="modal-add-choice-desktop-title" class="font-headline-md text-base font-bold text-deep-forest">Add New Entry</h3>
+                        <p class="font-body-sm text-xs text-body font-medium">Select how you want to record your transaction</p>
+                    </div>
+                </div>
+                <button type="button" id="btn-close-add-choice-desktop" aria-label="Close modal" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
 
-        <!-- Modal Content Container -->
-        <div id="modal-add-choice-content" class="w-full sm:max-w-lg bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl border border-surface-variant/60 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 flex flex-col max-h-[85vh] overflow-hidden">
+            <!-- Choices 2-Column Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                
+                <!-- Choice 1: Scan Receipt -->
+                <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt-desktop" class="flex flex-col justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low hover:border-positive/50 hover:shadow-xs transition-all group active:scale-[0.98] cursor-pointer min-h-[140px]">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-extrabold border border-positive/30">AI Scan</span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Scan Receipt</h4>
+                            <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-transform text-[16px]">arrow_forward</span>
+                        </div>
+                        <p class="font-body-sm text-[11px] text-body font-medium mt-0.5 leading-relaxed">Auto-extract items & totals with AI</p>
+                    </div>
+                </a>
+
+                <!-- Choice 2: Manual Entry -->
+                <a href="{% url 'add_transaction' %}" id="choice-manual-entry-desktop" class="flex flex-col justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low hover:border-positive/50 hover:shadow-xs transition-all group active:scale-[0.98] cursor-pointer min-h-[140px]">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-deep-forest text-[10px] font-bold border border-outline-variant/40">Manual</span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Manual Entry</h4>
+                            <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-transform text-[16px]">arrow_forward</span>
+                        </div>
+                        <p class="font-body-sm text-[11px] text-body font-medium mt-0.5 leading-relaxed">Log expense, income, or transfer</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MOBILE ADD ACTION SHEET (SMALL SCREENS ONLY)-->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="modal-add-choice-mobile" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-mobile-title" class="fixed inset-0 z-[100] flex items-end justify-center p-0 md:hidden hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+        <!-- Backdrop -->
+        <div id="modal-add-choice-mobile-backdrop" class="absolute inset-0 bg-deep-forest/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+
+        <!-- Action Sheet Drawer -->
+        <div id="modal-add-choice-mobile-content" class="w-full bg-surface-container-lowest rounded-t-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[85vh] overflow-hidden">
             
             <!-- Mobile Drag Handle Bar -->
-            <div id="modal-add-choice-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 sm:hidden">
+            <div id="modal-add-choice-mobile-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0">
                 <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
             </div>
 
-            <!-- Modal Header -->
-            <div class="px-5 pt-1 pb-3 sm:px-6 sm:py-4 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
+            <!-- Header -->
+            <div class="px-5 pt-1 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-[18px]">add</span>
                     </div>
                     <div>
-                        <h3 id="modal-add-choice-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Add New Entry</h3>
+                        <h3 id="modal-add-choice-mobile-title" class="font-headline-md text-sm font-bold text-deep-forest">Add New Entry</h3>
                         <p class="font-body-sm text-[11px] text-body font-medium">Select how to log your transaction</p>
                     </div>
                 </div>
-                <button id="btn-close-add-choice" aria-label="Close add choice modal" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                <button type="button" id="btn-close-add-choice-mobile" aria-label="Close action sheet" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
 
-            <!-- Choices Grid / Action List -->
-            <div class="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5 overscroll-contain overflow-y-auto">
-                
-                <!-- Choice 1: Scan / Upload Receipt -->
-                <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt" class="flex sm:flex-col justify-between items-center sm:items-start p-4 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs gap-3">
-                    <div class="flex items-center sm:justify-between sm:w-full gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <!-- Choices Vertical List -->
+            <div class="p-5 flex flex-col gap-3 overscroll-contain overflow-y-auto">
+                <!-- Scan Receipt -->
+                <a href="{% url 'scan_receipt' %}" class="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                             <span class="material-symbols-outlined text-[22px]">photo_camera</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-bold border border-positive/30 hidden sm:inline-flex">AI Scan</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
+                        <div>
                             <div class="flex items-center gap-2">
-                                <h4 class="font-label-md text-sm font-bold text-on-surface group-hover:text-deep-forest transition-colors">Scan Receipt</h4>
-                                <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[9px] font-bold border border-positive/30 sm:hidden">AI Scan</span>
+                                <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Scan Receipt</h4>
+                                <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-extrabold border border-positive/30">AI Scan</span>
                             </div>
-                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[16px] hidden sm:inline-block">chevron_right</span>
+                            <p class="font-body-sm text-xs text-body font-medium mt-0.5">Auto-extract items & totals with AI</p>
                         </div>
-                        <p class="font-body-sm text-xs text-body mt-0.5 sm:mt-1">Auto-scan items & totals from receipts with AI.</p>
                     </div>
-                    <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[18px] sm:hidden shrink-0">chevron_right</span>
+                    <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[20px] shrink-0">chevron_right</span>
                 </a>
 
-                <!-- Choice 2: Add Manual Transaction -->
-                <a href="{% url 'add_transaction' %}" id="choice-manual-entry" class="flex sm:flex-col justify-between items-center sm:items-start p-4 sm:p-4 rounded-xl border border-surface-variant/60 bg-surface-container-low/30 hover:bg-surface-container-low hover:border-outline-variant/80 transition-all group active:scale-[0.98] cursor-pointer shadow-xs gap-3">
-                    <div class="flex items-center sm:justify-between sm:w-full gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-surface-container text-deep-forest flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <!-- Manual Entry -->
+                <a href="{% url 'add_transaction' %}" class="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                             <span class="material-symbols-outlined text-[22px]">edit_note</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full bg-surface-container text-deep-forest text-[10px] font-bold border border-surface-variant/40 hidden sm:inline-flex">Manual</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
+                        <div>
                             <div class="flex items-center gap-2">
-                                <h4 class="font-label-md text-sm font-bold text-on-surface group-hover:text-deep-forest transition-colors">Manual Entry</h4>
-                                <span class="px-2 py-0.5 rounded-full bg-surface-container text-deep-forest text-[9px] font-bold border border-surface-variant/40 sm:hidden">Manual</span>
+                                <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Manual Entry</h4>
+                                <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-deep-forest text-[10px] font-bold border border-outline-variant/40">Manual</span>
                             </div>
-                            <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[16px] hidden sm:inline-block">chevron_right</span>
+                            <p class="font-body-sm text-xs text-body font-medium mt-0.5">Log expense, income, or transfer</p>
                         </div>
-                        <p class="font-body-sm text-xs text-body mt-0.5 sm:mt-1">Log expense, income, or transfer manually.</p>
                     </div>
-                    <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[18px] sm:hidden shrink-0">chevron_right</span>
+                    <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[20px] shrink-0">chevron_right</span>
                 </a>
-
             </div>
 
         </div>
@@ -336,82 +388,128 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const addChoiceModal = document.getElementById('modal-add-choice');
-            const addChoiceBackdrop = document.getElementById('modal-add-choice-backdrop');
-            const addChoiceContent = document.getElementById('modal-add-choice-content');
-            const closeChoiceBtn = document.getElementById('btn-close-add-choice');
-
-            const bnavAdd = document.getElementById('bnav-add');
+            // ─── 1. Desktop Add Choice Modal Controller ───
+            const desktopModal = document.getElementById('modal-add-choice-desktop');
+            const desktopModalContent = document.getElementById('modal-add-choice-desktop-content');
             const desktopAddBtn = document.getElementById('btn-add-transaction-desktop');
+            const desktopCloseBtn = document.getElementById('btn-close-add-choice-desktop');
 
-            function openAddChoiceModal(e) {
+            function openDesktopModal(e) {
                 if (e) e.preventDefault();
-                if (!addChoiceModal) return;
+                if (!desktopModal) return;
 
                 document.body.style.overflow = 'hidden';
-                addChoiceModal.classList.remove('hidden');
+                desktopModal.classList.remove('hidden');
+                desktopModal.classList.add('flex');
                 requestAnimationFrame(() => {
-                    if (addChoiceBackdrop) {
-                        addChoiceBackdrop.classList.remove('opacity-0');
-                        addChoiceBackdrop.classList.add('opacity-100');
-                    }
-                    addChoiceModal.classList.remove('opacity-0');
-                    addChoiceModal.classList.add('opacity-100');
-                    if (addChoiceContent) {
-                        addChoiceContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
-                        addChoiceContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
+                    desktopModal.classList.remove('opacity-0');
+                    desktopModal.classList.add('opacity-100');
+                    if (desktopModalContent) {
+                        desktopModalContent.classList.remove('scale-95');
+                        desktopModalContent.classList.add('scale-100');
                     }
                 });
             }
 
-            function closeAddChoiceModal() {
-                if (!addChoiceModal) return;
+            function closeDesktopModal() {
+                if (!desktopModal) return;
 
-                if (addChoiceBackdrop) {
-                    addChoiceBackdrop.classList.remove('opacity-100');
-                    addChoiceBackdrop.classList.add('opacity-0');
-                }
-                addChoiceModal.classList.remove('opacity-100');
-                addChoiceModal.classList.add('opacity-0');
-                if (addChoiceContent) {
-                    addChoiceContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
-                    addChoiceContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
+                desktopModal.classList.remove('opacity-100');
+                desktopModal.classList.add('opacity-0');
+                if (desktopModalContent) {
+                    desktopModalContent.classList.remove('scale-100');
+                    desktopModalContent.classList.add('scale-95');
                 }
                 setTimeout(() => {
-                    addChoiceModal.classList.add('hidden');
+                    desktopModal.classList.add('hidden');
+                    desktopModal.classList.remove('flex');
                     document.body.style.overflow = '';
                 }, 200);
             }
 
-            if (bnavAdd) bnavAdd.addEventListener('click', openAddChoiceModal);
-            if (desktopAddBtn) desktopAddBtn.addEventListener('click', openAddChoiceModal);
-            if (closeChoiceBtn) closeChoiceBtn.addEventListener('click', closeAddChoiceModal);
-            if (addChoiceBackdrop) addChoiceBackdrop.addEventListener('click', closeAddChoiceModal);
-
-            if (addChoiceModal) {
-                addChoiceModal.addEventListener('click', (e) => {
-                    if (e.target === addChoiceModal) closeAddChoiceModal();
+            if (desktopAddBtn) desktopAddBtn.addEventListener('click', openDesktopModal);
+            if (desktopCloseBtn) desktopCloseBtn.addEventListener('click', closeDesktopModal);
+            if (desktopModal) {
+                desktopModal.addEventListener('click', (e) => {
+                    if (e.target === desktopModal) closeDesktopModal();
                 });
             }
 
+            // ─── 2. Mobile Add Choice Action Sheet Controller ───
+            const mobileSheet = document.getElementById('modal-add-choice-mobile');
+            const mobileBackdrop = document.getElementById('modal-add-choice-mobile-backdrop');
+            const mobileContent = document.getElementById('modal-add-choice-mobile-content');
+            const mobileCloseBtn = document.getElementById('btn-close-add-choice-mobile');
+            const bnavAdd = document.getElementById('bnav-add');
+            const mobileHandle = document.getElementById('modal-add-choice-mobile-handle');
+
+            function openMobileSheet(e) {
+                if (e) e.preventDefault();
+                if (!mobileSheet) return;
+
+                document.body.style.overflow = 'hidden';
+                mobileSheet.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    if (mobileBackdrop) {
+                        mobileBackdrop.classList.remove('opacity-0');
+                        mobileBackdrop.classList.add('opacity-100');
+                    }
+                    mobileSheet.classList.remove('opacity-0');
+                    mobileSheet.classList.add('opacity-100');
+                    if (mobileContent) {
+                        mobileContent.classList.remove('translate-y-full', 'opacity-0');
+                        mobileContent.classList.add('translate-y-0', 'opacity-100');
+                    }
+                });
+            }
+
+            function closeMobileSheet() {
+                if (!mobileSheet) return;
+
+                if (mobileBackdrop) {
+                    mobileBackdrop.classList.remove('opacity-100');
+                    mobileBackdrop.classList.add('opacity-0');
+                }
+                mobileSheet.classList.remove('opacity-100');
+                mobileSheet.classList.add('opacity-0');
+                if (mobileContent) {
+                    mobileContent.classList.remove('translate-y-0', 'opacity-100');
+                    mobileContent.classList.add('translate-y-full', 'opacity-0');
+                }
+                setTimeout(() => {
+                    mobileSheet.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 200);
+            }
+
+            if (bnavAdd) bnavAdd.addEventListener('click', openMobileSheet);
+            if (mobileCloseBtn) mobileCloseBtn.addEventListener('click', closeMobileSheet);
+            if (mobileBackdrop) mobileBackdrop.addEventListener('click', closeMobileSheet);
+            if (mobileSheet) {
+                mobileSheet.addEventListener('click', (e) => {
+                    if (e.target === mobileSheet) closeMobileSheet();
+                });
+            }
+
+            // Keyboard Escape handling
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && addChoiceModal && !addChoiceModal.classList.contains('hidden')) {
-                    closeAddChoiceModal();
+                if (e.key === 'Escape') {
+                    if (desktopModal && !desktopModal.classList.contains('hidden')) closeDesktopModal();
+                    if (mobileSheet && !mobileSheet.classList.contains('hidden')) closeMobileSheet();
                 }
             });
 
-            // Mobile Touch Drag Down to Dismiss Gesture for Add Choice Modal
-            const choiceHandle = document.getElementById('modal-add-choice-handle');
+            // Mobile Touch Drag Down to Dismiss Gesture
             let startYChoice = 0;
             let currentYChoice = 0;
             let isDraggingChoice = false;
 
-            if (choiceHandle) {
-                choiceHandle.addEventListener('touchstart', (e) => {
+            if (mobileHandle && mobileContent) {
+                mobileHandle.addEventListener('touchstart', (e) => {
                     startYChoice = e.touches[0].clientY;
                     currentYChoice = startYChoice;
                     isDraggingChoice = true;
-                    addChoiceContent.style.transition = 'none';
+                    mobileContent.style.transition = 'none';
                 }, { passive: true });
 
                 window.addEventListener('touchmove', (e) => {
@@ -419,19 +517,19 @@
                     currentYChoice = e.touches[0].clientY;
                     const deltaY = currentYChoice - startYChoice;
                     if (deltaY > 0) {
-                        addChoiceContent.style.transform = `translateY(${deltaY}px)`;
+                        mobileContent.style.transform = `translateY(${deltaY}px)`;
                     }
                 }, { passive: true });
 
                 window.addEventListener('touchend', () => {
                     if (!isDraggingChoice) return;
                     isDraggingChoice = false;
-                    addChoiceContent.style.transition = '';
+                    mobileContent.style.transition = '';
                     const deltaY = currentYChoice - startYChoice;
                     if (deltaY > 80) {
-                        closeAddChoiceModal();
+                        closeMobileSheet();
                     } else {
-                        addChoiceContent.style.transform = '';
+                        mobileContent.style.transform = '';
                     }
                 });
             }
