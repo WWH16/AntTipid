@@ -320,66 +320,62 @@
     <!-- ═══════════════════════════════════════════ -->
     <div id="modal-add-choice-mobile" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-mobile-title" class="fixed inset-0 z-[100] flex items-end justify-center p-0 md:hidden hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
         <!-- Backdrop -->
-        <div id="modal-add-choice-mobile-backdrop" class="absolute inset-0 bg-deep-forest/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="modal-add-choice-mobile-backdrop" class="absolute inset-0 bg-deep-forest/40 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
 
         <!-- Action Sheet Drawer -->
-        <div id="modal-add-choice-mobile-content" class="w-full bg-surface-container-lowest rounded-t-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[85vh] overflow-hidden">
+        <div id="modal-add-choice-mobile-content" class="w-full bg-surface-container-lowest rounded-t-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-200 ease-out flex flex-col max-h-[85vh] overflow-hidden">
             
-            <!-- Mobile Drag Handle Bar -->
-            <div id="modal-add-choice-mobile-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0">
-                <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
+            <!-- Mobile Drag Handle Bar (---) -->
+            <div id="modal-add-choice-mobile-handle" class="w-full pt-3 pb-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0">
+                <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full shadow-2xs"></div>
             </div>
 
             <!-- Header -->
-            <div class="px-5 pt-1 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
+            <div class="px-5 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-[18px]">add</span>
                     </div>
                     <div>
-                        <h3 id="modal-add-choice-mobile-title" class="font-headline-md text-sm font-bold text-deep-forest">Add New Entry</h3>
-                        <p class="font-body-sm text-[11px] text-body font-medium">Select how to log your transaction</p>
+                        <h3 id="modal-add-choice-mobile-title" class="font-headline-md text-base font-bold text-deep-forest">Add Entry</h3>
+                        <p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Select how you want to record</p>
                     </div>
                 </div>
-                <button type="button" id="btn-close-add-choice-mobile" aria-label="Close action sheet" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                <button type="button" id="btn-close-add-choice-mobile" aria-label="Close action sheet" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-deep-forest transition-colors cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
 
             <!-- Choices Vertical List -->
-            <div class="p-5 flex flex-col gap-3 overscroll-contain overflow-y-auto">
+            <div class="p-4 pb-6 flex flex-col gap-3 overscroll-contain overflow-y-auto">
                 <!-- Scan Receipt -->
-                <a href="{% url 'scan_receipt' %}" class="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                            <span class="material-symbols-outlined text-[22px]">photo_camera</span>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Scan Receipt</h4>
-                                <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-extrabold border border-positive/30">AI Scan</span>
-                            </div>
-                            <p class="font-body-sm text-xs text-body font-medium mt-0.5">Auto-extract items & totals with AI</p>
-                        </div>
+                <a href="{% url 'scan_receipt' %}" class="flex items-center gap-3.5 p-3.5 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-primary-pale/20 hover:border-positive/40 active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
+                    <div class="w-12 h-12 min-w-[48px] min-h-[48px] max-w-[48px] max-h-[48px] rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 aspect-square shadow-xs">
+                        <span class="material-symbols-outlined text-[24px] select-none shrink-0" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; line-height: 1;">photo_camera</span>
                     </div>
-                    <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[20px] shrink-0">chevron_right</span>
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors truncate">Scan Receipt</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-[10px] font-extrabold border border-positive/30 shrink-0">AI Scan</span>
+                        </div>
+                        <p class="font-body-sm text-xs text-on-surface-variant font-medium mt-0.5 leading-snug truncate">Auto-extract items & totals with AI</p>
+                    </div>
+                    <span class="material-symbols-outlined text-positive/70 group-hover:text-positive-deep group-hover:translate-x-0.5 transition-all text-[20px] shrink-0 ml-auto">chevron_right</span>
                 </a>
 
                 <!-- Manual Entry -->
-                <a href="{% url 'add_transaction' %}" class="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                            <span class="material-symbols-outlined text-[22px]">edit_note</span>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-positive-deep transition-colors">Manual Entry</h4>
-                                <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-deep-forest text-[10px] font-bold border border-outline-variant/40">Manual</span>
-                            </div>
-                            <p class="font-body-sm text-xs text-body font-medium mt-0.5">Log expense, income, or transfer</p>
-                        </div>
+                <a href="{% url 'add_transaction' %}" class="flex items-center gap-3.5 p-3.5 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low hover:border-outline active:scale-[0.98] transition-all group cursor-pointer shadow-xs">
+                    <div class="w-12 h-12 min-w-[48px] min-h-[48px] max-w-[48px] max-h-[48px] rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center shrink-0 aspect-square shadow-xs">
+                        <span class="material-symbols-outlined text-[24px] select-none shrink-0" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; line-height: 1;">edit_note</span>
                     </div>
-                    <span class="material-symbols-outlined text-on-surface-variant/40 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[20px] shrink-0">chevron_right</span>
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-headline-md text-sm font-bold text-deep-forest group-hover:text-deep-forest transition-colors truncate">Manual Entry</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-deep-forest text-[10px] font-bold border border-outline-variant/40 shrink-0">Manual</span>
+                        </div>
+                        <p class="font-body-sm text-xs text-on-surface-variant font-medium mt-0.5 leading-snug truncate">Log expense, income, or transfer</p>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant/50 group-hover:text-deep-forest group-hover:translate-x-0.5 transition-all text-[20px] shrink-0 ml-auto">chevron_right</span>
                 </a>
             </div>
 
