@@ -233,20 +233,48 @@ def get_transactions_data(profile, filters=None):
 
 def get_budget_data(profile, selected_month=None):
     """
-    Calculate dynamic category budgets and progress for the Budget Page.
+    Calculate dynamic category budgets and progress for the Budget Page for the selected month.
     """
     today = date.today()
-    start_of_month = today.replace(day=1)
-    if today.month == 12:
-        end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+    today_start_of_month = today.replace(day=1)
+
+    target_date = today
+    if selected_month:
+        try:
+            target_date = datetime.strptime(str(selected_month).strip(), '%Y-%m').date()
+        except Exception:
+            target_date = today
+
+    start_of_month = target_date.replace(day=1)
+    if target_date.month == 12:
+        end_of_month = target_date.replace(year=target_date.year + 1, month=1, day=1) - timedelta(days=1)
     else:
-        end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+        end_of_month = target_date.replace(month=target_date.month + 1, day=1) - timedelta(days=1)
+
+    # Next / Previous Month navigation logic based on database transactions & current date
+    is_current_month = (start_of_month >= today_start_of_month)
+    next_month_date = (start_of_month + timedelta(days=32)).replace(day=1)
+    prev_month_date = (start_of_month - timedelta(days=1)).replace(day=1)
+
+    # Chevron Right: ONLY show if viewed month is strictly in the past (before current month)
+    has_next_month = (next_month_date <= today_start_of_month)
+    next_month_str = next_month_date.strftime('%Y-%m')
+    prev_month_str = prev_month_date.strftime('%Y-%m')
+
+    # Detect if user has transactions in earlier months in the database
+    earliest_tx = Transaction.objects.filter(user=profile).order_by('transaction_date').first()
+    if earliest_tx and earliest_tx.transaction_date:
+        earliest_month = earliest_tx.transaction_date.replace(day=1)
+        has_prev_month = (start_of_month > earliest_month)
+    else:
+        # If no transactions exist, allow viewing past 3 months
+        has_prev_month = (start_of_month > (today_start_of_month - timedelta(days=90)).replace(day=1))
 
     budgets = Budget.objects.filter(user=profile, is_active=True).select_related('category')
     overall_budget = budgets.filter(category=None).first()
     category_budgets = budgets.exclude(category=None)
 
-    # Calculate actual spending per category this month
+    # Calculate actual spending per category for this specific month from database
     expense_txs = Transaction.objects.filter(
         user=profile,
         transaction_type=Transaction.TransactionType.EXPENSE,
@@ -341,7 +369,13 @@ def get_budget_data(profile, selected_month=None):
         'exceeded_count': exceeded_count,
         'budget_cards': budget_cards,
         'categories': categories,
-        'current_month_label': today.strftime('%B %Y'),
+        'current_month_label': target_date.strftime('%B %Y'),
+        'current_month_str': target_date.strftime('%Y-%m'),
+        'is_current_month': is_current_month,
+        'has_next_month': has_next_month,
+        'has_prev_month': has_prev_month,
+        'next_month_str': next_month_str,
+        'prev_month_str': prev_month_str,
     }
 
 

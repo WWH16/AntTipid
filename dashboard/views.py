@@ -68,7 +68,8 @@ def transactions_view(request):
 def budget_view(request):
     """Render the budget view with live spending against category targets."""
     profile = get_current_user_profile(request)
-    data = get_budget_data(profile) if profile else {}
+    selected_month = request.GET.get('month')
+    data = get_budget_data(profile, selected_month=selected_month) if profile else {}
 
     context = {
         'active_nav': 'budgets',

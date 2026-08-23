@@ -26,13 +26,23 @@
         <div class="flex items-center justify-between gap-3">
             <!-- Month Selector Pill / Controls -->
             <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-canvas border border-outline-variant/60 rounded-full shadow-2xs">
-                <button aria-label="Previous month" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                {% if has_prev_month %}
+                <a href="?month={{ prev_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Previous month ({{ prev_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">chevron_left</span>
-                </button>
-                <span id="current-month-label" class="font-sans text-xs font-bold text-ink px-1.5 select-none">August 2026</span>
-                <button aria-label="Next month" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                </a>
+                {% else %}
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-outline-variant/60 opacity-30 select-none cursor-default" title="No earlier transactions">
+                    <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                </span>
+                {% endif %}
+
+                <span id="current-month-label" class="font-sans text-xs font-bold text-ink px-1.5 select-none">{{ current_month_label }}</span>
+
+                {% if has_next_month %}
+                <a href="?month={{ next_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Next month ({{ next_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                </button>
+                </a>
+                {% endif %}
             </div>
 
             <!-- New Category Action (button-primary pill per DESIGN.md) -->
