@@ -592,3 +592,153 @@ def api_scan_receipt_view(request):
                 'error_type': 'ocr_error',
                 'detail': err_str
             }, status=500)
+
+
+# ==============================================================================
+# Account & Payment Method Management APIs
+# ==============================================================================
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def api_list_accounts(request):
+    """
+    Returns active accounts / payment methods for current user.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    accounts = Account.objects.filter(user=profile, is_active=True).order_by('name')
+    data = []
+    for acc in accounts:
+        data.append({
+            'id': str(acc.id),
+            'name': acc.name,
+            'account_type': acc.account_type,
+            'account_type_display': acc.get_account_type_display(),
+            'current_balance': float(acc.current_balance),
+            'icon': acc.icon or 'payments',
+            'color_hex': acc.color_hex or '#163300',
+        })
+    return JsonResponse({'accounts': data})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def api_create_account(request):
+    """
+    Create a new Account / Payment Method.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        if not name:
+            return JsonResponse({'error': 'Account name is required.'}, status=400)
+
+        account_type = data.get('account_type', Account.AccountType.CASH)
+        if account_type not in dict(Account.AccountType.choices):
+            account_type = Account.AccountType.CASH
+
+        balance = Decimal(str(data.get('current_balance', 0.00)))
+        icon = data.get('icon', 'payments').strip() or 'payments'
+        color = data.get('color_hex', '#163300').strip() or '#163300'
+
+        account = Account.objects.create(
+            user=profile,
+            name=name,
+            account_type=account_type,
+            institution_name=name,
+            current_balance=balance,
+            icon=icon,
+            color_hex=color,
+            is_active=True
+        )
+
+        return JsonResponse({
+            'success': True,
+            'account': {
+                'id': str(account.id),
+                'name': account.name,
+                'account_type': account.account_type,
+                'account_type_display': account.get_account_type_display(),
+                'current_balance': float(account.current_balance),
+                'icon': account.icon,
+                'color_hex': account.color_hex,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(['POST', 'PUT'])
+def api_update_account(request, pk):
+    """
+    Update or Rename an Account / Payment Method.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    account = get_object_or_404(Account, id=pk, user=profile)
+
+    try:
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        if name:
+            account.name = name
+            account.institution_name = name
+
+        if 'current_balance' in data:
+            account.current_balance = Decimal(str(data['current_balance']))
+
+        if 'account_type' in data and data['account_type'] in dict(Account.AccountType.choices):
+            account.account_type = data['account_type']
+
+        if 'icon' in data and data['icon'].strip():
+            account.icon = data['icon'].strip()
+
+        if 'color_hex' in data and data['color_hex'].strip():
+            account.color_hex = data['color_hex'].strip()
+
+        account.save()
+
+        return JsonResponse({
+            'success': True,
+            'account': {
+                'id': str(account.id),
+                'name': account.name,
+                'account_type': account.account_type,
+                'account_type_display': account.get_account_type_display(),
+                'current_balance': float(account.current_balance),
+                'icon': account.icon,
+                'color_hex': account.color_hex,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(['POST', 'DELETE'])
+def api_delete_account(request, pk):
+    """
+    Delete or Deactivate an Account / Payment Method.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    active_count = Account.objects.filter(user=profile, is_active=True).count()
+    if active_count <= 1:
+        return JsonResponse({'error': 'You must keep at least one active payment method.'}, status=400)
+
+    account = get_object_or_404(Account, id=pk, user=profile)
+    account.is_active = False
+    account.save()
+
+    return JsonResponse({'success': True, 'deleted_id': str(pk)})

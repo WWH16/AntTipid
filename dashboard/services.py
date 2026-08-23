@@ -50,10 +50,10 @@ def seed_default_user_data(profile):
     """
     Populate a user with starter Accounts, Categories, Budgets, and initial Transactions.
     """
-    # 1. Accounts
+    # 1. Accounts (Default starter payment sources)
     cash_acc = Account.objects.create(
         user=profile,
-        name='Cash Wallet',
+        name='Cash',
         account_type=Account.AccountType.CASH,
         institution_name='Cash',
         current_balance=Decimal('4500.00'),
@@ -68,35 +68,6 @@ def seed_default_user_data(profile):
         current_balance=Decimal('8250.00'),
         color_hex='#005CEE',
         icon='account_balance_wallet',
-    )
-    maya_acc = Account.objects.create(
-        user=profile,
-        name='Maya',
-        account_type=Account.AccountType.E_WALLET,
-        institution_name='Maya',
-        current_balance=Decimal('3400.00'),
-        color_hex='#000000',
-        icon='wallet',
-    )
-    bpi_acc = Account.objects.create(
-        user=profile,
-        name='BPI Bank Account',
-        account_type=Account.AccountType.BANK_ACCOUNT,
-        institution_name='BPI',
-        account_number_mask='•••• 8421',
-        current_balance=Decimal('45000.00'),
-        color_hex='#990000',
-        icon='account_balance',
-    )
-    bdo_card = Account.objects.create(
-        user=profile,
-        name='BDO Credit Card',
-        account_type=Account.AccountType.CREDIT_CARD,
-        institution_name='BDO',
-        account_number_mask='•••• 1092',
-        current_balance=Decimal('-6200.00'),
-        color_hex='#002D72',
-        icon='credit_card',
     )
 
     # 2. Categories
@@ -150,7 +121,7 @@ def seed_default_user_data(profile):
     # 5. Starter Transactions
     Transaction.objects.create(
         user=profile,
-        account=bpi_acc,
+        account=gcash_acc,
         category=cat_sal,
         transaction_type=Transaction.TransactionType.INCOME,
         amount=Decimal('35000.00'),
@@ -161,7 +132,7 @@ def seed_default_user_data(profile):
     )
     Transaction.objects.create(
         user=profile,
-        account=bdo_card,
+        account=gcash_acc,
         category=cat_groc,
         receipt=sample_rcpt,
         transaction_type=Transaction.TransactionType.EXPENSE,
@@ -173,7 +144,7 @@ def seed_default_user_data(profile):
     )
     Transaction.objects.create(
         user=profile,
-        account=bdo_card,
+        account=cash_acc,
         category=cat_food,
         transaction_type=Transaction.TransactionType.EXPENSE,
         amount=Decimal('250.00'),
@@ -196,7 +167,7 @@ def seed_default_user_data(profile):
     yesterday = today - timedelta(days=1)
     Transaction.objects.create(
         user=profile,
-        account=bdo_card,
+        account=gcash_acc,
         category=cat_shop,
         transaction_type=Transaction.TransactionType.EXPENSE,
         amount=Decimal('650.00'),
@@ -218,7 +189,7 @@ def seed_default_user_data(profile):
     )
     Transaction.objects.create(
         user=profile,
-        account=bpi_acc,
+        account=gcash_acc,
         category=cat_house,
         transaction_type=Transaction.TransactionType.EXPENSE,
         amount=Decimal('12500.00'),
@@ -229,11 +200,11 @@ def seed_default_user_data(profile):
     )
     Transaction.objects.create(
         user=profile,
-        account=bpi_acc,
+        account=gcash_acc,
         destination_account=cash_acc,
         transaction_type=Transaction.TransactionType.TRANSFER,
         amount=Decimal('5000.00'),
-        title='ATM Cash Withdrawal',
+        title='GCash to Cash Cash-out',
         transaction_date=today - timedelta(days=6),
         source=Transaction.SourceType.MANUAL,
         notes='Withdrew physical pocket cash',

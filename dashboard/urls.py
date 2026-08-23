@@ -21,4 +21,10 @@ urlpatterns = [
     path('api/budgets/save/', views.api_save_budget, name='api_save_budget'),
     path('api/receipts/<uuid:pk>/update-items/', views.api_update_receipt_items, name='api_update_receipt_items'),
     path('api/receipts/<uuid:pk>/delete/', views.api_delete_receipt, name='api_delete_receipt'),
+    
+    # Account & Payment Method APIs
+    path('api/accounts/', views.api_list_accounts, name='api_list_accounts'),
+    path('api/accounts/create/', views.api_create_account, name='api_create_account'),
+    path('api/accounts/<uuid:pk>/update/', views.api_update_account, name='api_update_account'),
+    path('api/accounts/<uuid:pk>/delete/', views.api_delete_account, name='api_delete_account'),
 ]

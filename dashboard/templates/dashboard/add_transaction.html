@@ -53,7 +53,7 @@
                     <label for="input-amount" class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.06em] font-bold mb-1">Enter Amount</label>
                     <div class="flex items-center gap-1">
                         <span id="currency-symbol" class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
-                        <input type="number" id="input-amount" aria-label="Enter Amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight" required autofocus>
+                        <input type="number" id="input-amount" aria-label="Enter Amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-64 bg-transparent font-headline-lg text-3xl sm:4xl font-extrabold text-deep-forest text-center focus:outline-none placeholder:text-outline-variant/60 tabular-nums tracking-tight" required autofocus>
                     </div>
 
                     <!-- Quick Amount Preset Chips -->
@@ -110,14 +110,21 @@
 
                     <!-- Account / Payment Method -->
                     <div class="flex flex-col gap-1.5">
-                        <label for="select-account" class="font-label-sm text-xs font-bold text-deep-forest">Account / Wallet</label>
+                        <div class="flex items-center justify-between">
+                            <label for="select-account" class="font-label-sm text-xs font-bold text-deep-forest">Payment Method / Wallet</label>
+                            <button type="button" id="btn-open-manage-accounts" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
+                                <span class="material-symbols-outlined text-[14px]">tune</span>
+                                <span>Manage</span>
+                            </button>
+                        </div>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
                             <select id="select-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
                                 {% for acc in accounts %}
-                                <option value="{{ acc.name }}">{{ acc.name }} (₱{{ acc.current_balance|floatformat:2 }})</option>
+                                <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }} (₱{{ acc.current_balance|floatformat:2 }})</option>
                                 {% empty %}
-                                <option value="Cash Wallet">Cash Wallet</option>
+                                <option value="Cash">Cash</option>
+                                <option value="GCash">GCash</option>
                                 {% endfor %}
                             </select>
                             <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[18px] pointer-events-none">expand_more</span>
@@ -150,7 +157,6 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- UNSAVED CHANGES CONFIRMATION MODAL          -->
 <!-- ═══════════════════════════════════════════ -->
-<!-- Discard Confirmation Modal -->
 <div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
     <div id="modal-confirm-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[105]">
         
@@ -172,6 +178,82 @@
             </button>
             <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary-hover font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                 Keep Editing
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MANAGE PAYMENT METHODS / WALLETS MODAL      -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="modal-manage-accounts" role="dialog" aria-modal="true" aria-labelledby="modal-accounts-title" class="fixed inset-0 z-[110] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-accounts-content" class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[115] max-h-[90vh] overflow-y-auto">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between gap-2 border-b border-outline-variant/40 pb-3">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                </div>
+                <div>
+                    <h3 id="modal-accounts-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Payment Methods</h3>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant">Add, rename, or delete payment wallets</p>
+                </div>
+            </div>
+            <button type="button" id="btn-close-manage-accounts" class="w-8 h-8 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low flex items-center justify-center transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <!-- Current Accounts List -->
+        <div class="flex flex-col gap-2">
+            <label class="font-label-sm text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Your Wallets & Accounts</label>
+            <div id="accounts-list-container" class="flex flex-col gap-2">
+                <div class="text-center py-4 text-xs text-on-surface-variant">Loading accounts...</div>
+            </div>
+        </div>
+
+        <!-- Add New Payment Method Box -->
+        <div class="border-t border-outline-variant/40 pt-3 flex flex-col gap-2.5">
+            <div class="flex items-center justify-between">
+                <label class="font-label-sm text-xs font-bold text-deep-forest">Add New Payment Method</label>
+                <!-- Quick Preset Chips -->
+                <div class="flex items-center gap-1">
+                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Maya" data-type="E_WALLET" data-icon="wallet">+ Maya</button>
+                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Bank Account" data-type="BANK_ACCOUNT" data-icon="account_balance">+ Bank</button>
+                    <button type="button" class="btn-account-preset px-2 py-0.5 rounded-md bg-surface-container-low text-deep-forest font-label-sm text-[10px] font-bold hover:bg-primary-pale hover:text-positive-deep transition-colors cursor-pointer" data-name="Credit Card" data-type="CREDIT_CARD" data-icon="credit_card">+ Card</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input type="text" id="input-new-account-name" placeholder="Name (e.g. Maya, BPI)" class="w-full px-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
+                
+                <select id="select-new-account-type" class="w-full px-2.5 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all cursor-pointer">
+                    <option value="CASH">Cash Wallet</option>
+                    <option value="E_WALLET" selected>E-Wallet (GCash / Maya)</option>
+                    <option value="BANK_ACCOUNT">Bank Account</option>
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <span class="text-xs text-on-surface-variant font-bold absolute left-3 top-2 pointer-events-none">₱</span>
+                    <input type="number" step="0.01" min="0" id="input-new-account-balance" placeholder="Starting balance (0.00)" class="w-full pl-6 pr-3 py-1.5 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary text-xs font-bold text-deep-forest outline-none transition-all" />
+                </div>
+                <button type="button" id="btn-add-account-submit" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">add</span>
+                    <span>Add</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end pt-2 border-t border-outline-variant/40">
+            <button type="button" id="btn-done-manage-accounts" class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-deep-forest font-label-md text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer">
+                Done
             </button>
         </div>
 
@@ -219,104 +301,91 @@
             let firstVisible = null;
             categoryBtns.forEach(btn => {
                 const btnType = (btn.dataset.type || 'EXPENSE').toUpperCase();
-                if (upperType === 'TRANSFER' || btnType === upperType) {
+                if (btnType === upperType || (upperType === 'TRANSFER' && btnType === 'EXPENSE')) {
                     btn.classList.remove('hidden');
                     if (!firstVisible) firstVisible = btn;
                 } else {
                     btn.classList.add('hidden');
                 }
             });
-            const currentActive = document.querySelector('.category-btn.active:not(.hidden)');
-            if (!currentActive && firstVisible) {
-                firstVisible.click();
+
+            // Activate first visible category
+            const currentlyActive = document.querySelector('.category-btn.active:not(.hidden)');
+            if (!currentlyActive && firstVisible) {
+                categoryBtns.forEach(b => {
+                    b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
+                    b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+                    b.setAttribute('aria-pressed', 'false');
+                    const iconBox = b.querySelector('div');
+                    if (iconBox) {
+                        iconBox.classList.remove('bg-primary', 'text-on-primary');
+                        iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
+                    }
+                });
+                firstVisible.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
+                firstVisible.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
+                firstVisible.setAttribute('aria-pressed', 'true');
+                const firstIconBox = firstVisible.querySelector('div');
+                if (firstIconBox) {
+                    firstIconBox.classList.add('bg-primary', 'text-on-primary');
+                    firstIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
+                }
             }
         }
 
-        // Segmented Type Tabs (Expense / Income / Transfer)
-        const typeTabs = document.querySelectorAll('.type-tab');
-        typeTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const selectedType = tab.dataset.type || 'expense';
-                typeTabs.forEach(t => {
-                    t.classList.remove('bg-expense/15', 'text-expense', 'border-expense/30', 'bg-primary-pale', 'text-positive-deep', 'border-positive/30', 'bg-warning/15', 'text-amber-800', 'border-warning/30', 'font-bold', 'border', 'shadow-xs');
-                    t.classList.add('text-body', 'font-medium');
-                    t.setAttribute('aria-pressed', 'false');
-                });
-
-                if (selectedType === 'expense') {
-                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs', 'font-bold');
-                } else if (selectedType === 'income') {
-                    tab.classList.add('bg-primary-pale', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs', 'font-bold');
-                } else {
-                    tab.classList.add('bg-warning/15', 'text-amber-800', 'border', 'border-warning/30', 'shadow-xs', 'font-bold');
-                }
-                tab.classList.remove('text-body', 'font-medium');
-                tab.setAttribute('aria-pressed', 'true');
-
-                const submitBtn = document.getElementById('btn-save-transaction');
-                if (submitBtn) {
-                    const label = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
-                    submitBtn.textContent = `Save ${label}`;
-                }
-
-                updateCategoryGridForType(selectedType);
-                markDirty();
-            });
-        });
-
-        // Initialize category grid for default type
-        updateCategoryGridForType('expense');
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 categoryBtns.forEach(b => {
-                    b.classList.remove('border-deep-forest', 'border-primary', 'bg-primary-pale', 'bg-primary/10', 'text-primary', 'text-deep-forest', 'shadow-xs', 'active', 'border-on-surface', 'bg-on-surface', 'text-inverse-on-surface');
+                    b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
                     b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
                     b.setAttribute('aria-pressed', 'false');
-                    
-                    const labelSpan = b.querySelector('span:last-child');
-                    if (labelSpan) {
-                        labelSpan.classList.remove('font-semibold');
-                        labelSpan.classList.add('font-medium');
-                    }
-
-                    const iconBox = b.querySelector('.w-9');
+                    const iconBox = b.querySelector('div');
                     if (iconBox) {
-                        iconBox.classList.remove('bg-primary', 'text-on-primary', 'bg-primary/20', 'text-primary', 'bg-inverse-on-surface/20', 'text-inverse-on-surface');
+                        iconBox.classList.remove('bg-primary', 'text-on-primary');
                         iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
                     }
-
-                    const iconEl = b.querySelector('.material-symbols-outlined');
-                    if (iconEl) {
-                        iconEl.style.fontVariationSettings = "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24";
-                    }
                 });
-
-                btn.classList.add('border-deep-forest', 'bg-primary-pale', 'text-deep-forest', 'shadow-xs', 'active');
+                btn.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
                 btn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
                 btn.setAttribute('aria-pressed', 'true');
-
-                const labelSpan = btn.querySelector('span:last-child');
-                if (labelSpan) {
-                    labelSpan.classList.remove('font-medium');
-                    labelSpan.classList.add('font-semibold');
-                }
-
-                const activeIconBox = btn.querySelector('.w-9');
+                const activeIconBox = btn.querySelector('div');
                 if (activeIconBox) {
-                    activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
                     activeIconBox.classList.add('bg-primary', 'text-on-primary');
+                    activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
                 }
-
-                const activeIconEl = btn.querySelector('.material-symbols-outlined');
-                if (activeIconEl) {
-                    activeIconEl.style.fontVariationSettings = "'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24";
-                }
-
                 markDirty();
             });
         });
 
-        // Input Change Listeners for Form Fields
+        // Type Tabs
+        const typeTabs = document.querySelectorAll('.type-tab');
+        typeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                typeTabs.forEach(t => {
+                    t.classList.remove('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs',
+                                       'bg-positive/15', 'text-positive-deep', 'border-positive/30',
+                                       'bg-amber-800/15', 'border-amber-800/30', 'text-amber-800');
+                    t.classList.add('text-body');
+                    t.setAttribute('aria-pressed', 'false');
+                });
+
+                const type = tab.dataset.type;
+                tab.classList.remove('text-body');
+                tab.setAttribute('aria-pressed', 'true');
+
+                if (type === 'expense') {
+                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs');
+                } else if (type === 'income') {
+                    tab.classList.add('bg-positive/15', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs');
+                } else if (type === 'transfer') {
+                    tab.classList.add('bg-amber-800/15', 'text-amber-800', 'border', 'border-amber-800/30', 'shadow-xs');
+                }
+
+                updateCategoryGridForType(type);
+                markDirty();
+            });
+        });
+
         const inputTitle = document.getElementById('input-title');
         const selectAccount = document.getElementById('select-account');
         const inputNotes = document.getElementById('input-notes');
@@ -339,9 +408,6 @@
 
             lastFocusedElement = document.activeElement;
             document.body.style.overflow = 'hidden';
-            
-            const mainContainer = document.querySelector('main') || document.body;
-            mainContainer.setAttribute('aria-hidden', 'true');
 
             confirmModal.classList.remove('hidden');
             requestAnimationFrame(() => {
@@ -351,9 +417,7 @@
                     confirmContent.classList.remove('scale-95');
                     confirmContent.classList.add('scale-100');
                 }
-                if (btnKeepEditing) {
-                    btnKeepEditing.focus();
-                }
+                if (btnKeepEditing) btnKeepEditing.focus();
             });
         }
 
@@ -366,167 +430,397 @@
                 confirmContent.classList.remove('scale-100');
                 confirmContent.classList.add('scale-95');
             }
+
             setTimeout(() => {
                 confirmModal.classList.add('hidden');
                 document.body.style.overflow = '';
-                const mainContainer = document.querySelector('main') || document.body;
-                mainContainer.removeAttribute('aria-hidden');
-
-                pendingTargetUrl = null;
                 if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
                     lastFocusedElement.focus();
                 }
             }, 200);
         }
 
-        // Trap focus inside modal
-        if (confirmModal) {
-            confirmModal.addEventListener('keydown', (e) => {
-                if (e.key === 'Tab') {
-                    const focusables = [btnConfirmDiscard, btnKeepEditing].filter(Boolean);
-                    if (focusables.length === 0) return;
-                    const first = focusables[0];
-                    const last = focusables[focusables.length - 1];
-                    if (e.shiftKey) {
-                        if (document.activeElement === first) {
-                            e.preventDefault();
-                            last.focus();
-                        }
-                    } else {
-                        if (document.activeElement === last) {
-                            e.preventDefault();
-                            first.focus();
-                        }
-                    }
-                }
-            });
-        }
-
-        function navigateBack() {
-            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
-                window.history.back();
-            } else {
-                window.location.href = "{% url 'dashboard' %}";
-            }
-        }
-
-        // Global Link & Nav Interception
-        document.addEventListener('click', (e) => {
-            const backTarget = e.target.closest('#btn-back, #btn-cancel');
-            if (backTarget) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isFormDirty) {
-                    openConfirmModal('BACK');
-                } else {
-                    navigateBack();
-                }
-                return;
-            }
-
-            if (!isFormDirty) return;
-
-            const linkOrBtn = e.target.closest('a[href], button:not(#btn-save-transaction):not(#btn-keep-editing):not(#btn-confirm-discard):not(.btn-preset-chip):not(.category-btn):not(.type-tab)');
-            if (linkOrBtn) {
-                const href = linkOrBtn.getAttribute('href');
-                if (href && href !== '#' && !href.startsWith('javascript:')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openConfirmModal(href);
-                }
-            }
-        }, true);
-
-        if (btnKeepEditing) {
-            btnKeepEditing.addEventListener('click', closeConfirmModal);
-        }
-
+        if (btnKeepEditing) btnKeepEditing.addEventListener('click', closeConfirmModal);
         if (btnConfirmDiscard) {
             btnConfirmDiscard.addEventListener('click', () => {
                 isFormDirty = false;
-                document.body.style.overflow = '';
-                const mainContainer = document.querySelector('main') || document.body;
-                mainContainer.removeAttribute('aria-hidden');
-
-                if (pendingTargetUrl && pendingTargetUrl !== 'BACK') {
+                if (pendingTargetUrl) {
                     window.location.href = pendingTargetUrl;
                 } else {
-                    navigateBack();
+                    window.location.href = "{% url 'transactions' %}";
                 }
             });
         }
 
-        if (confirmModal) {
-            confirmModal.addEventListener('click', (e) => {
-                if (e.target === confirmModal) closeConfirmModal();
+        // Intercept top back button
+        const backBtn = document.getElementById('btn-back');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                if (isFormDirty) {
+                    e.preventDefault();
+                    openConfirmModal(backBtn.getAttribute('href'));
+                }
             });
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && confirmModal && !confirmModal.classList.contains('hidden')) {
-                closeConfirmModal();
+        // Intercept Scan Receipt switch button
+        const switchScanBtn = document.getElementById('btn-switch-scan');
+        if (switchScanBtn) {
+            switchScanBtn.addEventListener('click', (e) => {
+                if (isFormDirty) {
+                    e.preventDefault();
+                    openConfirmModal(switchScanBtn.getAttribute('href'));
+                }
+            });
+        }
+
+        // ══════════════════════════════════════════════════
+        // MANAGE PAYMENT METHODS / ACCOUNTS MODAL LOGIC
+        // ══════════════════════════════════════════════════
+        const manageAccountsModal = document.getElementById('modal-manage-accounts');
+        const manageAccountsContent = document.getElementById('modal-accounts-content');
+        const openManageAccountsBtn = document.getElementById('btn-open-manage-accounts');
+        const closeManageAccountsBtn = document.getElementById('btn-close-manage-accounts');
+        const doneManageAccountsBtn = document.getElementById('btn-done-manage-accounts');
+        const accountsListContainer = document.getElementById('accounts-list-container');
+
+        const inputNewAccName = document.getElementById('input-new-account-name');
+        const selectNewAccType = document.getElementById('select-new-account-type');
+        const inputNewAccBalance = document.getElementById('input-new-account-balance');
+        const btnAddAccSubmit = document.getElementById('btn-add-account-submit');
+        const presetAccButtons = document.querySelectorAll('.btn-account-preset');
+
+        let userAccountsCache = [];
+
+        function openManageAccountsModal() {
+            if (!manageAccountsModal) return;
+            document.body.style.overflow = 'hidden';
+            manageAccountsModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                manageAccountsModal.classList.remove('opacity-0');
+                manageAccountsModal.classList.add('opacity-100');
+                if (manageAccountsContent) {
+                    manageAccountsContent.classList.remove('scale-95');
+                    manageAccountsContent.classList.add('scale-100');
+                }
+            });
+            fetchAndRenderAccounts();
+        }
+
+        function closeManageAccountsModal() {
+            if (!manageAccountsModal) return;
+            manageAccountsModal.classList.remove('opacity-100');
+            manageAccountsModal.classList.add('opacity-0');
+            if (manageAccountsContent) {
+                manageAccountsContent.classList.remove('scale-100');
+                manageAccountsContent.classList.add('scale-95');
             }
+            setTimeout(() => {
+                manageAccountsModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        if (openManageAccountsBtn) openManageAccountsBtn.addEventListener('click', openManageAccountsModal);
+        if (closeManageAccountsBtn) closeManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
+        if (doneManageAccountsBtn) doneManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
+
+        // Account presets
+        presetAccButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (inputNewAccName) inputNewAccName.value = btn.dataset.name || '';
+                if (selectNewAccType) selectNewAccType.value = btn.dataset.type || 'E_WALLET';
+                if (inputNewAccBalance) inputNewAccBalance.focus();
+            });
         });
 
-        // Form Submit Simulation: navigate straight back to the list,
-        // which shows the success toast itself once it lands.
-        const form = document.getElementById('form-manual-entry');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                isFormDirty = false;
-                const toastKind = isEditMode ? 'updated' : 'saved';
-                window.location.href = "{% url 'transactions' %}?toast=" + toastKind;
+        function getAccountApiUrl(path) {
+            const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
+            return `${path}${previewParam}`;
+        }
+
+        async function fetchAndRenderAccounts() {
+            if (!accountsListContainer) return;
+            try {
+                const res = await fetch(getAccountApiUrl('/api/accounts/'));
+                const data = await res.json();
+                if (data.accounts) {
+                    userAccountsCache = data.accounts;
+                    renderAccountsList(userAccountsCache);
+                    updateSelectAccountDropdown(userAccountsCache);
+                }
+            } catch (err) {
+                console.error("Failed to load accounts:", err);
+            }
+        }
+
+        function updateSelectAccountDropdown(accounts) {
+            if (!selectAccount) return;
+            const currentSelectedVal = selectAccount.value;
+            selectAccount.innerHTML = '';
+            
+            accounts.forEach(acc => {
+                const opt = document.createElement('option');
+                opt.value = acc.name;
+                opt.dataset.id = acc.id;
+                opt.textContent = `${acc.name} (₱${parseFloat(acc.current_balance).toFixed(2)})`;
+                selectAccount.appendChild(opt);
+            });
+
+            if (currentSelectedVal) {
+                for (let opt of selectAccount.options) {
+                    if (opt.value === currentSelectedVal) {
+                        selectAccount.value = currentSelectedVal;
+                        break;
+                    }
+                }
+            }
+        }
+
+        function renderAccountsList(accounts) {
+            accountsListContainer.innerHTML = '';
+            if (accounts.length === 0) {
+                accountsListContainer.innerHTML = `
+                    <div class="text-center py-3 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-xl">
+                        No payment accounts found. Add one below.
+                    </div>
+                `;
+                return;
+            }
+
+            accounts.forEach(acc => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant transition-all gap-2";
+                row.id = `account-row-${acc.id}`;
+
+                let iconName = 'payments';
+                if (acc.account_type === 'E_WALLET') iconName = 'account_balance_wallet';
+                else if (acc.account_type === 'BANK_ACCOUNT') iconName = 'account_balance';
+                else if (acc.account_type === 'CREDIT_CARD') iconName = 'credit_card';
+
+                row.innerHTML = `
+                    <!-- Display Mode -->
+                    <div class="acc-display flex items-center justify-between w-full gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
+                                <span class="material-symbols-outlined text-[17px] text-positive-deep">${iconName}</span>
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-label-md text-xs font-bold text-deep-forest truncate">${escapeHtml(acc.name)}</span>
+                                <span class="text-[10px] text-on-surface-variant font-medium">₱${parseFloat(acc.current_balance).toFixed(2)} • ${escapeHtml(acc.account_type_display || 'Wallet')}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" class="btn-edit-account w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${acc.id}" title="Rename / Edit">
+                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                            </button>
+                            <button type="button" class="btn-delete-account w-7 h-7 rounded-lg text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer ${accounts.length <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" data-id="${acc.id}" ${accounts.length <= 1 ? 'disabled' : ''} title="Delete">
+                                <span class="material-symbols-outlined text-[15px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Inline Edit Mode (Hidden initially) -->
+                    <div class="acc-edit hidden items-center gap-1.5 w-full">
+                        <input type="text" class="input-edit-acc-name flex-1 px-2.5 py-1 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(acc.name)}" placeholder="Wallet name" />
+                        <div class="relative w-24">
+                            <span class="text-[10px] text-on-surface-variant font-bold absolute left-2 top-1.5 pointer-events-none">₱</span>
+                            <input type="number" step="0.01" class="input-edit-acc-balance w-full pl-4 pr-1.5 py-1 rounded-lg border border-outline-variant text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none tabular-nums text-right" value="${parseFloat(acc.current_balance).toFixed(2)}" placeholder="0.00" />
+                        </div>
+                        <button type="button" class="btn-save-acc-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${acc.id}" title="Save">
+                            <span class="material-symbols-outlined text-[14px]">check</span>
+                        </button>
+                        <button type="button" class="btn-cancel-acc-edit w-7 h-7 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${acc.id}" title="Cancel">
+                            <span class="material-symbols-outlined text-[14px]">close</span>
+                        </button>
+                    </div>
+                `;
+                accountsListContainer.appendChild(row);
+            });
+
+            attachAccountRowListeners();
+        }
+
+        function attachAccountRowListeners() {
+            // Edit trigger
+            document.querySelectorAll('.btn-edit-account').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = document.getElementById(`account-row-${btn.dataset.id}`);
+                    if (!row) return;
+                    row.querySelector('.acc-display').classList.add('hidden');
+                    const editMode = row.querySelector('.acc-edit');
+                    editMode.classList.remove('hidden');
+                    editMode.classList.add('flex');
+                    const input = editMode.querySelector('.input-edit-acc-name');
+                    if (input) { input.focus(); input.select(); }
+                });
+            });
+
+            // Cancel Edit
+            document.querySelectorAll('.btn-cancel-acc-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = document.getElementById(`account-row-${btn.dataset.id}`);
+                    if (!row) return;
+                    row.querySelector('.acc-display').classList.remove('hidden');
+                    const editMode = row.querySelector('.acc-edit');
+                    editMode.classList.add('hidden');
+                    editMode.classList.remove('flex');
+                });
+            });
+
+            // Save Edit (Rename/Balance)
+            document.querySelectorAll('.btn-save-acc-edit').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const accId = btn.dataset.id;
+                    const row = document.getElementById(`account-row-${accId}`);
+                    if (!row) return;
+
+                    const nameInput = row.querySelector('.input-edit-acc-name');
+                    const balInput = row.querySelector('.input-edit-acc-balance');
+                    const newName = nameInput ? nameInput.value.trim() : '';
+                    const newBal = balInput ? parseFloat(balInput.value) || 0 : 0;
+
+                    if (!newName) {
+                        alert("Account name is required.");
+                        return;
+                    }
+
+                    try {
+                        btn.disabled = true;
+                        const res = await fetch(getAccountApiUrl(`/api/accounts/${accId}/update/`), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newName, current_balance: newBal })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            await fetchAndRenderAccounts();
+                        } else {
+                            alert(data.error || 'Failed to update account.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            });
+
+            // Delete Account
+            document.querySelectorAll('.btn-delete-account').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const accId = btn.dataset.id;
+                    if (!confirm("Are you sure you want to delete this payment method?")) return;
+
+                    try {
+                        btn.disabled = true;
+                        const res = await fetch(getAccountApiUrl(`/api/accounts/${accId}/delete/`), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            await fetchAndRenderAccounts();
+                        } else {
+                            alert(data.error || 'Failed to delete account.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
             });
         }
 
-        // Edit Mode: pre-fill the form when opened from a transaction's edit link or receipt scan
-        (function applyPrefill() {
-            // 1. Check scanned receipt data from AI Scanner
-            const scannedDataRaw = sessionStorage.getItem('scanned_receipt_data');
-            if (scannedDataRaw) {
+        // Add Account Submit
+        if (btnAddAccSubmit) {
+            btnAddAccSubmit.addEventListener('click', async () => {
+                const name = inputNewAccName ? inputNewAccName.value.trim() : '';
+                const type = selectNewAccType ? selectNewAccType.value : 'E_WALLET';
+                const bal = inputNewAccBalance ? parseFloat(inputNewAccBalance.value) || 0 : 0;
+
+                if (!name) {
+                    inputNewAccName.focus();
+                    return;
+                }
+
+                let icon = 'payments';
+                if (type === 'E_WALLET') icon = 'account_balance_wallet';
+                else if (type === 'BANK_ACCOUNT') icon = 'account_balance';
+                else if (type === 'CREDIT_CARD') icon = 'credit_card';
+
                 try {
-                    const scanned = JSON.parse(scannedDataRaw);
-                    sessionStorage.removeItem('scanned_receipt_data');
+                    btnAddAccSubmit.disabled = true;
+                    const res = await fetch(getAccountApiUrl('/api/accounts/create/'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name,
+                            account_type: type,
+                            current_balance: bal,
+                            icon: icon
+                        })
+                    });
+                    const data = await res.json();
+                    btnAddAccSubmit.disabled = false;
+                    if (data.success) {
+                        if (inputNewAccName) inputNewAccName.value = '';
+                        if (inputNewAccBalance) inputNewAccBalance.value = '';
+                        await fetchAndRenderAccounts();
+                        // Select newly created account
+                        if (selectAccount && data.account) {
+                            selectAccount.value = data.account.name;
+                        }
+                    } else {
+                        alert(data.error || 'Failed to create account.');
+                    }
+                } catch (e) {
+                    btnAddAccSubmit.disabled = false;
+                    console.error(e);
+                }
+            });
+        }
+
+        // Check for receipt scan pre-fill in sessionStorage
+        (function checkScannedReceiptPreFill() {
+            const rawData = sessionStorage.getItem('scanned_receipt_data');
+            if (rawData) {
+                try {
+                    const scanned = JSON.parse(rawData);
                     if (scanned.total && inputAmount) inputAmount.value = parseFloat(scanned.total).toFixed(2);
                     if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
                     if (scanned.date && inputDate) inputDate.value = scanned.date;
                     if (scanned.category) {
-                        const catBtn = document.querySelector(`.category-btn[data-category="${scanned.category}"]`);
-                        if (catBtn) catBtn.click();
+                        const matchingCatBtn = document.querySelector(`.category-btn[data-category="${scanned.category}"]`);
+                        if (matchingCatBtn) matchingCatBtn.click();
                     }
                     if (scanned.payment_method && selectAccount) {
                         for (let opt of selectAccount.options) {
-                            if (opt.value.toLowerCase().includes(scanned.payment_method.toLowerCase()) || scanned.payment_method.toLowerCase().includes(opt.value.toLowerCase())) {
+                            if (opt.value.toLowerCase().includes(scanned.payment_method.toLowerCase())) {
                                 selectAccount.value = opt.value;
                                 break;
                             }
                         }
                     }
                     if (scanned.items && scanned.items.length > 0 && inputNotes) {
-                        const itemSummary = scanned.items.map(i => `${i.description} (${i.quantity}x)`).join(', ');
-                        const timePrefix = scanned.time ? `[Time: ${scanned.time}] ` : '';
-                        inputNotes.value = `${timePrefix}Scanned items: ${itemSummary}`.slice(0, 250);
-                    } else if (scanned.time && inputNotes) {
-                        inputNotes.value = `[Time: ${scanned.time}]`;
+                        const itemSummary = scanned.items.map(i => `${i.description} (x${i.quantity || 1})`).join(', ');
+                        inputNotes.value = itemSummary;
                     }
-                    isFormDirty = true;
-                    return;
+                    sessionStorage.removeItem('scanned_receipt_data');
+                    markDirty();
                 } catch (e) {
-                    console.error('Failed to parse scanned_receipt_data', e);
+                    console.error("Error reading scanned receipt data:", e);
                 }
             }
+        })();
 
-            // 2. Check query params for edit mode
+        // Check for URL query params (for editing transactions)
+        (function checkEditUrlParams() {
             const params = new URLSearchParams(window.location.search);
             const editId = params.get('edit');
             if (!editId) return;
 
             isEditMode = true;
-
             const heading = document.getElementById('page-heading');
             const subheading = document.getElementById('page-subheading');
-            if (heading) heading.textContent = 'Edit Transaction';
+            if (heading) heading.textContent = "Edit Transaction";
             if (subheading) subheading.textContent = "Update this transaction's details";
 
             const amount = params.get('amount');
@@ -553,7 +847,6 @@
                 if (catBtn) catBtn.click();
             }
 
-            // Pre-filling existing data shouldn't count as an unsaved edit
             isFormDirty = false;
         })();
 
@@ -572,7 +865,7 @@
                 const txType = activeTypeTab ? activeTypeTab.dataset.type : 'expense';
                 const activeCatBtn = document.querySelector('.category-btn[aria-pressed="true"]');
                 const category = activeCatBtn ? activeCatBtn.dataset.category : '';
-                const account = selectAccount ? selectAccount.value : 'Cash Wallet';
+                const account = selectAccount ? selectAccount.value : 'Cash';
                 const dateVal = inputDate && inputDate.value ? inputDate.value : new Date().toISOString().split('T')[0];
                 const notes = inputNotes ? inputNotes.value.trim() : '';
 
@@ -617,6 +910,20 @@
                 }
             });
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (manageAccountsModal && !manageAccountsModal.classList.contains('hidden')) {
+                    closeManageAccountsModal();
+                } else if (confirmModal && !confirmModal.classList.contains('hidden')) {
+                    closeConfirmModal();
+                }
+            }
+        });
     });
+
+    function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 </script>
 {% endblock %}
