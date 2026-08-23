@@ -18,268 +18,303 @@
 
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
-    <div class="max-w-7xl mx-auto flex flex-col gap-md md:gap-lg">
+    <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:gap-5">
         
         <!-- ═══════════════════════════════════════ -->
-        <!-- PAGE HEADER & ACTIONS                   -->
+        <!-- TOP CONTROLS & ACTIONS                  -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm sm:gap-md">
-            <div>
-                <h1 class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest tracking-tight" style="text-wrap: balance;">Monthly Budget</h1>
-                <div class="flex items-center gap-2 mt-1">
-                    <button aria-label="Previous month" class="w-7 h-7 rounded-full flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                    </button>
-                    <span id="current-month-label" class="font-body-sm text-xs sm:text-sm font-bold text-deep-forest">August 2026</span>
-                    <button aria-label="Next month" class="w-7 h-7 rounded-full flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 self-end sm:self-auto">
-                <button id="btn-add-category" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-primary-hover shadow-xs transition-all active:scale-95 cursor-pointer">
-                    <span class="material-symbols-outlined text-[18px]">add</span>
-                    New Category
+        <div class="flex items-center justify-between gap-3">
+            <!-- Month Selector Pill / Controls -->
+            <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-canvas border border-outline-variant/60 rounded-full shadow-2xs">
+                <button aria-label="Previous month" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                </button>
+                <span id="current-month-label" class="font-sans text-xs font-bold text-ink px-1.5 select-none">August 2026</span>
+                <button aria-label="Next month" class="w-6 h-6 rounded-full flex items-center justify-center text-ink hover:bg-canvas-soft active:scale-95 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </button>
             </div>
-        </div>
 
-        <!-- ═══════════════════════════════════════ -->
-        <!-- BUDGET OVERVIEW (GOLD & PRIMARY ACCENTS) -->
-        <!-- ═══════════════════════════════════════ -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-
-            <!-- Overall Budget Ring - Gold Budget Color Accent -->
-            <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex items-center gap-3.5 sm:gap-4 relative overflow-hidden group">
-                <div class="absolute -right-6 -top-6 w-28 h-28 bg-warning/15 rounded-full blur-xl pointer-events-none"></div>
-                <!-- SVG Ring with Gold Stroke -->
-                <div class="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
-                        <circle class="text-warning stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round"></circle>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="font-headline-md text-sm sm:text-base md:text-xl font-extrabold text-deep-forest tabular-nums">75%</span>
-                        <span class="font-label-sm text-[9px] md:text-[10px] text-on-surface-variant font-medium">spent</span>
-                    </div>
-                </div>
-                <!-- Summary Text -->
-                <div class="flex flex-col gap-0.5 min-w-0 z-10">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-label-sm text-[10px] text-amber-700 font-bold uppercase tracking-wider">Remaining</span>
-                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-warning"></span>
-                    </div>
-                    <span class="font-headline-lg text-base sm:text-lg md:text-xl font-extrabold text-deep-forest tracking-tight tabular-nums truncate">₱12,450.00</span>
-                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium truncate">of ₱50,000.00 total budget</span>
-                </div>
-            </div>
-
-            <!-- Total Spent -->
-            <div class="col-span-1 bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex flex-col justify-center gap-1 group">
-                <div class="flex items-center gap-1.5">
-                    <div class="w-5 h-5 rounded-md bg-expense/15 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                        <span class="material-symbols-outlined text-[14px]">trending_down</span>
-                    </div>
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant font-bold truncate">Total Spent</span>
-                </div>
-                <span class="font-headline-md text-sm sm:text-base md:text-lg font-extrabold text-deep-forest tabular-nums truncate">₱37,550.00</span>
-            </div>
-
-            <!-- Over Budget Alert (Expense Red Accent) -->
-            <div class="col-span-1 bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft transition-all duration-200 flex flex-col justify-center gap-1 relative overflow-hidden group">
-                <div class="flex items-center gap-1.5 relative">
-                    <div class="w-5 h-5 rounded-md bg-expense/20 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                        <span class="material-symbols-outlined text-[14px]">warning</span>
-                    </div>
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold uppercase tracking-wider truncate">Over Budget</span>
-                </div>
-                <span class="font-headline-md text-sm sm:text-base md:text-lg font-extrabold text-expense relative truncate">1 Category</span>
-            </div>
-
-        </section>
-
-        <!-- ═══════════════════════════════════════ -->
-        <!-- CATEGORY BUDGETS                        -->
-        <!-- ═══════════════════════════════════════ -->
-        <section class="flex flex-col gap-2.5 sm:gap-3">
-            <div class="flex justify-between items-center px-0.5">
-                <h2 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Categories</h2>
-                <span class="font-label-sm text-[11px] text-on-surface-variant font-semibold">4 Active Categories</span>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4" id="category-cards-grid">
-
-                <!-- Food & Dining (On Track - Soft Green + Ant Green) -->
-                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Food & Dining" data-category="Food & Dining" data-spent="2400" data-target="3000">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">restaurant</span>
-                            </div>
-                            <div>
-                                <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Food & Dining</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[9px] font-bold border border-positive/30">On Track</span>
-                            </div>
-                        </div>
-                        <span class="text-deep-forest group-hover:text-positive-deep font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 transition-colors">
-                            Adjust
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <span class="font-body-md text-xs sm:text-sm font-extrabold text-deep-forest tabular-nums">₱2,400.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱3,000.00</span>
-                        </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-extrabold tabular-nums">80%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
-                        <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 80%;"></div>
-                    </div>
-                </div>
-
-                <!-- Transportation (Over Budget - Expense Red) -->
-                <div class="category-budget-card bg-expense/10 border border-expense/30 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-expense/60 transition-all duration-200 flex flex-col gap-2.5 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Transportation" data-category="Transportation" data-spent="5200" data-target="4000">
-                    <div class="flex justify-between items-start relative">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">directions_car</span>
-                            </div>
-                            <div>
-                                <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Transportation</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-expense/20 text-expense font-label-sm text-[9px] font-bold border border-expense/30">Over Budget</span>
-                            </div>
-                        </div>
-                        <span class="text-expense font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 relative">
-                            Adjust
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-end relative">
-                        <div>
-                            <span class="font-body-md text-xs sm:text-sm font-extrabold text-expense tabular-nums">₱5,200.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱4,000.00</span>
-                        </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-expense font-extrabold tabular-nums">130%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-expense/20 rounded-full overflow-hidden relative">
-                        <div class="h-full bg-expense rounded-full transition-all duration-500" style="width: 100%;"></div>
-                    </div>
-                    <div class="flex items-center gap-1 text-expense relative">
-                        <span class="material-symbols-outlined text-[13px]">error</span>
-                        <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">Over budget by ₱1,200.00</span>
-                    </div>
-                </div>
-
-                <!-- Utilities (On Track - Soft Green + Ant Green) -->
-                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Utilities" data-category="Utilities" data-spent="4500" data-target="5000">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">bolt</span>
-                            </div>
-                            <div>
-                                <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Utilities</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[9px] font-bold border border-positive/30">On Track</span>
-                            </div>
-                        </div>
-                        <span class="text-deep-forest group-hover:text-positive-deep font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0 transition-colors">
-                            Adjust
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <span class="font-body-md text-xs sm:text-sm font-extrabold text-deep-forest tabular-nums">₱4,500.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-body ml-1 font-medium tabular-nums">/ ₱5,000.00</span>
-                        </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-positive-deep font-extrabold tabular-nums">90%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
-                        <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 90%;"></div>
-                    </div>
-                </div>
-
-                <!-- Entertainment (Nearing Limit - Gold Accent) -->
-                <div class="category-budget-card bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 sm:p-4 shadow-xs hover:shadow-soft hover:-translate-y-0.5 hover:border-warning/50 transition-all duration-200 flex flex-col gap-2.5 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Entertainment" data-category="Entertainment" data-spent="2800" data-target="3000">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-warning/15 text-amber-700 border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">movie</span>
-                            </div>
-                            <div>
-                                <h3 class="font-label-md text-xs sm:text-sm text-deep-forest font-bold">Entertainment</h3>
-                                <span class="inline-block px-2 py-0.5 rounded-full bg-warning/15 text-amber-700 font-label-sm text-[9px] font-bold border border-warning/30">Nearing Limit</span>
-                            </div>
-                        </div>
-                        <span class="text-amber-700 font-label-sm text-[11px] font-bold px-1.5 py-0.5 flex items-center gap-0.5 shrink-0">
-                            Adjust
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <span class="font-body-md text-xs sm:text-sm font-extrabold text-deep-forest tabular-nums">₱2,800.00</span>
-                            <span class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant ml-1 font-medium tabular-nums">/ ₱3,000.00</span>
-                        </div>
-                        <span class="font-label-sm text-[11px] sm:text-xs text-amber-700 font-extrabold tabular-nums">93%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/40">
-                        <div class="h-full bg-warning rounded-full transition-all duration-500" style="width: 93%;"></div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-    </div>
-    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
-    <div class="h-20 md:hidden" aria-hidden="true"></div>
-</div>
-{% endblock %}
-
-<!-- ═══════════════════════════════════════ -->
-<!-- ADJUST BUDGET MODAL (Mobile Bottom Sheet z-[70]) -->
-<!-- ═══════════════════════════════════════ -->
-<div id="adjust-modal-wrapper" class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center hidden touch-none">
-    <!-- Backdrop -->
-    <div id="adjust-modal-backdrop" class="absolute inset-0 bg-deep-forest/40 backdrop-blur-md opacity-0 transition-opacity duration-300 ease-out"></div>
-    
-    <!-- Modal Container -->
-    <div id="adjust-modal-content" class="bg-surface-container-lowest w-full max-w-lg rounded-t-[24px] md:rounded-[24px] p-5 md:p-6 pb-8 pb-safe relative z-10 shadow-2xl border border-outline-variant/60 translate-y-full md:translate-y-0 md:opacity-0 transition-all duration-300 ease-out">
-        
-        <!-- Handle for mobile drag -->
-        <div id="adjust-modal-handle" class="w-full py-1.5 -mt-2 mb-3 flex justify-center items-center cursor-grab md:hidden">
-            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
-        </div>
-
-        <div class="flex justify-between items-center mb-5">
-            <div>
-                <h3 class="font-headline-md text-lg font-bold text-deep-forest" id="modal-category-title">Adjust Budget</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant font-medium">Set monthly budget limit for this category.</p>
-            </div>
-            <button id="btn-close-adjust-modal" aria-label="Close modal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-soft-green/30 transition-colors text-deep-forest cursor-pointer">
-                <span class="material-symbols-outlined text-[20px]">close</span>
+            <!-- New Category Action (button-primary pill per DESIGN.md) -->
+            <button id="btn-add-category" class="px-4 py-2 rounded-full bg-primary text-on-primary font-sans text-xs font-bold flex items-center gap-1.5 hover:bg-primary-hover shadow-2xs transition-all active:scale-95 cursor-pointer shrink-0">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                <span>New Category</span>
             </button>
         </div>
 
-        <form id="form-adjust-budget" class="space-y-4">
-            <div>
-                <label class="font-label-md text-xs text-deep-forest block mb-1 font-bold">Budget Limit (₱)</label>
-                <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-label-md text-deep-forest font-bold">₱</span>
-                    <input id="input-adjust-target" class="w-full pl-8 pr-4 py-2.5 bg-surface-container-low/40 border border-outline-variant/60 rounded-xl text-body-md font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="0.00" type="number" step="100" min="0">
+        <!-- ═══════════════════════════════════════ -->
+        <!-- BUDGET OVERVIEW BENTO GRID (DESIGN.md)  -->
+        <!-- ═══════════════════════════════════════ -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
+            <!-- Overall Budget Ring (Hero Bento Card) -->
+            <div class="sm:col-span-2 bg-canvas border border-outline-variant/60 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex items-center gap-4 relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 w-28 h-28 bg-warning/10 rounded-full blur-xl pointer-events-none"></div>
+                
+                <!-- SVG Ring with Gold Stroke -->
+                <div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-canvas-soft stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+                        <circle class="text-warning stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">75%</span>
+                        <span class="font-sans text-[8px] sm:text-[9px] text-mute font-medium">spent</span>
+                    </div>
+                </div>
+
+                <!-- Summary Metrics -->
+                <div class="flex flex-col min-w-0 z-10 flex-1">
+                    <div class="flex items-center gap-1 mb-1">
+                        <span class="px-2 py-0.5 rounded-full bg-warning/15 text-warning-content font-sans text-[10px] font-bold border border-warning/30">Remaining</span>
+                    </div>
+                    <span class="font-sans text-base sm:text-lg font-bold text-ink tracking-tight tabular-nums truncate">₱12,450.00</span>
+                    <p class="font-sans text-[11px] text-body font-medium truncate">of <span class="font-bold text-ink">₱50,000.00</span> monthly limit</p>
                 </div>
             </div>
 
-            <div class="pt-2 flex gap-3">
-                <button type="button" id="btn-cancel-adjust" class="flex-1 min-h-[44px] rounded-xl border border-outline-variant/60 text-deep-forest font-label-md text-xs font-bold hover:bg-soft-green/30 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="flex-1 min-h-[44px] rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-colors shadow-xs cursor-pointer">Save Budget</button>
+            <!-- Total Spent Metric -->
+            <div class="col-span-1 bg-canvas border border-outline-variant/60 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between gap-2.5 group">
+                <div class="flex items-center justify-between">
+                    <span class="font-sans text-[11px] text-body font-bold">Total Spent</span>
+                    <div class="w-7 h-7 rounded-full bg-negative/10 text-negative flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">trending_down</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-sans text-base sm:text-lg font-bold text-ink tabular-nums truncate block">₱37,550.00</span>
+                    <span class="font-sans text-[10px] sm:text-[11px] text-mute font-medium">75.1% of allocated budget</span>
+                </div>
             </div>
-        </form>
+
+            <!-- Over Budget Alert Card -->
+            <div class="col-span-1 bg-negative/10 border border-negative/25 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between gap-2.5 relative overflow-hidden group">
+                <div class="flex items-center justify-between relative">
+                    <span class="font-sans text-[11px] text-negative font-bold uppercase tracking-wider">Status Alert</span>
+                    <div class="w-7 h-7 rounded-full bg-negative/15 text-negative flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">warning</span>
+                    </div>
+                </div>
+                <div class="relative">
+                    <span class="font-sans text-base sm:text-lg font-bold text-negative truncate block">1 Exceeded</span>
+                    <span class="font-sans text-[10px] sm:text-[11px] text-negative font-medium">Transportation is over</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- CATEGORY BUDGETS SECTION                -->
+        <!-- ═══════════════════════════════════════ -->
+        <section class="flex flex-col gap-3">
+            <div class="flex justify-between items-center px-0.5">
+                <h2 class="font-sans text-xs sm:text-sm font-bold text-ink">Categories</h2>
+                <span class="px-2.5 py-0.5 rounded-full bg-canvas border border-outline-variant/60 text-ink font-sans text-[10px] sm:text-[11px] font-semibold">4 Categories</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="category-cards-grid">
+
+                <!-- Food & Dining (On Track - Primary Pale + Positive Deep) -->
+                <div class="category-budget-card bg-canvas border border-outline-variant/60 rounded-xl p-4 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col justify-between gap-3 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Food & Dining" data-category="Food & Dining" data-spent="2400" data-target="3000">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[18px]">restaurant</span>
+                            </div>
+                            <div>
+                                <h3 class="font-sans text-xs sm:text-sm text-ink font-bold">Food & Dining</h3>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-sans text-[9px] font-bold border border-positive/30 mt-0.5">On Track</span>
+                            </div>
+                        </div>
+                        <span class="text-body group-hover:text-ink font-sans text-[11px] font-bold px-2 py-0.5 rounded-full bg-canvas-soft hover:bg-primary-pale hover:text-positive-deep flex items-center gap-0.5 shrink-0 transition-colors">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div>
+                                <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">₱2,400.00</span>
+                                <span class="font-sans text-[10px] sm:text-[11px] text-mute ml-1 font-normal tabular-nums">/ ₱3,000.00</span>
+                            </div>
+                            <span class="font-sans text-[11px] text-positive-deep font-bold tabular-nums">80%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-canvas-soft rounded-full overflow-hidden">
+                            <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 80%;"></div>
+                        </div>
+                        <span class="font-sans text-[10px] sm:text-[11px] text-body font-medium mt-1 block">₱600.00 left</span>
+                    </div>
+                </div>
+
+                <!-- Transportation (Over Budget - Negative Red) -->
+                <div class="category-budget-card bg-negative/10 border border-negative/25 rounded-xl p-4 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 hover:border-negative/50 transition-all duration-200 flex flex-col justify-between gap-3 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Transportation" data-category="Transportation" data-spent="5200" data-target="4000">
+                    <div class="flex justify-between items-start relative">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-negative/15 text-negative flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[18px]">directions_car</span>
+                            </div>
+                            <div>
+                                <h3 class="font-sans text-xs sm:text-sm text-ink font-bold">Transportation</h3>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-negative/15 text-negative font-sans text-[9px] font-bold border border-negative/30 mt-0.5">Over Budget</span>
+                            </div>
+                        </div>
+                        <span class="text-negative font-sans text-[11px] font-bold px-2 py-0.5 rounded-full bg-negative/15 hover:bg-negative/25 flex items-center gap-0.5 shrink-0 transition-colors">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
+                    </div>
+
+                    <div class="relative">
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div>
+                                <span class="font-sans text-xs sm:text-sm font-bold text-negative tabular-nums">₱5,200.00</span>
+                                <span class="font-sans text-[10px] sm:text-[11px] text-body ml-1 font-normal tabular-nums">/ ₱4,000.00</span>
+                            </div>
+                            <span class="font-sans text-[11px] text-negative font-bold tabular-nums">130%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-negative/20 rounded-full overflow-hidden">
+                            <div class="h-full bg-negative rounded-full transition-all duration-500" style="width: 100%;"></div>
+                        </div>
+                        <div class="flex items-center gap-1 text-negative mt-1">
+                            <span class="material-symbols-outlined text-[13px]">error</span>
+                            <span class="font-sans text-[10px] sm:text-[11px] font-bold">Over by ₱1,200.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utilities (On Track - Primary Pale + Positive Deep) -->
+                <div class="category-budget-card bg-canvas border border-outline-variant/60 rounded-xl p-4 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 hover:border-positive/40 transition-all duration-200 flex flex-col justify-between gap-3 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust budget for Utilities" data-category="Utilities" data-spent="4500" data-target="5000">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[18px]">bolt</span>
+                            </div>
+                            <div>
+                                <h3 class="font-sans text-xs sm:text-sm text-ink font-bold">Utilities</h3>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-sans text-[9px] font-bold border border-positive/30 mt-0.5">On Track</span>
+                            </div>
+                        </div>
+                        <span class="text-body group-hover:text-ink font-sans text-[11px] font-bold px-2 py-0.5 rounded-full bg-canvas-soft hover:bg-primary-pale hover:text-positive-deep flex items-center gap-0.5 shrink-0 transition-colors">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div>
+                                <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">₱4,500.00</span>
+                                <span class="font-sans text-[10px] sm:text-[11px] text-mute ml-1 font-normal tabular-nums">/ ₱5,000.00</span>
+                            </div>
+                            <span class="font-sans text-[11px] text-positive-deep font-bold tabular-nums">90%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-canvas-soft rounded-full overflow-hidden">
+                            <div class="h-full bg-positive rounded-full transition-all duration-500" style="width: 90%;"></div>
+                        </div>
+                        <span class="font-sans text-[10px] sm:text-[11px] text-body font-medium mt-1 block">₱500.00 left</span>
+                    </div>
+                </div>
+
+                <!-- Entertainment (Nearing Limit - Warning family) -->
+                <div class="category-budget-card bg-canvas border border-outline-variant/60 rounded-xl p-4 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 hover:border-warning/50 transition-all duration-200 flex flex-col justify-between gap-3 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50" role="button" tabindex="0" aria-label="Adjust budget for Entertainment" data-category="Entertainment" data-spent="2800" data-target="3000">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-warning/15 text-warning-deep border border-warning/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-[18px]">movie</span>
+                            </div>
+                            <div>
+                                <h3 class="font-sans text-xs sm:text-sm text-ink font-bold">Entertainment</h3>
+                                <span class="inline-block px-2 py-0.5 rounded-full bg-warning/15 text-warning-content font-sans text-[9px] font-bold border border-warning/30 mt-0.5">Nearing Limit</span>
+                            </div>
+                        </div>
+                        <span class="text-warning-deep font-sans text-[11px] font-bold px-2 py-0.5 rounded-full bg-warning/15 hover:bg-warning/25 flex items-center gap-0.5 shrink-0 transition-colors">
+                            Adjust
+                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-baseline mb-1.5">
+                            <div>
+                                <span class="font-sans text-xs sm:text-sm font-bold text-ink tabular-nums">₱2,800.00</span>
+                                <span class="font-sans text-[10px] sm:text-[11px] text-mute ml-1 font-normal tabular-nums">/ ₱3,000.00</span>
+                            </div>
+                            <span class="font-sans text-[11px] text-warning-deep font-bold tabular-nums">93%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-canvas-soft rounded-full overflow-hidden">
+                            <div class="h-full bg-warning rounded-full transition-all duration-500" style="width: 93%;"></div>
+                        </div>
+                        <span class="font-sans text-[10px] sm:text-[11px] text-body font-medium mt-1 block">₱200.00 left</span>
+                    </div>
+                </div>
+
+                <!-- Add New Category Dashed Card -->
+                <button type="button" id="card-add-category-trigger" class="rounded-xl border-2 border-dashed border-outline-variant/70 hover:border-primary hover:bg-primary-pale/20 p-4 flex flex-col items-center justify-center gap-1.5 text-body hover:text-ink transition-all group cursor-pointer min-h-[110px]">
+                    <div class="w-8 h-8 rounded-full bg-canvas-soft group-hover:bg-primary group-hover:text-on-primary text-ink flex items-center justify-center transition-colors shadow-2xs">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                    </div>
+                    <span class="font-sans text-xs font-bold">Add Category</span>
+                    <span class="font-sans text-[10px] text-mute">Set custom limit</span>
+                </button>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
+    <div class="h-20 md:hidden" aria-hidden="true"></div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- ADJUST BUDGET MODAL (Responsive Bottom Sheet & Centered Modal - DESIGN.md) -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="adjust-modal-wrapper" role="dialog" aria-modal="true" aria-labelledby="modal-category-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+        <!-- Backdrop -->
+        <div id="adjust-modal-backdrop" class="absolute inset-0 bg-ink/40 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+        
+        <!-- Modal Content Container -->
+        <div id="adjust-modal-content" class="bg-canvas w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full sm:translate-y-0 scale-95 opacity-0 transition-all duration-200 ease-out flex flex-col overflow-hidden">
+            
+            <!-- Mobile Drag Handle Bar -->
+            <div id="adjust-modal-handle" class="w-full pt-3 pb-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 sm:hidden">
+                <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full shadow-2xs"></div>
+            </div>
+
+            <!-- Header -->
+            <div class="px-5 pt-1 pb-3 sm:px-6 sm:py-4 flex justify-between items-center border-b border-outline-variant/30 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[18px]">tune</span>
+                    </div>
+                    <div>
+                        <h3 class="font-sans text-base font-bold text-ink" id="modal-category-title">Adjust Budget</h3>
+                        <p class="font-sans text-xs text-body">Update monthly allocation</p>
+                    </div>
+                </div>
+                <button id="btn-close-adjust-modal" aria-label="Close modal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-canvas-soft transition-colors text-body hover:text-ink cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+
+            <form id="form-adjust-budget" class="p-5 sm:p-6 flex flex-col gap-4">
+                <div>
+                    <label for="input-adjust-target" class="font-sans text-xs text-ink block mb-1.5 font-bold">Monthly Budget Target (₱)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-sans text-base text-ink font-bold">₱</span>
+                        <input id="input-adjust-target" class="w-full pl-8 pr-4 py-2.5 bg-canvas-soft/50 border border-outline-variant/80 rounded-xl font-sans text-sm font-bold text-ink outline-none focus:bg-canvas focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="0.00" type="number" step="100" min="0" required>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5 pt-2">
+                    <button type="button" id="btn-cancel-adjust" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-canvas text-ink font-sans text-xs sm:text-sm font-bold hover:bg-canvas-soft active:scale-[0.98] transition-all cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-sans text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-2xs active:scale-[0.98] transition-all cursor-pointer">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+{% endblock %}
 
 {% block extra_scripts %}
 <script>
@@ -293,8 +328,8 @@
         const cancelBtn = document.getElementById('btn-cancel-adjust');
 
         function openAdjustModal(categoryName, spent, target) {
-            modalTitle.textContent = `Adjust Budget: ${categoryName}`;
-            inputTarget.value = target;
+            if (modalTitle) modalTitle.textContent = `Adjust: ${categoryName}`;
+            if (inputTarget) inputTarget.value = target || '';
             
             document.body.style.overflow = 'hidden';
             modalWrapper.classList.remove('hidden');
@@ -302,20 +337,25 @@
             requestAnimationFrame(() => {
                 modalBackdrop.classList.remove('opacity-0');
                 modalBackdrop.classList.add('opacity-100');
-                modalContent.classList.remove('translate-y-full', 'md:opacity-0');
-                modalContent.classList.add('translate-y-0', 'md:opacity-100');
+                modalWrapper.classList.remove('opacity-0');
+                modalWrapper.classList.add('opacity-100');
+                modalContent.classList.remove('translate-y-full', 'scale-95', 'opacity-0');
+                modalContent.classList.add('translate-y-0', 'scale-100', 'opacity-100');
             });
         }
 
         function closeAdjustModal() {
             modalBackdrop.classList.remove('opacity-100');
             modalBackdrop.classList.add('opacity-0');
-            modalContent.classList.add('translate-y-full', 'md:opacity-0');
+            modalWrapper.classList.remove('opacity-100');
+            modalWrapper.classList.add('opacity-0');
+            modalContent.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+            modalContent.classList.add('translate-y-full', 'scale-95', 'opacity-0');
             
             setTimeout(() => {
                 modalWrapper.classList.add('hidden');
                 document.body.style.overflow = '';
-            }, 300);
+            }, 200);
         }
 
         document.querySelectorAll('.category-budget-card').forEach(card => {
@@ -330,16 +370,41 @@
             });
         });
 
+        const addCategoryBtn = document.getElementById('btn-add-category');
+        const addCardTrigger = document.getElementById('card-add-category-trigger');
+        if (addCategoryBtn) {
+            addCategoryBtn.addEventListener('click', () => {
+                openAdjustModal('New Category', 0, 5000);
+            });
+        }
+        if (addCardTrigger) {
+            addCardTrigger.addEventListener('click', () => {
+                openAdjustModal('New Category', 0, 5000);
+            });
+        }
+
         if (closeBtn) closeBtn.addEventListener('click', closeAdjustModal);
         if (cancelBtn) cancelBtn.addEventListener('click', closeAdjustModal);
         if (modalBackdrop) modalBackdrop.addEventListener('click', closeAdjustModal);
+
+        if (modalWrapper) {
+            modalWrapper.addEventListener('click', (e) => {
+                if (e.target === modalWrapper) closeAdjustModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalWrapper && !modalWrapper.classList.contains('hidden')) {
+                closeAdjustModal();
+            }
+        });
 
         document.getElementById('form-adjust-budget')?.addEventListener('submit', (e) => {
             e.preventDefault();
             closeAdjustModal();
         });
 
-        // Mobile Drag Down to Dismiss Gesture (matches the filter sheet's behavior)
+        // Mobile Drag Down to Dismiss Gesture
         const adjustDragHandle = document.getElementById('adjust-modal-handle');
         let adjustStartY = 0;
         let adjustCurrentY = 0;

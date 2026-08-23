@@ -54,7 +54,9 @@
         window.clerkInitPromise = clerk.load().then(() => {
           window.Clerk = clerk;
 
-          if (!clerk.user) {
+          // ⚠️ TODO (DEPLOYMENT REMINDER): Remove '!window.location.search.includes("preview=true")' before deploying to production.
+          // Used only for local UI testing / headless browser developer tool inspection.
+          if (!clerk.user && !window.location.search.includes('preview=true')) {
             window.location.href = "{% url 'landing' %}?sign_in=true";
             return null;
           }
