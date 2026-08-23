@@ -87,10 +87,10 @@
                 <!-- ─── Category Selection Grid ─── -->
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Select Category</label>
+                        <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Category</label>
                         <button type="button" id="btn-open-manage-categories" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
                             <span class="material-symbols-outlined text-[14px]">tune</span>
-                            <span>Manage Categories</span>
+                            <span>Manage</span>
                         </button>
                     </div>
                     
@@ -103,13 +103,21 @@
                             <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">{{ cat.name }}</span>
                         </button>
                         {% empty %}
-                        <button type="button" id="btn-empty-add-cat" class="category-btn active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-dashed border-deep-forest/40 bg-surface-container-low/40 text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="General" data-type="EXPENSE" aria-pressed="true">
-                            <div class="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center transition-colors shadow-xs">
+                        <button type="button" id="btn-empty-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
+                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
                                 <span class="material-symbols-outlined text-[20px]">add</span>
                             </div>
-                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">+ Add Category</span>
                         </button>
                         {% endfor %}
+
+                        {% if categories %}
+                        <!-- Persistent Initial Add Button -->
+                        <button type="button" id="btn-grid-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
+                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
+                                <span class="material-symbols-outlined text-[20px]">add</span>
+                            </div>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -185,119 +193,147 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MODAL: MANAGE CATEGORIES (WITH INEVITABLE / NO BUDGET OPTION) -->
+<!-- MODAL: MANAGE CATEGORIES & CREATE CATEGORY HUB             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-manage-categories-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-3.5 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-manage-categories-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-xl shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
         
         <!-- Header -->
         <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40 shrink-0">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[18px]">category</span>
+                <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
+                    <span class="material-symbols-outlined text-[20px]">category</span>
                 </div>
-                <div>
-                    <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Manage Categories</h3>
-                    <p class="font-body-sm text-[11px] text-on-surface-variant">Create and manage spending categories with optional budget limits</p>
-                </div>
+                <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Categories</h3>
             </div>
-            <button type="button" id="btn-close-manage-categories" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+            <button type="button" id="btn-close-manage-categories" aria-label="Close" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
         </div>
 
-        <!-- Scrollable Body -->
-        <div class="overflow-y-auto pr-1 flex flex-col gap-4 flex-1">
+        <!-- Segmented Tab Navigation -->
+        <div class="flex items-center p-1 bg-surface-container-low rounded-2xl border border-outline-variant/40 shrink-0">
+            <button type="button" id="tab-btn-add-cat" class="flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs">
+                <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
+                <span>Add Category</span>
+            </button>
+            <button type="button" id="tab-btn-list-cat" class="flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest">
+                <span class="material-symbols-outlined text-[16px]">tune</span>
+                <span>Manage (<span id="modal-cat-count">0</span>)</span>
+            </button>
+        </div>
+
+        <!-- Tab 1: Add New Category Pane -->
+        <div id="pane-add-category" class="flex flex-col gap-3.5 overflow-y-auto pr-1 flex-1">
             
-            <!-- Existing Categories List -->
-            <div class="flex flex-col gap-2">
-                <label class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Your Categories</label>
-                <div id="categories-list-container" class="flex flex-col gap-2">
+            <!-- Presets -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Presets</label>
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Groceries" data-icon="local_grocery_store">
+                        <span class="material-symbols-outlined text-[14px]">local_grocery_store</span> Groceries
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Food & Dining" data-icon="restaurant">
+                        <span class="material-symbols-outlined text-[14px]">restaurant</span> Dining
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Transportation" data-icon="directions_car">
+                        <span class="material-symbols-outlined text-[14px]">directions_car</span> Transport
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Utilities & Bills" data-icon="bolt">
+                        <span class="material-symbols-outlined text-[14px]">bolt</span> Utilities
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Shopping" data-icon="shopping_bag">
+                        <span class="material-symbols-outlined text-[14px]">shopping_bag</span> Shopping
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Health & Medical" data-icon="local_hospital">
+                        <span class="material-symbols-outlined text-[14px]">local_hospital</span> Medical
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Entertainment" data-icon="movie">
+                        <span class="material-symbols-outlined text-[14px]">movie</span> Entertainment
+                    </button>
+                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Cafe & Drinks" data-icon="coffee">
+                        <span class="material-symbols-outlined text-[14px]">coffee</span> Cafe
+                    </button>
+                </div>
+            </div>
+
+            <!-- Name Input -->
+            <div class="flex flex-col gap-1.5">
+                <label for="input-new-cat-name" class="text-xs font-bold text-deep-forest">Name</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
+                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health, Fitness, Subscriptions" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                </div>
+            </div>
+
+            <!-- Icon Picker -->
+            <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-bold text-deep-forest">Icon</label>
+                    <span id="label-selected-icon" class="text-[11px] font-bold text-positive-deep capitalize">Restaurant</span>
+                </div>
+                <div id="new-cat-icon-picker" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 p-2.5 bg-surface-container-low/30 rounded-2xl border border-outline-variant/40 max-h-52 overflow-y-auto">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
-            <!-- Add Category Form -->
-            <div class="flex flex-col gap-3 pt-3 border-t border-outline-variant/40 bg-surface-container-low/20 p-3.5 rounded-2xl border border-outline-variant/50">
-                <span class="font-label-sm text-xs font-bold text-deep-forest flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
-                    <span>Add New Category</span>
-                </span>
-
-                <!-- Quick Presets -->
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Groceries" data-icon="local_grocery_store">Groceries</button>
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Food & Dining" data-icon="restaurant">Dining</button>
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Transportation" data-icon="directions_car">Transport</button>
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Emergency / Medical" data-icon="local_hospital">Medical (Inevitable)</button>
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Utilities" data-icon="bolt">Utilities</button>
-                    <button type="button" class="cat-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Shopping" data-icon="shopping_bag">Shopping</button>
+            <!-- Strategy Selector -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-deep-forest">Strategy</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
+                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-positive-deep">track_changes</span> Track Only</span>
+                        <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">No limit</span>
+                    </button>
+                    <button type="button" id="btn-strategy-budget" class="strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
+                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">speed</span> Set Limit</span>
+                        <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">Monthly cap</span>
+                    </button>
                 </div>
 
-                <!-- Category Name Input -->
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Category Name</label>
-                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health & Meds, Grab, Coffee" class="w-full px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-                </div>
-
-                <!-- Icon Selector -->
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Select Icon</label>
-                    <div id="new-cat-icon-picker" class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
-                        <button type="button" data-icon="restaurant" class="icon-picker-btn active w-8 h-8 rounded-xl border border-primary bg-primary-pale text-deep-forest flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">restaurant</span></button>
-                        <button type="button" data-icon="local_grocery_store" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">local_grocery_store</span></button>
-                        <button type="button" data-icon="shopping_bag" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">shopping_bag</span></button>
-                        <button type="button" data-icon="local_hospital" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">local_hospital</span></button>
-                        <button type="button" data-icon="directions_car" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">directions_car</span></button>
-                        <button type="button" data-icon="bolt" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">bolt</span></button>
-                        <button type="button" data-icon="home" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">home</span></button>
-                        <button type="button" data-icon="movie" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">movie</span></button>
-                        <button type="button" data-icon="fitness_center" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">fitness_center</span></button>
-                        <button type="button" data-icon="pets" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">pets</span></button>
-                        <button type="button" data-icon="school" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">school</span></button>
-                        <button type="button" data-icon="receipt_long" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">receipt_long</span></button>
-                        <button type="button" data-icon="category" class="icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer"><span class="material-symbols-outlined text-[17px]">category</span></button>
+                <!-- Target Limit Input -->
+                <div id="group-new-cat-limit" class="hidden flex flex-col gap-1.5 mt-1">
+                    <label for="input-new-cat-limit" class="text-xs font-bold text-deep-forest">Monthly Limit (₱)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-sm text-deep-forest">₱</span>
+                        <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-8 pr-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary tabular-nums">
                     </div>
                 </div>
+            </div>
 
-                <!-- Budget Limit Strategy Selector (Inevitable vs Budgeted) -->
-                <div class="flex flex-col gap-1.5 pt-1">
-                    <label class="text-[10px] font-bold text-on-surface-variant uppercase">Monthly Budget Strategy</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
-                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-positive-deep">track_changes</span> Track Only</span>
-                            <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">No limit (for inevitable, variable, or emergency costs)</span>
-                        </button>
-                        <button type="button" id="btn-strategy-budget" class="strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
-                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">speed</span> Set Limit</span>
-                            <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">Alerts when spending exceeds monthly cap</span>
-                        </button>
-                    </div>
+            <!-- Submit Action -->
+            <div class="pt-2">
+                <button type="button" id="btn-add-cat-submit" class="w-full py-3 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                    <span>Create Category</span>
+                </button>
+            </div>
+        </div>
 
-                    <!-- Target Limit Input (Hidden when Track Only) -->
-                    <div id="group-new-cat-limit" class="hidden flex flex-col gap-1 mt-1.5">
-                        <label for="input-new-cat-limit" class="text-[10px] font-bold text-deep-forest uppercase">Monthly Budget Limit (₱)</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-2 font-bold text-xs text-deep-forest">₱</span>
-                            <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-7 pr-3 py-1.5 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary">
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" id="btn-add-cat-submit" class="w-full py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-hover transition-all shadow-2xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 mt-1">
-                    <span class="material-symbols-outlined text-[16px]">add</span>
-                    <span>Save Category</span>
+        <!-- Tab 2: Manage Existing Categories List Pane -->
+        <div id="pane-list-categories" class="hidden flex-col gap-3 overflow-hidden flex-1">
+            <!-- Search bar -->
+            <div class="relative shrink-0">
+                <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">search</span>
+                <input type="text" id="input-search-modal-categories" placeholder="Search categories..." class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary">
+                <button type="button" id="btn-clear-modal-cat-search" class="hidden absolute right-2.5 top-2 text-on-surface-variant hover:text-deep-forest cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
                 </button>
             </div>
 
+            <!-- Categories Scroll List -->
+            <div id="categories-list-container" class="overflow-y-auto pr-1 flex flex-col gap-2 flex-1 max-h-[50vh]">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="pt-2 border-t border-outline-variant/40 shrink-0">
+                <button type="button" id="btn-done-manage-categories" class="w-full py-2.5 rounded-xl bg-surface-container-low text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
+                    Done
+                </button>
+            </div>
         </div>
 
-        <!-- Footer -->
-        <div class="pt-2 border-t border-outline-variant/40 shrink-0">
-            <button type="button" id="btn-done-manage-categories" class="w-full py-2.5 rounded-full bg-surface-container-low text-deep-forest text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
-                Done
-            </button>
-        </div>
     </div>
 </div>
 
@@ -441,6 +477,11 @@
         const openManageCatBtn = document.getElementById('btn-open-manage-categories');
         const closeManageCatBtn = document.getElementById('btn-close-manage-categories');
         const doneManageCatBtn = document.getElementById('btn-done-manage-categories');
+        const tabBtnAddCat = document.getElementById('tab-btn-add-cat');
+        const tabBtnListCat = document.getElementById('tab-btn-list-cat');
+        const paneAddCat = document.getElementById('pane-add-category');
+        const paneListCat = document.getElementById('pane-list-categories');
+        const modalCatCount = document.getElementById('modal-cat-count');
         const catListContainer = document.getElementById('categories-list-container');
         const inputNewCatName = document.getElementById('input-new-cat-name');
         const inputNewCatLimit = document.getElementById('input-new-cat-limit');
@@ -448,7 +489,33 @@
         const btnAddCatSubmit = document.getElementById('btn-add-cat-submit');
         const btnStrategyNoBudget = document.getElementById('btn-strategy-nobudget');
         const btnStrategyBudget = document.getElementById('btn-strategy-budget');
-        let selectedCatIcon = 'restaurant';
+        const searchModalCatInput = document.getElementById('input-search-modal-categories');
+        const clearModalCatSearchBtn = document.getElementById('btn-clear-modal-cat-search');
+
+        const CATEGORY_ICON_SET = [
+            { icon: 'local_grocery_store', label: 'Groceries' },
+            { icon: 'restaurant', label: 'Dining' },
+            { icon: 'coffee', label: 'Cafe' },
+            { icon: 'shopping_bag', label: 'Shopping' },
+            { icon: 'directions_car', label: 'Transport' },
+            { icon: 'bolt', label: 'Utilities' },
+            { icon: 'local_hospital', label: 'Medical' },
+            { icon: 'receipt_long', label: 'Bills' },
+            { icon: 'home', label: 'Housing' },
+            { icon: 'movie', label: 'Entertainment' },
+            { icon: 'fitness_center', label: 'Fitness' },
+            { icon: 'pets', label: 'Pets' },
+            { icon: 'school', label: 'Education' },
+            { icon: 'savings', label: 'Savings' },
+            { icon: 'flight', label: 'Travel' },
+            { icon: 'work', label: 'Work' },
+            { icon: 'card_giftcard', label: 'Gifts' },
+            { icon: 'devices', label: 'Electronics' },
+            { icon: 'face', label: 'Personal Care' },
+            { icon: 'category', label: 'General' },
+        ];
+
+        let selectedCatIcon = 'local_grocery_store';
         let newCatHasBudget = false;
 
         function getApiUrl(path) {
@@ -456,19 +523,111 @@
             return `${path}${previewParam}`;
         }
 
+        // Render Dynamic Icon Picker Grid with Icon and Text Name
+        function renderCategoryIconPicker() {
+            const picker = document.getElementById('new-cat-icon-picker');
+            const labelSelected = document.getElementById('label-selected-icon');
+            if (!picker) return;
+            picker.innerHTML = '';
+
+            CATEGORY_ICON_SET.forEach(item => {
+                const isSelected = item.icon === selectedCatIcon;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.icon = item.icon;
+                btn.title = item.label;
+                btn.className = `icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all cursor-pointer active:scale-95 text-center min-h-[58px] ${
+                    isSelected 
+                        ? 'border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02]' 
+                        : 'border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest'
+                }`;
+                btn.innerHTML = `
+                    <span class="material-symbols-outlined text-[22px]">${item.icon}</span>
+                    <span class="font-label-sm text-[10px] font-bold leading-tight truncate w-full text-center">${item.label}</span>
+                `;
+                btn.addEventListener('click', () => {
+                    selectedCatIcon = item.icon;
+                    if (labelSelected) labelSelected.textContent = item.label;
+                    document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn').forEach(b => {
+                        b.className = 'icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest transition-all cursor-pointer active:scale-95 text-center min-h-[58px]';
+                    });
+                    btn.className = 'icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02] transition-all cursor-pointer active:scale-95 text-center min-h-[58px]';
+                });
+                picker.appendChild(btn);
+            });
+
+            const current = CATEGORY_ICON_SET.find(i => i.icon === selectedCatIcon);
+            if (labelSelected && current) labelSelected.textContent = current.label;
+        }
+
+        // Tab Switching Engine
+        function switchCategoryModalTab(targetTab) {
+            if (targetTab === 'add') {
+                if (tabBtnAddCat) {
+                    tabBtnAddCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs';
+                }
+                if (tabBtnListCat) {
+                    tabBtnListCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest';
+                }
+                if (paneAddCat) { paneAddCat.classList.remove('hidden'); paneAddCat.classList.add('flex'); }
+                if (paneListCat) { paneListCat.classList.add('hidden'); paneListCat.classList.remove('flex'); }
+                if (inputNewCatName) setTimeout(() => inputNewCatName.focus(), 50);
+            } else {
+                if (tabBtnListCat) {
+                    tabBtnListCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs';
+                }
+                if (tabBtnAddCat) {
+                    tabBtnAddCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest';
+                }
+                if (paneListCat) { paneListCat.classList.remove('hidden'); paneListCat.classList.add('flex'); }
+                if (paneAddCat) { paneAddCat.classList.add('hidden'); paneAddCat.classList.remove('flex'); }
+                renderCategoriesModalList(userCategoriesCache);
+                if (searchModalCatInput) {
+                    searchModalCatInput.value = '';
+                    if (clearModalCatSearchBtn) clearModalCatSearchBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        if (tabBtnAddCat) tabBtnAddCat.addEventListener('click', () => switchCategoryModalTab('add'));
+        if (tabBtnListCat) tabBtnListCat.addEventListener('click', () => switchCategoryModalTab('list'));
+
+        // Search Filter for Categories List
+        if (searchModalCatInput) {
+            searchModalCatInput.addEventListener('input', (e) => {
+                const query = (e.target.value || '').toLowerCase().trim();
+                if (clearModalCatSearchBtn) {
+                    clearModalCatSearchBtn.classList.toggle('hidden', !query);
+                }
+                const filtered = userCategoriesCache.filter(c => c.name.toLowerCase().includes(query));
+                renderCategoriesModalList(filtered);
+            });
+        }
+
+        if (clearModalCatSearchBtn) {
+            clearModalCatSearchBtn.addEventListener('click', () => {
+                if (searchModalCatInput) {
+                    searchModalCatInput.value = '';
+                    clearModalCatSearchBtn.classList.add('hidden');
+                    renderCategoriesModalList(userCategoriesCache);
+                    searchModalCatInput.focus();
+                }
+            });
+        }
+
         // Budget strategy switcher in Modal
         if (btnStrategyNoBudget && btnStrategyBudget) {
             btnStrategyNoBudget.addEventListener('click', () => {
                 newCatHasBudget = false;
-                btnStrategyNoBudget.className = 'strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
-                btnStrategyBudget.className = 'strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyNoBudget.className = 'strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyBudget.className = 'strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
                 if (groupNewCatLimit) groupNewCatLimit.classList.add('hidden');
             });
 
             btnStrategyBudget.addEventListener('click', () => {
                 newCatHasBudget = true;
-                btnStrategyBudget.className = 'strategy-pill active p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
-                btnStrategyNoBudget.className = 'strategy-pill p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyBudget.className = 'strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
+                btnStrategyNoBudget.className = 'strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
                 if (groupNewCatLimit) {
                     groupNewCatLimit.classList.remove('hidden');
                     if (inputNewCatLimit) inputNewCatLimit.focus();
@@ -476,30 +635,23 @@
             });
         }
 
-        // Icon picker buttons
-        const iconPickerButtons = document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn');
-        iconPickerButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                iconPickerButtons.forEach(b => {
-                    b.className = 'icon-picker-btn w-8 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shrink-0 cursor-pointer';
-                });
-                btn.className = 'icon-picker-btn active w-8 h-8 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex items-center justify-center shrink-0 cursor-pointer';
-                selectedCatIcon = btn.dataset.icon || 'category';
-            });
-        });
-
         // Preset category chips
         document.querySelectorAll('.cat-preset-chip').forEach(chip => {
             chip.addEventListener('click', () => {
-                if (inputNewCatName) inputNewCatName.value = chip.dataset.name || '';
-                const targetIcon = chip.dataset.icon || 'category';
-                const matchingBtn = Array.from(iconPickerButtons).find(b => b.dataset.icon === targetIcon);
-                if (matchingBtn) matchingBtn.click();
+                if (inputNewCatName) {
+                    inputNewCatName.value = chip.dataset.name || '';
+                    inputNewCatName.focus();
+                }
+                const targetIcon = chip.dataset.icon || 'local_grocery_store';
+                selectedCatIcon = targetIcon;
+                renderCategoryIconPicker();
             });
         });
 
-        function openManageCategoriesModal() {
+        function openManageCategoriesModal(initialTab = 'add') {
             if (!manageCatModal) return;
+            renderCategoryIconPicker();
+            switchCategoryModalTab(initialTab);
             document.body.style.overflow = 'hidden';
             manageCatModal.classList.remove('hidden');
             requestAnimationFrame(() => {
@@ -527,9 +679,22 @@
             }, 200);
         }
 
-        if (openManageCatBtn) openManageCatBtn.addEventListener('click', openManageCategoriesModal);
+        if (openManageCatBtn) openManageCatBtn.addEventListener('click', () => openManageCategoriesModal('list'));
         if (closeManageCatBtn) closeManageCatBtn.addEventListener('click', closeManageCategoriesModal);
         if (doneManageCatBtn) doneManageCatBtn.addEventListener('click', closeManageCategoriesModal);
+
+        // Bind initial server-rendered category buttons and '+ Add' button immediately
+        const initialGridAddCatBtn = document.getElementById('btn-grid-add-cat');
+        if (initialGridAddCatBtn) {
+            initialGridAddCatBtn.addEventListener('click', () => openManageCategoriesModal('add'));
+        }
+        const initialEmptyAddCatBtn = document.getElementById('btn-empty-add-cat');
+        if (initialEmptyAddCatBtn) {
+            initialEmptyAddCatBtn.addEventListener('click', () => openManageCategoriesModal('add'));
+        }
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectCategoryBtn(btn));
+        });
 
         async function fetchAndRenderCategories() {
             if (!catListContainer) return;
@@ -538,6 +703,7 @@
                 const data = await res.json();
                 if (data.categories) {
                     userCategoriesCache = data.categories;
+                    if (modalCatCount) modalCatCount.textContent = userCategoriesCache.length;
                     renderCategoriesModalList(userCategoriesCache);
                     renderCategoryGrid(userCategoriesCache);
                 }
@@ -546,6 +712,9 @@
             }
         }
 
+        // Fetch categories cache immediately on initial page load
+        fetchAndRenderCategories();
+
         function renderCategoryGrid(categories) {
             if (!categoryGrid) return;
             const currentSelected = document.querySelector('.category-btn.active')?.dataset?.category;
@@ -553,14 +722,13 @@
 
             if (!categories || categories.length === 0) {
                 categoryGrid.innerHTML = `
-                    <button type="button" id="btn-empty-add-cat" class="category-btn active col-span-4 flex flex-row items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-deep-forest/40 bg-surface-container-low/40 text-deep-forest shadow-xs transition-all text-center group cursor-pointer" data-category="" aria-pressed="true">
-                        <div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                            <span class="material-symbols-outlined text-[18px]">add</span>
+                    <button type="button" id="btn-empty-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
+                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
+                            <span class="material-symbols-outlined text-[20px]">add</span>
                         </div>
-                        <span class="font-label-sm text-xs font-bold">No categories yet. Click to create one</span>
                     </button>
                 `;
-                document.getElementById('btn-empty-add-cat')?.addEventListener('click', openManageCategoriesModal);
+                document.getElementById('btn-empty-add-cat')?.addEventListener('click', () => openManageCategoriesModal('add'));
                 return;
             }
 
@@ -584,17 +752,18 @@
                 categoryGrid.appendChild(btn);
             });
 
-            // Add persistent "+ Add" tile at end of grid
+            // Add persistent Add tile at end of grid
             const addTile = document.createElement('button');
             addTile.type = 'button';
-            addTile.className = 'flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer';
+            addTile.id = 'btn-grid-add-cat';
+            addTile.className = 'flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]';
+            addTile.title = 'Add Category';
             addTile.innerHTML = `
                 <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
                     <span class="material-symbols-outlined text-[20px]">add</span>
                 </div>
-                <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">+ Add</span>
             `;
-            addTile.addEventListener('click', openManageCategoriesModal);
+            addTile.addEventListener('click', () => openManageCategoriesModal('add'));
             categoryGrid.appendChild(addTile);
         }
 
@@ -623,10 +792,12 @@
         function renderCategoriesModalList(categories) {
             if (!catListContainer) return;
             catListContainer.innerHTML = '';
-            if (categories.length === 0) {
+            if (!categories || categories.length === 0) {
                 catListContainer.innerHTML = `
-                    <div class="text-center py-3 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-xl">
-                        No categories found. Create your first category below.
+                    <div class="text-center py-6 px-4 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-2xl border border-outline-variant/40 flex flex-col items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[24px] text-on-surface-variant/60">category</span>
+                        <p class="font-bold">No matching categories found.</p>
+                        <button type="button" class="text-[11px] font-bold text-positive-deep hover:underline mt-1 cursor-pointer" onclick="switchCategoryModalTab('add')">+ Create a new category</button>
                     </div>
                 `;
                 return;
@@ -634,43 +805,44 @@
 
             categories.forEach(cat => {
                 const row = document.createElement('div');
-                row.className = "flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant transition-all gap-2";
+                row.className = "flex items-center justify-between p-3 rounded-2xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant hover:bg-surface-container-low transition-all gap-2";
                 row.id = `cat-row-${cat.id}`;
 
                 const badgeHtml = cat.has_budget
                     ? `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-pale text-positive-deep border border-positive/30">Limit: ${cat.limit_formatted}</span>`
-                    : `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40">Track Only (No Limit)</span>`;
+                    : `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40">Track Only</span>`;
 
                 row.innerHTML = `
                     <!-- Display Mode -->
                     <div class="cat-display flex items-center justify-between w-full gap-2">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
-                                <span class="material-symbols-outlined text-[17px] text-positive-deep">${cat.icon_name || 'category'}</span>
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-xl bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
+                                <span class="material-symbols-outlined text-[19px] text-positive-deep">${cat.icon_name || 'category'}</span>
                             </div>
                             <div class="flex flex-col min-w-0">
-                                <span class="font-label-md text-xs font-bold text-deep-forest truncate">${escapeHtml(cat.name)}</span>
+                                <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest truncate">${escapeHtml(cat.name)}</span>
                                 <div class="mt-0.5">${badgeHtml}</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" class="btn-edit-cat w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Rename">
-                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                            <button type="button" class="btn-edit-cat w-8 h-8 rounded-xl text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Rename">
+                                <span class="material-symbols-outlined text-[16px]">edit</span>
                             </button>
-                            <button type="button" class="btn-delete-cat w-7 h-7 rounded-lg text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Delete">
-                                <span class="material-symbols-outlined text-[15px]">delete</span>
+                            <button type="button" class="btn-delete-cat w-8 h-8 rounded-xl text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Delete">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Inline Edit Mode -->
-                    <div class="cat-edit hidden items-center gap-1.5 w-full">
-                        <input type="text" class="input-edit-cat-name flex-1 px-2.5 py-1.5 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(cat.name)}" placeholder="Category name" />
-                        <button type="button" class="btn-save-cat-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${cat.id}" title="Save">
-                            <span class="material-symbols-outlined text-[14px]">check</span>
+                    <div class="cat-edit hidden items-center gap-2 w-full">
+                        <input type="text" class="input-edit-cat-name flex-1 px-3 py-1.5 rounded-xl border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary/20" value="${escapeHtml(cat.name)}" placeholder="Category name" />
+                        <button type="button" class="btn-save-cat-edit px-2.5 py-1.5 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer text-xs font-bold gap-1" data-id="${cat.id}" title="Save">
+                            <span class="material-symbols-outlined text-[15px]">check</span>
+                            <span>Save</span>
                         </button>
-                        <button type="button" class="btn-cancel-cat-edit w-7 h-7 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${cat.id}" title="Cancel">
-                            <span class="material-symbols-outlined text-[14px]">close</span>
+                        <button type="button" class="btn-cancel-cat-edit w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${cat.id}" title="Cancel">
+                            <span class="material-symbols-outlined text-[16px]">close</span>
                         </button>
                     </div>
                 `;
@@ -691,7 +863,18 @@
                     editMode.classList.remove('hidden');
                     editMode.classList.add('flex');
                     const input = editMode.querySelector('.input-edit-cat-name');
-                    if (input) { input.focus(); input.select(); }
+                    if (input) { 
+                        input.focus(); 
+                        input.select(); 
+                        input.onkeydown = (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                row.querySelector('.btn-save-cat-edit')?.click();
+                            } else if (e.key === 'Escape') {
+                                row.querySelector('.btn-cancel-cat-edit')?.click();
+                            }
+                        };
+                    }
                 });
             });
 
@@ -771,7 +954,11 @@
             btnAddCatSubmit.addEventListener('click', async () => {
                 const name = inputNewCatName ? inputNewCatName.value.trim() : '';
                 if (!name) {
-                    if (inputNewCatName) inputNewCatName.focus();
+                    if (inputNewCatName) {
+                        inputNewCatName.focus();
+                        inputNewCatName.classList.add('border-expense', 'ring-2', 'ring-expense/20');
+                        setTimeout(() => inputNewCatName.classList.remove('border-expense', 'ring-2', 'ring-expense/20'), 2000);
+                    }
                     return;
                 }
 
@@ -779,6 +966,8 @@
 
                 try {
                     btnAddCatSubmit.disabled = true;
+                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span><span>Creating...</span>`;
+                    
                     const res = await fetch(getApiUrl('/api/categories/create/'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -791,6 +980,8 @@
                     });
                     const data = await res.json();
                     btnAddCatSubmit.disabled = false;
+                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_circle</span><span>Create Category</span>`;
+                    
                     if (data.success) {
                         if (inputNewCatName) inputNewCatName.value = '';
                         if (inputNewCatLimit) inputNewCatLimit.value = '';
@@ -806,6 +997,7 @@
                     }
                 } catch (e) {
                     btnAddCatSubmit.disabled = false;
+                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_circle</span><span>Create Category</span>`;
                     console.error(e);
                 }
             });
