@@ -138,7 +138,7 @@
                         </div>
 
                         <!-- Chart Grid Canvas -->
-                        <div class="flex-1 relative border-b border-surface-variant/50 flex items-end justify-around px-2 sm:px-6">
+                        <div class="flex-1 relative border-b border-surface-variant/50 flex items-end px-2 sm:px-4">
                             
                             <!-- Horizontal Dashed Grid Lines -->
                             <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
@@ -148,65 +148,15 @@
                                 <div class="w-full h-0"></div>
                             </div>
 
-                            <!-- Column 1 -->
-                            <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
-                                <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-1" tabindex="0" aria-label="Expenses: ₱12,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 40%;">
-                                        <div id="tooltip-exp-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱12.0k</div>
-                                    </div>
-                                    <div id="bar-inc-1" tabindex="0" aria-label="Income: ₱18,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 60%;">
-                                        <div id="tooltip-inc-1" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱18.0k</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Column 2 -->
-                            <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
-                                <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-2" tabindex="0" aria-label="Expenses: ₱15,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 50%;">
-                                        <div id="tooltip-exp-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱15.0k</div>
-                                    </div>
-                                    <div id="bar-inc-2" tabindex="0" aria-label="Income: ₱24,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 80%;">
-                                        <div id="tooltip-inc-2" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱24.0k</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Column 3 -->
-                            <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
-                                <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-3" tabindex="0" aria-label="Expenses: ₱25,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 85%;">
-                                        <div id="tooltip-exp-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱25.0k</div>
-                                    </div>
-                                    <div id="bar-inc-3" tabindex="0" aria-label="Income: ₱9,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 30%;">
-                                        <div id="tooltip-inc-3" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱9.0k</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Column 4 -->
-                            <div class="flex flex-col items-center z-10 w-[20%] h-full justify-end">
-                                <div class="flex items-end gap-1.5 sm:gap-2.5 lg:gap-3 w-full justify-center h-full">
-                                    <div id="bar-exp-4" tabindex="0" aria-label="Expenses: ₱9,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 30%;">
-                                        <div id="tooltip-exp-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱9.0k</div>
-                                    </div>
-                                    <div id="bar-inc-4" tabindex="0" aria-label="Income: ₱12,000" class="chart-bar-grow w-3.5 sm:w-5 lg:w-6 xl:w-7 bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: 40%;">
-                                        <div id="tooltip-inc-4" class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-3 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">₱12.0k</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Dynamic Bars Container -->
+                            <div id="income-expense-bars-container" class="absolute inset-0 grid px-2 sm:px-4 z-10"></div>
                         </div>
                     </div>
 
                     <!-- X-Axis Column Labels Row -->
                     <div class="flex gap-2 sm:gap-4 pt-3">
                         <div class="w-10 sm:w-12 shrink-0 pointer-events-none"></div>
-                        <div class="flex-1 flex justify-around px-2 sm:px-6 font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">
-                            <span id="label-col-1" class="w-[20%] text-center truncate">Week 1</span>
-                            <span id="label-col-2" class="w-[20%] text-center truncate">Week 2</span>
-                            <span id="label-col-3" class="w-[20%] text-center truncate">Week 3</span>
-                            <span id="label-col-4" class="w-[20%] text-center truncate">Week 4</span>
-                        </div>
+                        <div id="income-expense-labels-container" class="flex-1 grid px-2 sm:px-4 font-label-sm text-[10px] sm:text-xs lg:text-sm text-deep-forest font-semibold"></div>
                     </div>
                 </div>
 
@@ -388,7 +338,7 @@
                             </svg>
 
                             <!-- Hover Overlay Zones -->
-                            <div id="trend-hover-zones" class="absolute inset-0 flex z-20"></div>
+                            <div id="trend-hover-zones" class="absolute inset-0 z-20"></div>
 
                             <!-- Interactive Floating Tooltip -->
                             <div id="trend-floating-tooltip" class="absolute hidden z-30 pointer-events-none bg-deep-forest text-white rounded-xl p-3 shadow-elevated border border-white/15 text-xs font-sans transition-all duration-150 min-w-[175px] sm:min-w-[205px] max-w-[250px]">
@@ -401,13 +351,8 @@
                             </div>
                         </div>
 
-                        <!-- X-Axis Labels Row -->
-                        <div class="flex justify-between items-center pt-2 font-label-sm text-xs sm:text-sm text-deep-forest font-semibold select-none px-2 sm:px-4" id="trends-x-axis">
-                            <span id="trends-x-0" class="text-center truncate">Week 1</span>
-                            <span id="trends-x-1" class="text-center truncate">Week 2</span>
-                            <span id="trends-x-2" class="text-center truncate">Week 3</span>
-                            <span id="trends-x-3" class="text-center truncate">Week 4</span>
-                        </div>
+                        <!-- X-Axis Labels Row (Mathematically positioned directly below SVG curve points) -->
+                        <div class="relative w-full h-6 pt-2 font-label-sm text-[10px] sm:text-xs text-deep-forest font-semibold select-none" id="trends-x-axis"></div>
                     </div>
                 </div>
             </div>
@@ -428,38 +373,38 @@
         // Data sets for period switching with exact breakdown items & smart insights
         const periodData = {
             week: {
-                total: '₱9,850.00',
+                total: '₱18,550.00',
                 totalSub: '<span class="text-positive-deep font-bold">-4%</span> from previous week',
                 highest: 'Food & Dining',
                 highestIcon: 'restaurant',
-                highestSub: '₱3,743.00 (38% of total)',
+                highestSub: '₱7,543.00 (41% of total)',
                 savings: '32.0%',
                 savingsBar: '92%',
                 chartSubtext: 'Daily breakdown for current week',
-                cols: ['Mon', 'Tue', 'Wed', 'Thu'],
-                yTicks: ['₱1.5k', '₱1.0k', '₱500', '₱0'],
-                expHeights: ['30%', '55%', '40%', '25%'],
-                incHeights: ['70%', '40%', '85%', '60%'],
-                expVals: ['₱2.1k', '₱3.2k', '₱2.8k', '₱1.7k'],
-                incVals: ['₱4.5k', '₱2.5k', '₱5.8k', '₱3.9k'],
-                donutTotal: '₱9.85k',
+                cols: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                yTicks: ['₱5.0k', '₱3.0k', '₱1.5k', '₱0'],
+                expHeights: ['60%', '30%', '55%', '40%', '25%', '65%', '85%'],
+                incHeights: ['45%', '70%', '40%', '85%', '60%', '75%', '50%'],
+                expVals: ['₱3.0k', '₱2.1k', '₱3.2k', '₱2.8k', '₱1.7k', '₱3.5k', '₱4.2k'],
+                incVals: ['₱2.8k', '₱4.5k', '₱2.5k', '₱5.8k', '₱3.9k', '₱5.0k', '₱3.0k'],
+                donutTotal: '₱18.55k',
                 donutPeriod: 'This Week',
                 categories: [
-                    { name: 'Housing', pct: 20, amount: '₱1,970.00' },
-                    { name: 'Food', pct: 38, amount: '₱3,743.00' },
-                    { name: 'Transport', pct: 22, amount: '₱2,167.00' },
-                    { name: 'Other', pct: 20, amount: '₱1,970.00' }
+                    { name: 'Housing', pct: 19, amount: '₱3,450.00' },
+                    { name: 'Food', pct: 41, amount: '₱7,543.00' },
+                    { name: 'Transport', pct: 19, amount: '₱3,617.00' },
+                    { name: 'Other', pct: 21, amount: '₱3,940.00' }
                 ],
                 trendPeriod: 'This Week',
                 trendSubtext: 'Daily spending trajectory for current week',
                 trendYTicks: ['₱1.5k', '₱1.0k', '₱500', '₱0'],
                 trendMaxY: 1500,
                 insights: {
-                    all: 'Food & Dining was your highest daily expense (₱3,743 / 38%), peaking on Tuesday at ₱1,100.',
+                    all: 'Food & Dining was your highest daily expense (₱7,543 / 41%), peaking on Saturday at ₱1,400.',
                     0: 'Housing stayed constant at ~₱470–₱520/day (-2% overall vs last week).',
-                    1: 'Food & Dining spiked on Tuesday to ₱1,100, totaling ₱3,743 (+14% trend).',
-                    2: 'Transport peaked on Wednesday at ₱620 and totaled ₱2,167 (+8% trend).',
-                    3: 'Groceries & Other stayed balanced under budget at ₱1,970 (-5% savings).'
+                    1: 'Food & Dining spiked over the weekend (₱1,400 on Sat), totaling ₱7,543 (+14% trend).',
+                    2: 'Transport peaked on Friday at ₱650 and totaled ₱3,617 (+8% trend).',
+                    3: 'Groceries & Other stayed balanced under budget at ₱3,940 (-5% savings).'
                 },
                 trendCategories: [
                     {
@@ -467,9 +412,9 @@
                         icon: 'home',
                         color: '#163300',
                         gradId: 'grad-trend-0',
-                        values: [480, 520, 470, 500],
-                        formattedValues: ['₱480', '₱520', '₱470', '₱500'],
-                        total: '₱1,970.00',
+                        values: [480, 480, 520, 470, 500, 510, 490],
+                        formattedValues: ['₱480', '₱480', '₱520', '₱470', '₱500', '₱510', '₱490'],
+                        total: '₱3,450.00',
                         trend: '-2%',
                         isExpenseUp: false,
                         iconBg: 'bg-deep-forest/15 text-deep-forest'
@@ -479,9 +424,9 @@
                         icon: 'restaurant',
                         color: '#5C8F3A',
                         gradId: 'grad-trend-1',
-                        values: [850, 1100, 920, 873],
-                        formattedValues: ['₱850', '₱1,100', '₱920', '₱873'],
-                        total: '₱3,743.00',
+                        values: [1150, 850, 1100, 920, 873, 1250, 1400],
+                        formattedValues: ['₱1,150', '₱850', '₱1,100', '₱920', '₱873', '₱1,250', '₱1,400'],
+                        total: '₱7,543.00',
                         trend: '+14%',
                         isExpenseUp: true,
                         iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
@@ -491,9 +436,9 @@
                         icon: 'directions_car',
                         color: '#D97706',
                         gradId: 'grad-trend-2',
-                        values: [450, 580, 620, 517],
-                        formattedValues: ['₱450', '₱580', '₱620', '₱517'],
-                        total: '₱2,167.00',
+                        values: [380, 450, 580, 620, 517, 650, 420],
+                        formattedValues: ['₱380', '₱450', '₱580', '₱620', '₱517', '₱650', '₱420'],
+                        total: '₱3,617.00',
                         trend: '+8%',
                         isExpenseUp: true,
                         iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
@@ -503,9 +448,9 @@
                         icon: 'shopping_bag',
                         color: '#D03238',
                         gradId: 'grad-trend-3',
-                        values: [400, 480, 550, 540],
-                        formattedValues: ['₱400', '₱480', '₱550', '₱540'],
-                        total: '₱1,970.00',
+                        values: [620, 400, 480, 550, 540, 600, 750],
+                        formattedValues: ['₱620', '₱400', '₱480', '₱550', '₱540', '₱600', '₱750'],
+                        total: '₱3,940.00',
                         trend: '-5%',
                         isExpenseUp: false,
                         iconBg: 'bg-expense/15 text-expense'
@@ -893,12 +838,6 @@
                 }
             }
 
-            // X-Axis labels
-            for (let i = 0; i < 4; i++) {
-                const xEl = document.getElementById(`trends-x-${i}`);
-                if (xEl) xEl.textContent = data.cols[i] || '';
-            }
-
             // SVG Coordinate Math
             const svgWidth = 700;
             const leftMargin = 35;
@@ -906,6 +845,15 @@
             const usableWidth = svgWidth - leftMargin - rightMargin;
             const numCols = data.cols.length;
             const xPos = (idx) => leftMargin + (idx / (numCols - 1)) * usableWidth;
+
+            // X-Axis labels (Mathematically positioned directly below SVG curve points)
+            const trendsXAxis = document.getElementById('trends-x-axis');
+            if (trendsXAxis) {
+                trendsXAxis.innerHTML = data.cols.map((colName, idx) => {
+                    const leftPct = (xPos(idx) / svgWidth) * 100;
+                    return `<span class="absolute top-2 -translate-x-1/2 text-center truncate text-[10px] sm:text-xs text-deep-forest font-semibold pointer-events-none" style="left: ${leftPct.toFixed(2)}%;">${colName}</span>`;
+                }).join('');
+            }
 
             const topMargin = 20;
             const bottomMargin = 25;
@@ -1005,8 +953,25 @@
                 hoverZonesContainer.innerHTML = '';
                 for (let c = 0; c < numCols; c++) {
                     const zone = document.createElement('div');
-                    zone.className = 'flex-1 h-full cursor-pointer';
+                    zone.className = 'absolute top-0 bottom-0 cursor-pointer';
                     zone.setAttribute('data-col-index', c);
+
+                    let startX, endX;
+                    if (c === 0) {
+                        startX = 0;
+                        endX = (xPos(0) + xPos(1)) / 2;
+                    } else if (c === numCols - 1) {
+                        startX = (xPos(c - 1) + xPos(c)) / 2;
+                        endX = svgWidth;
+                    } else {
+                        startX = (xPos(c - 1) + xPos(c)) / 2;
+                        endX = (xPos(c) + xPos(c + 1)) / 2;
+                    }
+
+                    const leftPct = (startX / svgWidth) * 100;
+                    const widthPct = ((endX - startX) / svgWidth) * 100;
+                    zone.style.left = `${leftPct.toFixed(2)}%`;
+                    zone.style.width = `${widthPct.toFixed(2)}%`;
 
                     const onEnterCol = () => {
                         const targetX = xPos(c);
@@ -1150,19 +1115,35 @@
                 document.getElementById('y-tick-1').textContent = data.yTicks[3];
             }
 
-            // Update bar heights and tooltips
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById(`label-col-${i}`).textContent = data.cols[i - 1];
+            // Update bar heights, tooltips, and labels dynamically (supports 7 days for week, 4 for month/year)
+            const barsContainer = document.getElementById('income-expense-bars-container');
+            const labelsContainer = document.getElementById('income-expense-labels-container');
 
-                const expBar = document.getElementById(`bar-exp-${i}`);
-                const incBar = document.getElementById(`bar-inc-${i}`);
-                const expTooltip = document.getElementById(`tooltip-exp-${i}`);
-                const incTooltip = document.getElementById(`tooltip-inc-${i}`);
+            if (barsContainer && labelsContainer) {
+                const numCols = data.cols.length;
+                barsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+                labelsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
 
-                if (expBar) expBar.style.height = data.expHeights[i - 1];
-                if (incBar) incBar.style.height = data.incHeights[i - 1];
-                if (expTooltip) expTooltip.textContent = data.expVals[i - 1];
-                if (incTooltip) incTooltip.textContent = data.incVals[i - 1];
+                const barWidthClass = numCols > 4 ? 'w-2.5 sm:w-3.5 lg:w-4' : 'w-3.5 sm:w-5 lg:w-6 xl:w-7';
+
+                barsContainer.innerHTML = data.cols.map((col, idx) => `
+                    <div class="flex flex-col items-center justify-end h-full w-full">
+                        <div class="flex items-end gap-1 sm:gap-1.5 lg:gap-2 justify-center h-full w-full">
+                            <div tabindex="0" aria-label="Expenses: ${data.expVals[idx]}" class="chart-bar-grow ${barWidthClass} bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.expHeights[idx]};">
+                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.expVals[idx]}</div>
+                            </div>
+                            <div tabindex="0" aria-label="Income: ${data.incVals[idx]}" class="chart-bar-grow ${barWidthClass} bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.incHeights[idx]};">
+                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.incVals[idx]}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                labelsContainer.innerHTML = data.cols.map((col) => `
+                    <div class="flex items-center justify-center text-center w-full">
+                        <span class="truncate">${col}</span>
+                    </div>
+                `).join('');
             }
 
             // Update Donut with exact gapless math & new period data
@@ -1183,9 +1164,8 @@
             });
         });
 
-        // Initialize Month Donut & Combined Trends Chart
-        renderDonut(periodData.month.categories, periodData.month.donutTotal);
-        renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+        // Initialize Default Period (Month)
+        updatePeriod('month');
 
         // Window resize handler for responsive chart dot sizing
         let resizeTimer;
