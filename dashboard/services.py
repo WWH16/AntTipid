@@ -47,10 +47,11 @@ def get_current_user_profile(request):
 
 def seed_default_user_data(profile):
     """
-    Populate a user with starter Accounts, Categories, Budgets, and initial Transactions.
+    Populate a user with starter Accounts / Payment Methods (Cash, GCash).
+    Categories and Budgets start 100% empty so the user can create their own.
     """
-    # 1. Accounts (Default starter payment sources)
-    cash_acc = Account.objects.create(
+    # Default starter payment sources
+    Account.objects.create(
         user=profile,
         name='Cash',
         account_type=Account.AccountType.CASH,
@@ -58,7 +59,7 @@ def seed_default_user_data(profile):
         color_hex='#163300',
         icon='payments',
     )
-    gcash_acc = Account.objects.create(
+    Account.objects.create(
         user=profile,
         name='GCash',
         account_type=Account.AccountType.E_WALLET,
@@ -66,34 +67,6 @@ def seed_default_user_data(profile):
         color_hex='#005CEE',
         icon='account_balance_wallet',
     )
-
-    # 2. Categories
-    cat_food = Category.objects.create(user=profile, name='Food & Dining', category_type=Category.CategoryType.EXPENSE, icon_name='restaurant', color_hex='#5C8F3A', is_system_default=True)
-    cat_trans = Category.objects.create(user=profile, name='Transportation', category_type=Category.CategoryType.EXPENSE, icon_name='directions_car', color_hex='#D97706', is_system_default=True)
-    cat_shop = Category.objects.create(user=profile, name='Shopping', category_type=Category.CategoryType.EXPENSE, icon_name='shopping_bag', color_hex='#8B5CF6', is_system_default=True)
-    cat_util = Category.objects.create(user=profile, name='Utilities', category_type=Category.CategoryType.EXPENSE, icon_name='bolt', color_hex='#0EA5E9', is_system_default=True)
-    cat_ent = Category.objects.create(user=profile, name='Entertainment', category_type=Category.CategoryType.EXPENSE, icon_name='movie', color_hex='#EC4899', is_system_default=True)
-    cat_groc = Category.objects.create(user=profile, name='Groceries', category_type=Category.CategoryType.EXPENSE, icon_name='local_grocery_store', color_hex='#10B981', is_system_default=True)
-    cat_house = Category.objects.create(user=profile, name='Housing & Rent', category_type=Category.CategoryType.EXPENSE, icon_name='home', color_hex='#163300', is_system_default=True)
-    cat_other = Category.objects.create(user=profile, name='Others', category_type=Category.CategoryType.EXPENSE, icon_name='category', color_hex='#D03238', is_system_default=True)
-
-    cat_sal = Category.objects.create(user=profile, name='Salary', category_type=Category.CategoryType.INCOME, icon_name='payments', color_hex='#163300', is_system_default=True)
-    cat_free = Category.objects.create(user=profile, name='Freelance', category_type=Category.CategoryType.INCOME, icon_name='work', color_hex='#6366F1', is_system_default=True)
-
-    # 3. Monthly Budgets
-    today = date.today()
-    start_of_month = today.replace(day=1)
-    if today.month == 12:
-        end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-    else:
-        end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-
-    Budget.objects.create(user=profile, category=None, name='Overall Monthly Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('20000.00'), start_date=start_of_month, end_date=end_of_month)
-    Budget.objects.create(user=profile, category=cat_food, name='Food & Dining Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('6000.00'), start_date=start_of_month, end_date=end_of_month)
-    Budget.objects.create(user=profile, category=cat_trans, name='Transportation Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('3000.00'), start_date=start_of_month, end_date=end_of_month)
-    Budget.objects.create(user=profile, category=cat_groc, name='Groceries Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('4000.00'), start_date=start_of_month, end_date=end_of_month)
-    Budget.objects.create(user=profile, category=cat_util, name='Utilities Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('2500.00'), start_date=start_of_month, end_date=end_of_month)
-    Budget.objects.create(user=profile, category=cat_shop, name='Shopping Budget', period_type=Budget.PeriodType.MONTHLY, amount_limit=Decimal('2500.00'), start_date=start_of_month, end_date=end_of_month)
 
 
 def get_dashboard_data(profile):
@@ -347,177 +320,241 @@ def get_budget_data(profile, selected_month=None):
 
 def get_reports_data(profile):
     """
-    Compute full dynamic statistics for Reports (week, month, year) from real Transaction records.
+    Compute 100% dynamic statistics for Reports (week, month, year) strictly from database Transaction records.
+    Zero mock/hardcoded fallback data.
     """
+    if not profile:
+        return {}
+
     today = date.today()
 
-    # 1. Week Calculations (Sun to Sat of current week)
-    idx_sun = (today.weekday() + 1) % 7  # 0 is Sunday
-    sunday = today - timedelta(days=idx_sun)
-    saturday = sunday + timedelta(days=6)
+    def get_period_stats(cols, col_ranges, period_start, period_end, prev_start, prev_end, period_label):
+        # 1. Total Incomes & Expenses
+        period_txs = Transaction.objects.filter(
+            user=profile,
+            transaction_date__gte=period_start,
+            transaction_date__lte=period_end,
+        )
+        total_exp = float(period_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+        total_inc = float(period_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
 
-    week_days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    week_exp_vals = []
-    week_inc_vals = []
-    week_trend_food = []
-    week_trend_trans = []
-    week_trend_shop = []
-    week_trend_util = []
+        # Previous period comparison
+        prev_txs = Transaction.objects.filter(
+            user=profile,
+            transaction_date__gte=prev_start,
+            transaction_date__lte=prev_end,
+        )
+        prev_exp = float(prev_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
 
-    cat_food = Category.objects.filter(user=profile, name__icontains='Food').first()
-    cat_trans = Category.objects.filter(user=profile, name__icontains='Transport').first()
-    cat_shop = Category.objects.filter(user=profile, name__icontains='Shop').first()
-    cat_util = Category.objects.filter(user=profile, name__icontains='Util').first()
+        if prev_exp > 0:
+            pct_diff = ((total_exp - prev_exp) / prev_exp) * 100
+            diff_sign = '+' if pct_diff > 0 else ''
+            spending_change = f"{diff_sign}{pct_diff:.1f}% vs previous period"
+        elif total_exp > 0:
+            spending_change = "+100% vs previous period"
+        else:
+            spending_change = "0% vs previous period"
 
-    for d in range(7):
-        current_day = sunday + timedelta(days=d)
-        day_txs = Transaction.objects.filter(user=profile, transaction_date=current_day)
+        # Savings Rate
+        if total_inc > 0:
+            raw_savings = max(0.0, ((total_inc - total_exp) / total_inc) * 100)
+            savings_str = f"{raw_savings:.1f}%"
+            savings_bar = f"{min(100, int(raw_savings))}%"
+        else:
+            savings_str = "0.0%"
+            savings_bar = "0%"
 
-        d_exp = float(day_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
-        d_inc = float(day_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
+        # Column breakdown (Bars)
+        exp_vals = []
+        inc_vals = []
+        for r_start, r_end in col_ranges:
+            sub_txs = period_txs.filter(transaction_date__gte=r_start, transaction_date__lte=r_end)
+            e = float(sub_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+            i = float(sub_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
+            exp_vals.append(e)
+            inc_vals.append(i)
 
-        week_exp_vals.append(d_exp)
-        week_inc_vals.append(d_inc)
+        max_bar = max(exp_vals + inc_vals + [1.0])
+        exp_heights = [int((v / max_bar) * 100) if v > 0 else 0 for v in exp_vals]
+        inc_heights = [int((v / max_bar) * 100) if v > 0 else 0 for v in inc_vals]
 
-        f_val = float(day_txs.filter(category=cat_food, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0) if cat_food else 0
-        t_val = float(day_txs.filter(category=cat_trans, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0) if cat_trans else 0
-        s_val = float(day_txs.filter(category=cat_shop, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0) if cat_shop else 0
-        u_val = float(day_txs.filter(category=cat_util, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0) if cat_util else 0
+        # Y-axis ticks
+        if total_exp == 0 and total_inc == 0:
+            y_ticks = ["₱1,000", "₱750", "₱500", "₱0"]
+        else:
+            y_step = max_bar / 3.0
+            y_ticks = [
+                f"₱{max_bar:,.0f}" if max_bar < 1000 else f"₱{max_bar/1000:,.1f}k",
+                f"₱{y_step*2:,.0f}" if y_step*2 < 1000 else f"₱{(y_step*2)/1000:,.1f}k",
+                f"₱{y_step:,.0f}" if y_step < 1000 else f"₱{y_step/1000:,.1f}k",
+                "₱0"
+            ]
 
-        week_trend_food.append(f_val)
-        week_trend_trans.append(t_val)
-        week_trend_shop.append(s_val)
-        week_trend_util.append(u_val)
+        # Category Donut Distribution
+        donut = []
+        user_categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE)
+        cat_spending_map = {}
+        for cat in user_categories:
+            c_sum = float(period_txs.filter(category=cat, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+            if c_sum > 0:
+                cat_spending_map[cat] = c_sum
+                donut.append({
+                    'name': cat.name,
+                    'color': cat.color_hex or '#163300',
+                    'icon': cat.icon_name or 'category',
+                    'value': c_sum,
+                    'percentage': int((c_sum / total_exp * 100)) if total_exp > 0 else 0,
+                    'amount': f"₱{c_sum:,.2f}"
+                })
 
-    # Scaling for week bar heights (0 to 100%)
-    max_week_val = max(week_exp_vals + week_inc_vals + [1.0])
-    week_exp_heights = [int((v / max_week_val) * 100) if v > 0 else 0 for v in week_exp_vals]
-    week_inc_heights = [int((v / max_week_val) * 100) if v > 0 else 0 for v in week_inc_vals]
-
-    week_total_exp = sum(week_exp_vals)
-    week_total_inc = sum(week_inc_vals)
-    week_savings_rate = f"{((week_total_inc - week_total_exp) / week_total_inc * 100):.1f}%" if week_total_inc > 0 else "0.0%"
-
-    # 2. Month Calculations (Weeks 1 to 4)
-    start_of_month = today.replace(day=1)
-    month_exp_vals = []
-    month_inc_vals = []
-    for w in range(4):
-        w_start = start_of_month + timedelta(days=w * 7)
-        w_end = w_start + timedelta(days=6)
-        w_txs = Transaction.objects.filter(user=profile, transaction_date__gte=w_start, transaction_date__lte=w_end)
-        w_exp = float(w_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
-        w_inc = float(w_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
-        month_exp_vals.append(w_exp)
-        month_inc_vals.append(w_inc)
-
-    max_month_val = max(month_exp_vals + month_inc_vals + [1.0])
-    month_exp_heights = [int((v / max_month_val) * 100) if v > 0 else 0 for v in month_exp_vals]
-    month_inc_heights = [int((v / max_month_val) * 100) if v > 0 else 0 for v in month_inc_vals]
-
-    month_total_exp = sum(month_exp_vals)
-    month_total_inc = sum(month_inc_vals)
-    month_savings_rate = f"{((month_total_inc - month_total_exp) / month_total_inc * 100):.1f}%" if month_total_inc > 0 else "0.0%"
-
-    # 3. Category Donut Distribution for Month
-    expense_txs = Transaction.objects.filter(
-        user=profile,
-        transaction_type=Transaction.TransactionType.EXPENSE,
-        transaction_date__gte=start_of_month,
-    )
-    categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE)
-    donut_categories = []
-    for cat in categories:
-        cat_sum = float(expense_txs.filter(category=cat).aggregate(s=Sum('amount'))['s'] or 0)
-        if cat_sum > 0:
-            donut_categories.append({
-                'name': cat.name,
-                'color': cat.color_hex,
-                'value': cat_sum,
-                'percentage': int((cat_sum / month_total_exp * 100)) if month_total_exp > 0 else 0,
+        # Also capture uncategorized expenses if any
+        uncat_sum = float(period_txs.filter(category__isnull=True, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+        if uncat_sum > 0:
+            donut.append({
+                'name': 'Uncategorized',
+                'color': '#868685',
+                'icon': 'category',
+                'value': uncat_sum,
+                'percentage': int((uncat_sum / total_exp * 100)) if total_exp > 0 else 0,
+                'amount': f"₱{uncat_sum:,.2f}"
             })
-    donut_categories.sort(key=lambda x: x['value'], reverse=True)
 
-    # Pack full period data dict
-    return {
-        'week': {
-            'spending': f"₱{week_total_exp:,.2f}",
-            'spendingChange': '+4.2% vs last week',
-            'topCatName': 'Food & Dining',
-            'topCatAmount': f"₱{sum(week_trend_food):,.2f}",
-            'topCatPercent': f"{int((sum(week_trend_food) / week_total_exp * 100)) if week_total_exp > 0 else 0}% of weekly total",
-            'savings': week_savings_rate,
-            'savingsBar': '85%',
-            'cols': week_days,
-            'expHeights': week_exp_heights,
-            'incHeights': week_inc_heights,
-            'expVals': [f"₱{v:,.0f}" for v in week_exp_vals],
-            'incVals': [f"₱{v:,.0f}" for v in week_inc_vals],
-            'donut': donut_categories or [
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'value': 2450.0, 'percentage': 52},
-                {'name': 'Transportation', 'color': '#D97706', 'value': 980.0, 'percentage': 21},
-                {'name': 'Groceries', 'color': '#10B981', 'value': 840.0, 'percentage': 18},
-                {'name': 'Shopping', 'color': '#8B5CF6', 'value': 420.0, 'percentage': 9},
-            ],
-            'trendCategories': [
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'values': week_trend_food, 'formattedValues': [f"₱{v:,.0f}" for v in week_trend_food]},
-                {'name': 'Transportation', 'color': '#D97706', 'values': week_trend_trans, 'formattedValues': [f"₱{v:,.0f}" for v in week_trend_trans]},
-                {'name': 'Groceries', 'color': '#10B981', 'values': week_trend_shop, 'formattedValues': [f"₱{v:,.0f}" for v in week_trend_shop]},
-                {'name': 'Utilities', 'color': '#0EA5E9', 'values': week_trend_util, 'formattedValues': [f"₱{v:,.0f}" for v in week_trend_util]},
-            ],
-        },
-        'month': {
-            'spending': f"₱{month_total_exp:,.2f}",
-            'spendingChange': '-8.4% vs last month',
-            'topCatName': 'Housing & Rent',
-            'topCatAmount': '₱12,500.00',
-            'topCatPercent': '51% of monthly total',
-            'savings': month_savings_rate,
-            'savingsBar': '75%',
-            'cols': ['W1', 'W2', 'W3', 'W4'],
-            'expHeights': month_exp_heights,
-            'incHeights': month_inc_heights,
-            'expVals': [f"₱{v:,.0f}" for v in month_exp_vals],
-            'incVals': [f"₱{v:,.0f}" for v in month_inc_vals],
-            'donut': donut_categories or [
-                {'name': 'Housing & Rent', 'color': '#163300', 'value': 12500.0, 'percentage': 51},
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'value': 5400.0, 'percentage': 22},
-                {'name': 'Transportation', 'color': '#D97706', 'value': 3200.0, 'percentage': 13},
-                {'name': 'Utilities', 'color': '#0EA5E9', 'value': 2155.0, 'percentage': 9},
-                {'name': 'Others', 'color': '#D03238', 'value': 1200.0, 'percentage': 5},
-            ],
-            'trendCategories': [
-                {'name': 'Housing & Rent', 'color': '#163300', 'values': [12500, 0, 0, 0], 'formattedValues': ['₱12,500', '₱0', '₱0', '₱0']},
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'values': [1350, 1420, 1280, 1350], 'formattedValues': ['₱1,350', '₱1,420', '₱1,280', '₱1,350']},
-                {'name': 'Transportation', 'color': '#D97706', 'values': [800, 750, 850, 800], 'formattedValues': ['₱800', '₱750', '₱850', '₱800']},
-                {'name': 'Utilities', 'color': '#0EA5E9', 'values': [540, 530, 550, 535], 'formattedValues': ['₱540', '₱530', '₱550', '₱535']},
-            ],
-        },
-        'year': {
-            'spending': '₱284,500.00',
-            'spendingChange': '-3.1% vs last year',
-            'topCatName': 'Housing & Rent',
-            'topCatAmount': '₱150,000.00',
-            'topCatPercent': '53% of annual total',
-            'savings': '31.2%',
-            'savingsBar': '88%',
-            'cols': ['Q1', 'Q2', 'Q3', 'Q4'],
-            'expHeights': [65, 80, 70, 75],
-            'incHeights': [85, 95, 90, 100],
-            'expVals': ['₱68,200', '₱74,100', '₱69,800', '₱72,400'],
-            'incVals': ['₱105,000', '₱110,000', '₱108,000', '₱120,000'],
-            'donut': [
-                {'name': 'Housing & Rent', 'color': '#163300', 'value': 150000.0, 'percentage': 53},
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'value': 64800.0, 'percentage': 23},
-                {'name': 'Transportation', 'color': '#D97706', 'value': 38400.0, 'percentage': 13},
-                {'name': 'Utilities', 'color': '#0EA5E9', 'value': 25800.0, 'percentage': 9},
-                {'name': 'Others', 'color': '#D03238', 'value': 5500.0, 'percentage': 2},
-            ],
-            'trendCategories': [
-                {'name': 'Housing & Rent', 'color': '#163300', 'values': [37500, 37500, 37500, 37500], 'formattedValues': ['₱37,500', '₱37,500', '₱37,500', '₱37,500']},
-                {'name': 'Food & Dining', 'color': '#5C8F3A', 'values': [15800, 16400, 16100, 16500], 'formattedValues': ['₱15,800', '₱16,400', '₱16,100', '₱16,500']},
-                {'name': 'Transportation', 'color': '#D97706', 'values': [9400, 9800, 9500, 9700], 'formattedValues': ['₱9,400', '₱9,800', '₱9,500', '₱9,700']},
-                {'name': 'Utilities', 'color': '#0EA5E9', 'values': [6200, 6500, 6400, 6700], 'formattedValues': ['₱6,200', '₱6,500', '₱6,400', '₱6,700']},
-            ],
+        donut.sort(key=lambda x: x['value'], reverse=True)
+
+        # Top Category KPI
+        if donut:
+            top_cat = donut[0]
+            top_cat_name = top_cat['name']
+            top_cat_icon = top_cat.get('icon', 'category')
+            top_cat_amount = top_cat['amount']
+            top_cat_percent = f"{top_cat['percentage']}% of total"
+        else:
+            top_cat_name = "—"
+            top_cat_icon = "category"
+            top_cat_amount = "₱0.00"
+            top_cat_percent = "0% of total"
+
+        # Multi-category Trends (Top 4 categories by spend)
+        trend_categories = []
+        top_cats = [c for c, _ in sorted(cat_spending_map.items(), key=lambda item: item[1], reverse=True)[:4]]
+
+        for idx, cat in enumerate(top_cats):
+            cat_vals = []
+            for r_start, r_end in col_ranges:
+                c_val = float(period_txs.filter(category=cat, transaction_date__gte=r_start, transaction_date__lte=r_end, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+                cat_vals.append(c_val)
+            
+            c_tot = sum(cat_vals)
+            trend_categories.append({
+                'name': cat.name,
+                'icon': cat.icon_name or 'category',
+                'color': cat.color_hex or '#163300',
+                'gradId': f"grad-trend-{idx}",
+                'values': cat_vals,
+                'formattedValues': [f"₱{v:,.0f}" for v in cat_vals],
+                'total': f"₱{c_tot:,.2f}",
+                'percentage': int((c_tot / total_exp * 100)) if total_exp > 0 else 0,
+                'isExpenseUp': True,
+                'iconBg': f"bg-surface-container text-deep-forest"
+            })
+
+        # Trend Max Y and Y-Ticks
+        trend_all_vals = [v for tc in trend_categories for v in tc['values']]
+        max_trend_y = max(trend_all_vals + [1.0])
+        if total_exp == 0 or not trend_all_vals or max_trend_y <= 1.0:
+            max_trend_y = 1000.0
+            trend_y_ticks = ["₱1,000", "₱750", "₱500", "₱0"]
+        else:
+            trend_step = max_trend_y / 3.0
+            trend_y_ticks = [
+                f"₱{max_trend_y:,.0f}" if max_trend_y < 1000 else f"₱{max_trend_y/1000:,.1f}k",
+                f"₱{trend_step*2:,.0f}" if trend_step*2 < 1000 else f"₱{(trend_step*2)/1000:,.1f}k",
+                f"₱{trend_step:,.0f}" if trend_step < 1000 else f"₱{trend_step/1000:,.1f}k",
+                "₱0"
+            ]
+
+        # Dynamic Insights
+        insights = {
+            'all': f"Total spending for {period_label} is ₱{total_exp:,.2f} with ₱{total_inc:,.2f} income recorded." if total_exp > 0 or total_inc > 0 else f"No spending recorded for {period_label} yet."
         }
+        for idx, tc in enumerate(trend_categories):
+            insights[idx] = f"{tc['name']} total spend is {tc['total']} ({tc['percentage']}% of {period_label})."
+
+        return {
+            'spending': f"₱{total_exp:,.2f}",
+            'total': f"₱{total_exp:,.2f}",
+            'spendingChange': spending_change,
+            'totalSub': spending_change,
+            'topCatName': top_cat_name,
+            'topCatIcon': top_cat_icon,
+            'topCatAmount': top_cat_amount,
+            'topCatPercent': top_cat_percent,
+            'highest': top_cat_name,
+            'highestIcon': top_cat_icon,
+            'highestSub': f"{top_cat_amount} ({top_cat_percent})",
+            'savings': savings_str,
+            'savingsBar': savings_bar,
+            'chartSubtext': f"Breakdown for {period_label}",
+            'cols': cols,
+            'yTicks': y_ticks,
+            'expHeights': exp_heights,
+            'incHeights': inc_heights,
+            'expVals': [f"₱{v:,.0f}" for v in exp_vals],
+            'incVals': [f"₱{v:,.0f}" for v in inc_vals],
+            'donutTotal': f"₱{total_exp:,.2f}",
+            'donutPeriod': period_label,
+            'donut': donut,
+            'categories': [{'name': d['name'], 'pct': d['percentage'], 'amount': d['amount']} for d in donut],
+            'trendPeriod': period_label,
+            'trendSubtext': f"Spending trajectory for {period_label}",
+            'trendYTicks': trend_y_ticks,
+            'trendMaxY': max_trend_y,
+            'trendCategories': trend_categories,
+            'insights': insights,
+        }
+
+    # 1. Week (Sun to Sat)
+    idx_sun = (today.weekday() + 1) % 7
+    week_start = today - timedelta(days=idx_sun)
+    week_end = week_start + timedelta(days=6)
+    prev_week_start = week_start - timedelta(days=7)
+    prev_week_end = week_start - timedelta(days=1)
+    week_cols = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    week_ranges = [(week_start + timedelta(days=d), week_start + timedelta(days=d)) for d in range(7)]
+
+    # 2. Month (Weeks 1 to 4)
+    month_start = today.replace(day=1)
+    if today.month == 12:
+        month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+    else:
+        month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+    
+    prev_month_end = month_start - timedelta(days=1)
+    prev_month_start = prev_month_end.replace(day=1)
+    
+    month_cols = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+    month_ranges = [
+        (month_start, month_start + timedelta(days=6)),
+        (month_start + timedelta(days=7), month_start + timedelta(days=13)),
+        (month_start + timedelta(days=14), month_start + timedelta(days=20)),
+        (month_start + timedelta(days=21), month_end),
+    ]
+
+    # 3. Year (Q1, Q2, Q3, Q4)
+    year_start = date(today.year, 1, 1)
+    year_end = date(today.year, 12, 31)
+    prev_year_start = date(today.year - 1, 1, 1)
+    prev_year_end = date(today.year - 1, 12, 31)
+    year_cols = ['Q1', 'Q2', 'Q3', 'Q4']
+    year_ranges = [
+        (date(today.year, 1, 1), date(today.year, 3, 31)),
+        (date(today.year, 4, 1), date(today.year, 6, 30)),
+        (date(today.year, 7, 1), date(today.year, 9, 30)),
+        (date(today.year, 10, 1), date(today.year, 12, 31)),
+    ]
+
+    return {
+        'week': get_period_stats(week_cols, week_ranges, week_start, week_end, prev_week_start, prev_week_end, 'This Week'),
+        'month': get_period_stats(month_cols, month_ranges, month_start, month_end, prev_month_start, prev_month_end, today.strftime('%B %Y')),
+        'year': get_period_stats(year_cols, year_ranges, year_start, year_end, prev_year_start, prev_year_end, f"{today.year} Year"),
     }

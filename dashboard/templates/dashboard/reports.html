@@ -48,7 +48,7 @@
                 <button data-period="year" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold">Year</button>
             </div>
 
-            <!-- Export Report Button (DESIGN.md button-secondary / tertiary pill) -->
+            <!-- Export Report Button -->
             <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-full border border-outline-variant/60 bg-canvas text-ink font-sans text-xs font-bold hover:bg-canvas-soft transition-all shadow-2xs active:scale-[0.98] cursor-pointer">
                 <span class="material-symbols-outlined text-[16px]">download</span>
                 <span>Export</span>
@@ -69,43 +69,43 @@
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-total-spending" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight tabular-nums">₱42,500.00</div>
+                    <div id="kpi-total-spending" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight tabular-nums">₱0.00</div>
                     <p id="kpi-total-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 flex items-center gap-1">
-                        <span class="text-expense font-bold">+12%</span> from previous period
+                        0% vs previous period
                     </p>
                 </div>
             </a>
 
-            <!-- Highest Category Card (Gold Budget Accent) -->
-            <a href="{% url 'transactions' %}" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
+            <!-- Highest Category Card -->
+            <a href="{% url 'budget' %}" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
                 <div class="flex justify-between items-start">
                     <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 uppercase tracking-wider font-bold">Highest Category</span>
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <span id="kpi-highest-icon" class="material-symbols-outlined text-[16px] sm:text-[18px]">home</span>
+                        <span id="kpi-highest-icon" class="material-symbols-outlined text-[16px] sm:text-[18px]">category</span>
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight truncate">Housing & Rent</div>
-                    <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 font-medium tabular-nums">₱17,850.00 (42% of total)</p>
+                    <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight truncate">—</div>
+                    <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 font-medium tabular-nums">₱0.00 (0% of total)</p>
                 </div>
             </a>
 
-            <!-- Savings Rate Hero Card (Deep Forest Background) -->
+            <!-- Savings Rate Hero Card -->
             <a href="{% url 'budget' %}" class="sm:col-span-2 lg:col-span-1 bg-deep-forest text-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
                 <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
                 <div class="flex justify-between items-start relative z-10">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider text-white/80 font-bold">Monthly Savings Rate</span>
+                    <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider text-white/80 font-bold">Savings Rate</span>
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_upward</span>
                     </div>
                 </div>
                 <div class="relative z-10">
-                    <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight tabular-nums text-white">28.5%</div>
-                    <p class="font-body-sm text-xs text-white/80 mt-0.5 font-medium">Target goal: 30.0%</p>
+                    <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight tabular-nums text-white">0.0%</div>
+                    <p class="font-body-sm text-xs text-white/80 mt-0.5 font-medium">Income saved after expenses</p>
                 </div>
                 <!-- Mini Progress Bar in Ant Green -->
                 <div class="w-full bg-white/20 h-2 rounded-full relative z-10 overflow-hidden p-0.5">
-                    <div id="kpi-savings-bar" class="bg-primary h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 85%"></div>
+                    <div id="kpi-savings-bar" class="bg-primary h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 0%"></div>
                 </div>
             </a>
 
@@ -121,7 +121,7 @@
                 <div class="flex justify-between items-center mb-3 sm:mb-4 border-b border-surface-variant/40 pb-3">
                     <div>
                         <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Income vs Expenses</h2>
-                        <p id="chart-subtext" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Weekly breakdown for current month</p>
+                        <p id="chart-subtext" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Breakdown for selected period</p>
                     </div>
                 </div>
 
@@ -131,9 +131,9 @@
                         
                         <!-- Y-Axis Labels Column -->
                         <div class="flex flex-col justify-between py-0 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums whitespace-nowrap">
-                            <span id="y-tick-4">₱30.0k</span>
-                            <span id="y-tick-3">₱20.0k</span>
-                            <span id="y-tick-2">₱10.0k</span>
+                            <span id="y-tick-4">₱0</span>
+                            <span id="y-tick-3">₱0</span>
+                            <span id="y-tick-2">₱0</span>
                             <span id="y-tick-1">₱0</span>
                         </div>
 
@@ -173,11 +173,11 @@
                 </div>
             </div>
 
-            <!-- Spending by Category Donut Chart (Right 5 Cols - DESIGN.md) -->
+            <!-- Spending by Category Donut Chart (Right 5 Cols) -->
             <div id="category-donut-card" class="lg:col-span-5 bg-canvas border border-outline-variant/60 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
                 <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3">
                     <h2 class="font-sans text-xs sm:text-sm font-bold text-ink">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
+                    <span id="donut-period-label" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">This Period</span>
                 </div>
 
                 <!-- Donut SVG Interactive Area -->
@@ -187,61 +187,22 @@
                             <!-- Background Track -->
                             <circle class="text-canvas-soft stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
                             
-                            <!-- Housing Segment (Deep Forest) -->
-                            <circle id="donut-seg-1" tabindex="0" role="button" aria-label="Housing: 42%" class="donut-segment text-deep-forest stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
-                            
-                            <!-- Food Segment (Primary Lime / Ant Green) -->
-                            <circle id="donut-seg-2" tabindex="0" role="button" aria-label="Food: 25%" class="donut-segment text-primary stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
-                            
-                            <!-- Transport Segment (Warning Gold) -->
-                            <circle id="donut-seg-3" tabindex="0" role="button" aria-label="Transport: 15%" class="donut-segment text-warning stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
-                            
-                            <!-- Other Segment (Negative Red) - Closes the gap seamlessly -->
-                            <circle id="donut-seg-4" tabindex="0" role="button" aria-label="Other: 18%" class="donut-segment text-negative stroke-current transition-all duration-300 cursor-pointer focus:outline-none" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
+                            <!-- Dynamic Segments Container -->
+                            <g id="donut-segments-group"></g>
                         </svg>
 
                         <!-- Center Info Display -->
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4 transition-all duration-200">
                             <span id="donut-center-label" class="font-sans text-[9px] sm:text-[10px] text-mute uppercase tracking-wider font-bold truncate max-w-[100px]">Total</span>
-                            <span id="donut-center-value" class="font-sans text-sm sm:text-base md:text-lg font-bold text-ink tabular-nums truncate">₱42.5k</span>
-                            <span id="donut-center-pct" class="font-sans text-[10px] font-bold text-positive-deep hidden">42%</span>
+                            <span id="donut-center-value" class="font-sans text-sm sm:text-base md:text-lg font-bold text-ink tabular-nums truncate">₱0.00</span>
+                            <span id="donut-center-pct" class="font-sans text-[10px] font-bold text-positive-deep hidden">0%</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Donut Legend Grid -->
                 <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/40" id="donut-legend-grid">
-                    <div id="legend-item-1" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-2.5 h-2.5 rounded-full bg-deep-forest shrink-0"></div>
-                            <span class="font-sans text-xs text-ink font-bold truncate">Housing</span>
-                        </div>
-                        <span id="legend-val-1" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">42%</span>
-                    </div>
-
-                    <div id="legend-item-2" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
-                            <span class="font-sans text-xs text-ink font-bold truncate">Food</span>
-                        </div>
-                        <span id="legend-val-2" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">25%</span>
-                    </div>
-
-                    <div id="legend-item-3" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-2.5 h-2.5 rounded-full bg-warning shrink-0"></div>
-                            <span class="font-sans text-xs text-ink font-bold truncate">Transport</span>
-                        </div>
-                        <span id="legend-val-3" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">15%</span>
-                    </div>
-
-                    <div id="legend-item-4" tabindex="0" role="button" class="legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-2.5 h-2.5 rounded-full bg-negative shrink-0"></div>
-                            <span class="font-sans text-xs text-ink font-bold truncate">Other</span>
-                        </div>
-                        <span id="legend-val-4" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">18%</span>
-                    </div>
+                    <div class="col-span-2 text-center py-2 text-xs text-on-surface-variant font-medium">No category spending recorded yet.</div>
                 </div>
             </div>
 
@@ -256,18 +217,14 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
-                        <span id="trends-period-badge" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 sm:px-2.5 py-0.5 rounded-full border border-positive/30">November</span>
+                        <span id="trends-period-badge" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 sm:px-2.5 py-0.5 rounded-full border border-positive/30">This Period</span>
                     </div>
-                    <p id="trends-subtext" class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant mt-0.5">Multi-category spending trajectory vs previous period</p>
+                    <p id="trends-subtext" class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant mt-0.5">Multi-category spending trajectory</p>
                 </div>
 
-                <!-- Interactive Category Filter Chips (Clean Name Buttons without dot colors) -->
+                <!-- Interactive Category Filter Chips -->
                 <div class="flex items-center flex-wrap gap-1 sm:gap-2" id="category-filter-group" role="tablist" aria-label="Filter categories">
                     <button id="cat-filter-all" data-cat="all" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all bg-deep-forest text-white shadow-2xs cursor-pointer active:scale-95 shrink-0"><span class="sm:hidden">All</span><span class="hidden sm:inline">All Categories</span></button>
-                    <button id="cat-filter-0" data-cat="0" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Housing</button>
-                    <button id="cat-filter-1" data-cat="1" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Food</button>
-                    <button id="cat-filter-2" data-cat="2" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Transport</button>
-                    <button id="cat-filter-3" data-cat="3" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0">Other</button>
                 </div>
             </div>
 
@@ -277,9 +234,9 @@
                     <!-- Y-Axis Labels -->
                     <div class="flex flex-col justify-between py-1 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums select-none whitespace-nowrap" id="trends-y-axis">
                         <span class="text-[9px] font-bold text-on-surface-variant/60 tracking-wider">₱ PHP</span>
-                        <span id="trends-y-3">₱6.0k</span>
-                        <span id="trends-y-2">₱4.0k</span>
-                        <span id="trends-y-1">₱2.0k</span>
+                        <span id="trends-y-3">₱0</span>
+                        <span id="trends-y-2">₱0</span>
+                        <span id="trends-y-1">₱0</span>
                         <span id="trends-y-0">₱0</span>
                     </div>
 
@@ -296,7 +253,7 @@
                         <!-- SVG Multi-Line Chart Canvas -->
                         <div class="relative flex-1 w-full h-[180px] sm:h-[220px] z-10">
                             <svg id="trends-svg" class="w-full h-full overflow-visible select-none" viewBox="0 0 700 200" preserveAspectRatio="none">
-                                <defs>
+                                <defs id="trends-defs">
                                     <linearGradient id="grad-trend-0" x1="0%" y1="0%" x2="0%" y2="100%">
                                         <stop offset="0%" stop-color="#163300" stop-opacity="0.25"></stop>
                                         <stop offset="100%" stop-color="#163300" stop-opacity="0.0"></stop>
@@ -318,17 +275,8 @@
                                 <!-- Column Highlight Band -->
                                 <rect id="trend-column-highlight" x="0" y="5" width="80" height="170" rx="8" fill="#163300" opacity="0" class="transition-all duration-150 pointer-events-none"></rect>
 
-                                <!-- Area Fills -->
-                                <path id="trend-area-0" class="trend-area" fill="url(#grad-trend-0)" opacity="0.08" d=""></path>
-                                <path id="trend-area-1" class="trend-area" fill="url(#grad-trend-1)" opacity="0.08" d=""></path>
-                                <path id="trend-area-2" class="trend-area" fill="url(#grad-trend-2)" opacity="0.08" d=""></path>
-                                <path id="trend-area-3" class="trend-area" fill="url(#grad-trend-3)" opacity="0.08" d=""></path>
-
-                                <!-- Multi-Category Trend Lines -->
-                                <path id="trend-line-0" class="trend-line" stroke="#163300" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
-                                <path id="trend-line-1" class="trend-line" stroke="#5C8F3A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
-                                <path id="trend-line-2" class="trend-line" stroke="#D97706" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
-                                <path id="trend-line-3" class="trend-line" stroke="#D03238" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+                                <!-- Dynamic SVG lines & areas container -->
+                                <g id="trend-lines-group"></g>
 
                                 <!-- Interactive Vertical Crosshair -->
                                 <line id="trend-crosshair" x1="0" y1="10" x2="0" y2="190" stroke="#868685" stroke-width="1.5" stroke-dasharray="3,3" opacity="0" class="transition-all duration-150 pointer-events-none"></line>
@@ -342,16 +290,16 @@
 
                             <!-- Interactive Floating Tooltip -->
                             <div id="trend-floating-tooltip" class="absolute hidden z-30 pointer-events-none bg-deep-forest text-white rounded-xl p-3 shadow-elevated border border-white/15 text-xs font-sans transition-all duration-150 min-w-[175px] sm:min-w-[205px] max-w-[250px]">
-                                <div id="tooltip-period-title" class="font-bold text-white/90 pb-1.5 mb-1.5 border-b border-white/15 text-[11px] sm:text-xs">Week 1 Breakdown</div>
+                                <div id="tooltip-period-title" class="font-bold text-white/90 pb-1.5 mb-1.5 border-b border-white/15 text-[11px] sm:text-xs">Period Breakdown</div>
                                 <div id="tooltip-items-list" class="flex flex-col gap-1.5"></div>
                                 <div id="tooltip-total-row" class="pt-1.5 mt-1.5 border-t border-white/15 flex justify-between font-bold text-[11px] sm:text-xs text-primary-active">
                                     <span>Total Spent</span>
-                                    <span id="tooltip-total-val" class="tabular-nums">₱11,200</span>
+                                    <span id="tooltip-total-val" class="tabular-nums">₱0.00</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- X-Axis Labels Row (Mathematically positioned directly below SVG curve points) -->
+                        <!-- X-Axis Labels Row -->
                         <div class="relative w-full h-6 pt-2 font-label-sm text-[10px] sm:text-xs text-deep-forest font-semibold select-none" id="trends-x-axis"></div>
                     </div>
                 </div>
@@ -371,293 +319,77 @@
         const C = 2 * Math.PI * 40; // ~251.3274
 
         const backendPeriodData = {{ period_data_json|safe|default:"{}" }};
-
-        // Data sets for period switching with exact breakdown items & smart insights
-        const periodData = {
-            week: Object.assign({
-                total: '₱18,550.00',
-                totalSub: '<span class="text-positive-deep font-bold">-4%</span> from previous week',
-                highest: 'Food & Dining',
-                highestIcon: 'restaurant',
-                highestSub: '₱7,543.00 (41% of total)',
-                savings: '32.0%',
-                savingsBar: '92%',
-                chartSubtext: 'Daily breakdown for current week',
-                cols: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                yTicks: ['₱5.0k', '₱3.0k', '₱1.5k', '₱0'],
-                expHeights: ['60%', '30%', '55%', '40%', '25%', '65%', '85%'],
-                incHeights: ['45%', '70%', '40%', '85%', '60%', '75%', '50%'],
-                expVals: ['₱3.0k', '₱2.1k', '₱3.2k', '₱2.8k', '₱1.7k', '₱3.5k', '₱4.2k'],
-                incVals: ['₱2.8k', '₱4.5k', '₱2.5k', '₱5.8k', '₱3.9k', '₱5.0k', '₱3.0k'],
-                donutTotal: '₱18.55k',
-                donutPeriod: 'This Week',
-                categories: [
-                    { name: 'Housing', pct: 19, amount: '₱3,450.00' },
-                    { name: 'Food', pct: 41, amount: '₱7,543.00' },
-                    { name: 'Transport', pct: 19, amount: '₱3,617.00' },
-                    { name: 'Other', pct: 21, amount: '₱3,940.00' }
-                ],
-                trendPeriod: 'This Week',
-                trendSubtext: 'Daily spending trajectory for current week',
-                trendYTicks: ['₱1.5k', '₱1.0k', '₱500', '₱0'],
-                trendMaxY: 1500,
-                insights: {
-                    all: 'Food & Dining was your highest daily expense (₱7,543 / 41%), peaking on Saturday at ₱1,400.',
-                    0: 'Housing stayed constant at ~₱470–₱520/day (-2% overall vs last week).',
-                    1: 'Food & Dining spiked over the weekend (₱1,400 on Sat), totaling ₱7,543 (+14% trend).',
-                    2: 'Transport peaked on Friday at ₱650 and totaled ₱3,617 (+8% trend).',
-                    3: 'Groceries & Other stayed balanced under budget at ₱3,940 (-5% savings).'
-                },
-                trendCategories: [
-                    {
-                        name: 'Housing',
-                        icon: 'home',
-                        color: '#163300',
-                        gradId: 'grad-trend-0',
-                        values: [480, 480, 520, 470, 500, 510, 490],
-                        formattedValues: ['₱480', '₱480', '₱520', '₱470', '₱500', '₱510', '₱490'],
-                        total: '₱3,450.00',
-                        trend: '-2%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-deep-forest/15 text-deep-forest'
-                    },
-                    {
-                        name: 'Food & Dining',
-                        icon: 'restaurant',
-                        color: '#5C8F3A',
-                        gradId: 'grad-trend-1',
-                        values: [1150, 850, 1100, 920, 873, 1250, 1400],
-                        formattedValues: ['₱1,150', '₱850', '₱1,100', '₱920', '₱873', '₱1,250', '₱1,400'],
-                        total: '₱7,543.00',
-                        trend: '+14%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
-                    },
-                    {
-                        name: 'Transport',
-                        icon: 'directions_car',
-                        color: '#D97706',
-                        gradId: 'grad-trend-2',
-                        values: [380, 450, 580, 620, 517, 650, 420],
-                        formattedValues: ['₱380', '₱450', '₱580', '₱620', '₱517', '₱650', '₱420'],
-                        total: '₱3,617.00',
-                        trend: '+8%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
-                    },
-                    {
-                        name: 'Groceries & Other',
-                        icon: 'shopping_bag',
-                        color: '#D03238',
-                        gradId: 'grad-trend-3',
-                        values: [620, 400, 480, 550, 540, 600, 750],
-                        formattedValues: ['₱620', '₱400', '₱480', '₱550', '₱540', '₱600', '₱750'],
-                        total: '₱3,940.00',
-                        trend: '-5%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-expense/15 text-expense'
-                    }
-                ]
-            }, backendPeriodData.week || {}),
-            month: Object.assign({
-                total: '₱42,500.00',
-                totalSub: '<span class="text-negative font-bold">+12%</span> from previous period',
-                highest: 'Housing & Rent',
-                highestIcon: 'home',
-                highestSub: '₱17,850.00 (42% of total)',
-                savings: '28.5%',
-                savingsBar: '85%',
-                chartSubtext: 'Weekly breakdown for current month',
-                cols: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                yTicks: ['₱30.0k', '₱20.0k', '₱10.0k', '₱0'],
-                expHeights: ['40%', '50%', '85%', '30%'],
-                incHeights: ['60%', '80%', '30%', '40%'],
-                expVals: ['₱12.0k', '₱15.0k', '₱25.0k', '₱9.0k'],
-                incVals: ['₱18.0k', '₱24.0k', '₱9.0k', '₱12.0k'],
-                donutTotal: '₱42.5k',
-                donutPeriod: 'November',
-                categories: [
-                    { name: 'Housing', pct: 42, amount: '₱17,850.00' },
-                    { name: 'Food', pct: 25, amount: '₱10,625.00' },
-                    { name: 'Transport', pct: 15, amount: '₱6,375.00' },
-                    { name: 'Other', pct: 18, amount: '₱7,650.00' }
-                ],
-                trendPeriod: 'November',
-                trendSubtext: 'Weekly multi-category trajectory vs previous period',
-                trendYTicks: ['₱6.0k', '₱4.0k', '₱2.0k', '₱0'],
-                trendMaxY: 6000,
-                insights: {
-                    all: 'Housing is your largest steady expense (₱17,850 / 42%), while Food rose +14% (peaking in Week 3 at ₱3,100).',
-                    0: 'Housing stayed constant at ~₱4.3k–₱4.8k/week, accounting for 42% of your monthly spend.',
-                    1: 'Food & Dining climbed from ₱2,400 to a peak of ₱3,100 in Week 3 (+14% overall).',
-                    2: 'Transport peaked in Week 3 at ₱1,825 and settled back to ₱1,500 in Week 4 (+8% overall).',
-                    3: 'Groceries & Other remained predictable at ~₱1.9k/week, totaling ₱7,650 (-5% savings).'
-                },
-                trendCategories: [
-                    {
-                        name: 'Housing',
-                        icon: 'home',
-                        color: '#163300',
-                        gradId: 'grad-trend-0',
-                        values: [4500, 4800, 4300, 4250],
-                        formattedValues: ['₱4,500', '₱4,800', '₱4,300', '₱4,250'],
-                        total: '₱17,850.00',
-                        trend: '-1%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-deep-forest/15 text-deep-forest'
-                    },
-                    {
-                        name: 'Food & Dining',
-                        icon: 'restaurant',
-                        color: '#5C8F3A',
-                        gradId: 'grad-trend-1',
-                        values: [2400, 2900, 3100, 2225],
-                        formattedValues: ['₱2,400', '₱2,900', '₱3,100', '₱2,225'],
-                        total: '₱10,625.00',
-                        trend: '+14%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
-                    },
-                    {
-                        name: 'Transport',
-                        icon: 'directions_car',
-                        color: '#D97706',
-                        gradId: 'grad-trend-2',
-                        values: [1400, 1650, 1825, 1500],
-                        formattedValues: ['₱1,400', '₱1,650', '₱1,825', '₱1,500'],
-                        total: '₱6,375.00',
-                        trend: '+8%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
-                    },
-                    {
-                        name: 'Groceries & Other',
-                        icon: 'shopping_bag',
-                        color: '#D03238',
-                        gradId: 'grad-trend-3',
-                        values: [1900, 1850, 2050, 1850],
-                        formattedValues: ['₱1,900', '₱1,850', '₱2,050', '₱1,850'],
-                        total: '₱7,650.00',
-                        trend: '-5%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-expense/15 text-expense'
-                    }
-                ]
-            }, backendPeriodData.month || {}),
-            year: Object.assign({
-                total: '₱485,000.00',
-                totalSub: '<span class="text-positive-deep font-bold">-8%</span> from last year',
-                highest: 'Housing & Rent',
-                highestIcon: 'home',
-                highestSub: '₱203,700.00 (42% of total)',
-                savings: '31.2%',
-                savingsBar: '88%',
-                chartSubtext: 'Quarterly breakdown for 2023',
-                cols: ['Q1', 'Q2', 'Q3', 'Q4'],
-                yTicks: ['₱200k', '₱150k', '₱100k', '₱0'],
-                expHeights: ['65%', '50%', '75%', '40%'],
-                incHeights: ['90%', '70%', '80%', '95%'],
-                expVals: ['₱115k', '₱95k', '₱130k', '₱75k'],
-                incVals: ['₱160k', '₱135k', '₱145k', '₱175k'],
-                donutTotal: '₱485k',
-                donutPeriod: '2023 Year',
-                categories: [
-                    { name: 'Housing', pct: 42, amount: '₱203,700.00' },
-                    { name: 'Food', pct: 26, amount: '₱126,100.00' },
-                    { name: 'Transport', pct: 16, amount: '₱77,600.00' },
-                    { name: 'Other', pct: 16, amount: '₱77,600.00' }
-                ],
-                trendPeriod: '2023 Year',
-                trendSubtext: 'Quarterly multi-category trajectory for 2023',
-                trendYTicks: ['₱60k', '₱40k', '₱20k', '₱0'],
-                trendMaxY: 60000,
-                insights: {
-                    all: 'Annual spending peaked in Q3 at ₱130k, driven by higher Food (₱34.4k) and Transport expenses.',
-                    0: 'Housing remained predictable at ~₱50k–₱52k/quarter, totaling ₱203,700 (-3% annual change).',
-                    1: 'Food spending peaked in Q3 at ₱34.4k before dropping in Q4 (+10% annual trend).',
-                    2: 'Transport costs peaked in Q3 at ₱21.2k and totaled ₱77,600 (+6% trend).',
-                    3: 'Groceries & Other averaged ~₱19k–₱20k/quarter, totaling ₱77,600 (-4% savings).'
-                },
-                trendCategories: [
-                    {
-                        name: 'Housing',
-                        icon: 'home',
-                        color: '#163300',
-                        gradId: 'grad-trend-0',
-                        values: [51000, 50500, 52200, 50000],
-                        formattedValues: ['₱51.0k', '₱50.5k', '₱52.2k', '₱50.0k'],
-                        total: '₱203,700.00',
-                        trend: '-3%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-deep-forest/15 text-deep-forest'
-                    },
-                    {
-                        name: 'Food & Dining',
-                        icon: 'restaurant',
-                        color: '#5C8F3A',
-                        gradId: 'grad-trend-1',
-                        values: [29500, 33200, 34400, 29000],
-                        formattedValues: ['₱29.5k', '₱33.2k', '₱34.4k', '₱29.0k'],
-                        total: '₱126,100.00',
-                        trend: '+10%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-primary-pale text-positive-deep border border-positive/30'
-                    },
-                    {
-                        name: 'Transport',
-                        icon: 'directions_car',
-                        color: '#D97706',
-                        gradId: 'grad-trend-2',
-                        values: [18000, 19500, 21200, 18900],
-                        formattedValues: ['₱18.0k', '₱19.5k', '₱21.2k', '₱18.9k'],
-                        total: '₱77,600.00',
-                        trend: '+6%',
-                        isExpenseUp: true,
-                        iconBg: 'bg-warning/15 text-amber-700 border border-warning/30'
-                    },
-                    {
-                        name: 'Groceries & Other',
-                        icon: 'shopping_bag',
-                        color: '#D03238',
-                        gradId: 'grad-trend-3',
-                        values: [20000, 19200, 19800, 18600],
-                        formattedValues: ['₱20.0k', '₱19.2k', '₱19.8k', '₱18.6k'],
-                        total: '₱77,600.00',
-                        trend: '-4%',
-                        isExpenseUp: false,
-                        iconBg: 'bg-expense/15 text-expense'
-                    }
-                ]
-            }, backendPeriodData.year || {})
-        };
+        const periodData = backendPeriodData;
 
         const periodButtons = document.querySelectorAll('#period-selector-group .btn-period');
         let currentPeriod = 'month';
         let lockedCategoryIndex = null;
-        let activeTrendCategory = 'all'; // 'all' or 0, 1, 2, 3
+        let activeTrendCategory = 'all';
 
         const centerLabel = document.getElementById('donut-center-label');
         const centerValue = document.getElementById('donut-center-value');
         const centerPct = document.getElementById('donut-center-pct');
 
         function renderDonut(categories, defaultTotalText) {
+            const segmentsGroup = document.getElementById('donut-segments-group');
+            const legendGrid = document.getElementById('donut-legend-grid');
+            if (!segmentsGroup || !legendGrid) return;
+
+            segmentsGroup.innerHTML = '';
+            legendGrid.innerHTML = '';
+
+            if (!categories || categories.length === 0) {
+                legendGrid.innerHTML = '<div class="col-span-2 text-center py-2 text-xs text-on-surface-variant font-medium">No category spending recorded yet.</div>';
+                if (centerLabel) centerLabel.textContent = 'Total';
+                if (centerValue) centerValue.textContent = defaultTotalText || '₱0.00';
+                if (centerPct) centerPct.classList.add('hidden');
+                return;
+            }
+
             let runningOffset = 0;
 
             categories.forEach((cat, index) => {
-                const segEl = document.getElementById(`donut-seg-${index + 1}`);
-                const legendValEl = document.getElementById(`legend-val-${index + 1}`);
+                const segLength = (cat.pct / 100) * C;
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('id', `donut-seg-${index + 1}`);
+                circle.setAttribute('class', 'donut-segment stroke-current transition-all duration-300 cursor-pointer focus:outline-none');
+                circle.setAttribute('cx', '50');
+                circle.setAttribute('cy', '50');
+                circle.setAttribute('fill', 'transparent');
+                circle.setAttribute('r', '40');
+                circle.setAttribute('stroke-width', '16');
+                circle.setAttribute('stroke-dasharray', `${segLength.toFixed(2)} ${C.toFixed(2)}`);
+                circle.setAttribute('stroke-dashoffset', `${(-runningOffset).toFixed(2)}`);
+                circle.setAttribute('aria-label', `${cat.name}: ${cat.pct}% (${cat.amount})`);
+                circle.style.color = cat.color || '#163300';
+                segmentsGroup.appendChild(circle);
+                runningOffset += segLength;
 
-                if (segEl) {
-                    const segLength = (cat.pct / 100) * C;
-                    segEl.setAttribute('stroke-dasharray', `${segLength.toFixed(2)} ${C.toFixed(2)}`);
-                    segEl.setAttribute('stroke-dashoffset', `${(-runningOffset).toFixed(2)}`);
-                    segEl.setAttribute('aria-label', `${cat.name}: ${cat.pct}% (${cat.amount})`);
-                    runningOffset += segLength;
-                }
+                // Legend Card
+                const legCard = document.createElement('div');
+                legCard.setAttribute('id', `legend-item-${index + 1}`);
+                legCard.className = 'legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none';
+                legCard.innerHTML = `
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${cat.color || '#163300'}"></div>
+                        <span class="font-sans text-xs text-ink font-bold truncate">${cat.name}</span>
+                    </div>
+                    <span id="legend-val-${index + 1}" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">${cat.pct}%</span>
+                `;
+                legendGrid.appendChild(legCard);
 
-                if (legendValEl) {
-                    legendValEl.textContent = `${cat.pct}%`;
-                }
+                // Attach hover/click events
+                const onEnter = () => { if (lockedCategoryIndex === null) highlightCategory(index); };
+                const onLeave = () => { if (lockedCategoryIndex === null) resetDonutSelection(defaultTotalText); };
+                const onClick = (e) => { e.stopPropagation(); toggleCategoryLock(index); };
+
+                circle.addEventListener('mouseenter', onEnter);
+                circle.addEventListener('mouseleave', onLeave);
+                circle.addEventListener('click', onClick);
+
+                legCard.addEventListener('mouseenter', onEnter);
+                legCard.addEventListener('mouseleave', onLeave);
+                legCard.addEventListener('click', onClick);
             });
 
             resetDonutSelection(defaultTotalText);
@@ -665,6 +397,7 @@
 
         function highlightCategory(index) {
             const data = periodData[currentPeriod];
+            if (!data || !data.categories) return;
             const cat = data.categories[index];
             if (!cat) return;
 
@@ -710,6 +443,8 @@
             }
 
             const data = periodData[currentPeriod];
+            if (!data || !data.categories) return;
+
             data.categories.forEach((_, i) => {
                 const seg = document.getElementById(`donut-seg-${i + 1}`);
                 const leg = document.getElementById(`legend-item-${i + 1}`);
@@ -725,7 +460,7 @@
             });
 
             if (centerLabel) centerLabel.textContent = 'Total';
-            if (centerValue) centerValue.textContent = defaultTotalText || data.donutTotal;
+            if (centerValue) centerValue.textContent = defaultTotalText || data.donutTotal || '₱0.00';
             if (centerPct) centerPct.classList.add('hidden');
         }
 
@@ -736,46 +471,6 @@
             } else {
                 lockedCategoryIndex = index;
                 highlightCategory(index);
-            }
-        }
-
-        for (let i = 0; i < 4; i++) {
-            const seg = document.getElementById(`donut-seg-${i + 1}`);
-            const leg = document.getElementById(`legend-item-${i + 1}`);
-
-            const onEnter = () => {
-                if (lockedCategoryIndex === null) highlightCategory(i);
-            };
-            const onLeave = () => {
-                if (lockedCategoryIndex === null) resetDonutSelection();
-            };
-            const onClick = (e) => {
-                e.stopPropagation();
-                toggleCategoryLock(i);
-            };
-
-            if (seg) {
-                seg.addEventListener('mouseenter', onEnter);
-                seg.addEventListener('mouseleave', onLeave);
-                seg.addEventListener('click', onClick);
-                seg.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleCategoryLock(i);
-                    }
-                });
-            }
-
-            if (leg) {
-                leg.addEventListener('mouseenter', onEnter);
-                leg.addEventListener('mouseleave', onLeave);
-                leg.addEventListener('click', onClick);
-                leg.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleCategoryLock(i);
-                    }
-                });
             }
         }
 
@@ -790,7 +485,7 @@
         });
 
         // ═══════════════════════════════════════════════════════════════
-        // COMBINED CATEGORY TRENDS CHART ENGINE (ENHANCED LEGIBILITY)
+        // COMBINED CATEGORY TRENDS CHART ENGINE
         // ═══════════════════════════════════════════════════════════════
 
         function clampVal(val, min, max) {
@@ -813,7 +508,6 @@
                 let cp2x = p2.x - (p3.x - p1.x) / 5;
                 let cp2y = p2.y - (p3.y - p1.y) / 5;
 
-                // Clamp control points within chart limits so bezier curve never balloons outside bounds
                 cp1y = clampVal(cp1y, topLimit, bottomLimit);
                 cp2y = clampVal(cp2y, topLimit, bottomLimit);
                 const endY = clampVal(p2.y, topLimit, bottomLimit);
@@ -831,36 +525,6 @@
             return `${curve} L ${last.x.toFixed(1)} ${bottomY.toFixed(1)} L ${first.x.toFixed(1)} ${bottomY.toFixed(1)} Z`;
         }
 
-        function getNiceCeiling(val) {
-            if (val <= 100) return 100;
-            const magnitude = Math.pow(10, Math.floor(Math.log10(val)));
-            const normalized = val / magnitude;
-            let ceilNorm = 1;
-            if (normalized <= 1) ceilNorm = 1;
-            else if (normalized <= 1.25) ceilNorm = 1.25;
-            else if (normalized <= 1.5) ceilNorm = 1.5;
-            else if (normalized <= 2) ceilNorm = 2;
-            else if (normalized <= 2.5) ceilNorm = 2.5;
-            else if (normalized <= 3) ceilNorm = 3;
-            else if (normalized <= 4) ceilNorm = 4;
-            else if (normalized <= 5) ceilNorm = 5;
-            else if (normalized <= 6) ceilNorm = 6;
-            else if (normalized <= 7.5) ceilNorm = 7.5;
-            else if (normalized <= 8) ceilNorm = 8;
-            else ceilNorm = 10;
-            return ceilNorm * magnitude;
-        }
-
-        function formatYLabel(val) {
-            if (val >= 1000000) return `₱${(val / 1000000).toFixed(1)}M`;
-            if (val >= 10000) return `₱${Math.round(val / 1000)}k`;
-            if (val >= 1000) {
-                const k = val / 1000;
-                return k % 1 === 0 ? `₱${k.toFixed(0)}k` : `₱${k.toFixed(1)}k`;
-            }
-            return `₱${Math.round(val)}`;
-        }
-
         function renderCombinedTrendsChart(periodKey, filterSelection) {
             const data = periodData[periodKey];
             if (!data) return;
@@ -871,31 +535,33 @@
             if (badge) badge.textContent = data.trendPeriod;
             if (subtext) subtext.textContent = data.trendSubtext;
 
-            // Dynamically calculate maximum value across all categories to guarantee no line ever overflows
-            let maxVal = 0;
-            if (data.trendCategories && data.trendCategories.length > 0) {
-                data.trendCategories.forEach(cat => {
-                    if (cat.values && cat.values.length > 0) {
-                        cat.values.forEach(v => {
-                            if (typeof v === 'number' && v > maxVal) maxVal = v;
-                        });
-                    }
-                });
+            // Dynamically populate Category Filter Chips
+            const filterGroup = document.getElementById('category-filter-group');
+            if (filterGroup) {
+                filterGroup.innerHTML = `
+                    <button data-cat="all" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all ${filterSelection === 'all' ? 'bg-deep-forest text-white shadow-2xs' : 'bg-surface-container-low text-body hover:text-ink border border-outline-variant/60'} cursor-pointer active:scale-95 shrink-0">
+                        <span class="sm:hidden">All</span><span class="hidden sm:inline">All Categories</span>
+                    </button>
+                `;
+
+                if (data.trendCategories && data.trendCategories.length > 0) {
+                    data.trendCategories.forEach((cat, idx) => {
+                        const isActive = String(filterSelection) === String(idx);
+                        filterGroup.innerHTML += `
+                            <button data-cat="${idx}" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all ${isActive ? 'bg-deep-forest text-white shadow-2xs' : 'bg-surface-container-low text-body hover:text-ink border border-outline-variant/60'} cursor-pointer active:scale-95 shrink-0">
+                                ${cat.name}
+                            </button>
+                        `;
+                    });
+                }
             }
-            if (maxVal <= 0) maxVal = 1000;
 
-            const effectiveMaxY = getNiceCeiling(maxVal * 1.18);
-
-            // Populate responsive Y-Axis Labels
-            const computedYTicks = [
-                formatYLabel(effectiveMaxY),
-                formatYLabel(effectiveMaxY * 0.666),
-                formatYLabel(effectiveMaxY * 0.333),
-                '₱0'
-            ];
-            for (let i = 0; i < 4; i++) {
-                const yEl = document.getElementById(`trends-y-${3 - i}`);
-                if (yEl) yEl.textContent = computedYTicks[i];
+            // Populate Y-Axis Labels
+            if (data.trendYTicks && data.trendYTicks.length === 4) {
+                for (let i = 0; i < 4; i++) {
+                    const yEl = document.getElementById(`trends-y-${3 - i}`);
+                    if (yEl) yEl.textContent = data.trendYTicks[i];
+                }
             }
 
             // SVG Coordinate Math
@@ -903,12 +569,12 @@
             const leftMargin = 35;
             const rightMargin = 35;
             const usableWidth = svgWidth - leftMargin - rightMargin;
-            const numCols = data.cols.length;
+            const numCols = data.cols ? data.cols.length : 4;
             const xPos = (idx) => leftMargin + (idx / Math.max(1, numCols - 1)) * usableWidth;
 
-            // X-Axis labels (Mathematically positioned directly below SVG curve points)
+            // X-Axis labels
             const trendsXAxis = document.getElementById('trends-x-axis');
-            if (trendsXAxis) {
+            if (trendsXAxis && data.cols) {
                 trendsXAxis.innerHTML = data.cols.map((colName, idx) => {
                     const leftPct = (xPos(idx) / svgWidth) * 100;
                     return `<span class="absolute top-2 -translate-x-1/2 text-center truncate text-[10px] sm:text-xs text-deep-forest font-semibold pointer-events-none" style="left: ${leftPct.toFixed(2)}%;">${colName}</span>`;
@@ -919,91 +585,78 @@
             const bottomMargin = 25;
             const bottomY = 200 - bottomMargin; // 175
             const usableHeight = bottomY - topMargin;
+            const effectiveMaxY = data.trendMaxY || 1000;
             const yPos = (val) => {
                 const normalized = clampVal(val, 0, effectiveMaxY);
                 return bottomY - (normalized / effectiveMaxY) * usableHeight;
             };
 
+            const linesGroup = document.getElementById('trend-lines-group');
             const pointsGroup = document.getElementById('trend-points-group');
+            if (linesGroup) linesGroup.innerHTML = '';
             if (pointsGroup) pointsGroup.innerHTML = '';
 
-            // Render 4 category lines, areas, and points
-            data.trendCategories.forEach((cat, catIdx) => {
-                const lineEl = document.getElementById(`trend-line-${catIdx}`);
-                const areaEl = document.getElementById(`trend-area-${catIdx}`);
+            if (data.trendCategories && data.trendCategories.length > 0) {
+                data.trendCategories.forEach((cat, catIdx) => {
+                    const pts = cat.values.map((v, colIdx) => ({
+                        x: xPos(colIdx),
+                        y: yPos(v),
+                        val: v,
+                        formatted: cat.formattedValues[colIdx]
+                    }));
 
-                const pts = cat.values.map((v, colIdx) => ({
-                    x: xPos(colIdx),
-                    y: yPos(v),
-                    val: v,
-                    formatted: cat.formattedValues[colIdx]
-                }));
+                    const linePathD = getCurvePath(pts, topMargin, bottomY);
+                    const areaPathD = getAreaPath(pts, bottomY, topMargin);
 
-                const linePathD = getCurvePath(pts, topMargin, bottomY);
-                const areaPathD = getAreaPath(pts, bottomY, topMargin);
+                    const isTarget = (filterSelection === 'all' || filterSelection === catIdx || filterSelection === String(catIdx));
+                    const isSingleSelected = (filterSelection !== 'all' && isTarget);
 
-                const isTarget = (filterSelection === 'all' || filterSelection === catIdx || filterSelection === String(catIdx));
-                const isSingleSelected = (filterSelection !== 'all' && isTarget);
+                    if (linesGroup) {
+                        // Area
+                        const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        areaPath.setAttribute('class', 'trend-area');
+                        areaPath.setAttribute('fill', cat.color || '#163300');
+                        areaPath.setAttribute('d', areaPathD);
+                        areaPath.style.opacity = isTarget ? (filterSelection === 'all' ? '0.08' : '0.25') : '0';
+                        linesGroup.appendChild(areaPath);
 
-                if (lineEl) {
-                    lineEl.setAttribute('d', linePathD);
-                    if (isTarget) {
-                        lineEl.setAttribute('stroke-width', filterSelection === 'all' ? '2.5' : '3.5');
-                        lineEl.style.opacity = '1';
-                        lineEl.style.filter = filterSelection === 'all' ? 'none' : 'drop-shadow(0 3px 6px rgba(0,0,0,0.2))';
-                    } else {
-                        lineEl.setAttribute('stroke-width', '1.5');
-                        lineEl.style.opacity = '0.15';
-                        lineEl.style.filter = 'none';
+                        // Line
+                        const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        linePath.setAttribute('class', 'trend-line');
+                        linePath.setAttribute('stroke', cat.color || '#163300');
+                        linePath.setAttribute('stroke-width', isTarget ? (filterSelection === 'all' ? '2.5' : '3.5') : '1.5');
+                        linePath.setAttribute('fill', 'none');
+                        linePath.setAttribute('stroke-linecap', 'round');
+                        linePath.setAttribute('stroke-linejoin', 'round');
+                        linePath.setAttribute('d', linePathD);
+                        linePath.style.opacity = isTarget ? '1' : '0.15';
+                        linesGroup.appendChild(linePath);
                     }
-                }
 
-                if (areaEl) {
-                    areaEl.setAttribute('d', areaPathD);
-                    if (isTarget) {
-                        areaEl.style.opacity = filterSelection === 'all' ? '0.08' : '0.28';
-                    } else {
-                        areaEl.style.opacity = '0';
+                    const isMobile = window.innerWidth < 640;
+                    const baseDotRadius = isMobile ? (isSingleSelected ? '6.5' : '5') : (isSingleSelected ? '5' : '3.5');
+                    const dotStrokeWidth = isMobile ? '2.5' : '2';
+
+                    if (pointsGroup) {
+                        pts.forEach((pt, colIdx) => {
+                            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                            circle.setAttribute('class', 'trend-point');
+                            circle.setAttribute('cx', pt.x.toFixed(1));
+                            circle.setAttribute('cy', pt.y.toFixed(1));
+                            circle.setAttribute('r', baseDotRadius);
+                            circle.setAttribute('fill', cat.color || '#163300');
+                            circle.setAttribute('stroke', '#FFFFFF');
+                            circle.setAttribute('stroke-width', dotStrokeWidth);
+                            circle.setAttribute('data-cat', catIdx);
+                            circle.setAttribute('data-col', colIdx);
+                            circle.style.opacity = isTarget ? '1' : '0.15';
+                            pointsGroup.appendChild(circle);
+                        });
                     }
-                }
+                });
+            }
 
-                // Render SVG point dots (Enlarged on mobile for touch clarity)
-                const isMobile = window.innerWidth < 640;
-                const baseDotRadius = isMobile ? (isSingleSelected ? '6.5' : '5') : (isSingleSelected ? '5' : '3.5');
-                const dotStrokeWidth = isMobile ? '2.5' : '2';
-
-                if (pointsGroup) {
-                    pts.forEach((pt, colIdx) => {
-                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                        circle.setAttribute('class', 'trend-point');
-                        circle.setAttribute('cx', pt.x.toFixed(1));
-                        circle.setAttribute('cy', pt.y.toFixed(1));
-                        circle.setAttribute('r', baseDotRadius);
-                        circle.setAttribute('fill', cat.color);
-                        circle.setAttribute('stroke', '#FFFFFF');
-                        circle.setAttribute('stroke-width', dotStrokeWidth);
-                        circle.setAttribute('data-cat', catIdx);
-                        circle.setAttribute('data-col', colIdx);
-                        circle.style.opacity = isTarget ? '1' : '0.15';
-                        pointsGroup.appendChild(circle);
-                    });
-                }
-            });
-
-            // Update Filter Pills Style (Clean name buttons without dot colors)
-            const filterButtons = document.querySelectorAll('#category-filter-group .cat-filter-pill');
-            filterButtons.forEach(btn => {
-                const btnCat = btn.dataset.cat;
-                const isActive = (btnCat === String(filterSelection));
-
-                if (isActive) {
-                    btn.className = 'cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all bg-deep-forest text-white shadow-2xs cursor-pointer active:scale-95 shrink-0';
-                } else {
-                    btn.className = 'cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all bg-surface-container-low text-body hover:text-ink border border-outline-variant/60 cursor-pointer active:scale-95 shrink-0';
-                }
-            });
-
-            // Update Interactive Hover Columns and Tooltip
+            // Interactive Hover Columns and Tooltip
             const hoverZonesContainer = document.getElementById('trend-hover-zones');
             const crosshair = document.getElementById('trend-crosshair');
             const colHighlight = document.getElementById('trend-column-highlight');
@@ -1012,7 +665,7 @@
             const tooltipList = document.getElementById('tooltip-items-list');
             const tooltipTotal = document.getElementById('tooltip-total-val');
 
-            if (hoverZonesContainer) {
+            if (hoverZonesContainer && data.cols) {
                 hoverZonesContainer.innerHTML = '';
                 for (let c = 0; c < numCols; c++) {
                     const zone = document.createElement('div');
@@ -1022,7 +675,7 @@
                     let startX, endX;
                     if (c === 0) {
                         startX = 0;
-                        endX = (xPos(0) + xPos(1)) / 2;
+                        endX = (xPos(0) + (xPos(1) || xPos(0))) / 2;
                     } else if (c === numCols - 1) {
                         startX = (xPos(c - 1) + xPos(c)) / 2;
                         endX = svgWidth;
@@ -1037,25 +690,23 @@
                     zone.style.width = `${widthPct.toFixed(2)}%`;
 
                     const onEnterCol = () => {
+                        if (!data.trendCategories || data.trendCategories.length === 0) return;
                         const targetX = xPos(c);
                         const colWidth = usableWidth / numCols;
                         const isMob = window.innerWidth < 640;
 
-                        // Highlight vertical column band
                         if (colHighlight) {
                             colHighlight.setAttribute('x', (targetX - colWidth / 2).toFixed(1));
                             colHighlight.setAttribute('width', colWidth.toFixed(1));
                             colHighlight.style.opacity = '0.06';
                         }
 
-                        // Position Crosshair
                         if (crosshair) {
                             crosshair.setAttribute('x1', targetX.toFixed(1));
                             crosshair.setAttribute('x2', targetX.toFixed(1));
                             crosshair.style.opacity = '0.7';
                         }
 
-                        // Enlarge point circles in this column
                         const circles = document.querySelectorAll('#trend-points-group circle');
                         circles.forEach(cir => {
                             if (parseInt(cir.getAttribute('data-col'), 10) === c) {
@@ -1068,30 +719,28 @@
                             }
                         });
 
-                        // Calculate column total and category percentages
                         let colTotal = 0;
                         data.trendCategories.forEach(cat => {
-                            colTotal += cat.values[c];
+                            colTotal += (cat.values[c] || 0);
                         });
 
-                        // Populate and position tooltip
                         if (tooltip && tooltipTitle && tooltipList && tooltipTotal) {
-                            tooltipTitle.textContent = `${data.cols[c]} Detailed Breakdown`;
+                            tooltipTitle.textContent = `${data.cols[c]} Breakdown`;
                             let listHtml = '';
 
                             data.trendCategories.forEach((cat, idx) => {
-                                const val = cat.values[c];
+                                const val = cat.values[c] || 0;
                                 const sharePct = colTotal > 0 ? Math.round((val / colTotal) * 100) : 0;
                                 const isDimmed = (filterSelection !== 'all' && filterSelection !== idx && filterSelection !== String(idx));
                                 
                                 listHtml += `
                                     <div class="flex items-center justify-between gap-3 text-[11px] ${isDimmed ? 'opacity-35' : 'opacity-100'}">
                                         <div class="flex items-center gap-1.5 min-w-0">
-                                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${cat.color}"></span>
+                                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${cat.color || '#163300'}"></span>
                                             <span class="text-white/90 truncate">${cat.name}</span>
                                             <span class="text-white/50 text-[10px]">(${sharePct}%)</span>
                                         </div>
-                                        <span class="font-bold tabular-nums text-white shrink-0">${cat.formattedValues[c]}</span>
+                                        <span class="font-bold tabular-nums text-white shrink-0">${cat.formattedValues[c] || '₱0'}</span>
                                     </div>
                                 `;
                             });
@@ -1099,18 +748,18 @@
                             tooltipList.innerHTML = listHtml;
                             tooltipTotal.textContent = `₱${colTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-                            const pctLeft = (targetX / svgWidth) * 100;
-                            tooltip.style.left = `${pctLeft}%`;
+                            const rect = hoverZonesContainer.getBoundingClientRect();
+                            const xRatio = targetX / svgWidth;
+                            const isFarRight = xRatio > 0.65;
+
                             tooltip.style.top = '10px';
-
-                            if (c === 0) {
-                                tooltip.style.transform = 'translate(6px, 0)';
-                            } else if (c === numCols - 1) {
-                                tooltip.style.transform = 'translate(calc(-100% - 6px), 0)';
+                            if (isFarRight) {
+                                tooltip.style.left = 'auto';
+                                tooltip.style.right = `${((1 - xRatio) * 100) + 4}%`;
                             } else {
-                                tooltip.style.transform = 'translate(-50%, 0)';
+                                tooltip.style.right = 'auto';
+                                tooltip.style.left = `${(xRatio * 100) + 4}%`;
                             }
-
                             tooltip.classList.remove('hidden');
                         }
                     };
@@ -1159,16 +808,16 @@
             if (!data) return;
 
             // Update KPI cards
-            document.getElementById('kpi-total-spending').textContent = data.total;
-            document.getElementById('kpi-total-subtext').innerHTML = data.totalSub;
-            document.getElementById('kpi-highest-cat').textContent = data.highest;
-            document.getElementById('kpi-highest-icon').textContent = data.highestIcon;
-            document.getElementById('kpi-highest-subtext').textContent = data.highestSub;
-            document.getElementById('kpi-savings-rate').textContent = data.savings;
-            document.getElementById('kpi-savings-bar').style.width = data.savingsBar;
+            document.getElementById('kpi-total-spending').textContent = data.total || '₱0.00';
+            document.getElementById('kpi-total-subtext').textContent = data.totalSub || '0% vs previous period';
+            document.getElementById('kpi-highest-cat').textContent = data.highest || '—';
+            document.getElementById('kpi-highest-icon').textContent = data.highestIcon || 'category';
+            document.getElementById('kpi-highest-subtext').textContent = data.highestSub || '₱0.00 (0% of total)';
+            document.getElementById('kpi-savings-rate').textContent = data.savings || '0.0%';
+            document.getElementById('kpi-savings-bar').style.width = data.savingsBar || '0%';
 
             // Update chart text
-            document.getElementById('chart-subtext').textContent = data.chartSubtext;
+            document.getElementById('chart-subtext').textContent = data.chartSubtext || 'Breakdown for selected period';
 
             // Update Y-Axis Ticks for Income vs Expenses Bar Chart
             if (data.yTicks && data.yTicks.length === 4) {
@@ -1178,11 +827,11 @@
                 document.getElementById('y-tick-1').textContent = data.yTicks[3];
             }
 
-            // Update bar heights, tooltips, and labels dynamically (supports 7 days for week, 4 for month/year)
+            // Update bar heights and labels
             const barsContainer = document.getElementById('income-expense-bars-container');
             const labelsContainer = document.getElementById('income-expense-labels-container');
 
-            if (barsContainer && labelsContainer) {
+            if (barsContainer && labelsContainer && data.cols) {
                 const numCols = data.cols.length;
                 barsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
                 labelsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
@@ -1192,11 +841,11 @@
                 barsContainer.innerHTML = data.cols.map((col, idx) => `
                     <div class="flex flex-col items-center justify-end h-full w-full">
                         <div class="flex items-end gap-1 sm:gap-1.5 lg:gap-2 justify-center h-full w-full">
-                            <div tabindex="0" aria-label="Expenses: ${data.expVals[idx]}" class="chart-bar-grow ${barWidthClass} bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.expHeights[idx]};">
-                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.expVals[idx]}</div>
+                            <div tabindex="0" aria-label="Expenses: ${data.expVals ? data.expVals[idx] : '₱0'}" class="chart-bar-grow ${barWidthClass} bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.expHeights ? data.expHeights[idx] : 0}%;">
+                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.expVals ? data.expVals[idx] : '₱0'}</div>
                             </div>
-                            <div tabindex="0" aria-label="Income: ${data.incVals[idx]}" class="chart-bar-grow ${barWidthClass} bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.incHeights[idx]};">
-                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.incVals[idx]}</div>
+                            <div tabindex="0" aria-label="Income: ${data.incVals ? data.incVals[idx] : '₱0'}" class="chart-bar-grow ${barWidthClass} bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.incHeights ? data.incHeights[idx] : 0}%;">
+                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.incVals ? data.incVals[idx] : '₱0'}</div>
                             </div>
                         </div>
                     </div>
@@ -1209,11 +858,11 @@
                 `).join('');
             }
 
-            // Update Donut with exact gapless math & new period data
-            document.getElementById('donut-period-label').textContent = data.donutPeriod;
-            renderDonut(data.categories, data.donutTotal);
+            // Update Donut
+            document.getElementById('donut-period-label').textContent = data.donutPeriod || 'This Period';
+            renderDonut(data.categories || [], data.donutTotal);
 
-            // Render Combined Category Trends Chart with Smart Insights
+            // Render Combined Category Trends Chart
             renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
         }
 
@@ -1230,7 +879,7 @@
         // Initialize Default Period (Month)
         updatePeriod('month');
 
-        // Window resize handler for responsive chart dot sizing
+        // Window resize handler
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
