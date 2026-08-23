@@ -144,22 +144,22 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
-                                <div class="flex items-center gap-3 min-w-0">
+                            <div class="tx-item-fg flex items-center justify-between p-3 sm:p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-3">
                                     <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                                     </div>
-                                    <div class="min-w-0">
-                                        <div class="flex items-center gap-1.5">
-                                            <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-primary-pale text-positive-deep text-[9px] font-extrabold border border-positive/30">
-                                                <span class="material-symbols-outlined text-[11px]">receipt_long</span> Receipt
-                                            </span>
-                                        </div>
-                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">{{ tx.category.name|default:'Groceries' }} • {{ tx.account.name }}</p>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:'Groceries' }} • {{ tx.account.name }}</p>
                                     </div>
                                 </div>
-                                <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap ml-2 tabular-nums">-₱{{ tx.amount|floatformat:2 }}</span>
+                                <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
+                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱{{ tx.amount|floatformat:2 }}</span>
+                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-primary-pale text-positive-deep text-[9px] font-extrabold border border-positive/30 whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[10px] shrink-0">receipt_long</span> Receipt
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         {% else %}
@@ -169,26 +169,26 @@
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
                             </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
-                                <div class="flex items-center gap-3 min-w-0">
+                            <div class="tx-item-fg flex items-center justify-between p-3 sm:p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
+                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-3">
                                     <div class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                         <span class="material-symbols-outlined text-[18px]">
                                             {% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'payments' }}{% endif %}
                                         </span>
                                     </div>
-                                    <div class="min-w-0">
-                                        <div class="flex items-center gap-1.5">
-                                            <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[9px] font-bold border border-outline-variant/60">
-                                                <span class="material-symbols-outlined text-[11px]">edit_note</span> {{ tx.get_source_display }}
-                                            </span>
-                                        </div>
-                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium">{{ tx.category.name|default:tx.get_transaction_type_display }} • {{ tx.account.name }}</p>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
+                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:tx.get_transaction_type_display }} • {{ tx.account.name }}</p>
                                     </div>
                                 </div>
-                                <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap ml-2 tabular-nums">
-                                    {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
-                                </span>
+                                <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
+                                    <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap tabular-nums">
+                                        {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
+                                    </span>
+                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-surface-container-high text-on-surface-variant text-[9px] font-bold border border-outline-variant/60 whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[10px] shrink-0">edit_note</span> Manual
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         {% endif %}
