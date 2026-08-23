@@ -8,43 +8,26 @@
 
 {% block extra_head %}
 <style>
-    .pulse-ring {
-        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    .scanning-line-quiet {
+        animation: scanQuiet 2.4s ease-in-out infinite alternate;
     }
-    @keyframes pulse-ring {
-        0% { transform: scale(0.85); opacity: 0.6; }
-        80%, 100% { opacity: 0; transform: scale(2.1); }
-    }
-    
-    .fade-in-out {
-        animation: fadeInOut 3s infinite;
-    }
-    @keyframes fadeInOut {
-        0%, 100% { opacity: 0; transform: translateY(6px); }
-        15%, 85% { opacity: 1; transform: translateY(0); }
-    }
-
-    .scanning-line {
-        animation: scan 2.2s linear infinite;
-    }
-    @keyframes scan {
-        0% { top: 0; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { top: 100%; opacity: 0; }
+    @keyframes scanQuiet {
+        0% { top: 8%; opacity: 0.4; }
+        50% { opacity: 0.85; }
+        100% { top: 88%; opacity: 0.4; }
     }
 
     /* Drag over state for dropzone */
     .drag-over {
         border-color: #5C8F3A !important;
-        background-color: rgba(92, 143, 58, 0.08) !important;
+        background-color: rgba(92, 143, 58, 0.04) !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="px-3.5 sm:px-margin-mobile md:px-lg py-3 sm:py-md md:py-lg pb-32 md:pb-lg w-full">
-    <div class="max-w-6xl mx-auto flex flex-col gap-3.5 sm:gap-6">
+    <div class="max-w-4xl mx-auto flex flex-col gap-4 sm:gap-5">
 
         <!-- ─── Top Header & Navigation ─── -->
         <div class="flex items-center justify-between gap-2">
@@ -53,47 +36,47 @@
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 </a>
                 <div class="min-w-0">
-                    <h1 class="font-headline-lg text-lg sm:text-2xl font-extrabold text-deep-forest tracking-tight truncate" id="header-page-title">Scan Receipt</h1>
+                    <h1 class="font-headline-lg text-lg sm:text-xl font-bold text-deep-forest tracking-tight truncate" id="header-page-title">Scan Receipt</h1>
                     <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5 truncate" id="header-page-desc">Extract merchant, line items, and totals with AI</p>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-switch-manual" class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 hover:bg-primary hover:text-on-primary transition-all font-label-md text-xs font-bold cursor-pointer shadow-xs">
-                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-switch-manual" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 h-8.5 rounded-xl bg-surface-container-low text-deep-forest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep transition-all font-label-md text-xs font-semibold cursor-pointer shadow-xs">
+                    <span class="material-symbols-outlined text-[16px] text-positive-deep">edit_note</span>
                     <span>Manual Entry</span>
                 </a>
             </div>
         </div>
 
         <!-- ─── ERROR & QUOTA EXCEEDED ALERT BANNER ─── -->
-        <div id="ocr-error-banner" class="hidden w-full bg-expense/10 border-2 border-expense/30 rounded-2xl p-3.5 sm:p-5 shadow-xs transition-all duration-300">
+        <div id="ocr-error-banner" class="hidden w-full bg-expense/10 border border-expense/25 rounded-2xl p-3.5 sm:p-4 shadow-xs transition-all duration-300">
             <div class="flex items-start gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
-                    <span class="material-symbols-outlined text-[20px] sm:text-[22px]" id="ocr-error-icon">warning</span>
+                <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
+                    <span class="material-symbols-outlined text-[18px]" id="ocr-error-icon">warning</span>
                 </div>
                 <div class="flex-1 flex flex-col gap-1 min-w-0">
                     <div class="flex items-center justify-between gap-2">
-                        <h3 id="ocr-error-title" class="font-headline-md text-xs sm:text-base font-bold text-deep-forest">
+                        <h3 id="ocr-error-title" class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest">
                             Scan Quota Exceeded
                         </h3>
                         <button type="button" id="btn-dismiss-error" class="text-on-surface-variant/70 hover:text-deep-forest text-xs font-bold p-1 rounded-lg hover:bg-expense/15 transition-all cursor-pointer">
-                            <span class="material-symbols-outlined text-[18px]">close</span>
+                            <span class="material-symbols-outlined text-[16px]">close</span>
                         </button>
                     </div>
                     <p id="ocr-error-message" class="font-body-sm text-[11px] sm:text-xs text-body leading-relaxed">
                         The AI OCR API quota limit for receipt scanning has been reached. You can record this transaction via Manual Entry or fill in the details manually.
                     </p>
                     <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-2 mt-0.5">
-                        <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-error-manual-entry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-expense text-white font-label-md text-xs font-bold shadow-xs hover:bg-expense/90 transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px]">edit_note</span>
+                        <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-error-manual-entry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-expense text-white font-label-md text-xs font-bold shadow-xs hover:bg-expense/90 transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[15px]">edit_note</span>
                             <span>Switch to Manual Entry</span>
                         </a>
-                        <button type="button" id="btn-error-fill-manual" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px] text-positive-deep">edit</span>
+                        <button type="button" id="btn-error-fill-manual" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[15px] text-positive-deep">edit</span>
                             <span>Edit Details Manually</span>
                         </button>
-                        <button type="button" id="btn-error-retry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px]">refresh</span>
+                        <button type="button" id="btn-error-retry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[15px]">refresh</span>
                             <span>Try Again</span>
                         </button>
                     </div>
@@ -105,121 +88,116 @@
         <input type="file" id="input-receipt-camera" accept="image/*" capture="environment" class="hidden" />
 
         <!-- ═══════════════════════════════════════════ -->
-        <!-- STEP 1: UPLOAD / CAMERA CAPTURE DROPZONE    -->
+        <!-- STEP 1: QUIET UPLOAD DROPZONE               -->
         <!-- ═══════════════════════════════════════════ -->
-        <div id="section-upload-trigger" class="max-w-2xl mx-auto w-full">
-            <div class="flex flex-col gap-3.5 sm:gap-5">
+        <div id="section-upload-trigger" class="max-w-xl mx-auto w-full">
+            <div class="flex flex-col gap-3">
                 
-                <!-- Main Upload Viewfinder Box -->
-                <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-4 sm:gap-5 bg-surface-container-lowest p-6 sm:p-12 rounded-3xl shadow-soft border-2 border-dashed border-outline-variant/60 hover:border-primary/60 hover:bg-primary-pale/15 transition-all cursor-pointer text-center group overflow-hidden">
+                <!-- Main Upload Surface Card -->
+                <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-4 bg-surface-container-lowest p-6 sm:p-9 rounded-2xl shadow-soft border border-outline-variant/60 hover:border-primary/50 transition-all cursor-pointer text-center group">
 
-                    <!-- Viewfinder Frame Corner Brackets -->
-                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0">
-                        <span class="absolute top-0 left-0 w-5 h-5 sm:w-6 sm:h-6 border-t-2 border-l-2 border-primary/40 rounded-tl-xl group-hover:border-primary transition-colors"></span>
-                        <span class="absolute top-0 right-0 w-5 h-5 sm:w-6 sm:h-6 border-t-2 border-r-2 border-primary/40 rounded-tr-xl group-hover:border-primary transition-colors"></span>
-                        <span class="absolute bottom-0 left-0 w-5 h-5 sm:w-6 sm:h-6 border-b-2 border-l-2 border-primary/40 rounded-bl-xl group-hover:border-primary transition-colors"></span>
-                        <span class="absolute bottom-0 right-0 w-5 h-5 sm:w-6 sm:h-6 border-b-2 border-r-2 border-primary/40 rounded-br-xl group-hover:border-primary transition-colors"></span>
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">photo_camera</span>
-                        </div>
+                    <!-- Icon Container -->
+                    <div class="w-12 h-12 rounded-xl bg-surface-container-low text-deep-forest border border-outline-variant/40 flex items-center justify-center transition-colors group-hover:bg-primary-pale group-hover:text-positive-deep">
+                        <span class="material-symbols-outlined text-[24px]">photo_camera</span>
                     </div>
 
-                    <div class="space-y-1 max-w-md">
-                        <h2 class="font-headline-lg text-base sm:text-xl md:text-2xl font-extrabold text-deep-forest group-hover:text-positive-deep transition-colors">
+                    <!-- Typography -->
+                    <div class="space-y-1 max-w-sm">
+                        <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight">
                             Scan Paper Receipt
                         </h2>
-                        <p class="font-body-md text-xs sm:text-sm text-body leading-relaxed font-medium">
-                            Snap a receipt photo or upload an image. AI extracts the merchant, items, date, time, and totals.
+                        <p class="font-body-sm text-xs text-body leading-relaxed font-normal">
+                            Take a photo or upload an image to automatically extract merchant, items, date, and totals.
                         </p>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 w-full sm:w-auto pt-1">
-                        <button type="button" id="btn-select-file" class="w-full sm:w-auto px-5 sm:px-6 py-2.5 h-11 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[18px] sm:text-[20px]">upload_file</span>
+                    <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto pt-1">
+                        <button type="button" id="btn-select-file" class="w-full sm:w-auto px-5 py-2.5 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[17px]">upload_file</span>
                             <span>Choose Receipt Image</span>
                         </button>
 
-                        <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-4 sm:px-5 py-2.5 h-11 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 transition-all font-label-md text-xs sm:text-sm font-bold flex items-center justify-center gap-2 active:scale-95 shadow-xs cursor-pointer">
-                            <span class="material-symbols-outlined text-[17px] text-positive-deep">auto_awesome</span>
-                            <span>Try Sample Demo</span>
+                        <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-4 py-2.5 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low transition-all font-label-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px] text-positive-deep">auto_awesome</span>
+                            <span>Try Demo</span>
                         </button>
                     </div>
 
-                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium -mt-1">Supports JPG, PNG, or WebP • Fast and secure</span>
-                </div>
-
-                <!-- Quick scan tip -->
-                <div class="flex items-start sm:items-center gap-2.5 sm:gap-3 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-surface-container-low/70 border border-outline-variant/40">
-                    <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-primary-pale text-positive-deep flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                        <span class="material-symbols-outlined text-[15px] sm:text-[16px]">lightbulb</span>
-                    </div>
-                    <p class="font-body-sm text-[11px] sm:text-xs text-body leading-relaxed font-medium">
-                        <strong class="text-deep-forest font-bold">Quick Tip:</strong> Flatten the receipt, avoid strong shadows, and ensure all corners and date/time stamps are visible.
-                    </p>
+                    <!-- Format & Privacy Note -->
+                    <span class="text-[11px] text-on-surface-variant font-medium">Supports JPG, PNG, WebP • Fully editable before saving</span>
                 </div>
 
             </div>
         </div>
 
         <!-- ═══════════════════════════════════════════ -->
-        <!-- STEP 2: PROCESSING ANIMATION CANVAS         -->
+        <!-- STEP 2: QUIET SCANNING PROCESSOR            -->
         <!-- ═══════════════════════════════════════════ -->
-        <div id="section-processing-canvas" class="hidden w-full max-w-md mx-auto flex flex-col items-center justify-center py-6 sm:py-10 my-auto flex-1 gap-5 sm:gap-6">
+        <div id="section-processing-canvas" class="hidden w-full max-w-sm mx-auto flex flex-col items-center justify-center py-6 sm:py-10 my-auto flex-1 gap-4">
             
-            <!-- Processing Container Card -->
-            <div class="w-full bg-surface-container-lowest rounded-3xl p-5 sm:p-8 border border-outline-variant/60 shadow-elevated flex flex-col items-center justify-center space-y-4 sm:space-y-5 text-center">
+            <!-- Quiet Container Card -->
+            <div class="w-full bg-surface-container-lowest rounded-2xl p-5 sm:p-6 border border-outline-variant/60 shadow-soft flex flex-col items-center justify-center space-y-4 text-center">
                 
-                <!-- Scanning Preview Thumbnail Card -->
-                <div class="relative w-40 h-52 sm:w-48 sm:h-60 bg-surface-container-low rounded-2xl shadow-soft border border-outline-variant/40 flex items-center justify-center overflow-hidden transition-all shrink-0">
-                    <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-35" />
+                <!-- Minimal Scanning Viewport -->
+                <div class="relative w-36 h-48 sm:w-40 sm:h-52 bg-surface-container-low rounded-xl border border-outline-variant/40 flex items-center justify-center overflow-hidden transition-all shrink-0">
+                    <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-40" />
                     
-                    <!-- Simulated Receipt Lines -->
-                    <div id="skeleton-doc" class="absolute inset-4 border border-outline-variant/30 rounded-lg flex flex-col gap-2 p-3 opacity-60">
-                        <div class="h-2 bg-surface-container-highest rounded w-3/4"></div>
-                        <div class="h-2 bg-surface-container-highest rounded w-1/2"></div>
-                        <div class="mt-4 space-y-2">
-                            <div class="h-1.5 bg-surface-container-high rounded w-full"></div>
-                            <div class="h-1.5 bg-surface-container-high rounded w-5/6"></div>
-                            <div class="h-1.5 bg-surface-container-high rounded w-full"></div>
+                    <!-- Paper Texture Wireframe -->
+                    <div id="skeleton-doc" class="absolute inset-3 border border-dashed border-outline-variant/30 rounded-lg flex flex-col gap-2 p-2.5 bg-surface-container-lowest/50">
+                        <div class="h-2 bg-deep-forest/10 rounded w-2/3 mx-auto"></div>
+                        <div class="h-1.5 bg-deep-forest/8 rounded w-1/3 mx-auto"></div>
+                        <div class="mt-2.5 space-y-1.5 border-t border-outline-variant/20 pt-2">
+                            <div class="flex justify-between items-center">
+                                <div class="h-1 bg-deep-forest/10 rounded w-1/2"></div>
+                                <div class="h-1 bg-deep-forest/10 rounded w-1/4"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-1 bg-deep-forest/10 rounded w-3/5"></div>
+                                <div class="h-1 bg-deep-forest/10 rounded w-1/5"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-1 bg-deep-forest/10 rounded w-2/5"></div>
+                                <div class="h-1 bg-deep-forest/10 rounded w-1/4"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Scanning Line animation -->
-                    <div class="scanning-line absolute left-0 w-full h-1 bg-primary shadow-[0_0_12px_rgba(92,143,58,0.9)] z-10"></div>
+                    <!-- Quiet Scanning Line -->
+                    <div class="scanning-line-quiet absolute left-0 w-full h-0.5 bg-primary z-10"></div>
 
-                    <!-- Pulsing Icon -->
+                    <!-- Subtle Icon -->
                     <div class="relative z-20">
-                        <div class="pulse-ring absolute inset-0 bg-primary/20 rounded-full"></div>
-                        <div class="w-13 h-13 sm:w-16 sm:h-16 bg-primary text-on-primary rounded-2xl flex items-center justify-center shadow-[0_4px_14px_rgba(92,143,58,0.4)]">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl" style="font-variation-settings: 'FILL' 1;">
+                        <div class="w-11 h-11 bg-surface-container-lowest/90 backdrop-blur-xs text-deep-forest border border-outline-variant/40 rounded-xl flex items-center justify-center shadow-xs">
+                            <span class="material-symbols-outlined text-[20px] text-positive-deep">
                                 document_scanner
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dynamic Text Updates -->
-                <div class="text-center h-9 sm:h-10 flex flex-col items-center justify-center w-full">
-                    <h2 class="font-headline-md text-sm sm:text-lg text-deep-forest font-bold tracking-tight fade-in-out" id="status-text">Reading receipt...</h2>
+                <!-- Status & Step Text -->
+                <div class="space-y-1 text-center w-full">
+                    <h2 class="font-headline-md text-sm sm:text-base text-deep-forest font-bold tracking-tight" id="status-text">
+                        Reading receipt...
+                    </h2>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant font-medium" id="step-count-text">
+                        Step 1 of 4 • Analyzing text
+                    </p>
                 </div>
 
-                <!-- Progress Bar & Step Indicator -->
-                <div class="w-full space-y-1.5 max-w-xs">
-                    <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden p-0.5 border border-outline-variant/40">
-                        <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full shadow-xs"></div>
-                    </div>
-                    <div class="flex justify-between items-center text-xs text-body font-medium px-1">
-                        <span id="step-count-text" class="font-bold text-deep-forest text-[11px] sm:text-xs">Step 1 of 4</span>
-                        <span class="font-bold text-positive-deep tabular-nums text-[11px] sm:text-xs">Processing</span>
+                <!-- Quiet Progress Bar -->
+                <div class="w-full max-w-xs space-y-1">
+                    <div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden border border-outline-variant/30">
+                        <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full"></div>
                     </div>
                 </div>
 
                 <!-- Cancel Button -->
                 <div class="w-full pt-1">
-                    <button type="button" id="btn-cancel-processing" class="w-full h-10 sm:h-11 flex items-center justify-center gap-2 bg-surface-container-lowest hover:bg-expense/10 border border-outline-variant/60 rounded-xl text-deep-forest hover:text-expense transition-all shadow-xs cursor-pointer active:scale-95">
-                        <span class="material-symbols-outlined text-[17px] text-expense">close</span>
-                        <span class="font-label-md text-xs sm:text-sm font-bold">Cancel Scan</span>
+                    <button type="button" id="btn-cancel-processing" class="w-full py-2 text-on-surface-variant hover:text-expense font-label-md text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                        <span class="material-symbols-outlined text-[15px]">close</span>
+                        <span>Cancel scan</span>
                     </button>
                 </div>
 
@@ -548,6 +526,7 @@
         
         const progressEl = document.getElementById('scanning-progress');
         const statusElement = document.getElementById('status-text');
+        const stepCountText = document.getElementById('step-count-text');
 
         const merchantInput = document.getElementById('input-review-merchant');
         const dateInput = document.getElementById('input-review-date');
@@ -605,18 +584,11 @@
         const keepEditingBtn = document.getElementById('btn-keep-editing');
         const confirmDiscardBtn = document.getElementById('btn-confirm-discard');
 
-        const statusTexts = [
-            "Reading receipt...",
-            "Extracting date, time & items...",
-            "Identifying category...",
-            "Calculating totals..."
-        ];
-
         const scanSteps = [
-            { text: statusTexts[0], percent: 25 },
-            { text: statusTexts[1], percent: 50 },
-            { text: statusTexts[2], percent: 75 },
-            { text: statusTexts[3], percent: 95 }
+            { text: "Reading receipt...", stepText: "Step 1 of 4 • Analyzing text", percent: 25 },
+            { text: "Extracting details...", stepText: "Step 2 of 4 • Detecting store & date", percent: 50 },
+            { text: "Itemizing receipt...", stepText: "Step 3 of 4 • Parsing line items", percent: 75 },
+            { text: "Computing totals...", stepText: "Step 4 of 4 • Calculating totals", percent: 95 }
         ];
 
         // Transition views cleanly
@@ -800,31 +772,29 @@
             });
         }
 
-        const stepCountText = document.getElementById('step-count-text');
-
         function runScanningAnimation(onComplete) {
             let currentIndex = 0;
             if (statusElement) statusElement.textContent = scanSteps[0].text;
+            if (stepCountText) stepCountText.textContent = scanSteps[0].stepText;
             if (progressEl) progressEl.style.width = `${scanSteps[0].percent}%`;
-            if (stepCountText) stepCountText.textContent = `Step 1 of ${scanSteps.length}`;
 
             const interval = setInterval(() => {
                 currentIndex = (currentIndex + 1) % scanSteps.length;
-                const nextStepIndex = currentIndex;
+                const nextStep = scanSteps[currentIndex];
                 setTimeout(() => {
-                    if (statusElement) statusElement.textContent = scanSteps[nextStepIndex].text;
-                    if (progressEl) progressEl.style.width = `${scanSteps[nextStepIndex].percent}%`;
-                    if (stepCountText) stepCountText.textContent = `Step ${nextStepIndex + 1} of ${scanSteps.length}`;
-                }, 300);
-            }, 3000);
+                    if (statusElement) statusElement.textContent = nextStep.text;
+                    if (stepCountText) stepCountText.textContent = nextStep.stepText;
+                    if (progressEl) progressEl.style.width = `${nextStep.percent}%`;
+                }, 200);
+            }, 2400);
 
             return {
                 finish: () => {
                     clearInterval(interval);
                     if (statusElement) statusElement.textContent = "Scan complete!";
+                    if (stepCountText) stepCountText.textContent = "Step 4 of 4 • Complete";
                     if (progressEl) progressEl.style.width = '100%';
-                    if (stepCountText) stepCountText.textContent = `Step 4 of 4`;
-                    if (onComplete) setTimeout(onComplete, 300);
+                    if (onComplete) setTimeout(onComplete, 250);
                 },
                 cancel: () => {
                     clearInterval(interval);
@@ -860,7 +830,7 @@
                     });
                 });
 
-                setTimeout(() => anim.finish(), 3300);
+                setTimeout(() => anim.finish(), 3000);
             });
         }
 
