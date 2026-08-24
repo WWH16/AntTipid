@@ -150,7 +150,7 @@
                         </div>
                         {% else %}
                         <!-- Manual / Transfer Transaction -->
-                        <div class="tx-item relative overflow-hidden" data-source="manual" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:tx.get_transaction_type_display }}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
+                        <div class="tx-item relative overflow-hidden" data-source="manual" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:tx.get_transaction_type_display }}" data-category-icon="{% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'payments' }}{% endif %}" data-title="{{ tx.title }}" data-account="{{ tx.account.name }}" data-notes="{{ tx.notes|default:'' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-formatted-date="{{ tx.transaction_date|date:'M d, Y' }}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes|default:'' }}">
                             <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
@@ -205,7 +205,7 @@
                         </thead>
                         <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-outline-variant/30">
                             {% for tx in transactions %}
-                            <tr class="tx-row {% if tx.receipt %}receipt-row-item{% endif %} hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-source="{% if tx.receipt %}receipt{% else %}manual{% endif %}" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id|default:'' }}" data-detail-url="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% endif %}" data-receipt-img="{% if tx.receipt and tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt and tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
+                            <tr class="tx-row {% if tx.receipt %}receipt-row-item{% endif %} hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-source="{% if tx.receipt %}receipt{% else %}manual{% endif %}" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-category-icon="{% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'category' }}{% endif %}" data-merchant="{{ tx.title }}" data-title="{{ tx.title }}" data-account="{{ tx.account.name }}" data-notes="{{ tx.notes|default:'' }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-formatted-date="{{ tx.transaction_date|date:'M d, Y' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id|default:'' }}" data-detail-url="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% endif %}" data-receipt-img="{% if tx.receipt and tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt and tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes|default:'' }}">
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-body whitespace-nowrap font-medium">{{ tx.transaction_date|date:"M d, Y" }}</td>
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4">
                                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -447,6 +447,113 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
+<!-- MANUAL TRANSACTION PREVIEW MODAL        -->
+<!-- ═══════════════════════════════════════ -->
+<div id="modal-preview-transaction" role="dialog" aria-modal="true" aria-labelledby="modal-tx-preview-title" class="fixed inset-0 z-[120] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-preview-transaction-content" class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-all duration-200 relative z-[125]">
+        <!-- Header -->
+        <div class="p-4 sm:p-5 border-b border-outline-variant/40 flex items-center justify-between bg-surface-container-low/40">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div id="modal-tx-preview-icon-wrapper" class="w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]" id="modal-tx-preview-icon">payments</span>
+                </div>
+                <div class="min-w-0">
+                    <h3 id="modal-tx-preview-title" class="font-headline-md text-base font-bold text-deep-forest truncate">Transaction Preview</h3>
+                    <p id="modal-tx-preview-meta" class="font-body-sm text-xs text-body font-medium truncate">Manual Entry • Oct 24, 2026</p>
+                </div>
+            </div>
+            <button type="button" id="btn-close-tx-preview-modal" aria-label="Close modal" class="w-8 h-8 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <!-- Body Content -->
+        <div class="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[60vh]">
+            <!-- Hero Amount Card -->
+            <div class="bg-surface-container-low/50 rounded-2xl p-5 border border-outline-variant/40 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span id="modal-tx-preview-type-badge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-expense/15 text-expense border border-expense/30">
+                        <span class="material-symbols-outlined text-[13px]" id="modal-tx-preview-type-badge-icon">arrow_downward</span>
+                        <span id="modal-tx-preview-type-text">Expense</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-surface-container-high text-on-surface-variant border border-outline-variant/60">
+                        <span class="material-symbols-outlined text-[12px]">edit_note</span> Manual Entry
+                    </span>
+                </div>
+                <div id="modal-tx-preview-amount" class="font-headline-lg text-3xl sm:text-4xl font-extrabold text-expense tabular-nums tracking-tight my-1">
+                    -₱0.00
+                </div>
+                <div class="font-body-sm text-xs text-on-surface-variant font-medium" id="modal-tx-preview-date-subtitle">
+                    Recorded on Oct 24, 2026
+                </div>
+            </div>
+
+            <!-- Transaction Detail Rows -->
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 divide-y divide-outline-variant/30 overflow-hidden text-xs">
+                <!-- Merchant / Title -->
+                <div class="flex items-center justify-between p-3 sm:px-4">
+                    <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-body">description</span>
+                        Description
+                    </span>
+                    <span id="modal-tx-preview-detail-title" class="font-bold text-deep-forest text-right truncate max-w-[200px] sm:max-w-[260px]">-</span>
+                </div>
+
+                <!-- Category -->
+                <div class="flex items-center justify-between p-3 sm:px-4">
+                    <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-body">category</span>
+                        Category
+                    </span>
+                    <span id="modal-tx-preview-detail-category" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-low text-deep-forest font-bold border border-outline-variant/60">
+                        <span class="material-symbols-outlined text-[14px]" id="modal-tx-preview-category-icon">category</span>
+                        <span id="modal-tx-preview-category-name">-</span>
+                    </span>
+                </div>
+
+                <!-- Account / Payment Method -->
+                <div class="flex items-center justify-between p-3 sm:px-4">
+                    <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-body">account_balance_wallet</span>
+                        Payment Method
+                    </span>
+                    <span id="modal-tx-preview-detail-account" class="font-bold text-deep-forest text-right">-</span>
+                </div>
+
+                <!-- Date -->
+                <div class="flex items-center justify-between p-3 sm:px-4">
+                    <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-body">calendar_today</span>
+                        Date
+                    </span>
+                    <span id="modal-tx-preview-detail-date" class="font-semibold text-deep-forest text-right">-</span>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div id="modal-tx-preview-notes-container" class="bg-surface-container-low/40 rounded-xl p-3 sm:p-3.5 border border-outline-variant/40 flex flex-col gap-1">
+                <span class="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px] text-body">notes</span>
+                    Notes & Remarks
+                </span>
+                <p id="modal-tx-preview-notes" class="font-body-sm text-xs text-deep-forest font-medium whitespace-pre-wrap leading-relaxed">No additional notes.</p>
+            </div>
+        </div>
+
+        <!-- Summary & Action Footer -->
+        <div class="p-4 sm:p-5 border-t border-outline-variant/40 flex items-center justify-end gap-2.5 bg-surface-container-lowest">
+            <button type="button" id="btn-modal-tx-preview-close" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low transition-all cursor-pointer">
+                Close
+            </button>
+            <button type="button" id="btn-modal-tx-preview-edit" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+                <span>Edit Transaction</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
 <!-- RECEIPT QUICK VIEW LIGHTBOX MODAL       -->
 <!-- ═══════════════════════════════════════ -->
 <div id="modal-preview-receipt-image" role="dialog" aria-modal="true" aria-labelledby="modal-preview-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
@@ -504,6 +611,9 @@
 <script src="{% static 'js/edit-transaction-sheet.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Edit Transaction Sheet (shared component, see edit-transaction-sheet.js)
+        const editSheet = window.initEditTransactionSheet();
+
         // Page Toast: used both after redirecting back from Add/Edit, and for
         // actions taken directly on this page (e.g. deleting a desktop row).
         const navToast = document.getElementById('nav-toast-success');
@@ -608,7 +718,7 @@
                 if (row.dataset.source === 'receipt') {
                     openReceiptPreview(row.dataset);
                 } else {
-                    editSheet.open(row.dataset);
+                    openManualTxPreview(row.dataset);
                 }
             });
 
@@ -827,7 +937,7 @@
                 if (row.dataset.source === 'receipt') {
                     window.location.href = row.dataset.detailUrl || "{% url 'receipt_detail' %}";
                 } else {
-                    editSheet.open(row.dataset);
+                    openManualTxPreview(row.dataset);
                 }
             });
 
@@ -1018,9 +1128,177 @@
                 if (e.target === previewModal) closeReceiptPreview();
             });
         }
+
+        // ═════════════════════════════════════════════
+        // MANUAL TRANSACTION PREVIEW MODAL HANDLER
+        // ═════════════════════════════════════════════
+        const txPreviewModal = document.getElementById('modal-preview-transaction');
+        const txPreviewModalContent = document.getElementById('modal-preview-transaction-content');
+        const txPreviewTitle = document.getElementById('modal-tx-preview-title');
+        const txPreviewMeta = document.getElementById('modal-tx-preview-meta');
+        const txPreviewIconWrapper = document.getElementById('modal-tx-preview-icon-wrapper');
+        const txPreviewIcon = document.getElementById('modal-tx-preview-icon');
+        const txPreviewTypeBadge = document.getElementById('modal-tx-preview-type-badge');
+        const txPreviewTypeBadgeIcon = document.getElementById('modal-tx-preview-type-badge-icon');
+        const txPreviewTypeText = document.getElementById('modal-tx-preview-type-text');
+        const txPreviewAmount = document.getElementById('modal-tx-preview-amount');
+        const txPreviewDateSubtitle = document.getElementById('modal-tx-preview-date-subtitle');
+        const txPreviewDetailTitle = document.getElementById('modal-tx-preview-detail-title');
+        const txPreviewCategoryIcon = document.getElementById('modal-tx-preview-category-icon');
+        const txPreviewCategoryName = document.getElementById('modal-tx-preview-category-name');
+        const txPreviewDetailAccount = document.getElementById('modal-tx-preview-detail-account');
+        const txPreviewDetailDate = document.getElementById('modal-tx-preview-detail-date');
+        const txPreviewNotes = document.getElementById('modal-tx-preview-notes');
+        const btnCloseTxPreviewModal = document.getElementById('btn-close-tx-preview-modal');
+        const btnModalTxPreviewClose = document.getElementById('btn-modal-tx-preview-close');
+        const btnModalTxPreviewEdit = document.getElementById('btn-modal-tx-preview-edit');
+
+        let currentActiveTxData = null;
+
+        function formatDateForDisplay(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    if (!isNaN(d.getTime())) {
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    }
+                }
+            } catch(e) {}
+            return dateStr;
+        }
+
+        function openManualTxPreview(data) {
+            if (!txPreviewModal || !data) return;
+            currentActiveTxData = data;
+
+            const title = data.editTitle || data.title || data.merchant || 'Untitled Transaction';
+            const rawType = (data.editType || data.type || 'expense').toLowerCase();
+            const amountVal = parseFloat(data.editAmount || data.amount || 0);
+            const formattedAmount = isNaN(amountVal) ? '0.00' : Math.abs(amountVal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const rawDate = data.editDate || data.date || '';
+            const dateFormatted = data.formattedDate || formatDateForDisplay(rawDate);
+            const category = data.editCategory || data.category || 'General';
+            const categoryIcon = data.categoryIcon || 'category';
+            const account = data.editAccount || data.account || 'Cash Wallet';
+            const notes = data.editNotes || data.notes || '';
+
+            if (txPreviewTitle) txPreviewTitle.textContent = title;
+            if (txPreviewMeta) txPreviewMeta.textContent = `Manual Entry • ${dateFormatted || rawDate}`;
+            if (txPreviewDateSubtitle) txPreviewDateSubtitle.textContent = dateFormatted ? `Recorded on ${dateFormatted}` : '';
+            if (txPreviewDetailTitle) txPreviewDetailTitle.textContent = title;
+            if (txPreviewCategoryName) txPreviewCategoryName.textContent = category;
+            if (txPreviewCategoryIcon) txPreviewCategoryIcon.textContent = categoryIcon;
+            if (txPreviewDetailAccount) txPreviewDetailAccount.textContent = account;
+            if (txPreviewDetailDate) txPreviewDetailDate.textContent = dateFormatted || rawDate || '-';
+
+            if (txPreviewNotes) {
+                if (notes && notes.trim()) {
+                    txPreviewNotes.textContent = notes.trim();
+                    txPreviewNotes.classList.remove('italic', 'text-on-surface-variant/70');
+                    txPreviewNotes.classList.add('text-deep-forest');
+                } else {
+                    txPreviewNotes.textContent = 'No notes added for this transaction.';
+                    txPreviewNotes.classList.add('italic', 'text-on-surface-variant/70');
+                    txPreviewNotes.classList.remove('text-deep-forest');
+                }
+            }
+
+            if (rawType === 'income') {
+                if (txPreviewAmount) {
+                    txPreviewAmount.textContent = `+₱${formattedAmount}`;
+                    txPreviewAmount.className = 'font-headline-lg text-3xl sm:text-4xl font-extrabold text-positive-deep tabular-nums tracking-tight my-1';
+                }
+                if (txPreviewIconWrapper) {
+                    txPreviewIconWrapper.className = 'w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0';
+                }
+                if (txPreviewIcon) txPreviewIcon.textContent = 'payments';
+                if (txPreviewTypeBadge) {
+                    txPreviewTypeBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-primary-pale text-positive-deep border border-positive/30';
+                }
+                if (txPreviewTypeBadgeIcon) txPreviewTypeBadgeIcon.textContent = 'arrow_upward';
+                if (txPreviewTypeText) txPreviewTypeText.textContent = 'Income';
+            } else if (rawType === 'transfer') {
+                if (txPreviewAmount) {
+                    txPreviewAmount.textContent = `₱${formattedAmount}`;
+                    txPreviewAmount.className = 'font-headline-lg text-3xl sm:text-4xl font-extrabold text-amber-800 tabular-nums tracking-tight my-1';
+                }
+                if (txPreviewIconWrapper) {
+                    txPreviewIconWrapper.className = 'w-9 h-9 rounded-xl bg-amber-500/15 text-amber-800 border border-amber-500/30 flex items-center justify-center shrink-0';
+                }
+                if (txPreviewIcon) txPreviewIcon.textContent = 'swap_horiz';
+                if (txPreviewTypeBadge) {
+                    txPreviewTypeBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-amber-500/15 text-amber-800 border border-amber-500/30';
+                }
+                if (txPreviewTypeBadgeIcon) txPreviewTypeBadgeIcon.textContent = 'swap_horiz';
+                if (txPreviewTypeText) txPreviewTypeText.textContent = 'Transfer';
+            } else {
+                if (txPreviewAmount) {
+                    txPreviewAmount.textContent = `-₱${formattedAmount}`;
+                    txPreviewAmount.className = 'font-headline-lg text-3xl sm:text-4xl font-extrabold text-expense tabular-nums tracking-tight my-1';
+                }
+                if (txPreviewIconWrapper) {
+                    txPreviewIconWrapper.className = 'w-9 h-9 rounded-xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center shrink-0';
+                }
+                if (txPreviewIcon) txPreviewIcon.textContent = categoryIcon || 'shopping_cart';
+                if (txPreviewTypeBadge) {
+                    txPreviewTypeBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-expense/15 text-expense border border-expense/30';
+                }
+                if (txPreviewTypeBadgeIcon) txPreviewTypeBadgeIcon.textContent = 'arrow_downward';
+                if (txPreviewTypeText) txPreviewTypeText.textContent = 'Expense';
+            }
+
+            txPreviewModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                txPreviewModal.classList.remove('opacity-0');
+                txPreviewModal.classList.add('opacity-100');
+                if (txPreviewModalContent) {
+                    txPreviewModalContent.classList.remove('scale-95');
+                    txPreviewModalContent.classList.add('scale-100');
+                }
+            });
+        }
+
+        function closeManualTxPreview() {
+            if (!txPreviewModal) return;
+            txPreviewModal.classList.remove('opacity-100');
+            txPreviewModal.classList.add('opacity-0');
+            if (txPreviewModalContent) {
+                txPreviewModalContent.classList.remove('scale-100');
+                txPreviewModalContent.classList.add('scale-95');
+            }
+            setTimeout(() => txPreviewModal.classList.add('hidden'), 200);
+        }
+
+        if (btnCloseTxPreviewModal) btnCloseTxPreviewModal.addEventListener('click', closeManualTxPreview);
+        if (btnModalTxPreviewClose) btnModalTxPreviewClose.addEventListener('click', closeManualTxPreview);
+        if (txPreviewModal) {
+            txPreviewModal.addEventListener('click', (e) => {
+                if (e.target === txPreviewModal) closeManualTxPreview();
+            });
+        }
+
+        if (btnModalTxPreviewEdit) {
+            btnModalTxPreviewEdit.addEventListener('click', () => {
+                const dataToEdit = currentActiveTxData;
+                closeManualTxPreview();
+                if (dataToEdit && editSheet) {
+                    setTimeout(() => {
+                        editSheet.open(dataToEdit);
+                    }, 150);
+                }
+            });
+        }
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && previewModal && !previewModal.classList.contains('hidden')) {
-                closeReceiptPreview();
+            if (e.key === 'Escape') {
+                if (txPreviewModal && !txPreviewModal.classList.contains('hidden')) {
+                    closeManualTxPreview();
+                }
+                if (previewModal && !previewModal.classList.contains('hidden')) {
+                    closeReceiptPreview();
+                }
             }
         });
 
@@ -1472,9 +1750,6 @@
 
         // Initialize state on load
         applyAllFilters();
-
-        // Edit Transaction Sheet (shared component, see edit-transaction-sheet.js)
-        const editSheet = window.initEditTransactionSheet();
     });
 </script>
 {% endblock %}
