@@ -1,6 +1,9 @@
 import os
 import json
 import base64
+import uuid
+from io import BytesIO
+from PIL import Image as PILImage
 from decimal import Decimal
 from datetime import datetime, date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
@@ -8,6 +11,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction as db_transaction
+from django.core.files.base import ContentFile
 
 from .models import (
     UserProfile,
@@ -449,6 +453,163 @@ def api_delete_receipt(request, pk):
 
 
 @csrf_exempt
+@require_POST
+def api_save_scanned_receipt(request):
+    """
+    Directly saves a scanned receipt as an Expense Transaction with linked Receipt and ReceiptItems.
+    Compresses receipt image before storing in the database to optimize storage.
+    """
+    profile = get_current_user_profile(request)
+    if not profile:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        merchant = data.get('merchant', '').strip() or 'Receipt Expense'
+        total = Decimal(str(data.get('total', 0)))
+        tax = Decimal(str(data.get('tax', 0)))
+        date_str = data.get('date', '').strip()
+        category_name = data.get('category', '').strip()
+        payment_method = data.get('payment_method', 'CASH').strip()
+        items_data = data.get('items', [])
+        notes = data.get('notes', '').strip()
+        image_data = data.get('image_data', '').strip()
+
+        tx_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
+
+        # Find or fallback account / payment method
+        account = None
+        if payment_method:
+            account = Account.objects.filter(user=profile, name__iexact=payment_method).first()
+            if not account:
+                account = Account.objects.filter(user=profile, name__icontains=payment_method.split()[0]).first()
+            if not account:
+                pm_lower = payment_method.lower()
+                if 'gcash' in pm_lower or 'maya' in pm_lower or 'wallet' in pm_lower:
+                    account = Account.objects.filter(user=profile, account_type=Account.AccountType.E_WALLET).first()
+                elif 'card' in pm_lower or 'visa' in pm_lower or 'master' in pm_lower:
+                    account = Account.objects.filter(user=profile, account_type__in=[Account.AccountType.CREDIT_CARD, Account.AccountType.BANK]).first()
+        if not account:
+            account = Account.objects.filter(user=profile, is_active=True).first()
+            if not account:
+                account = Account.objects.create(user=profile, name='Cash Wallet', account_type=Account.AccountType.CASH)
+
+        # Find or create category if it was newly suggested
+        category = None
+        if category_name:
+            category = Category.objects.filter(user=profile, name__iexact=category_name).first()
+            if not category:
+                category = Category.objects.filter(user=profile, name__icontains=category_name).first()
+            if not category:
+                lower_cat = category_name.lower()
+                cat_icon = 'category'
+                if any(w in lower_cat for w in ['pet', 'vet', 'dog', 'cat']):
+                    cat_icon = 'pets'
+                elif any(w in lower_cat for w in ['pharmacy', 'med', 'drug', 'health', 'hospital', 'doctor']):
+                    cat_icon = 'local_hospital'
+                elif any(w in lower_cat for w in ['grocer', 'market', 'supermarket']):
+                    cat_icon = 'local_grocery_store'
+                elif any(w in lower_cat for w in ['food', 'din', 'restau', 'cafe', 'snack']):
+                    cat_icon = 'restaurant'
+                elif any(w in lower_cat for w in ['coffee', 'starbucks', 'tea']):
+                    cat_icon = 'coffee'
+                elif any(w in lower_cat for w in ['trans', 'gas', 'fuel', 'grab', 'taxi', 'car']):
+                    cat_icon = 'directions_car'
+                elif any(w in lower_cat for w in ['util', 'electric', 'water', 'power', 'bill']):
+                    cat_icon = 'bolt'
+                elif any(w in lower_cat for w in ['tech', 'gadget', 'phone', 'device', 'elec']):
+                    cat_icon = 'devices'
+                elif any(w in lower_cat for w in ['cloth', 'apparel', 'shop', 'mall']):
+                    cat_icon = 'shopping_bag'
+                elif any(w in lower_cat for w in ['movie', 'cinema', 'game', 'entertain']):
+                    cat_icon = 'movie'
+                elif any(w in lower_cat for w in ['gym', 'fit', 'sport']):
+                    cat_icon = 'fitness_center'
+
+                category = Category.objects.create(
+                    user=profile,
+                    name=category_name,
+                    category_type=Category.CategoryType.EXPENSE,
+                    icon_name=cat_icon,
+                    color_hex='#5C8F3A'
+                )
+
+        # Image compression & storage
+        image_file = None
+        if image_data:
+            try:
+                raw_b64 = image_data.split(',', 1)[1] if ',' in image_data else image_data
+                img_bytes = base64.b64decode(raw_b64)
+                pil_img = PILImage.open(BytesIO(img_bytes))
+                if pil_img.mode in ('RGBA', 'P'):
+                    pil_img = pil_img.convert('RGB')
+                
+                # Maximum dimension 1400px for optimal storage savings
+                max_dim = 1400
+                if pil_img.width > max_dim or pil_img.height > max_dim:
+                    pil_img.thumbnail((max_dim, max_dim), PILImage.Resampling.LANCZOS)
+                
+                out_buf = BytesIO()
+                pil_img.save(out_buf, format='JPEG', quality=75, optimize=True)
+                file_name = f"receipt_{tx_date}_{uuid.uuid4().hex[:6]}.jpg"
+                image_file = ContentFile(out_buf.getvalue(), name=file_name)
+            except Exception as img_err:
+                print("Receipt image compression notice:", img_err)
+
+        with db_transaction.atomic():
+            receipt = Receipt.objects.create(
+                user=profile,
+                image=image_file,
+                merchant_name=merchant,
+                receipt_date=tx_date,
+                subtotal_amount=total - tax if total >= tax else total,
+                tax_amount=tax,
+                total_amount=total,
+                ocr_status=Receipt.OCRStatus.SUCCESS,
+                gemini_raw_json=data,
+            )
+
+            for item in items_data:
+                desc = item.get('description', '').strip() or 'Item'
+                qty = Decimal(str(item.get('quantity', 1)))
+                price = Decimal(str(item.get('price', 0)))
+                item_total = price * qty if price else Decimal('0.00')
+                ReceiptItem.objects.create(
+                    receipt=receipt,
+                    item_name=desc,
+                    quantity=qty,
+                    unit_price=price,
+                    total_price=item_total,
+                )
+
+            if not notes and items_data:
+                notes = f"{len(items_data)} items scanned from receipt ({merchant})"
+
+            tx = Transaction.objects.create(
+                user=profile,
+                account=account,
+                category=category,
+                receipt=receipt,
+                transaction_type=Transaction.TransactionType.EXPENSE,
+                amount=total,
+                title=merchant,
+                transaction_date=tx_date,
+                notes=notes,
+                source=Transaction.SourceType.OCR_SCAN,
+                status=Transaction.Status.CLEARED,
+            )
+
+        return JsonResponse({
+            'success': True,
+            'transaction_id': str(tx.id),
+            'receipt_id': str(receipt.id),
+            'redirect_url': '/transactions/'
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
 def api_scan_receipt_view(request):
     """
     API Endpoint for processing receipt images with Gemini API OCR.
@@ -512,7 +673,7 @@ def api_scan_receipt_view(request):
             '  "date": "YYYY-MM-DD",\n'
             '  "time": "HH:MM",\n'
             '  "category": "Groceries",\n'
-            '  "payment_method": "Cash | GCash | Maya | Credit Card | Debit Card | Bank Transfer",\n'
+            '  "payment_method": "GCASH | MAYA | CASH | CREDIT CARD | DEBIT CARD | BANK TRANSFER | OTHER",\n'
             '  "subtotal": 0.00,\n'
             '  "tax": 0.00,\n'
             '  "total": 0.00,\n'
@@ -527,34 +688,34 @@ def api_scan_receipt_view(request):
             "2. Total/Grand Total: Read the exact grand total printed on the receipt.\n"
             "3. Tax: Do NOT calculate or guess tax on your own. Only extract tax if it is explicitly printed on the receipt image; otherwise return 0.00.\n"
             "4. Cash & Change: If payment method is Cash, extract the cash tendered and change stated on the receipt; otherwise return 0.00 for both.\n"
-            "5. Category must be one of: Groceries, Food & Dining, Transportation, Utilities, Shopping, Healthcare, Housing & Rent, Entertainment, Services, Other."
+            "5. Category must be one of: Groceries, Food & Dining, Transportation, Utilities, Shopping, Healthcare, Housing & Rent, Entertainment, Services, Other.\n"
+            "6. Payment Method: Extract ONLY the clean standard keyword identifying the payment mode used on the receipt, e.g.:\n"
+            "   - 'GCASH' (for GCash, GCash QR, QR Ph, E-Wallet)\n"
+            "   - 'MAYA' (for Maya, PayMaya)\n"
+            "   - 'CREDIT CARD' or 'DEBIT CARD' (for Visa, Mastercard, BancNet, EPS, POS card approval slips)\n"
+            "   - 'CASH' (for cash tendered, change, or standard cash transactions)\n"
+            "   - 'BANK TRANSFER' (for BDO, BPI, Unionbank, InstaPay, PESONet)\n"
+            "   Return ONLY the uppercase payment keyword (e.g. 'GCASH' or 'CASH') without transaction IDs or extra notes.\n"
+            "   If payment method is not explicitly indicated or unclear, return 'CASH'."
         )
 
         raw_bytes = image_bytes if 'image_bytes' in locals() else base64.b64decode(image_base64)
 
-        # Try gemini-2.5-flash or fallback
-        model_name = "gemini-2.5-flash"
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=[
-                    types.Part.from_bytes(
-                        data=raw_bytes,
-                        mime_type=mime_type
-                    ),
-                    prompt_text
-                ],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    response_mime_type="application/json"
-                )
-            )
-        except Exception as model_err:
-            # If 2.5 is unavailable, try gemini-1.5-flash or gemini-2.0-flash
-            err_lower = str(model_err).lower()
-            if 'not found' in err_lower or 'unsupported' in err_lower:
+        # Cascade through candidate models starting with gemini-3.6-flash
+        candidate_models = [
+            "gemini-3.6-flash",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+        ]
+
+        response = None
+        last_model_err = None
+
+        for model_name in candidate_models:
+            try:
                 response = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model=model_name,
                     contents=[
                         types.Part.from_bytes(
                             data=raw_bytes,
@@ -567,8 +728,25 @@ def api_scan_receipt_view(request):
                         response_mime_type="application/json"
                     )
                 )
-            else:
-                raise model_err
+                if response:
+                    break
+            except Exception as model_err:
+                last_model_err = model_err
+                err_lower = str(model_err).lower()
+                if (
+                    'not found' in err_lower
+                    or 'unsupported' in err_lower
+                    or '404' in err_lower
+                    or 'no longer available' in err_lower
+                ):
+                    continue
+                else:
+                    raise model_err
+
+        if not response:
+            if last_model_err:
+                raise last_model_err
+            raise RuntimeError("Failed to generate content with available Gemini models.")
 
         raw_text = response.text.strip()
         if raw_text.startswith('```'):

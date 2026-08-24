@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/transactions/<uuid:pk>/update/', views.api_update_transaction, name='api_update_transaction'),
     path('api/transactions/<uuid:pk>/delete/', views.api_delete_transaction, name='api_delete_transaction'),
     path('api/budgets/save/', views.api_save_budget, name='api_save_budget'),
+    path('api/receipts/save/', views.api_save_scanned_receipt, name='api_save_scanned_receipt'),
     path('api/receipts/<uuid:pk>/update-items/', views.api_update_receipt_items, name='api_update_receipt_items'),
     path('api/receipts/<uuid:pk>/delete/', views.api_delete_receipt, name='api_delete_receipt'),
     

@@ -93,6 +93,23 @@
                             <span>Manage</span>
                         </button>
                     </div>
+
+                    <!-- AI Category Suggestion Banner (shown when OCR detects unknown category) -->
+                    <div id="ai-category-suggestion-banner" class="hidden items-center justify-between p-2.5 px-3 rounded-2xl bg-primary-pale/90 border border-primary/40 text-deep-forest text-xs font-bold gap-2 transition-all shadow-2xs">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="material-symbols-outlined text-[17px] text-positive-deep shrink-0">auto_awesome</span>
+                            <span class="truncate text-[11px] sm:text-xs">Receipt Category: <span class="font-extrabold text-positive-deep" id="ai-suggested-category-name">Pet Care</span></span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" id="btn-create-suggested-category" class="px-2.5 py-1 rounded-xl bg-primary text-on-primary font-label-md text-[11px] font-bold hover:bg-primary-hover shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px]">add</span>
+                                <span>+ Create</span>
+                            </button>
+                            <button type="button" id="btn-dismiss-suggested-category" class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container transition-colors cursor-pointer" title="Dismiss">
+                                <span class="material-symbols-outlined text-[15px]">close</span>
+                            </button>
+                        </div>
+                    </div>
                     
                     <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
                         {% for cat in categories %}
@@ -1439,7 +1456,63 @@
             });
         }
 
-        // ─── Scanned Receipt Pre-Fill ───
+        // ─── Scanned Receipt Pre-Fill & AI Category Suggestion Engine ───
+        let pendingAiSuggestedCategory = null;
+        const aiCatSuggestionBanner = document.getElementById('ai-category-suggestion-banner');
+        const aiCatSuggestedName = document.getElementById('ai-suggested-category-name');
+        const btnCreateSuggestedCat = document.getElementById('btn-create-suggested-category');
+        const btnDismissSuggestedCat = document.getElementById('btn-dismiss-suggested-category');
+
+        function dismissAiCategorySuggestion() {
+            if (aiCatSuggestionBanner) {
+                aiCatSuggestionBanner.classList.add('hidden');
+                aiCatSuggestionBanner.classList.remove('flex');
+            }
+            pendingAiSuggestedCategory = null;
+        }
+
+        if (btnDismissSuggestedCat) {
+            btnDismissSuggestedCat.addEventListener('click', dismissAiCategorySuggestion);
+        }
+
+        if (btnCreateSuggestedCat) {
+            btnCreateSuggestedCat.addEventListener('click', () => {
+                if (!pendingAiSuggestedCategory) return;
+                openManageCategoriesModal('add');
+                if (inputNewCatName) {
+                    inputNewCatName.value = pendingAiSuggestedCategory;
+                }
+                // Match best icon for this category keyword
+                const lowerCat = pendingAiSuggestedCategory.toLowerCase();
+                let matchedIcon = 'category';
+                if (lowerCat.includes('pet') || lowerCat.includes('vet') || lowerCat.includes('dog') || lowerCat.includes('cat')) matchedIcon = 'pets';
+                else if (lowerCat.includes('pharmacy') || lowerCat.includes('med') || lowerCat.includes('drug') || lowerCat.includes('doctor') || lowerCat.includes('health')) matchedIcon = 'local_hospital';
+                else if (lowerCat.includes('grocer') || lowerCat.includes('market') || lowerCat.includes('supermarket')) matchedIcon = 'local_grocery_store';
+                else if (lowerCat.includes('food') || lowerCat.includes('din') || lowerCat.includes('restau') || lowerCat.includes('cafe') || lowerCat.includes('snack')) matchedIcon = 'restaurant';
+                else if (lowerCat.includes('coffee') || lowerCat.includes('starbucks') || lowerCat.includes('tea')) matchedIcon = 'coffee';
+                else if (lowerCat.includes('trans') || lowerCat.includes('gas') || lowerCat.includes('fuel') || lowerCat.includes('grab') || lowerCat.includes('taxi')) matchedIcon = 'directions_car';
+                else if (lowerCat.includes('util') || lowerCat.includes('electric') || lowerCat.includes('water') || lowerCat.includes('power') || lowerCat.includes('bill')) matchedIcon = 'bolt';
+                else if (lowerCat.includes('tech') || lowerCat.includes('gadget') || lowerCat.includes('phone') || lowerCat.includes('device') || lowerCat.includes('elec')) matchedIcon = 'devices';
+                else if (lowerCat.includes('cloth') || lowerCat.includes('apparel') || lowerCat.includes('shop') || lowerCat.includes('mall')) matchedIcon = 'shopping_bag';
+                else if (lowerCat.includes('movie') || lowerCat.includes('cinema') || lowerCat.includes('game') || lowerCat.includes('entertain')) matchedIcon = 'movie';
+                else if (lowerCat.includes('gym') || lowerCat.includes('fit') || lowerCat.includes('sport')) matchedIcon = 'fitness_center';
+                else if (lowerCat.includes('school') || lowerCat.includes('book') || lowerCat.includes('educ') || lowerCat.includes('tuition')) matchedIcon = 'school';
+                else if (lowerCat.includes('travel') || lowerCat.includes('flight') || lowerCat.includes('hotel') || lowerCat.includes('trip')) matchedIcon = 'flight';
+                else if (lowerCat.includes('gift') || lowerCat.includes('present') || lowerCat.includes('donation')) matchedIcon = 'card_giftcard';
+                else {
+                    for (const item of CATEGORY_ICON_SET) {
+                        if (lowerCat.includes(item.label.toLowerCase()) || item.label.toLowerCase().includes(lowerCat)) {
+                            matchedIcon = item.icon;
+                            break;
+                        }
+                    }
+                }
+
+                selectedCatIcon = matchedIcon;
+                renderCategoryIconPicker();
+            });
+        }
+
         (function checkScannedReceiptPreFill() {
             const rawData = sessionStorage.getItem('scanned_receipt_data');
             if (rawData) {
@@ -1448,15 +1521,25 @@
                     if (scanned.total && inputAmount) inputAmount.value = parseFloat(scanned.total).toFixed(2);
                     if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
                     if (scanned.date && inputDate) inputDate.value = scanned.date;
-                    if (scanned.category) {
-                        const matchingCatBtn = document.querySelector(`.category-btn[data-category="${scanned.category}"]`);
-                        if (matchingCatBtn) matchingCatBtn.click();
-                    }
                     if (scanned.payment_method && selectAccount) {
+                        const pm = scanned.payment_method.toLowerCase();
+                        let matched = false;
                         for (let opt of selectAccount.options) {
-                            if (opt.value.toLowerCase().includes(scanned.payment_method.toLowerCase())) {
+                            const optVal = opt.value.toLowerCase();
+                            if (optVal === pm || optVal.includes(pm) || pm.includes(optVal)) {
                                 selectAccount.value = opt.value;
+                                matched = true;
                                 break;
+                            }
+                        }
+                        if (!matched && (pm.includes('card') || pm.includes('visa') || pm.includes('master') || pm.includes('bancnet'))) {
+                            for (let opt of selectAccount.options) {
+                                const optVal = opt.value.toLowerCase();
+                                if (optVal.includes('card') || optVal.includes('credit') || optVal.includes('debit')) {
+                                    selectAccount.value = opt.value;
+                                    matched = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1464,6 +1547,30 @@
                         const itemSummary = scanned.items.map(i => `${i.description} (x${i.quantity || 1})`).join(', ');
                         inputNotes.value = itemSummary;
                     }
+
+                    // Handle Category matching or Option A Suggestion Banner
+                    if (scanned.category) {
+                        const targetCat = scanned.category.trim();
+                        // Find matching category button
+                        const existingButtons = Array.from(document.querySelectorAll('.category-btn'));
+                        const exactMatch = existingButtons.find(b => b.dataset.category?.toLowerCase() === targetCat.toLowerCase());
+                        const partialMatch = !exactMatch ? existingButtons.find(b => b.dataset.category && (b.dataset.category.toLowerCase().includes(targetCat.toLowerCase()) || targetCat.toLowerCase().includes(b.dataset.category.toLowerCase()))) : null;
+
+                        const matchedBtn = exactMatch || partialMatch;
+                        if (matchedBtn) {
+                            selectCategoryBtn(matchedBtn);
+                            dismissAiCategorySuggestion();
+                        } else {
+                            // No matching category found -> show AI Suggestion Chip!
+                            pendingAiSuggestedCategory = targetCat;
+                            if (aiCatSuggestedName) aiCatSuggestedName.textContent = targetCat;
+                            if (aiCatSuggestionBanner) {
+                                aiCatSuggestionBanner.classList.remove('hidden');
+                                aiCatSuggestionBanner.classList.add('flex');
+                            }
+                        }
+                    }
+
                     sessionStorage.removeItem('scanned_receipt_data');
                     markDirty();
                 } catch (e) {
