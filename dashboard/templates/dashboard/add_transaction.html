@@ -225,37 +225,6 @@
 
         <!-- Tab 1: Add New Category Pane -->
         <div id="pane-add-category" class="flex flex-col gap-3.5 overflow-y-auto pr-1 flex-1">
-            
-            <!-- Presets -->
-            <div class="flex flex-col gap-1.5">
-                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Presets</label>
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Groceries" data-icon="local_grocery_store">
-                        <span class="material-symbols-outlined text-[14px]">local_grocery_store</span> Groceries
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Food & Dining" data-icon="restaurant">
-                        <span class="material-symbols-outlined text-[14px]">restaurant</span> Dining
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Transportation" data-icon="directions_car">
-                        <span class="material-symbols-outlined text-[14px]">directions_car</span> Transport
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Utilities & Bills" data-icon="bolt">
-                        <span class="material-symbols-outlined text-[14px]">bolt</span> Utilities
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Shopping" data-icon="shopping_bag">
-                        <span class="material-symbols-outlined text-[14px]">shopping_bag</span> Shopping
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Health & Medical" data-icon="local_hospital">
-                        <span class="material-symbols-outlined text-[14px]">local_hospital</span> Medical
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Entertainment" data-icon="movie">
-                        <span class="material-symbols-outlined text-[14px]">movie</span> Entertainment
-                    </button>
-                    <button type="button" class="cat-preset-chip text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale hover:text-positive-deep transition-all cursor-pointer flex items-center gap-1 active:scale-95" data-name="Cafe & Drinks" data-icon="coffee">
-                        <span class="material-symbols-outlined text-[14px]">coffee</span> Cafe
-                    </button>
-                </div>
-            </div>
 
             <!-- Name Input -->
             <div class="flex flex-col gap-1.5">
@@ -548,6 +517,17 @@
                 btn.addEventListener('click', () => {
                     selectedCatIcon = item.icon;
                     if (labelSelected) labelSelected.textContent = item.label;
+
+                    // Smart Auto-fill: If name is empty or matches one of the preset labels, fill with clicked icon name
+                    if (inputNewCatName) {
+                        const currentVal = inputNewCatName.value.trim().toLowerCase();
+                        const isBlank = currentVal === '';
+                        const isMatchingPreset = CATEGORY_ICON_SET.some(c => c.label.toLowerCase() === currentVal);
+                        if (isBlank || isMatchingPreset) {
+                            inputNewCatName.value = item.label;
+                        }
+                    }
+
                     document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn').forEach(b => {
                         b.className = 'icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest transition-all cursor-pointer active:scale-95 text-center min-h-[58px]';
                     });
@@ -635,18 +615,6 @@
             });
         }
 
-        // Preset category chips
-        document.querySelectorAll('.cat-preset-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                if (inputNewCatName) {
-                    inputNewCatName.value = chip.dataset.name || '';
-                    inputNewCatName.focus();
-                }
-                const targetIcon = chip.dataset.icon || 'local_grocery_store';
-                selectedCatIcon = targetIcon;
-                renderCategoryIconPicker();
-            });
-        });
 
         function openManageCategoriesModal(initialTab = 'add') {
             if (!manageCatModal) return;
