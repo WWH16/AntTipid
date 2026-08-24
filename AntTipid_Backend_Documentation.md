@@ -132,7 +132,6 @@ erDiagram
         string name
         string kind "expense | income"
         string icon "material symbol name"
-        boolean is_system_default
     }
 
     TRANSACTION {

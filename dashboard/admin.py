@@ -27,8 +27,8 @@ class AccountAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category_type', 'is_system_default', 'user', 'icon_name', 'color_hex')
-    list_filter = ('category_type', 'is_system_default')
+    list_display = ('name', 'category_type', 'user', 'icon_name', 'color_hex')
+    list_filter = ('category_type',)
     search_fields = ('name',)
 
 

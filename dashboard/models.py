@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 
 
@@ -6,7 +5,7 @@ class UserProfile(models.Model):
     """
     User Profile associated with Clerk authentication.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     clerk_user_id = models.CharField(max_length=255, unique=True, db_index=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
     first_name = models.CharField(max_length=150, blank=True, default='')
@@ -39,7 +38,7 @@ class Account(models.Model):
         SAVINGS = 'SAVINGS', 'Savings Account'
         OTHER = 'OTHER', 'Other'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='accounts', db_index=True)
     name = models.CharField(max_length=100, help_text="e.g. Cash Wallet, GCash, BPI Checking")
     account_type = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.CASH)
@@ -68,14 +67,13 @@ class Category(models.Model):
         EXPENSE = 'EXPENSE', 'Expense'
         INCOME = 'INCOME', 'Income'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='categories', null=True, blank=True, help_text="Null for system-default categories")
     parent_category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
     name = models.CharField(max_length=80)
     category_type = models.CharField(max_length=10, choices=CategoryType.choices, default=CategoryType.EXPENSE)
     icon_name = models.CharField(max_length=50, default='category', help_text="Material symbols icon key")
     color_hex = models.CharField(max_length=10, default='#5C8F3A')
-    is_system_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -97,7 +95,7 @@ class Receipt(models.Model):
         EDITED = 'EDITED', 'Edited'
         FAILED = 'FAILED', 'Failed'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='receipts', db_index=True)
     image = models.ImageField(upload_to='receipts/%Y/%m/', blank=True, null=True)
     image_url = models.URLField(max_length=1000, blank=True, null=True)
@@ -127,7 +125,7 @@ class ReceiptItem(models.Model):
     """
     Individual extracted or edited line items from a scanned receipt.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE, related_name='items')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='receipt_items')
     item_name = models.CharField(max_length=255)
@@ -164,7 +162,7 @@ class Transaction(models.Model):
         PENDING = 'PENDING', 'Pending'
         RECONCILED = 'RECONCILED', 'Reconciled'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='transactions', db_index=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='source_transactions', help_text="Source Account (e.g. Cash Wallet, GCash, Bank)")
     destination_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='destination_transactions', help_text="Target Account for Transfers")
@@ -198,7 +196,7 @@ class Budget(models.Model):
         MONTHLY = 'MONTHLY', 'Monthly'
         YEARLY = 'YEARLY', 'Yearly'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='budgets', db_index=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='budgets', help_text="Leave empty for Overall Monthly Budget")
     name = models.CharField(max_length=100, help_text="e.g. Food & Dining Budget, November Limit")
@@ -232,7 +230,7 @@ class RecurringRule(models.Model):
         MONTHLY = 'MONTHLY', 'Monthly'
         YEARLY = 'YEARLY', 'Yearly'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='recurring_rules', db_index=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='recurring_rules')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='recurring_rules')

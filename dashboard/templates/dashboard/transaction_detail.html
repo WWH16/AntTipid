@@ -2,8 +2,7 @@
 {% load static %}
 
 {% block title %}{{ transaction.title|default:'Transaction Details' }} | AntTipid{% endblock %}
-{% block header_title %}Transaction Details{% endblock %}
-{% block meta_description %}View itemized transaction details, payment method, category, notes, and ledger breakdown.{% endblock %}
+{% block meta_description %}View itemized transaction details, payment method, category, notes, and amount.{% endblock %}
 
 {% block content %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
@@ -191,31 +190,15 @@
                         </div>
                     </div>
 
-                    <!-- Financial Summary Breakdown -->
-                    <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex flex-col gap-1.5">
-                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
-                            <span>Ledger Source</span>
-                            <span class="inline-flex items-center gap-1 font-bold text-deep-forest">
-                                <span class="material-symbols-outlined text-[13px] text-positive-deep">edit_note</span>
-                                Manual Entry
-                            </span>
+                    <!-- Total Amount Breakdown -->
+                    <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex justify-between items-end">
+                        <div>
+                            <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
+                            <span class="font-label-sm text-[10px] text-body font-medium">Philippine Peso (PHP)</span>
                         </div>
-                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
-                            <span>Status</span>
-                            <span class="font-bold text-positive-deep flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></span>
-                                Cleared
-                            </span>
-                        </div>
-                        <div class="border-t border-outline-variant/40 pt-2.5 mt-1 flex justify-between items-end">
-                            <div>
-                                <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
-                                <span class="font-label-sm text-[10px] text-body font-medium">Philippine Peso (PHP)</span>
-                            </div>
-                            <span id="tx-display-total-amount" class="font-headline-lg text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums {% if transaction.transaction_type == 'INCOME' %}text-positive-deep{% elif transaction.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %}">
-                                {% if transaction.transaction_type == 'INCOME' %}+₱{{ transaction.amount|floatformat:2 }}{% elif transaction.transaction_type == 'TRANSFER' %}₱{{ transaction.amount|floatformat:2 }}{% else %}-₱{{ transaction.amount|floatformat:2 }}{% endif %}
-                            </span>
-                        </div>
+                        <span id="tx-display-total-amount" class="font-headline-lg text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums {% if transaction.transaction_type == 'INCOME' %}text-positive-deep{% elif transaction.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %}">
+                            {% if transaction.transaction_type == 'INCOME' %}+₱{{ transaction.amount|floatformat:2 }}{% elif transaction.transaction_type == 'TRANSFER' %}₱{{ transaction.amount|floatformat:2 }}{% else %}-₱{{ transaction.amount|floatformat:2 }}{% endif %}
+                        </span>
                     </div>
                 </div>
 
@@ -227,12 +210,8 @@
                     <!-- Overview Header Label -->
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-outline-variant/30 text-xs">
                         <span class="font-label-sm text-[11px] font-bold text-deep-forest flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px] text-positive-deep">edit_note</span>
-                            Manual Entry Record
-                        </span>
-                        <span class="bg-surface-container-low/80 border border-outline-variant/50 text-deep-forest px-2 py-0.5 rounded-lg font-label-sm text-[10px] font-bold flex items-center justify-center gap-1">
-                            <span class="material-symbols-outlined text-[12px] text-positive-deep">verified</span>
-                            Verified
+                            <span class="material-symbols-outlined text-[16px] text-positive-deep">overview</span>
+                            Transaction Overview
                         </span>
                     </div>
 
@@ -289,7 +268,7 @@
             </div>
             <div class="flex flex-col gap-1">
                 <h3 id="modal-delete-tx-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed from your ledger.</p>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
             </div>
         </div>
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
