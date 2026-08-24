@@ -247,7 +247,15 @@
                 </div>
                 {% empty %}
                 <div class="sm:col-span-2 lg:col-span-3 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-8 text-center text-xs text-body font-medium shadow-xs">
-                    No budget limits set yet. Click "New Category" to set your monthly targets.
+                  <p class="mb-3 font-body-sm text-[11px] text-on-surface-variant">
+                    You haven’t created any budget limits for this month yet.
+                    Set your financial targets so you can track spending against them.
+                  </p>
+                  <button type="button"
+                          id="btn-add-category"
+                          class="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-sm text-xs font-bold hover:bg-primary-hover transition-all">
+                    New Category
+                  </button>
                 </div>
                 {% endfor %}
 

@@ -183,7 +183,8 @@
                 </div>
                 {% empty %}
                 <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-8 text-center text-xs text-body font-medium">
-                    No transactions recorded yet.
+                    <p>No transactions recorded yet.</p>
+                    <a href="{% url 'add_transaction' %}" class="mt-4 inline-block px-4 py-2 bg-primary text-on-primary rounded-md font-bold hover:bg-primary-hover transition">Add your first transaction</a>
                 </div>
                 {% endfor %}
             </div>
