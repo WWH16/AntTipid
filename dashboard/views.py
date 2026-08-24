@@ -131,6 +131,31 @@ def receipt_detail_view(request, pk=None):
     return render(request, 'dashboard/receipt_detail.html', context)
 
 
+def transaction_detail_view(request, pk=None):
+    """Render the transaction details view matching receipt details styling."""
+    profile = get_current_user_profile(request)
+    transaction = None
+    if pk:
+        transaction = get_object_or_404(Transaction, id=pk, user=profile)
+    elif profile:
+        transaction = Transaction.objects.filter(user=profile).order_by('-transaction_date', '-created_at').first()
+
+    if not transaction and profile:
+        return redirect('transactions')
+
+    categories = Category.objects.filter(user=profile).order_by('name') if profile else []
+    accounts = Account.objects.filter(user=profile, is_active=True).order_by('name') if profile else []
+
+    context = {
+        'active_nav': 'transactions',
+        'profile': profile,
+        'transaction': transaction,
+        'categories': categories,
+        'accounts': accounts,
+    }
+    return render(request, 'dashboard/transaction_detail.html', context)
+
+
 def add_transaction_view(request):
     """Render and process the manual transaction entry screen."""
     profile = get_current_user_profile(request)
@@ -277,6 +302,11 @@ def api_update_transaction(request, pk):
         data = json.loads(request.body.decode('utf-8'))
         if 'amount' in data:
             tx.amount = Decimal(str(data['amount']))
+
+        if 'type' in data and data['type']:
+            t_type = data['type'].strip().upper()
+            if t_type in ('EXPENSE', 'INCOME', 'TRANSFER'):
+                tx.transaction_type = t_type
 
         if 'title' in data:
             tx.title = data['title'].strip()

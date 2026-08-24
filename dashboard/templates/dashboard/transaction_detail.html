@@ -1,0 +1,580 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ transaction.title|default:'Transaction Details' }} | AntTipid{% endblock %}
+{% block header_title %}Transaction Details{% endblock %}
+{% block meta_description %}View itemized transaction details, payment method, category, notes, and ledger breakdown.{% endblock %}
+
+{% block content %}
+<div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
+    <div class="max-w-6xl mx-auto flex flex-col gap-4">
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- TOP COMPACT NAVIGATION & ACTIONS BAR    -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="flex items-center justify-between gap-2 pt-1 pb-1">
+            <a href="{% url 'transactions' %}" id="btn-back-transaction" class="inline-flex items-center gap-1.5 text-body hover:text-positive-deep transition-colors font-label-md text-xs font-bold py-1 shrink-0 cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                <span class="hidden sm:inline">Back to History &amp; Receipts</span>
+                <span class="sm:hidden">Back</span>
+            </a>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button type="button" id="btn-edit-tx" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 h-9 sm:h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-primary-pale hover:text-positive-deep transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">edit</span>
+                    <span class="hidden sm:inline">Edit Details</span>
+                </button>
+                <button type="button" id="btn-delete-tx" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 h-9 sm:h-8 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">delete</span>
+                    <span class="hidden sm:inline">Delete</span>
+                </button>
+                <button type="button" id="btn-cancel-edit-tx" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">close</span>
+                    <span class="hidden sm:inline">Cancel</span>
+                </button>
+                <button type="button" id="btn-save-edit-tx" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 h-8 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">check</span>
+                    <span class="hidden sm:inline">Save Changes</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- COMPACT 2-COLUMN TRANSACTION LAYOUT     -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+            
+            <!-- RIGHT COLUMN: TRANSACTION DATA & BREAKDOWN (Appears first on mobile for immediate reading) -->
+            <div class="lg:col-span-7 flex flex-col gap-4 order-1 lg:order-2">
+                
+                <!-- Main Transaction Card with Integrated Info Header -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 sm:p-5 shadow-xs flex flex-col">
+                    
+                    <!-- Integrated Header On The Card -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 sm:pb-3.5 sm:mb-3.5 border-b border-outline-variant/40">
+                        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                            <!-- Category / Type Icon Avatar -->
+                            <div id="tx-header-icon-box" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl {% if transaction.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif transaction.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px] sm:text-[20px]" id="tx-header-icon">
+                                    {% if transaction.transaction_type == 'INCOME' %}payments{% elif transaction.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ transaction.category.icon_name|default:'payments' }}{% endif %}
+                                </span>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                    <h1 id="tx-display-title" class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest tracking-tight truncate">{{ transaction.title }}</h1>
+                                    <span id="tx-display-category-badge" class="px-2 py-0.5 rounded-full bg-surface-container text-deep-forest font-label-sm text-[10px] sm:text-[11px] font-bold border border-outline-variant/60">{{ transaction.category.name|default:transaction.get_transaction_type_display }}</span>
+                                </div>
+                                <p class="font-body-sm text-[11px] sm:text-xs text-body flex items-center gap-1.5 mt-0.5 font-medium flex-wrap">
+                                    <span class="material-symbols-outlined text-[13px] sm:text-[14px]">event</span>
+                                    <span id="tx-display-date-sub">{{ transaction.transaction_date|date:"M d, Y" }}</span>
+                                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                                    <span id="tx-display-account-sub" class="text-body/80 text-[10px] sm:text-[11px]">{{ transaction.account.name }}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Type Badge -->
+                        <span id="tx-display-type-badge" class="self-start sm:self-center font-label-sm text-[11px] sm:text-xs font-bold px-2.5 py-0.5 sm:py-1 rounded-full border shrink-0 {% if transaction.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border-positive/30{% elif transaction.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border-amber-500/30{% else %}bg-expense/15 text-expense border-expense/30{% endif %}">
+                            {{ transaction.get_transaction_type_display }}
+                        </span>
+                    </div>
+
+                    <!-- READ-ONLY DETAILS VIEW -->
+                    <div id="tx-readonly-details" class="flex flex-col divide-y divide-outline-variant/30 text-xs sm:text-sm">
+                        <!-- Description Row -->
+                        <div class="py-2.5 sm:py-3 flex items-center justify-between gap-4">
+                            <span class="font-label-sm text-[11px] text-body uppercase tracking-[0.06em] font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-body">description</span>
+                                Description
+                            </span>
+                            <span id="tx-detail-title-val" class="font-bold text-deep-forest text-right truncate max-w-[240px] sm:max-w-[320px]">{{ transaction.title }}</span>
+                        </div>
+
+                        <!-- Transaction Type Row -->
+                        <div class="py-2.5 sm:py-3 flex items-center justify-between gap-4">
+                            <span class="font-label-sm text-[11px] text-body uppercase tracking-[0.06em] font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-body">sync_alt</span>
+                                Transaction Type
+                            </span>
+                            <span id="tx-detail-type-val" class="font-bold text-deep-forest text-right">{{ transaction.get_transaction_type_display }}</span>
+                        </div>
+
+                        <!-- Category Row -->
+                        <div class="py-2.5 sm:py-3 flex items-center justify-between gap-4">
+                            <span class="font-label-sm text-[11px] text-body uppercase tracking-[0.06em] font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-body">category</span>
+                                Category
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-low text-deep-forest font-bold border border-outline-variant/60">
+                                <span class="material-symbols-outlined text-[14px]" id="tx-detail-cat-icon">{{ transaction.category.icon_name|default:'category' }}</span>
+                                <span id="tx-detail-category-val">{{ transaction.category.name|default:transaction.get_transaction_type_display }}</span>
+                            </span>
+                        </div>
+
+                        <!-- Payment Method / Account Row -->
+                        <div class="py-2.5 sm:py-3 flex items-center justify-between gap-4">
+                            <span class="font-label-sm text-[11px] text-body uppercase tracking-[0.06em] font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-body">account_balance_wallet</span>
+                                Payment Method
+                            </span>
+                            <span id="tx-detail-account-val" class="font-bold text-deep-forest text-right">{{ transaction.account.name }}</span>
+                        </div>
+
+                        <!-- Date Recorded Row -->
+                        <div class="py-2.5 sm:py-3 flex items-center justify-between gap-4">
+                            <span class="font-label-sm text-[11px] text-body uppercase tracking-[0.06em] font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-body">calendar_today</span>
+                                Date Recorded
+                            </span>
+                            <span id="tx-detail-date-val" class="font-semibold text-deep-forest text-right tabular-nums">{{ transaction.transaction_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+
+                    <!-- EDITABLE FORM (Hidden by default, shown during edit mode) -->
+                    <div id="tx-editable-form" class="hidden flex-col gap-3 pt-1 pb-2">
+                        <!-- Edit Title -->
+                        <div class="space-y-1">
+                            <label for="edit-tx-title" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Description / Title</label>
+                            <input type="text" id="edit-tx-title" value="{{ transaction.title }}" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                        </div>
+
+                        <!-- Edit Amount & Type Row -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label for="edit-tx-amount" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Amount (PHP)</label>
+                                <input type="number" step="0.01" min="0" id="edit-tx-amount" value="{{ transaction.amount|floatformat:2 }}" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 tabular-nums" />
+                            </div>
+                            <div class="space-y-1">
+                                <label for="edit-tx-type" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Transaction Type</label>
+                                <select id="edit-tx-type" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20">
+                                    <option value="EXPENSE" {% if transaction.transaction_type == 'EXPENSE' %}selected{% endif %}>Expense</option>
+                                    <option value="INCOME" {% if transaction.transaction_type == 'INCOME' %}selected{% endif %}>Income</option>
+                                    <option value="TRANSFER" {% if transaction.transaction_type == 'TRANSFER' %}selected{% endif %}>Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Edit Category & Account Row -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label for="edit-tx-category" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Category</label>
+                                <select id="edit-tx-category" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20">
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.name }}" data-icon="{{ cat.icon_name }}" {% if transaction.category and transaction.category.name == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endfor %}
+                                    {% if not transaction.category %}
+                                    <option value="General" selected>General</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label for="edit-tx-account" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Payment Account</label>
+                                <select id="edit-tx-account" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20">
+                                    {% for acc in accounts %}
+                                    <option value="{{ acc.name }}" {% if transaction.account.id == acc.id %}selected{% endif %}>{{ acc.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Edit Date -->
+                        <div class="space-y-1">
+                            <label for="edit-tx-date" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Date</label>
+                            <input type="date" id="edit-tx-date" value="{{ transaction.transaction_date|date:'Y-m-d' }}" class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                        </div>
+
+                        <!-- Edit Notes -->
+                        <div class="space-y-1">
+                            <label for="edit-tx-notes" class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Notes &amp; Remarks</label>
+                            <textarea id="edit-tx-notes" rows="2" placeholder="Add optional notes..." class="w-full px-3 py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-xl text-xs sm:text-sm font-medium text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20">{{ transaction.notes }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Financial Summary Breakdown -->
+                    <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex flex-col gap-1.5">
+                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
+                            <span>Ledger Source</span>
+                            <span class="inline-flex items-center gap-1 font-bold text-deep-forest">
+                                <span class="material-symbols-outlined text-[13px] text-positive-deep">edit_note</span>
+                                Manual Entry
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
+                            <span>Status</span>
+                            <span class="font-bold text-positive-deep flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></span>
+                                Cleared
+                            </span>
+                        </div>
+                        <div class="border-t border-outline-variant/40 pt-2.5 mt-1 flex justify-between items-end">
+                            <div>
+                                <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
+                                <span class="font-label-sm text-[10px] text-body font-medium">Philippine Peso (PHP)</span>
+                            </div>
+                            <span id="tx-display-total-amount" class="font-headline-lg text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums {% if transaction.transaction_type == 'INCOME' %}text-positive-deep{% elif transaction.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %}">
+                                {% if transaction.transaction_type == 'INCOME' %}+₱{{ transaction.amount|floatformat:2 }}{% elif transaction.transaction_type == 'TRANSFER' %}₱{{ transaction.amount|floatformat:2 }}{% else %}-₱{{ transaction.amount|floatformat:2 }}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- LEFT COLUMN: VISUAL TRANSACTION OVERVIEW & METADATA -->
+            <div class="lg:col-span-5 flex flex-col gap-3 order-2 lg:order-1">
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3 shadow-xs flex flex-col relative group overflow-hidden">
+                    <!-- Overview Header Label -->
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-outline-variant/30 text-xs">
+                        <span class="font-label-sm text-[11px] font-bold text-deep-forest flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-positive-deep">edit_note</span>
+                            Manual Entry Record
+                        </span>
+                        <span class="bg-surface-container-low/80 border border-outline-variant/50 text-deep-forest px-2 py-0.5 rounded-lg font-label-sm text-[10px] font-bold flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[12px] text-positive-deep">verified</span>
+                            Verified
+                        </span>
+                    </div>
+
+                    <!-- Visual Card Showcase Container (Matching Receipt Scan Viewport Height & Style) -->
+                    <div class="rounded-xl overflow-hidden relative bg-surface-container-low flex flex-col items-center justify-center p-6 min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] text-center" id="tx-visual-card">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl {% if transaction.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif transaction.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center mb-3 shadow-xs" id="tx-visual-icon-box">
+                            <span class="material-symbols-outlined text-[36px] sm:text-[44px]" id="tx-visual-icon">
+                                {% if transaction.transaction_type == 'INCOME' %}payments{% elif transaction.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ transaction.category.icon_name|default:'payments' }}{% endif %}
+                            </span>
+                        </div>
+                        <h2 id="tx-visual-title" class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight max-w-[280px] truncate">{{ transaction.title }}</h2>
+                        <span id="tx-visual-amount" class="font-headline-lg text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums my-1.5 {% if transaction.transaction_type == 'INCOME' %}text-positive-deep{% elif transaction.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %}">
+                            {% if transaction.transaction_type == 'INCOME' %}+₱{{ transaction.amount|floatformat:2 }}{% elif transaction.transaction_type == 'TRANSFER' %}₱{{ transaction.amount|floatformat:2 }}{% else %}-₱{{ transaction.amount|floatformat:2 }}{% endif %}
+                        </span>
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <span id="tx-visual-category" class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-deep-forest font-label-sm text-[11px] font-bold border border-outline-variant/60 shadow-2xs">
+                                {{ transaction.category.name|default:transaction.get_transaction_type_display }}
+                            </span>
+                            <span id="tx-visual-date" class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-body font-label-sm text-[11px] font-medium border border-outline-variant/40 shadow-2xs">
+                                {{ transaction.transaction_date|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Payment & Notes Strip -->
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 shadow-xs flex flex-col gap-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold">Payment</span>
+                        <span id="tx-notes-account-val" class="font-bold text-deep-forest text-xs">{{ transaction.account.name|default:'Cash Wallet' }}</span>
+                    </div>
+                    <div class="flex items-start justify-between text-xs border-t border-outline-variant/30 pt-2">
+                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold shrink-0 mr-2">Note</span>
+                        <span id="tx-notes-text-val" class="font-body-sm text-[11px] {% if transaction.notes %}text-on-surface-variant italic font-medium{% else %}text-on-surface-variant/60 italic{% endif %} text-right">
+                            {% if transaction.notes %}"{{ transaction.notes }}"{% else %}No notes recorded{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- DELETE TRANSACTION CONFIRMATION MODAL   -->
+<!-- ═══════════════════════════════════════ -->
+<div id="modal-confirm-delete-transaction" role="dialog" aria-modal="true" aria-labelledby="modal-delete-tx-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-delete-tx-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[22px]">delete</span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <h3 id="modal-delete-tx-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
+                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed from your ledger.</p>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
+            <button type="button" id="btn-cancel-delete-modal" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
+            <button type="button" id="btn-confirm-delete-modal" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Transaction</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const txId = '{{ transaction.id }}';
+        let isEditing = false;
+
+        // Action Buttons
+        const editBtn = document.getElementById('btn-edit-tx');
+        const deleteBtn = document.getElementById('btn-delete-tx');
+        const cancelEditBtn = document.getElementById('btn-cancel-edit-tx');
+        const saveEditBtn = document.getElementById('btn-save-edit-tx');
+
+        // Views
+        const readonlyDetails = document.getElementById('tx-readonly-details');
+        const editableForm = document.getElementById('tx-editable-form');
+
+        // Form Inputs
+        const inputTitle = document.getElementById('edit-tx-title');
+        const inputAmount = document.getElementById('edit-tx-amount');
+        const inputType = document.getElementById('edit-tx-type');
+        const inputCategory = document.getElementById('edit-tx-category');
+        const inputAccount = document.getElementById('edit-tx-account');
+        const inputDate = document.getElementById('edit-tx-date');
+        const inputNotes = document.getElementById('edit-tx-notes');
+
+        // Display Elements
+        const displayTitle = document.getElementById('tx-display-title');
+        const displayCatBadge = document.getElementById('tx-display-category-badge');
+        const displayDateSub = document.getElementById('tx-display-date-sub');
+        const displayAccountSub = document.getElementById('tx-display-account-sub');
+        const displayTypeBadge = document.getElementById('tx-display-type-badge');
+        const displayTotalAmount = document.getElementById('tx-display-total-amount');
+
+        const detailTitleVal = document.getElementById('tx-detail-title-val');
+        const detailTypeVal = document.getElementById('tx-detail-type-val');
+        const detailCategoryVal = document.getElementById('tx-detail-category-val');
+        const detailCatIcon = document.getElementById('tx-detail-cat-icon');
+        const detailAccountVal = document.getElementById('tx-detail-account-val');
+        const detailDateVal = document.getElementById('tx-detail-date-val');
+
+        const visualTitle = document.getElementById('tx-visual-title');
+        const visualAmount = document.getElementById('tx-visual-amount');
+        const visualCategory = document.getElementById('tx-visual-category');
+        const visualDate = document.getElementById('tx-visual-date');
+        const visualIcon = document.getElementById('tx-visual-icon');
+        const visualIconBox = document.getElementById('tx-visual-icon-box');
+        const headerIcon = document.getElementById('tx-header-icon');
+        const headerIconBox = document.getElementById('tx-header-icon-box');
+
+        const notesAccountVal = document.getElementById('tx-notes-account-val');
+        const notesTextVal = document.getElementById('tx-notes-text-val');
+
+        // Delete Modal Elements
+        const deleteModal = document.getElementById('modal-confirm-delete-transaction');
+        const deleteModalContent = document.getElementById('modal-confirm-delete-tx-content');
+        const cancelDeleteBtn = document.getElementById('btn-cancel-delete-modal');
+        const confirmDeleteBtn = document.getElementById('btn-confirm-delete-modal');
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    if (!isNaN(d.getTime())) {
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    }
+                }
+            } catch(e) {}
+            return dateStr;
+        }
+
+        function formatMoney(amount, type) {
+            const num = Math.abs(parseFloat(amount) || 0);
+            const str = num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (type === 'INCOME') return `+₱${str}`;
+            if (type === 'TRANSFER') return `₱${str}`;
+            return `-₱${str}`;
+        }
+
+        function updateTypeStyling(type) {
+            const isIncome = type === 'INCOME';
+            const isTransfer = type === 'TRANSFER';
+
+            const colorClass = isIncome ? 'text-positive-deep' : (isTransfer ? 'text-amber-800' : 'text-expense');
+            const bgBorderClass = isIncome 
+                ? 'bg-primary-pale text-positive-deep border-positive/30' 
+                : (isTransfer ? 'bg-amber-500/15 text-amber-800 border-amber-500/30' : 'bg-expense/15 text-expense border-expense/30');
+
+            if (displayTotalAmount) {
+                displayTotalAmount.className = `font-headline-lg text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums ${colorClass}`;
+            }
+            if (visualAmount) {
+                visualAmount.className = `font-headline-lg text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums my-1.5 ${colorClass}`;
+            }
+            if (displayTypeBadge) {
+                displayTypeBadge.className = `self-start sm:self-center font-label-sm text-[11px] sm:text-xs font-bold px-2.5 py-0.5 sm:py-1 rounded-full border shrink-0 ${bgBorderClass}`;
+                displayTypeBadge.textContent = isIncome ? 'Income' : (isTransfer ? 'Transfer' : 'Expense');
+            }
+            if (headerIconBox) {
+                headerIconBox.className = `w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${bgBorderClass} flex items-center justify-center shrink-0`;
+            }
+            if (visualIconBox) {
+                visualIconBox.className = `w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${bgBorderClass} flex items-center justify-center mb-3 shadow-xs`;
+            }
+        }
+
+        function enterEditMode() {
+            isEditing = true;
+            if (readonlyDetails) readonlyDetails.classList.add('hidden');
+            if (editableForm) {
+                editableForm.classList.remove('hidden');
+                editableForm.classList.add('flex');
+            }
+            if (editBtn) editBtn.classList.add('hidden');
+            if (deleteBtn) deleteBtn.classList.add('hidden');
+            if (cancelEditBtn) cancelEditBtn.classList.remove('hidden');
+            if (saveEditBtn) saveEditBtn.classList.remove('hidden');
+        }
+
+        function exitEditMode() {
+            isEditing = false;
+            if (editableForm) {
+                editableForm.classList.add('hidden');
+                editableForm.classList.remove('flex');
+            }
+            if (readonlyDetails) readonlyDetails.classList.remove('hidden');
+            if (editBtn) editBtn.classList.remove('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (cancelEditBtn) cancelEditBtn.classList.add('hidden');
+            if (saveEditBtn) saveEditBtn.classList.add('hidden');
+        }
+
+        if (editBtn) editBtn.addEventListener('click', enterEditMode);
+        if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
+
+        if (saveEditBtn) {
+            saveEditBtn.addEventListener('click', async () => {
+                const title = inputTitle ? inputTitle.value.trim() : '';
+                const amount = inputAmount ? parseFloat(inputAmount.value) || 0 : 0;
+                const type = inputType ? inputType.value : 'EXPENSE';
+                const category = inputCategory ? inputCategory.value : 'General';
+                const account = inputAccount ? inputAccount.value : 'Cash Wallet';
+                const dateVal = inputDate ? inputDate.value : '';
+                const notes = inputNotes ? inputNotes.value.trim() : '';
+
+                const formattedDate = formatDate(dateVal);
+                const moneyText = formatMoney(amount, type);
+
+                // Update UI immediately
+                if (displayTitle) displayTitle.textContent = title || 'Untitled Transaction';
+                if (detailTitleVal) detailTitleVal.textContent = title || 'Untitled Transaction';
+                if (visualTitle) visualTitle.textContent = title || 'Untitled Transaction';
+
+                if (displayCatBadge) displayCatBadge.textContent = category;
+                if (detailCategoryVal) detailCategoryVal.textContent = category;
+                if (visualCategory) visualCategory.textContent = category;
+
+                if (displayAccountSub) displayAccountSub.textContent = account;
+                if (detailAccountVal) detailAccountVal.textContent = account;
+                if (notesAccountVal) notesAccountVal.textContent = account;
+
+                if (displayDateSub) displayDateSub.textContent = formattedDate;
+                if (detailDateVal) detailDateVal.textContent = formattedDate;
+                if (visualDate) visualDate.textContent = formattedDate;
+
+                if (detailTypeVal) detailTypeVal.textContent = type.charAt(0) + type.slice(1).toLowerCase();
+                if (displayTotalAmount) displayTotalAmount.textContent = moneyText;
+                if (visualAmount) visualAmount.textContent = moneyText;
+
+                updateTypeStyling(type);
+
+                if (notesTextVal) {
+                    if (notes) {
+                        notesTextVal.textContent = `"${notes}"`;
+                        notesTextVal.className = 'font-body-sm text-[11px] text-on-surface-variant italic font-medium text-right';
+                    } else {
+                        notesTextVal.textContent = 'No notes recorded';
+                        notesTextVal.className = 'font-body-sm text-[11px] text-on-surface-variant/60 italic text-right';
+                    }
+                }
+
+                exitEditMode();
+
+                // Save to API
+                try {
+                    await fetch(`/api/transactions/${txId}/update/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({
+                            title,
+                            amount,
+                            type,
+                            category,
+                            account,
+                            date: dateVal,
+                            notes
+                        })
+                    });
+                } catch(err) {
+                    console.error('Update transaction error:', err);
+                }
+            });
+        }
+
+        // Delete Modal Handlers
+        function openDeleteModal() {
+            if (!deleteModal) return;
+            deleteModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                deleteModal.classList.remove('opacity-0');
+                deleteModal.classList.add('opacity-100');
+                if (deleteModalContent) {
+                    deleteModalContent.classList.remove('scale-95');
+                    deleteModalContent.classList.add('scale-100');
+                }
+                if (cancelDeleteBtn) cancelDeleteBtn.focus();
+            });
+        }
+
+        function closeDeleteModal() {
+            if (!deleteModal) return;
+            deleteModal.classList.remove('opacity-100');
+            deleteModal.classList.add('opacity-0');
+            if (deleteModalContent) {
+                deleteModalContent.classList.remove('scale-100');
+                deleteModalContent.classList.add('scale-95');
+            }
+            setTimeout(() => deleteModal.classList.add('hidden'), 200);
+        }
+
+        if (deleteBtn) deleteBtn.addEventListener('click', openDeleteModal);
+        if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+        if (deleteModal) {
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) closeDeleteModal();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && deleteModal && !deleteModal.classList.contains('hidden')) {
+                closeDeleteModal();
+            }
+        });
+
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', async () => {
+                try {
+                    await fetch(`/api/transactions/${txId}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+                } catch(err) {
+                    console.error('Delete transaction error:', err);
+                }
+                window.location.href = "{% url 'transactions' %}?toast=deleted";
+            });
+        }
+
+        // Smart Back Navigation
+        const backBtn = document.getElementById('btn-back-transaction');
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
+                    e.preventDefault();
+                    window.history.back();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

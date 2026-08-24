@@ -251,7 +251,7 @@
                     </div>
                     <div class="flex flex-col divide-y divide-outline-variant/30">
                         {% for tx in recent_transactions %}
-                        <a href="{% url 'transactions' %}" aria-label="Transaction details for {{ tx.title }}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
+                        <a href="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" aria-label="Transaction details for {{ tx.title }}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                     <span class="material-symbols-outlined text-[18px]">
