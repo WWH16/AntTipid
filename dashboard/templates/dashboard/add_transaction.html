@@ -307,6 +307,37 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODAL: CONFIRM CATEGORY DELETION                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="modal-delete-category-confirm" class="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-deep-forest/60 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-delete-category-content" class="relative z-[125] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-3.5 text-center">
+        <!-- Danger Icon Badge -->
+        <div class="w-12 h-12 rounded-2xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center mx-auto shadow-2xs">
+            <span class="material-symbols-outlined text-[24px]">delete_forever</span>
+        </div>
+
+        <!-- Title and Explanation -->
+        <div class="flex flex-col gap-1">
+            <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Delete Category?</h3>
+            <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                Are you sure you want to delete <span id="delete-cat-confirm-name" class="font-bold text-deep-forest">"Category"</span>? Past transactions with this category will keep their records.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 pt-1">
+            <button type="button" id="btn-cancel-delete-cat" class="flex-1 py-2 px-3 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-deep-forest font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer">
+                Cancel
+            </button>
+            <button type="button" id="btn-confirm-delete-cat" class="flex-1 py-2 px-3 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+                <span id="btn-confirm-delete-cat-text">Delete</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL: MANAGE PAYMENT METHODS / WALLETS                  -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <div id="modal-manage-accounts" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
@@ -894,26 +925,88 @@
 
             // Delete Category
             document.querySelectorAll('.btn-delete-cat').forEach(btn => {
-                btn.addEventListener('click', async () => {
+                btn.addEventListener('click', () => {
                     const catId = btn.dataset.id;
-                    if (!confirm("Are you sure you want to delete this category?")) return;
+                    const cat = userCategoriesCache.find(c => String(c.id) === String(catId));
+                    const catName = cat ? cat.name : 'this category';
+                    openDeleteCategoryConfirmModal(catId, catName);
+                });
+            });
+        }
 
-                    try {
-                        btn.disabled = true;
-                        const res = await fetch(getApiUrl(`/api/categories/${catId}/delete/`), {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        const data = await res.json();
-                        if (data.success) {
-                            await fetchAndRenderCategories();
-                        } else {
-                            alert(data.error || 'Failed to delete category.');
-                        }
-                    } catch (e) {
-                        console.error(e);
+        // Delete Confirmation Modal Engine
+        let pendingCatDeleteId = null;
+        const modalDeleteCatConfirm = document.getElementById('modal-delete-category-confirm');
+        const modalDeleteCatContent = document.getElementById('modal-delete-category-content');
+        const labelDeleteCatConfirmName = document.getElementById('delete-cat-confirm-name');
+        const btnCancelDeleteCat = document.getElementById('btn-cancel-delete-cat');
+        const btnConfirmDeleteCat = document.getElementById('btn-confirm-delete-cat');
+        const btnConfirmDeleteCatText = document.getElementById('btn-confirm-delete-cat-text');
+
+        function openDeleteCategoryConfirmModal(catId, catName) {
+            pendingCatDeleteId = catId;
+            if (labelDeleteCatConfirmName) labelDeleteCatConfirmName.textContent = `"${catName}"`;
+            if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
+            if (btnConfirmDeleteCat) btnConfirmDeleteCat.disabled = false;
+
+            if (modalDeleteCatConfirm) {
+                modalDeleteCatConfirm.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    modalDeleteCatConfirm.classList.remove('opacity-0');
+                    modalDeleteCatConfirm.classList.add('opacity-100');
+                    if (modalDeleteCatContent) {
+                        modalDeleteCatContent.classList.remove('scale-95');
+                        modalDeleteCatContent.classList.add('scale-100');
                     }
                 });
+            }
+        }
+
+        function closeDeleteCategoryConfirmModal() {
+            if (modalDeleteCatConfirm) {
+                modalDeleteCatConfirm.classList.remove('opacity-100');
+                modalDeleteCatConfirm.classList.add('opacity-0');
+                if (modalDeleteCatContent) {
+                    modalDeleteCatContent.classList.remove('scale-100');
+                    modalDeleteCatContent.classList.add('scale-95');
+                }
+                setTimeout(() => {
+                    modalDeleteCatConfirm.classList.add('hidden');
+                    pendingCatDeleteId = null;
+                }, 200);
+            }
+        }
+
+        if (btnCancelDeleteCat) btnCancelDeleteCat.addEventListener('click', closeDeleteCategoryConfirmModal);
+        if (modalDeleteCatConfirm) {
+            modalDeleteCatConfirm.addEventListener('click', (e) => {
+                if (e.target === modalDeleteCatConfirm) closeDeleteCategoryConfirmModal();
+            });
+        }
+
+        if (btnConfirmDeleteCat) {
+            btnConfirmDeleteCat.addEventListener('click', async () => {
+                if (!pendingCatDeleteId) return;
+                try {
+                    btnConfirmDeleteCat.disabled = true;
+                    if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Deleting...';
+                    const res = await fetch(getApiUrl(`/api/categories/${pendingCatDeleteId}/delete/`), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        closeDeleteCategoryConfirmModal();
+                        await fetchAndRenderCategories();
+                    } else {
+                        alert(data.error || 'Failed to delete category.');
+                        btnConfirmDeleteCat.disabled = false;
+                        if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
+                    }
+                } catch (e) {
+                    console.error(e);
+                    closeDeleteCategoryConfirmModal();
+                }
             });
         }
 
