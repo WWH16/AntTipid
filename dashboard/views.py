@@ -333,7 +333,9 @@ def api_save_budget(request):
 
         if category_id:
             category = Category.objects.filter(id=category_id, user=profile).first()
-            if category and (data.get('icon') or data.get('color')):
+            if category:
+                if category_name and category_name.strip():
+                    category.name = category_name.strip()
                 if data.get('icon'):
                     category.icon_name = data.get('icon')
                 if data.get('color'):

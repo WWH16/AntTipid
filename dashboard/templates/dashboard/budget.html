@@ -197,7 +197,7 @@
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="category-cards-grid">
                 {% for card in budget_cards %}
-                <div class="category-budget-card {% if card.is_exceeded %}bg-expense/5 border border-expense/30 hover:border-expense/60{% elif card.is_unbudgeted %}bg-surface-container-lowest border border-outline-variant/60 hover:border-outline-variant{% else %}bg-surface-container-lowest border border-outline-variant/60 hover:border-positive/40{% endif %} rounded-2xl p-4 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-3 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Adjust limit for {{ card.name }}" data-category="{{ card.name }}" data-category-id="{{ card.category_id }}" data-spent="{{ card.spent|floatformat:2 }}" data-target="{{ card.limit|default:'' }}" data-unbudgeted="{{ card.is_unbudgeted|yesno:'true,false' }}" data-percentage="{{ card.percentage }}" data-status="{% if card.is_exceeded %}exceeded{% elif card.is_warning %}warning{% elif card.is_unbudgeted %}unbudgeted{% else %}ontrack{% endif %}">
+                <div class="category-budget-card {% if card.is_exceeded %}bg-expense/5 border border-expense/30 hover:border-expense/60{% elif card.is_unbudgeted %}bg-surface-container-lowest border border-outline-variant/60 hover:border-outline-variant{% else %}bg-surface-container-lowest border border-outline-variant/60 hover:border-positive/40{% endif %} rounded-2xl p-4 shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-3 relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50" role="button" tabindex="0" aria-label="Edit category {{ card.name }}" data-category="{{ card.name }}" data-category-id="{{ card.category_id }}" data-spent="{{ card.spent|floatformat:2 }}" data-target="{{ card.limit|default:'' }}" data-unbudgeted="{{ card.is_unbudgeted|yesno:'true,false' }}" data-percentage="{{ card.percentage }}" data-status="{% if card.is_exceeded %}exceeded{% elif card.is_warning %}warning{% elif card.is_unbudgeted %}unbudgeted{% else %}ontrack{% endif %}">
                     <div class="flex justify-between items-start relative">
                         <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
                             <div class="w-9 h-9 rounded-xl {% if card.is_exceeded %}bg-expense/15 text-expense{% elif card.is_warning %}bg-warning/15 text-warning-deep border border-warning/30{% elif card.is_unbudgeted %}bg-surface-container text-on-surface-variant border border-outline-variant/60{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -210,9 +210,9 @@
                                 </span>
                             </div>
                         </div>
-                        <span class="text-body group-hover:text-deep-forest font-label-sm text-[11px] font-bold px-2.5 py-1 rounded-xl bg-surface-container-low hover:bg-primary-pale hover:text-positive-deep flex items-center gap-0.5 shrink-0 transition-colors">
-                            Adjust
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        <span class="text-on-surface-variant group-hover:text-deep-forest font-label-sm text-[11px] font-bold px-2.5 py-1 rounded-xl bg-surface-container-low group-hover:bg-primary-pale group-hover:text-positive-deep flex items-center gap-1 shrink-0 transition-all shadow-2xs">
+                            <span class="material-symbols-outlined text-[13px]">edit</span>
+                            <span>Edit</span>
                         </span>
                     </div>
 
@@ -425,12 +425,12 @@
             </div>
 
             <form id="form-adjust-budget" class="p-3.5 sm:p-5 flex flex-col gap-2.5 sm:gap-3 overflow-y-auto">
-                <!-- Category Name (Shown for new category mode) -->
-                <div id="group-category-name" class="flex flex-col gap-1 hidden">
-                    <label for="input-category-name" class="font-label-sm text-[11px] text-deep-forest font-bold">Name</label>
+                <!-- Category Name (Visible in both New and Edit modes) -->
+                <div id="group-category-name" class="flex flex-col gap-1">
+                    <label for="input-category-name" class="font-label-sm text-[11px] text-deep-forest font-bold">Category Name</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-2.5 top-2 text-on-surface-variant/60 text-[16px]">label</span>
-                        <input id="input-category-name" class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="e.g. Subscriptions, Fitness, Pets" type="text">
+                        <input id="input-category-name" class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="e.g. Subscriptions, Fitness, Pets" type="text" required>
                     </div>
                 </div>
 
@@ -1021,12 +1021,15 @@
                 if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Create Category';
                 if (btnDeleteCategory) btnDeleteCategory.classList.add('hidden');
             } else {
-                if (modalTitle) modalTitle.textContent = `Adjust: ${activeCategoryName}`;
-                if (modalSubtitle) modalSubtitle.textContent = 'Update monthly limit & tracking strategy';
+                if (modalTitle) modalTitle.textContent = 'Edit Category';
+                if (modalSubtitle) modalSubtitle.textContent = 'Update category name & spending limit';
                 if (modalHeaderIcon) modalHeaderIcon.textContent = selectedIcon;
-                if (groupCatName) groupCatName.classList.add('hidden');
-                if (inputCatName) inputCatName.required = false;
-                if (groupCatIcon) groupCatIcon.classList.remove('hidden');
+                if (groupCatName) groupCatName.classList.remove('hidden');
+                if (inputCatName) {
+                    inputCatName.required = true;
+                    inputCatName.value = activeCategoryName;
+                }
+                if (groupCatIcon) groupCatIcon.classList.add('hidden');
                 if (inputTarget) inputTarget.value = options.target || '';
                 if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Save Changes';
                 if (btnDeleteCategory) {
@@ -1044,7 +1047,7 @@
                 modalWrapper.classList.add('opacity-100');
                 modalContent.classList.remove('translate-y-full', 'scale-95', 'opacity-0');
                 modalContent.classList.add('translate-y-0', 'scale-100', 'opacity-100');
-                if (isNewCategoryMode && inputCatName) {
+                if (inputCatName) {
                     inputCatName.focus();
                 } else if (inputTarget && modalHasBudget) {
                     inputTarget.focus();
@@ -1209,8 +1212,10 @@
         document.getElementById('form-adjust-budget')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const targetAmount = modalHasBudget ? (parseFloat(inputTarget.value) || 0) : 0;
-            const categoryName = isNewCategoryMode ? (inputCatName.value.trim()) : activeCategoryName;
+            const categoryName = inputCatName ? inputCatName.value.trim() : activeCategoryName;
             if (!categoryName) return;
+
+            const categoryId = (!isNewCategoryMode && activeCategoryId && !activeCategoryId.startsWith('unbudgeted-')) ? activeCategoryId : undefined;
 
             try {
                 if (submitBtn) {
@@ -1224,6 +1229,7 @@
                         'X-Requested-With': 'XMLHttpRequest',
                     },
                     body: JSON.stringify({
+                        category_id: categoryId,
                         category: categoryName,
                         amount: targetAmount,
                         has_budget: modalHasBudget,
@@ -1234,7 +1240,7 @@
                 if (result.success) {
                     window.location.reload();
                 } else {
-                    alert(result.error || 'Failed to save budget limit.');
+                    alert(result.error || 'Failed to save category.');
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         if (btnSubmitBudgetLabel) {
