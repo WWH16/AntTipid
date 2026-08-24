@@ -195,92 +195,92 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL: MANAGE CATEGORIES & CREATE CATEGORY HUB             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-3.5 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-manage-categories-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-xl shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
+    <div id="modal-manage-categories-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 w-full max-w-lg shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-2.5 sm:gap-3 max-h-[85vh] overflow-hidden">
         
         <!-- Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40 shrink-0">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
-                    <span class="material-symbols-outlined text-[20px]">category</span>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30 shrink-0">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
+                    <span class="material-symbols-outlined text-[17px] sm:text-[18px]">category</span>
                 </div>
-                <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Categories</h3>
+                <h3 class="font-headline-sm text-xs sm:text-sm font-extrabold text-deep-forest">Categories</h3>
             </div>
-            <button type="button" id="btn-close-manage-categories" aria-label="Close" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[20px]">close</span>
+            <button type="button" id="btn-close-manage-categories" aria-label="Close" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
 
         <!-- Segmented Tab Navigation -->
-        <div class="flex items-center p-1 bg-surface-container-low rounded-2xl border border-outline-variant/40 shrink-0">
-            <button type="button" id="tab-btn-add-cat" class="flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs">
-                <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
+        <div class="flex items-center p-0.5 bg-surface-container-low rounded-xl border border-outline-variant/40 shrink-0">
+            <button type="button" id="tab-btn-add-cat" class="flex-1 py-1.5 px-2.5 rounded-lg font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs">
+                <span class="material-symbols-outlined text-[15px] text-positive-deep">add_circle</span>
                 <span>Add Category</span>
             </button>
-            <button type="button" id="tab-btn-list-cat" class="flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest">
-                <span class="material-symbols-outlined text-[16px]">tune</span>
+            <button type="button" id="tab-btn-list-cat" class="flex-1 py-1.5 px-2.5 rounded-lg font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest">
+                <span class="material-symbols-outlined text-[15px]">tune</span>
                 <span>Manage (<span id="modal-cat-count">0</span>)</span>
             </button>
         </div>
 
         <!-- Tab 1: Add New Category Pane -->
-        <div id="pane-add-category" class="flex flex-col gap-3.5 overflow-y-auto pr-1 flex-1">
+        <div id="pane-add-category" class="flex flex-col gap-2.5 sm:gap-3 overflow-y-auto pr-0.5 flex-1">
 
             <!-- Name Input -->
-            <div class="flex flex-col gap-1.5">
-                <label for="input-new-cat-name" class="text-xs font-bold text-deep-forest">Name</label>
+            <div class="flex flex-col gap-1">
+                <label for="input-new-cat-name" class="text-[11px] font-bold text-deep-forest">Name</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
-                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health, Fitness, Subscriptions" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-on-surface-variant/60 text-[16px]">label</span>
+                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health, Fitness, Subscriptions" class="w-full pl-8 pr-3 py-1.5 sm:py-2 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
                 </div>
             </div>
 
             <!-- Icon Picker -->
-            <div class="flex flex-col gap-1.5">
+            <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-between">
-                    <label class="text-xs font-bold text-deep-forest">Icon</label>
-                    <span id="label-selected-icon" class="text-[11px] font-bold text-positive-deep capitalize">Restaurant</span>
+                    <label class="text-[11px] font-bold text-deep-forest">Icon</label>
+                    <span id="label-selected-icon" class="text-[10px] sm:text-[11px] font-bold text-positive-deep capitalize">Restaurant</span>
                 </div>
-                <div id="new-cat-icon-picker" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 p-2.5 bg-surface-container-low/30 rounded-2xl border border-outline-variant/40 max-h-52 overflow-y-auto">
+                <div id="new-cat-icon-picker" class="grid grid-cols-4 sm:grid-cols-5 gap-1.5 p-1.5 bg-surface-container-low/30 rounded-xl border border-outline-variant/40 max-h-32 sm:max-h-40 overflow-y-auto">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
             <!-- Strategy Selector -->
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-deep-forest">Strategy</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
-                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-positive-deep">track_changes</span> Track Only</span>
-                        <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">No limit</span>
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-deep-forest">Strategy</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-1.5 sm:p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
+                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-positive-deep">track_changes</span> Track Only</span>
+                        <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">No limit</span>
                     </button>
-                    <button type="button" id="btn-strategy-budget" class="strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
-                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">speed</span> Set Limit</span>
-                        <span class="text-[10px] text-on-surface-variant leading-tight mt-0.5">Monthly cap</span>
+                    <button type="button" id="btn-strategy-budget" class="strategy-pill p-1.5 sm:p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
+                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> Set Limit</span>
+                        <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">Monthly cap</span>
                     </button>
                 </div>
 
                 <!-- Target Limit Input -->
-                <div id="group-new-cat-limit" class="hidden flex flex-col gap-1.5 mt-1">
-                    <label for="input-new-cat-limit" class="text-xs font-bold text-deep-forest">Monthly Limit (₱)</label>
+                <div id="group-new-cat-limit" class="hidden flex flex-col gap-1 mt-0.5">
+                    <label for="input-new-cat-limit" class="text-[11px] font-bold text-deep-forest">Monthly Limit (₱)</label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-sm text-deep-forest">₱</span>
-                        <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-8 pr-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary tabular-nums">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
+                        <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-7 pr-3 py-1.5 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary tabular-nums">
                     </div>
                 </div>
             </div>
 
             <!-- Submit Action -->
-            <div class="pt-2">
-                <button type="button" id="btn-add-cat-submit" class="w-full py-3 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            <div class="pt-1">
+                <button type="button" id="btn-add-cat-submit" class="w-full py-2 sm:py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">add_circle</span>
                     <span>Create Category</span>
                 </button>
             </div>
         </div>
 
         <!-- Tab 2: Manage Existing Categories List Pane -->
-        <div id="pane-list-categories" class="hidden flex-col gap-3 overflow-hidden flex-1">
+        <div id="pane-list-categories" class="hidden flex-col gap-2.5 overflow-hidden flex-1">
             <!-- Search bar -->
             <div class="relative shrink-0">
                 <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">search</span>
@@ -505,14 +505,14 @@
                 btn.type = 'button';
                 btn.dataset.icon = item.icon;
                 btn.title = item.label;
-                btn.className = `icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border transition-all cursor-pointer active:scale-95 text-center min-h-[58px] ${
+                btn.className = `icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px] ${
                     isSelected 
                         ? 'border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02]' 
                         : 'border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest'
                 }`;
                 btn.innerHTML = `
-                    <span class="material-symbols-outlined text-[22px]">${item.icon}</span>
-                    <span class="font-label-sm text-[10px] font-bold leading-tight truncate w-full text-center">${item.label}</span>
+                    <span class="material-symbols-outlined text-[18px] sm:text-[20px]">${item.icon}</span>
+                    <span class="font-label-sm text-[9px] sm:text-[10px] font-bold leading-tight truncate w-full text-center">${item.label}</span>
                 `;
                 btn.addEventListener('click', () => {
                     selectedCatIcon = item.icon;
@@ -529,9 +529,9 @@
                     }
 
                     document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn').forEach(b => {
-                        b.className = 'icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest transition-all cursor-pointer active:scale-95 text-center min-h-[58px]';
+                        b.className = 'icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px]';
                     });
-                    btn.className = 'icon-picker-btn flex flex-col items-center justify-center gap-1 p-2 rounded-xl border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02] transition-all cursor-pointer active:scale-95 text-center min-h-[58px]';
+                    btn.className = 'icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02] transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px]';
                 });
                 picker.appendChild(btn);
             });
