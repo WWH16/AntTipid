@@ -103,16 +103,28 @@ def receipt_detail_view(request, pk=None):
     if pk:
         receipt = get_object_or_404(Receipt, id=pk, user=profile)
     elif profile:
-        receipt = Receipt.objects.filter(user=profile).prefetch_related('items').first()
+        receipt = Receipt.objects.filter(user=profile).prefetch_related('items').order_by('-receipt_date', '-created_at').first()
 
     categories = Category.objects.filter(user=profile).order_by('name') if profile else []
     accounts = Account.objects.filter(user=profile, is_active=True).order_by('name') if profile else []
+
+    items = receipt.items.all() if receipt else []
+    items_list = []
+    for itm in items:
+        items_list.append({
+            'id': str(itm.id),
+            'description': itm.item_name,
+            'qty': int(itm.quantity) if itm.quantity == int(itm.quantity) else float(itm.quantity),
+            'unitPrice': float(itm.unit_price),
+            'totalPrice': float(itm.total_price),
+        })
 
     context = {
         'active_nav': 'transactions',
         'profile': profile,
         'receipt': receipt,
-        'items': receipt.items.all() if receipt else [],
+        'items': items,
+        'items_json': json.dumps(items_list),
         'categories': categories,
         'accounts': accounts,
     }

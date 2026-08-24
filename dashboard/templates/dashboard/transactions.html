@@ -125,8 +125,7 @@
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
                         {% for tx in tx_list %}
                         {% if tx.receipt %}
-                        <!-- Receipt Item -->
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="{{ tx.category.name|default:'Uncategorized' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}" data-edit-id="{{ tx.id }}" data-edit-type="expense" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}">
+                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="{{ tx.category.name|default:'Uncategorized' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}" data-receipt-img="{% if tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="expense" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}">
                             <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 <span class="font-label-sm text-[10px] font-bold">Delete</span>
@@ -206,7 +205,7 @@
                         </thead>
                         <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-outline-variant/30">
                             {% for tx in transactions %}
-                            <tr class="tx-row {% if tx.receipt %}receipt-row-item{% endif %} hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-source="{% if tx.receipt %}receipt{% else %}manual{% endif %}" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id|default:'' }}" data-detail-url="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
+                            <tr class="tx-row {% if tx.receipt %}receipt-row-item{% endif %} hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-source="{% if tx.receipt %}receipt{% else %}manual{% endif %}" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id|default:'' }}" data-detail-url="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% endif %}" data-receipt-img="{% if tx.receipt and tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt and tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes }}">
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-body whitespace-nowrap font-medium">{{ tx.transaction_date|date:"M d, Y" }}</td>
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4">
                                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -950,8 +949,20 @@
         function openReceiptPreview(data) {
             if (!previewModal) return;
             if (previewModalTitle) previewModalTitle.textContent = data.merchant || 'Scanned Receipt';
-            if (previewModalMeta) previewModalMeta.textContent = `${data.date || ''} • ${data.items || ''}`;
-            if (previewModalAmount) previewModalAmount.textContent = data.amount || '₱0.00';
+            if (previewModalMeta) previewModalMeta.textContent = `${data.date || ''} • ${data.items || 'Scanned items'}`;
+            if (previewModalAmount) {
+                const amtNum = parseFloat(data.amount);
+                previewModalAmount.textContent = isNaN(amtNum) ? (data.amount || '₱0.00') : `₱${amtNum.toFixed(2)}`;
+            }
+
+            const detailsBtn = document.getElementById('btn-modal-preview-details');
+            if (detailsBtn) {
+                if (data.detailUrl) {
+                    detailsBtn.href = data.detailUrl;
+                } else if (data.receiptId) {
+                    detailsBtn.href = `/receipt-detail/${data.receiptId}/`;
+                }
+            }
 
             if (data.receiptType === 'pdf') {
                 if (previewModalImg) previewModalImg.classList.add('hidden');
@@ -960,8 +971,13 @@
             } else {
                 if (previewModalPdfView) previewModalPdfView.classList.add('hidden');
                 if (previewModalImg) {
-                    previewModalImg.src = data.receiptImg || '';
-                    previewModalImg.classList.remove('hidden');
+                    if (data.receiptImg && data.receiptImg.trim() && data.receiptImg !== 'undefined') {
+                        previewModalImg.src = data.receiptImg;
+                        previewModalImg.classList.remove('hidden');
+                    } else {
+                        previewModalImg.src = '';
+                        previewModalImg.classList.add('hidden');
+                    }
                 }
                 if (previewModalIcon) previewModalIcon.textContent = 'receipt_long';
             }

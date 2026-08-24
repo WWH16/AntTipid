@@ -137,8 +137,16 @@
 
                     <!-- Receipt Image Container -->
                     <div class="rounded-xl overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] cursor-pointer" id="receipt-preview-container" title="Tap to enlarge receipt">
-                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="{% if receipt.image %}{{ receipt.image.url }}{% elif receipt.image_url %}{{ receipt.image_url }}{% else %}https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=800&q=80{% endif %}"/>
+                        {% if receipt.image or receipt.image_url %}
+                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="{% if receipt.image %}{{ receipt.image.url }}{% else %}{{ receipt.image_url }}{% endif %}"/>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+                        {% else %}
+                        <div class="flex flex-col items-center justify-center p-6 text-center text-on-surface-variant gap-2">
+                            <span class="material-symbols-outlined text-[36px] text-on-surface-variant/50">receipt_long</span>
+                            <span class="font-label-sm text-xs font-bold text-deep-forest">Itemized Receipt</span>
+                            <span class="font-body-sm text-[11px] text-body">No photo scan attached</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -211,7 +219,7 @@
     <button id="btn-close-image-modal" aria-label="Close image modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-expense/20 hover:text-expense transition-all z-10 shadow-md active:scale-95 cursor-pointer">
         <span class="material-symbols-outlined text-[20px]">close</span>
     </button>
-    <img id="modal-full-img" alt="Full Receipt Scan" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=1200&q=80"/>
+    <img id="modal-full-img" alt="Full Receipt Scan" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="{% if receipt.image %}{{ receipt.image.url }}{% elif receipt.image_url %}{{ receipt.image_url }}{% endif %}"/>
 </div>
 {% endblock %}
 
@@ -275,6 +283,13 @@
         // ─── Image Lightbox Logic ───
         function openImageModal() {
             if (!imageModal) return;
+            const previewImg = document.getElementById('receipt-preview-img');
+            if (previewImg && previewImg.src && modalImg) {
+                modalImg.src = previewImg.src;
+            }
+            if (!modalImg || !modalImg.src || modalImg.src.endsWith('#') || modalImg.src === window.location.href) {
+                return;
+            }
             document.body.style.overflow = 'hidden';
             imageModal.classList.remove('hidden');
             requestAnimationFrame(() => {
