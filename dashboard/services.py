@@ -142,9 +142,12 @@ def get_dashboard_data(profile):
         })
 
     # Max week height scaling
-    max_w_amount = max([w['amount'] for w in weekly_spending] + [Decimal('1.00')])
+    max_w_amount = max([w['amount'] for w in weekly_spending] + [Decimal('0')])
     for w in weekly_spending:
-        w['height_pct'] = max(15, min(100, int((w['amount'] / max_w_amount) * 100)))
+        if max_w_amount > 0:
+            w['height_pct'] = int((w['amount'] / max_w_amount) * 100)
+        else:
+            w['height_pct'] = 0
 
     # 5. Recent 5 Transactions
     recent_transactions = Transaction.objects.filter(user=profile).select_related('account', 'category', 'receipt').order_by('-transaction_date', '-created_at')[:5]
