@@ -595,6 +595,25 @@
             sessionStorage.setItem('anttipid_deleted_receipt_ids', JSON.stringify(existing));
         }
 
+        // Persist deletions to the database via the API endpoints
+        async function deleteTransactionOnServer(id) {
+            const res = await fetch(`/api/transactions/${id}/delete/`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!res.ok) throw new Error(`Failed to delete transaction ${id}`);
+            return res.json();
+        }
+
+        async function deleteReceiptOnServer(id) {
+            const res = await fetch(`/api/receipts/${id}/delete/`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!res.ok) throw new Error(`Failed to delete receipt ${id}`);
+            return res.json();
+        }
+
         (function hideDeletedItems() {
             getDeletedTxIds().forEach(id => {
                 document.querySelectorAll(`[data-edit-id="${id}"]`).forEach(el => el.remove());
@@ -694,18 +713,31 @@
             }
         });
         if (btnConfirmDeleteRow) {
-            btnConfirmDeleteRow.addEventListener('click', () => {
+            btnConfirmDeleteRow.addEventListener('click', async () => {
                 if (!pendingDeleteTableRow) {
                     closeDeleteRowModal();
                     return;
                 }
-                const isReceipt = pendingDeleteTableRow.dataset.source === 'receipt' || !!pendingDeleteTableRow.dataset.receiptId;
-                if (isReceipt && pendingDeleteTableRow.dataset.receiptId) {
-                    markReceiptsDeleted([pendingDeleteTableRow.dataset.receiptId]);
-                } else if (pendingDeleteTableRow.dataset.editId) {
-                    markTransactionDeleted(pendingDeleteTableRow.dataset.editId);
+                const row = pendingDeleteTableRow;
+                const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
+
+                try {
+                    if (isReceipt && row.dataset.receiptId) {
+                        await deleteReceiptOnServer(row.dataset.receiptId);
+                        markReceiptsDeleted([row.dataset.receiptId]);
+                    } else if (row.dataset.editId) {
+                        await deleteTransactionOnServer(row.dataset.editId);
+                        markTransactionDeleted(row.dataset.editId);
+                    }
+                } catch (err) {
+                    console.error('Delete failed:', err);
+                    pendingDeleteTableRow = null;
+                    closeDeleteRowModal();
+                    editSheet.showToast('Failed to delete. Please try again.');
+                    return;
                 }
-                pendingDeleteTableRow.remove();
+
+                row.remove();
                 pendingDeleteTableRow = null;
                 closeDeleteRowModal();
                 if (typeof applyAllFilters === 'function') applyAllFilters();
@@ -919,20 +951,32 @@
             }
         });
         if (btnConfirmDeleteTx) {
-            btnConfirmDeleteTx.addEventListener('click', () => {
+            btnConfirmDeleteTx.addEventListener('click', async () => {
                 if (!pendingDeleteRow) {
                     closeDeleteTxModal();
                     return;
                 }
-                const isReceipt = pendingDeleteRow.dataset.source === 'receipt' || !!pendingDeleteRow.dataset.receiptId;
-                if (isReceipt && pendingDeleteRow.dataset.receiptId) {
-                    markReceiptsDeleted([pendingDeleteRow.dataset.receiptId]);
-                } else if (pendingDeleteRow.dataset.editId) {
-                    markTransactionDeleted(pendingDeleteRow.dataset.editId);
+                const row = pendingDeleteRow;
+                const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
+
+                try {
+                    if (isReceipt && row.dataset.receiptId) {
+                        await deleteReceiptOnServer(row.dataset.receiptId);
+                        markReceiptsDeleted([row.dataset.receiptId]);
+                    } else if (row.dataset.editId) {
+                        await deleteTransactionOnServer(row.dataset.editId);
+                        markTransactionDeleted(row.dataset.editId);
+                    }
+                } catch (err) {
+                    console.error('Delete failed:', err);
+                    pendingDeleteRow = null;
+                    closeDeleteTxModal();
+                    editSheet.showToast('Failed to delete. Please try again.');
+                    return;
                 }
 
-                if (openSwipeRow === pendingDeleteRow) openSwipeRow = null;
-                pendingDeleteRow.remove();
+                if (openSwipeRow === row) openSwipeRow = null;
+                row.remove();
                 pendingDeleteRow = null;
                 closeDeleteTxModal();
                 if (typeof applyAllFilters === 'function') applyAllFilters();
