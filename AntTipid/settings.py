@@ -10,12 +10,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY') or os.getenv('DJANGO_SECRET_KEY') or 'django-insecure-5qco2)-=%18z^@nit*h833uiihj#xg#+_v1lqkowi#y19bm)l!'
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
-raw_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,*')
-ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(',') if h.strip()]
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if not host.startswith('.') and host not in ('127.0.0.1', 'localhost', '*')
-] + ["https://*.vercel.app"]
+    "https://*.vercel.app",
+    "http://127.0.0.1",
+    "http://localhost",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,9 +72,7 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True,
+            conn_max_age=0,
         )
     }
 else:
