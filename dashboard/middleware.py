@@ -79,6 +79,29 @@ class ClerkAuthenticationMiddleware:
 
         return self.get_response(request)
 
+    @staticmethod
+    def _verify_session_token(token):
+        client_and_host = _get_jwks_client()
+        if client_and_host is None:
+            return None
+        jwks_client, host = client_and_host
+
+        try:
+            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            payload = jwt.decode(
+                token,
+                signing_key.key,
+                algorithms=['RS256'],
+                issuer=f'https://{host}',
+                leeway=10,  # tolerate a few seconds of clock skew between this server and Clerk's
+                options={'require': ['exp', 'iat', 'sub']},
+            )
+        except jwt.PyJWTError:
+            return None
+
+        return payload.get('sub')
+
+
 class PerformanceLoggingMiddleware:
     """Logs request processing time and DB query count for each request."""
 
@@ -104,25 +127,3 @@ class PerformanceLoggingMiddleware:
             f"[Performance] {request.method} {request.path} - {duration:.2f}ms, {query_count} DB queries"
         )
         return response
-
-    @staticmethod
-    def _verify_session_token(token):
-        client_and_host = _get_jwks_client()
-        if client_and_host is None:
-            return None
-        jwks_client, host = client_and_host
-
-        try:
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
-            payload = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=['RS256'],
-                issuer=f'https://{host}',
-                leeway=10,  # tolerate a few seconds of clock skew between this server and Clerk's
-                options={'require': ['exp', 'iat', 'sub']},
-            )
-        except jwt.PyJWTError:
-            return None
-
-        return payload.get('sub')
