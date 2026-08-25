@@ -707,6 +707,12 @@ def api_scan_receipt_view(request):
             api_key=gemini_key,
             http_options=types.HttpOptions(timeout=25_000),
         )
+        user_cat_names = list(Category.objects.filter(user=profile).values_list('name', flat=True)) if profile else []
+        if user_cat_names:
+            category_guideline = f"5. Category: Choose the best matching category from the user's existing categories: [{', '.join(user_cat_names)}]. If the receipt items do not fit any of these, return a concise, natural category name reflecting the purchase (e.g. 'Electronics', 'Pet Supplies', 'Hardware')."
+        else:
+            category_guideline = "5. Category: Return a concise, natural category name reflecting the receipt purchase (e.g. 'Groceries', 'Food & Dining', 'Transportation', 'Utilities', 'Shopping', 'Healthcare', 'Entertainment', 'Services')."
+
         prompt_text = (
             "You are an expert receipt OCR assistant for a Philippine personal finance app (AntTipid). "
             "Analyze this receipt image and return ONLY a valid JSON object matching this exact schema without markdown wrap:\n"
@@ -730,7 +736,7 @@ def api_scan_receipt_view(request):
             "2. Total/Grand Total: Read the exact grand total printed on the receipt.\n"
             "3. Tax: Do NOT calculate or guess tax on your own. Only extract tax if it is explicitly printed on the receipt image; otherwise return 0.00.\n"
             "4. Cash & Change: If payment method is Cash, extract the cash tendered and change stated on the receipt; otherwise return 0.00 for both.\n"
-            "5. Category must be one of: Groceries, Food & Dining, Transportation, Utilities, Shopping, Healthcare, Housing & Rent, Entertainment, Services, Other.\n"
+            f"{category_guideline}\n"
             "6. Payment Method: Extract ONLY the clean standard keyword identifying the payment mode used on the receipt, e.g.:\n"
             "   - 'GCASH' (for GCash, GCash QR, QR Ph, E-Wallet)\n"
             "   - 'MAYA' (for Maya, PayMaya)\n"
