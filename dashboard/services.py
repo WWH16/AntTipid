@@ -364,6 +364,7 @@ def get_budget_data(profile, selected_month=None):
         })
 
     exceeded_count = sum(1 for c in budget_cards if c['is_exceeded'])
+    warning_count = sum(1 for c in budget_cards if c['is_warning'])
     overall_dashoffset = max(0, 251.2 - (251.2 * float(overall_pct) / 100.0))
 
     categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE).order_by('name')
@@ -379,6 +380,7 @@ def get_budget_data(profile, selected_month=None):
         'overall_percentage': overall_pct,
         'overall_dashoffset': f"{overall_dashoffset:.1f}",
         'exceeded_count': exceeded_count,
+        'warning_count': warning_count,
         'budget_cards': budget_cards,
         'categories': categories,
         'current_month_label': target_date.strftime('%B %Y'),

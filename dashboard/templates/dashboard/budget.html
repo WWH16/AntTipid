@@ -97,21 +97,35 @@
                 </div>
             </div>
 
-            <!-- Over Budget Alert Card -->
-            <div class="col-span-1 {% if exceeded_count > 0 %}bg-expense/10 border border-expense/30{% else %}bg-primary-pale/40 border border-positive/30{% endif %} rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between gap-2.5 relative overflow-hidden group">
-                <div class="flex items-center justify-between relative">
-                    <span class="font-label-sm text-[11px] {% if exceeded_count > 0 %}text-expense{% else %}text-positive-deep{% endif %} font-bold uppercase tracking-wider">Status Alert</span>
-                    <div class="w-7 h-7 rounded-full {% if exceeded_count > 0 %}bg-expense/20 text-expense{% else %}bg-primary-pale text-positive-deep border border-positive/30{% endif %} flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                        <span class="material-symbols-outlined text-[15px]">{% if exceeded_count > 0 %}warning{% else %}check_circle{% endif %}</span>
+            <!-- Budget Health Status Card -->
+            <div class="col-span-1 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between gap-2.5 group">
+                <div class="flex items-center justify-between">
+                    <span class="font-label-sm text-[11px] text-body font-bold">Budget Status</span>
+                    {% if exceeded_count > 0 %}
+                    <div class="w-7 h-7 rounded-full bg-expense/15 text-expense flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">error</span>
                     </div>
+                    {% elif warning_count > 0 %}
+                    <div class="w-7 h-7 rounded-full bg-warning/20 text-warning-deep flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">warning</span>
+                    </div>
+                    {% else %}
+                    <div class="w-7 h-7 rounded-full bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="relative">
-                    <span class="font-headline-md text-base sm:text-lg font-bold {% if exceeded_count > 0 %}text-expense{% else %}text-positive-deep{% endif %} truncate block">
-                        {% if exceeded_count > 0 %}{{ exceeded_count }} Exceeded{% else %}All On Track{% endif %}
-                    </span>
-                    <span class="font-body-sm text-[10px] sm:text-[11px] {% if exceeded_count > 0 %}text-expense{% else %}text-body{% endif %} font-medium">
-                        {% if exceeded_count > 0 %}Review categories over limit{% else %}Spending within monthly budget{% endif %}
-                    </span>
+                <div>
+                    {% if exceeded_count > 0 %}
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-expense tabular-nums truncate block">{{ exceeded_count }} Exceeded</span>
+                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium block">Categories over monthly limit</span>
+                    {% elif warning_count > 0 %}
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-warning-deep tabular-nums truncate block">{{ warning_count }} Nearing Limit</span>
+                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium block">Categories close to target</span>
+                    {% else %}
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-positive-deep truncate block">All On Track</span>
+                    <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium block">Spending within monthly budgets</span>
+                    {% endif %}
                 </div>
             </div>
 
