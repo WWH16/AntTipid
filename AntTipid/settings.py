@@ -66,7 +66,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AntTipid.wsgi.application'
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.getenv('SUPABASE_DB_URL')
 
 if DATABASE_URL:
     DATABASES = {
@@ -75,6 +75,7 @@ if DATABASE_URL:
             conn_max_age=0,
         )
     }
+
 else:
     DATABASES = {
         'default': {
