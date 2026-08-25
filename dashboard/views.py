@@ -519,7 +519,7 @@ def api_save_scanned_receipt(request):
 
         tx_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
 
-        # Find or fallback account / payment method
+        # Find or create account / payment method
         account = None
         if payment_method:
             account = Account.objects.filter(user=profile, name__iexact=payment_method).first()
@@ -530,7 +530,37 @@ def api_save_scanned_receipt(request):
                 if 'gcash' in pm_lower or 'maya' in pm_lower or 'wallet' in pm_lower:
                     account = Account.objects.filter(user=profile, account_type=Account.AccountType.E_WALLET).first()
                 elif 'card' in pm_lower or 'visa' in pm_lower or 'master' in pm_lower:
-                    account = Account.objects.filter(user=profile, account_type__in=[Account.AccountType.CREDIT_CARD, Account.AccountType.BANK]).first()
+                    account = Account.objects.filter(user=profile, account_type__in=[Account.AccountType.CREDIT_CARD, Account.AccountType.BANK_ACCOUNT]).first()
+            
+            # If still not found and a custom payment method was detected, auto-create the new Account for the user!
+            if not account and payment_method.strip().upper() not in ('OTHER', 'UNKNOWN'):
+                pm_name = payment_method.strip().title()
+                pm_upper = payment_method.upper()
+                acc_type = Account.AccountType.CASH
+                acc_icon = 'payments'
+                acc_color = '#5C8F3A'
+                if any(w in pm_upper for w in ['GCASH', 'MAYA', 'WALLET', 'PAY', 'SHOPEE', 'GRAB']):
+                    acc_type = Account.AccountType.E_WALLET
+                    acc_icon = 'account_balance_wallet'
+                    acc_color = '#005CEE'
+                elif any(w in pm_upper for w in ['CARD', 'VISA', 'MASTER', 'AMEX', 'DEBIT', 'CREDIT']):
+                    acc_type = Account.AccountType.CREDIT_CARD
+                    acc_icon = 'credit_card'
+                    acc_color = '#D97706'
+                elif any(w in pm_upper for w in ['BANK', 'TRANSFER', 'INSTAPAY', 'PESONET', 'BDO', 'BPI', 'UB', 'METROBANK']):
+                    acc_type = Account.AccountType.BANK_ACCOUNT
+                    acc_icon = 'account_balance'
+                    acc_color = '#8B5CF6'
+
+                account = Account.objects.create(
+                    user=profile,
+                    name=pm_name,
+                    account_type=acc_type,
+                    institution_name=pm_name,
+                    color_hex=acc_color,
+                    icon=acc_icon,
+                )
+
         if not account:
             account = Account.objects.filter(user=profile, is_active=True).first()
             if not account:
@@ -661,7 +691,8 @@ def api_scan_receipt_view(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-    gemini_key = os.getenv('GEMINI_API_KEY')
+    profile = get_current_user_profile(request)
+    gemini_key = NONE
     image_base64 = None
     mime_type = 'image/jpeg'
 
@@ -713,6 +744,18 @@ def api_scan_receipt_view(request):
         else:
             category_guideline = "5. Category: Return a concise, natural category name reflecting the receipt purchase (e.g. 'Groceries', 'Food & Dining', 'Transportation', 'Utilities', 'Shopping', 'Healthcare', 'Entertainment', 'Services')."
 
+        user_acc_names = list(Account.objects.filter(user=profile, is_active=True).values_list('name', flat=True)) if profile else []
+        if user_acc_names:
+            payment_guideline = (
+                f"6. Payment Method: Choose the best matching account from the user's existing payment sources: [{', '.join(user_acc_names)}]. "
+                "If the payment mode on the receipt is a new/unlisted payment method, return a clean uppercase keyword identifying it (e.g. 'GCASH', 'MAYA', 'CREDIT CARD', 'DEBIT CARD', 'BANK TRANSFER', 'CASH', 'SHOPEEPAY')."
+            )
+        else:
+            payment_guideline = (
+                "6. Payment Method: Extract ONLY a clean uppercase keyword identifying the payment mode used on the receipt "
+                "(e.g. 'GCASH', 'MAYA', 'CREDIT CARD', 'DEBIT CARD', 'CASH', 'BANK TRANSFER'). If unclear or not indicated, return 'CASH'."
+            )
+
         prompt_text = (
             "You are an expert receipt OCR assistant for a Philippine personal finance app (AntTipid). "
             "Analyze this receipt image and return ONLY a valid JSON object matching this exact schema without markdown wrap:\n"
@@ -737,14 +780,7 @@ def api_scan_receipt_view(request):
             "3. Tax: Do NOT calculate or guess tax on your own. Only extract tax if it is explicitly printed on the receipt image; otherwise return 0.00.\n"
             "4. Cash & Change: If payment method is Cash, extract the cash tendered and change stated on the receipt; otherwise return 0.00 for both.\n"
             f"{category_guideline}\n"
-            "6. Payment Method: Extract ONLY the clean standard keyword identifying the payment mode used on the receipt, e.g.:\n"
-            "   - 'GCASH' (for GCash, GCash QR, QR Ph, E-Wallet)\n"
-            "   - 'MAYA' (for Maya, PayMaya)\n"
-            "   - 'CREDIT CARD' or 'DEBIT CARD' (for Visa, Mastercard, BancNet, EPS, POS card approval slips)\n"
-            "   - 'CASH' (for cash tendered, change, or standard cash transactions)\n"
-            "   - 'BANK TRANSFER' (for BDO, BPI, Unionbank, InstaPay, PESONet)\n"
-            "   Return ONLY the uppercase payment keyword (e.g. 'GCASH' or 'CASH') without transaction IDs or extra notes.\n"
-            "   If payment method is not explicitly indicated or unclear, return 'CASH'."
+            f"{payment_guideline}"
         )
 
         raw_bytes = image_bytes if 'image_bytes' in locals() else base64.b64decode(image_base64)

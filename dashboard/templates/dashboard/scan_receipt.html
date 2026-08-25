@@ -49,37 +49,23 @@
         </div>
 
         <!-- ─── ERROR & QUOTA EXCEEDED ALERT BANNER ─── -->
-        <div id="ocr-error-banner" class="hidden w-full bg-expense/10 border border-expense/25 rounded-2xl p-3.5 sm:p-4 shadow-xs transition-all duration-300">
-            <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
-                    <span class="material-symbols-outlined text-[18px]" id="ocr-error-icon">warning</span>
+        <div id="ocr-error-banner" role="alert" aria-live="assertive" class="hidden w-full bg-expense/10 border border-expense/25 rounded-xl p-2.5 sm:p-3 shadow-xs transition-all duration-300">
+            <div class="flex items-start gap-2.5">
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
+                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]" id="ocr-error-icon">error</span>
                 </div>
-                <div class="flex-1 flex flex-col gap-1 min-w-0">
+                <div class="flex-1 flex flex-col gap-0.5 min-w-0">
                     <div class="flex items-center justify-between gap-2">
-                        <h3 id="ocr-error-title" class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest">
-                            Scan Quota Exceeded
+                        <h3 id="ocr-error-title" class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest tracking-tight">
+                            Receipt Scan Failed
                         </h3>
-                        <button type="button" id="btn-dismiss-error" class="text-on-surface-variant/70 hover:text-deep-forest text-xs font-bold p-1 rounded-lg hover:bg-expense/15 transition-all cursor-pointer">
+                        <button type="button" id="btn-dismiss-error" aria-label="Dismiss error message" class="w-6 h-6 rounded-md text-on-surface-variant/70 hover:text-deep-forest hover:bg-expense/15 flex items-center justify-center transition-all cursor-pointer shrink-0 -mr-0.5 active:scale-95">
                             <span class="material-symbols-outlined text-[16px]">close</span>
                         </button>
                     </div>
-                    <p id="ocr-error-message" class="font-body-sm text-[11px] sm:text-xs text-body leading-relaxed">
-                        The AI OCR API quota limit for receipt scanning has been reached. You can record this transaction via Manual Entry or fill in the details manually.
+                    <p id="ocr-error-message" class="font-body-sm text-[11px] sm:text-xs text-body leading-snug">
+                        Unable to process receipt image automatically.
                     </p>
-                    <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-2 mt-0.5">
-                        <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-error-manual-entry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-expense text-white font-label-md text-xs font-bold shadow-xs hover:bg-expense/90 transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[15px]">edit_note</span>
-                            <span>Switch to Manual Entry</span>
-                        </a>
-                        <button type="button" id="btn-error-fill-manual" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[15px] text-positive-deep">edit</span>
-                            <span>Edit Details Manually</span>
-                        </button>
-                        <button type="button" id="btn-error-retry" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low font-label-md text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[15px]">refresh</span>
-                            <span>Try Again</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -689,6 +675,13 @@
             if (!errorBanner) return;
             if (errorTitle) errorTitle.textContent = title;
             if (errorMessage) errorMessage.textContent = message;
+            if (errorRetryBtn) {
+                if (isQuota) {
+                    errorRetryBtn.classList.add('hidden');
+                } else {
+                    errorRetryBtn.classList.remove('hidden');
+                }
+            }
             errorBanner.classList.remove('hidden');
             errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -970,18 +963,18 @@
                 anim.cancel();
                 switchToUploadView();
 
-                let title = "Receipt Scan Failed";
-                let message = "Unable to process receipt image automatically. You can switch to Manual Entry or edit the details manually.";
+                let title = "AI Scan Unavailable";
+                let message = "Unable to process receipt image automatically. Please enter details manually below or try scanning again.";
                 let isQuota = false;
 
                 if (err && err.data) {
                     if (err.data.error_type === 'quota_exceeded' || err.status === 429) {
-                        title = "AI Scan Quota Exceeded";
-                        message = err.data.error || "The Gemini AI model quota for receipt scanning has been exhausted. You can record this transaction via Manual Entry or fill in the details manually.";
+                        title = "AI Quota Limit Reached";
+                        message = err.data.error || "The daily AI receipt scanning quota has been reached. Please enter details manually below.";
                         isQuota = true;
                     } else if (err.data.error_type === 'missing_api_key' || err.data.error_type === 'auth_error' || err.status === 401) {
-                        title = "API Key Configuration Notice";
-                        message = err.data.error || "Gemini API key is not configured or unauthorized. Please verify your GEMINI_API_KEY in your environment or use Manual Entry.";
+                        title = "API Configuration Required";
+                        message = err.data.error || "Gemini API key is not configured or authorized. You can enter details manually below.";
                     } else if (err.data.error) {
                         message = err.data.error;
                     }
@@ -1212,18 +1205,18 @@
                     const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
                     window.location.href = (data.redirect_url || "{% url 'transactions' %}") + previewParam;
                 } else {
-                    alert(data.error || 'Failed to save scanned expense.');
+                    showErrorBanner('Failed to Save Expense', data.error || 'Failed to save scanned expense.', false);
                     if (saveExpenseBtn) {
                         saveExpenseBtn.disabled = false;
-                        saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Save Expense</span>`;
+                        saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check</span><span>Save Expense</span>`;
                     }
                 }
             } catch (err) {
                 console.error("Save error:", err);
-                alert('Network error occurred while saving scanned receipt.');
+                showErrorBanner('Save Error', 'Network error occurred while saving scanned receipt. Please check connection and try again.', false);
                 if (saveExpenseBtn) {
                     saveExpenseBtn.disabled = false;
-                    saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Save Expense</span>`;
+                    saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check</span><span>Save Expense</span>`;
                 }
             }
         }
