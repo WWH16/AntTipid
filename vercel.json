@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "AntTipid/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     },
     {
@@ -20,7 +20,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "AntTipid/wsgi.py"
+      "dest": "api/index.py"
     }
   ]
 }
