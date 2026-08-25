@@ -156,7 +156,7 @@
                         <div class="flex justify-between items-center gap-3">
                             <div>
                                 <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight">Monthly Budget</h3>
-                                <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_spent|floatformat:2 }} spent of ₱{{ budget_limit|floatformat:2 }}</p>
+                                <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2 }} left of ₱{{ budget_limit|floatformat:2 }}</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <a href="{% url 'budget' %}?edit_limit=true" aria-label="Edit budget limit" class="inline-flex items-center gap-1 bg-surface-container-low hover:bg-surface-container-high text-deep-forest px-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold border border-outline-variant/60 shadow-2xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer">
@@ -171,7 +171,7 @@
                         </div>
                         <div class="space-y-2">
                             <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-deep-forest">{{ budget_percent }}% spent <span class="font-normal text-body">· ₱{{ budget_left|floatformat:2 }} left</span></span>
+                                <span class="font-bold text-deep-forest">₱{{ budget_spent|floatformat:2 }} spent <span class="font-normal text-body">({{ budget_percent }}%)</span></span>
                                 <span class="font-bold {% if budget_on_track %}text-positive-deep{% else %}text-expense{% endif %} flex items-center gap-1">
                                     <span class="w-1.5 h-1.5 rounded-full {% if budget_on_track %}bg-positive{% else %}bg-expense{% endif %} animate-pulse"></span>
                                     {% if budget_on_track %}On Track{% else %}Over Limit{% endif %}
@@ -185,11 +185,11 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-1">
                             <div>
                                 <h3 id="heading-monthly-budget" class="font-headline-md text-base text-deep-forest font-bold">Monthly Budget</h3>
-                                <p class="text-xs text-body font-medium mt-0.5">No monthly limit set for this month yet.</p>
+                                <p class="text-xs text-body font-medium mt-0.5">No limit set.</p>
                             </div>
                             <a href="{% url 'budget' %}?edit_limit=true" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
                                 <span class="material-symbols-outlined text-[16px]">tune</span>
-                                <span>Set Monthly Limit</span>
+                                <span>Set Limit</span>
                             </a>
                         </div>
                     {% endif %}
