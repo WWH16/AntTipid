@@ -159,10 +159,6 @@
                                 <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2 }} left of ₱{{ budget_limit|floatformat:2 }}</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="{% url 'budget' %}?edit_limit=true" aria-label="Edit budget limit" class="inline-flex items-center gap-1 bg-surface-container-low hover:bg-surface-container-high text-deep-forest px-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold border border-outline-variant/60 shadow-2xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer">
-                                    <span class="material-symbols-outlined text-[14px]">edit</span>
-                                    <span>Edit</span>
-                                </a>
                                 <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
                                     <span>Manage</span>
                                     <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
