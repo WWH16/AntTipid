@@ -45,62 +45,65 @@
         }
       };
     </script>
-    <script type="module">
-      import { Clerk } from 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/+esm';
+    <!-- Preconnect CDN -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
+    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js" crossorigin="anonymous"></script>
+    <script>
       const pubKey = "{{ clerk_publishable_key }}".trim();
 
       if (pubKey && !pubKey.includes('YOUR_CLERK')) {
-        const clerk = new Clerk(pubKey);
-        window.clerkInitPromise = clerk.load().then(() => {
-          window.Clerk = clerk;
+        window.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const ClerkClass = window.Clerk;
+            if (!ClerkClass) return;
 
-          // ⚠️ TODO (DEPLOYMENT REMINDER): Remove '!window.location.search.includes("preview=true")' before deploying to production.
-          // Used only for local UI testing / headless browser developer tool inspection.
-          if (!clerk.user && !window.location.search.includes('preview=true')) {
-            window.location.href = "{% url 'landing' %}?sign_in=true";
-            return null;
-          }
+            const clerk = new ClerkClass(pubKey);
+            await clerk.load();
+            window.Clerk = clerk;
 
-          const userAvatar = document.getElementById('user-avatar');
-          const userAvatarMobile = document.getElementById('user-avatar-mobile');
-          const sidebarUserAvatar = document.getElementById('user-avatar-sidebar');
-          const userNameEl = document.getElementById('clerk-user-name');
-          const userEmailEl = document.getElementById('clerk-user-email');
+            if (!clerk.user && !window.location.search.includes('preview=true')) {
+              window.location.href = "{% url 'landing' %}?sign_in=true";
+              return;
+            }
 
-          function updateDashboardUserUI(user) {
-            if (user) {
-              if (userAvatar) clerk.mountUserButton(userAvatar);
-              if (userAvatarMobile) clerk.mountUserButton(userAvatarMobile);
+            const userAvatar = document.getElementById('user-avatar');
+            const userAvatarMobile = document.getElementById('user-avatar-mobile');
+            const sidebarUserAvatar = document.getElementById('user-avatar-sidebar');
+            const userNameEl = document.getElementById('clerk-user-name');
+            const userEmailEl = document.getElementById('clerk-user-email');
 
-              const fullName = user.fullName || user.firstName || 'User Account';
-              const primaryEmail = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : '';
-              
-              if (userNameEl) userNameEl.innerText = fullName;
-              if (userEmailEl) userEmailEl.innerText = primaryEmail;
+            function updateDashboardUserUI(user) {
+              if (user) {
+                if (userAvatar) clerk.mountUserButton(userAvatar);
+                if (userAvatarMobile) clerk.mountUserButton(userAvatarMobile);
 
-              const userGreeting = document.getElementById('dashboard-user-greeting');
-              if (userGreeting) {
-                const firstName = user.firstName || 'there';
-                userGreeting.innerText = `Welcome back, ${firstName}! 👋`;
-              }
+                const fullName = user.fullName || user.firstName || 'User Account';
+                const primaryEmail = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : '';
+                
+                if (userNameEl) userNameEl.innerText = fullName;
+                if (userEmailEl) userEmailEl.innerText = primaryEmail;
 
-              if (sidebarUserAvatar && user.imageUrl) {
-                sidebarUserAvatar.innerHTML = `<img src="${user.imageUrl}" alt="${fullName}" class="w-full h-full object-cover rounded-xl" />`;
+                const userGreeting = document.getElementById('dashboard-user-greeting');
+                if (userGreeting) {
+                  const firstName = user.firstName || 'there';
+                  userGreeting.innerText = `Welcome back, ${firstName}! 👋`;
+                }
+
+                if (sidebarUserAvatar && user.imageUrl) {
+                  sidebarUserAvatar.innerHTML = `<img src="${user.imageUrl}" alt="${fullName}" class="w-full h-full object-cover rounded-xl" />`;
+                }
               }
             }
+
+            updateDashboardUserUI(clerk.user);
+
+            clerk.addListener(({ user }) => {
+              updateDashboardUserUI(user);
+            });
+          } catch (err) {
+            console.error("Clerk JS init error:", err);
           }
-
-          updateDashboardUserUI(clerk.user);
-
-          clerk.addListener(({ user }) => {
-            updateDashboardUserUI(user);
-          });
-
-          return clerk;
-        }).catch(err => {
-          console.error("Clerk ESM init error:", err);
-          return null;
         });
       }
     </script>

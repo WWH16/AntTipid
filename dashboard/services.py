@@ -47,8 +47,8 @@ def get_current_user_profile(request):
         }
     )
 
-    # Seed default accounts and categories if this is a newly created or empty user
-    if created or not profile.accounts.exists():
+    # Seed default accounts and categories if this is a newly created user
+    if created:
         seed_default_user_data(profile)
 
     return profile
