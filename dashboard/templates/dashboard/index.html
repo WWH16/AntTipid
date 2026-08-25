@@ -43,7 +43,7 @@
                     
                     <!-- Card 1: Net Cash Flow (Primary Anchor) -->
                     <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.09] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.14]" aria-hidden="true" />
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.09] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.14]" loading="lazy" decoding="async" aria-hidden="true" />
 
                         <!-- Attached Right Border Badge -->
                         <div class="absolute top-3.5 sm:top-4 right-0 z-20">
@@ -75,7 +75,7 @@
 
                     <!-- Card 2: Total Income -->
                     <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.12]" loading="lazy" decoding="async" aria-hidden="true" />
 
                         <div class="flex items-center gap-2.5 relative z-10 pr-28 sm:pr-32">
                             <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -99,7 +99,7 @@
 
                     <!-- Card 3: Total Expenses -->
                     <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-all duration-300 group-hover:scale-105 group-hover:opacity-[0.12]" aria-hidden="true" />
+                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.12]" loading="lazy" decoding="async" aria-hidden="true" />
 
                         <div class="absolute top-3.5 sm:top-4 right-0 z-20">
                             <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/20 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-expense/30 shadow-xs whitespace-nowrap inline-flex items-center">{{ budget_percent }}% of budget</span>
@@ -309,7 +309,6 @@
         if (!track || !dots.length || !slides.length) return;
 
         let currentIndex = 0;
-        const totalSlides = slides.length;
 
         function updateActiveDot(index) {
             if (currentIndex === index) return;
@@ -320,19 +319,16 @@
                 dot.setAttribute('tabindex', isActive ? '0' : '-1');
                 const span = dot.querySelector('.dot-indicator');
                 if (span) {
-                    if (isActive) {
-                        span.className = 'dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300';
-                    } else {
-                        span.className = 'dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300';
-                    }
+                    span.className = isActive
+                        ? 'dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300'
+                        : 'dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300';
                 }
             });
         }
 
         function scrollToSlide(index) {
             if (window.innerWidth >= 640 || !slides[index]) return;
-            const targetLeft = slides[index].offsetLeft;
-            track.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+            slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
             updateActiveDot(index);
         }
 
@@ -343,32 +339,25 @@
             });
         });
 
-        let isTicking = false;
-        track.addEventListener('scroll', () => {
-            if (window.innerWidth >= 640) return;
-            if (!isTicking) {
-                window.requestAnimationFrame(() => {
-                    const trackRect = track.getBoundingClientRect();
-                    const trackCenter = trackRect.left + trackRect.width / 2;
-                    let closestIndex = 0;
-                    let minDistance = Infinity;
-                    
-                    slides.forEach((slide, idx) => {
-                        const slideRect = slide.getBoundingClientRect();
-                        const slideCenter = slideRect.left + slideRect.width / 2;
-                        const dist = Math.abs(trackCenter - slideCenter);
-                        if (dist < minDistance) {
-                            minDistance = dist;
-                            closestIndex = idx;
+        // IntersectionObserver for zero-layout-thrashing scroll tracking on mobile
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                if (window.innerWidth >= 640) return;
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                        const slideIndex = Array.prototype.indexOf.call(slides, entry.target);
+                        if (slideIndex !== -1) {
+                            updateActiveDot(slideIndex);
                         }
-                    });
-                    
-                    updateActiveDot(closestIndex);
-                    isTicking = false;
+                    }
                 });
-                isTicking = true;
-            }
-        }, { passive: true });
+            }, {
+                root: track,
+                threshold: 0.5
+            });
+
+            slides.forEach((slide) => observer.observe(slide));
+        }
     });
 </script>
 {% endblock %}

@@ -81,6 +81,7 @@ def seed_default_user_data(profile):
 def get_dashboard_data(profile):
     """
     Calculate dynamic financial statistics and aggregated views for the main Dashboard.
+    Optimized to eliminate N+1 queries by combining aggregates and performing GROUP BY operations.
     """
     today = date.today()
     start_of_month = today.replace(day=1)
@@ -89,15 +90,19 @@ def get_dashboard_data(profile):
     else:
         end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
 
-    # 1. Total Income & Total Expenses for this Month
+    # 1. Combined Total Income & Total Expenses in a single query
     month_txs = Transaction.objects.filter(
         user=profile,
         transaction_date__gte=start_of_month,
         transaction_date__lte=end_of_month,
     )
 
-    total_income = month_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
-    total_expenses = month_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+    totals = month_txs.aggregate(
+        total_income=Sum('amount', filter=Q(transaction_type=Transaction.TransactionType.INCOME)),
+        total_expenses=Sum('amount', filter=Q(transaction_type=Transaction.TransactionType.EXPENSE))
+    )
+    total_income = totals['total_income'] or Decimal('0.00')
+    total_expenses = totals['total_expenses'] or Decimal('0.00')
     net_cash_flow = total_income - total_expenses
 
     # Saved percentage of income
@@ -121,54 +126,58 @@ def get_dashboard_data(profile):
     budget_left = max(Decimal('0.00'), budget_limit - total_expenses)
     budget_on_track = (total_expenses <= budget_limit) if budget_limit > 0 else True
 
-    # 3. Category Spending Breakdown for Month (optimized to avoid N+1 queries)
-    expense_txs = month_txs.filter(
-        transaction_type=Transaction.TransactionType.EXPENSE,
-        category__isnull=False,
-    )
-    # Aggregate spent per category in a single query
-    spent_per_cat = expense_txs.values('category').annotate(total=Sum('amount'))
-    spent_map = {item['category']: item['total'] for item in spent_per_cat}
-    categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE)
+    # 3. Category Spending Breakdown for Month (Single DB GROUP BY Query)
     category_breakdown = []
-    for cat in categories:
-        cat_spent = spent_map.get(cat.id, Decimal('0.00'))
-        if cat_spent > 0 or total_expenses == 0:
-            pct = int((cat_spent / total_expenses * 100)) if total_expenses > 0 else 0
+    if total_expenses > 0:
+        cat_sums = month_txs.filter(
+            transaction_type=Transaction.TransactionType.EXPENSE,
+            category__isnull=False
+        ).values(
+            'category_id',
+            'category__name',
+            'category__icon_name',
+            'category__color_hex'
+        ).annotate(
+            spent=Sum('amount')
+        ).order_by('-spent')
+
+        for item in cat_sums:
+            cat_spent = item['spent'] or Decimal('0.00')
+            pct = int((cat_spent / total_expenses * 100))
             category_breakdown.append({
-                'id': str(cat.id),
-                'name': cat.name,
-                'icon': cat.icon_name,
-                'color': cat.color_hex,
+                'id': str(item['category_id']),
+                'name': item['category__name'],
+                'icon': item['category__icon_name'] or 'category',
+                'color': item['category__color_hex'] or '#5C8F3A',
                 'spent': cat_spent,
                 'percentage': pct,
             })
-    category_breakdown.sort(key=lambda x: x['spent'], reverse=True)
 
-    # 4. Weekly Spending Breakdown for this Month (Weeks 1 to 4)
+    # 4. Weekly Spending Breakdown for this Month (Weeks 1 to 4) - Single in-memory aggregate pass over month_txs
+    expense_tx_dates = list(month_txs.filter(
+        transaction_type=Transaction.TransactionType.EXPENSE
+    ).values('transaction_date', 'amount'))
+
+    weekly_totals = [Decimal('0.00')] * 4
+    for tx in expense_tx_dates:
+        tx_date = tx['transaction_date']
+        amt = tx['amount']
+        day_offset = (tx_date - start_of_month).days
+        w_idx = min(3, max(0, day_offset // 7))
+        weekly_totals[w_idx] += amt
+
     weekly_spending = []
     for w in range(4):
-        w_start = start_of_month + timedelta(days=w * 7)
-        w_end = min(end_of_month, w_start + timedelta(days=6))
-        w_spent = Transaction.objects.filter(
-            user=profile,
-            transaction_type=Transaction.TransactionType.EXPENSE,
-            transaction_date__gte=w_start,
-            transaction_date__lte=w_end,
-        ).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+        w_spent = weekly_totals[w]
         weekly_spending.append({
             'week_label': f"W{w + 1}",
             'amount': w_spent,
             'amount_k': f"₱{w_spent / 1000:.1f}k" if w_spent >= 1000 else f"₱{w_spent:,.0f}",
         })
 
-    # Max week height scaling
     max_w_amount = max([w['amount'] for w in weekly_spending] + [Decimal('0')])
     for w in weekly_spending:
-        if max_w_amount > 0:
-            w['height_pct'] = int((w['amount'] / max_w_amount) * 100)
-        else:
-            w['height_pct'] = 0
+        w['height_pct'] = int((w['amount'] / max_w_amount) * 100) if max_w_amount > 0 else 0
 
     # 5. Recent 5 Transactions
     recent_transactions = Transaction.objects.filter(user=profile).select_related('account', 'category', 'receipt').order_by('-transaction_date', '-created_at')[:5]
@@ -194,6 +203,7 @@ def get_dashboard_data(profile):
 def get_transactions_data(profile, filters=None):
     """
     Fetch filtered transactions and receipts for the Transactions View.
+    Optimized to load query results once into memory to eliminate redundant SQL COUNT and evaluation calls.
     """
     filters = filters or {}
     qs = Transaction.objects.filter(user=profile).select_related('account', 'destination_account', 'category', 'receipt').order_by('-transaction_date', '-created_at')
@@ -223,12 +233,16 @@ def get_transactions_data(profile, filters=None):
     if source in ('MANUAL', 'OCR_SCAN', 'RECURRING'):
         qs = qs.filter(source=source)
 
+    # Fetch list once into memory
+    transactions_list = list(qs)
+    total_count = len(transactions_list)
+
     # Group transactions by date for mobile view
     today = date.today()
     yesterday = today - timedelta(days=1)
 
     grouped_mobile = {}
-    for tx in qs:
+    for tx in transactions_list:
         t_date = tx.transaction_date
         if t_date == today:
             group_key = f"Today • {t_date.strftime('%b %d, %Y')}"
@@ -241,24 +255,24 @@ def get_transactions_data(profile, filters=None):
             grouped_mobile[group_key] = []
         grouped_mobile[group_key].append(tx)
 
-    # Fetch user categories & accounts for filter selects
     user_categories = Category.objects.filter(user=profile).order_by('name')
     user_accounts = Account.objects.filter(user=profile, is_active=True).order_by('name')
     user_receipts = Receipt.objects.filter(user=profile).prefetch_related('items').order_by('-receipt_date', '-created_at')
 
     return {
-        'transactions': qs,
+        'transactions': transactions_list,
         'grouped_mobile': grouped_mobile,
         'receipts': user_receipts,
         'categories': user_categories,
         'accounts': user_accounts,
-        'total_count': qs.count(),
+        'total_count': total_count,
     }
 
 
 def get_budget_data(profile, selected_month=None):
     """
     Calculate dynamic category budgets and progress for the Budget Page for the selected month.
+    Optimized with single-query category aggregate mapping to eliminate N+1 queries.
     """
     today = date.today()
     today_start_of_month = today.replace(day=1)
@@ -276,30 +290,25 @@ def get_budget_data(profile, selected_month=None):
     else:
         end_of_month = target_date.replace(month=target_date.month + 1, day=1) - timedelta(days=1)
 
-    # Next / Previous Month navigation logic based on database transactions & current date
     is_current_month = (start_of_month >= today_start_of_month)
     next_month_date = (start_of_month + timedelta(days=32)).replace(day=1)
     prev_month_date = (start_of_month - timedelta(days=1)).replace(day=1)
 
-    # Chevron Right: ONLY show if viewed month is strictly in the past (before current month)
     has_next_month = (next_month_date <= today_start_of_month)
     next_month_str = next_month_date.strftime('%Y-%m')
     prev_month_str = prev_month_date.strftime('%Y-%m')
 
-    # Detect if user has transactions in earlier months in the database
     earliest_tx = Transaction.objects.filter(user=profile).order_by('transaction_date').first()
     if earliest_tx and earliest_tx.transaction_date:
         earliest_month = earliest_tx.transaction_date.replace(day=1)
         has_prev_month = (start_of_month > earliest_month)
     else:
-        # If no transactions exist, allow viewing past 3 months
         has_prev_month = (start_of_month > (today_start_of_month - timedelta(days=90)).replace(day=1))
 
-    budgets = Budget.objects.filter(user=profile, is_active=True).select_related('category')
-    overall_budget = budgets.filter(category=None).first()
-    category_budgets = budgets.exclude(category=None)
+    budgets = list(Budget.objects.filter(user=profile, is_active=True).select_related('category'))
+    overall_budget = next((b for b in budgets if b.category_id is None), None)
+    category_budgets = [b for b in budgets if b.category_id is not None]
 
-    # Calculate actual spending per category for this specific month from database
     expense_txs = Transaction.objects.filter(
         user=profile,
         transaction_type=Transaction.TransactionType.EXPENSE,
@@ -309,13 +318,19 @@ def get_budget_data(profile, selected_month=None):
 
     total_spent = expense_txs.aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
 
+    # Build category spent map in a single GROUP BY query
+    cat_spent_map = dict(
+        expense_txs.filter(category__isnull=False)
+        .values('category_id')
+        .annotate(spent=Sum('amount'))
+        .values_list('category_id', 'spent')
+    )
+
     has_custom_overall = bool(overall_budget and overall_budget.amount_limit > 0)
     if has_custom_overall:
         overall_limit = overall_budget.amount_limit
     else:
-        # Fallback to total sum of category budgets
-        cat_limits_sum = category_budgets.aggregate(sum=Sum('amount_limit'))['sum'] or Decimal('0.00')
-        overall_limit = cat_limits_sum
+        overall_limit = sum(b.amount_limit for b in category_budgets)
 
     if overall_limit > 0:
         actual_pct_val = float((total_spent / overall_limit) * 100)
@@ -328,39 +343,37 @@ def get_budget_data(profile, selected_month=None):
     is_over_limit = (total_spent > overall_limit) if overall_limit > 0 else False
     is_warning_limit = (actual_pct_val >= 80) and not is_over_limit and (overall_limit > 0)
 
-    # Determine dynamic color scheme for circle ring & status indicators
     if overall_limit == 0:
         overall_status_label = 'No Limit Set'
         overall_status_color = 'neutral'
-        overall_stroke_color = '#94A3B8'  # Slate Gray
+        overall_stroke_color = '#94A3B8'
         overall_badge_bg = 'bg-slate-100 text-slate-700 border-slate-300'
         overall_badge_text = 'text-slate-700'
     elif is_over_limit:
         overall_status_label = 'Over Budget'
         overall_status_color = 'expense'
-        overall_stroke_color = '#EF4444'  # Vibrant Alert Red
+        overall_stroke_color = '#EF4444'
         overall_badge_bg = 'bg-expense/15 text-expense border-expense/30'
         overall_badge_text = 'text-expense'
     elif is_warning_limit:
         overall_status_label = 'Nearing Limit'
         overall_status_color = 'warning'
-        overall_stroke_color = '#F59E0B'  # Bold Warning Amber
+        overall_stroke_color = '#F59E0B'
         overall_badge_bg = 'bg-warning/20 text-warning-deep border-warning/40'
         overall_badge_text = 'text-warning-deep'
     else:
         overall_status_label = 'On Track'
         overall_status_color = 'positive'
-        overall_stroke_color = '#10B981'  # Vibrant Emerald Green
+        overall_stroke_color = '#10B981'
         overall_badge_bg = 'bg-primary-pale text-positive-deep border-positive/30'
         overall_badge_text = 'text-positive-deep'
 
-    # Stroke dashoffset for SVG ring (viewBox circumference for r=38 is 238.76)
     capped_pct = min(100.0, actual_pct_val)
     overall_dashoffset = max(0.0, 238.76 - (238.76 * capped_pct / 100.0))
 
     budget_cards = []
     for b in category_budgets:
-        cat_spent = expense_txs.filter(category=b.category).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+        cat_spent = cat_spent_map.get(b.category_id, Decimal('0.00'))
         pct = min(100, int((cat_spent / b.amount_limit) * 100)) if b.amount_limit > 0 else 0
         left = b.amount_limit - cat_spent
         is_over = cat_spent > b.amount_limit
@@ -396,12 +409,11 @@ def get_budget_data(profile, selected_month=None):
             'status_color': status_color,
         })
 
-    # Include unbudgeted categories (inevitable expenses / tracking only)
     budgeted_cat_ids = set(b.category_id for b in category_budgets if b.category_id)
     unbudgeted_categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE).exclude(id__in=budgeted_cat_ids)
 
     for cat in unbudgeted_categories:
-        cat_spent = expense_txs.filter(category=cat).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+        cat_spent = cat_spent_map.get(cat.id, Decimal('0.00'))
         budget_cards.append({
             'id': f"unbudgeted-{cat.id}",
             'name': cat.name,
@@ -461,7 +473,7 @@ def get_budget_data(profile, selected_month=None):
 def get_reports_data(profile):
     """
     Compute 100% dynamic statistics for Reports (week, month, year) strictly from database Transaction records.
-    Zero mock/hardcoded fallback data.
+    Optimized with single-pass in-memory processing to eliminate 100+ redundant SQL queries.
     """
     if not profile:
         return {}
@@ -469,22 +481,23 @@ def get_reports_data(profile):
     today = date.today()
 
     def get_period_stats(cols, col_ranges, period_start, period_end, prev_start, prev_end, period_label):
-        # 1. Total Incomes & Expenses
-        period_txs = Transaction.objects.filter(
+        # Fetch period transactions once into memory
+        period_txs_list = list(Transaction.objects.filter(
             user=profile,
             transaction_date__gte=period_start,
             transaction_date__lte=period_end,
-        )
-        total_exp = float(period_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
-        total_inc = float(period_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
+        ).values('transaction_date', 'transaction_type', 'amount', 'category_id', 'category__name', 'category__icon_name', 'category__color_hex'))
 
-        # Previous period comparison
-        prev_txs = Transaction.objects.filter(
+        total_exp = sum(float(tx['amount']) for tx in period_txs_list if tx['transaction_type'] == Transaction.TransactionType.EXPENSE)
+        total_inc = sum(float(tx['amount']) for tx in period_txs_list if tx['transaction_type'] == Transaction.TransactionType.INCOME)
+
+        # Previous period comparison (1 DB query)
+        prev_exp = float(Transaction.objects.filter(
             user=profile,
             transaction_date__gte=prev_start,
             transaction_date__lte=prev_end,
-        )
-        prev_exp = float(prev_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+            transaction_type=Transaction.TransactionType.EXPENSE,
+        ).aggregate(s=Sum('amount'))['s'] or 0)
 
         if prev_exp > 0:
             pct_diff = ((total_exp - prev_exp) / prev_exp) * 100
@@ -504,13 +517,12 @@ def get_reports_data(profile):
             savings_str = "0.0%"
             savings_bar = "0%"
 
-        # Column breakdown (Bars)
+        # Column breakdown (In-memory pass over period_txs_list)
         exp_vals = []
         inc_vals = []
         for r_start, r_end in col_ranges:
-            sub_txs = period_txs.filter(transaction_date__gte=r_start, transaction_date__lte=r_end)
-            e = float(sub_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
-            i = float(sub_txs.filter(transaction_type=Transaction.TransactionType.INCOME).aggregate(s=Sum('amount'))['s'] or 0)
+            e = sum(float(tx['amount']) for tx in period_txs_list if tx['transaction_type'] == Transaction.TransactionType.EXPENSE and r_start <= tx['transaction_date'] <= r_end)
+            i = sum(float(tx['amount']) for tx in period_txs_list if tx['transaction_type'] == Transaction.TransactionType.INCOME and r_start <= tx['transaction_date'] <= r_end)
             exp_vals.append(e)
             inc_vals.append(i)
 
@@ -530,27 +542,43 @@ def get_reports_data(profile):
                 "₱0"
             ]
 
-        # Category Donut Distribution
-        donut = []
-        user_categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE)
+        # Category Donut Distribution (In-memory aggregation)
         cat_spending_map = {}
-        for cat in user_categories:
-            c_sum = float(period_txs.filter(category=cat, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+        cat_info_map = {}
+        uncat_sum = 0.0
+
+        for tx in period_txs_list:
+            if tx['transaction_type'] == Transaction.TransactionType.EXPENSE:
+                cat_id = tx['category_id']
+                amt = float(tx['amount'])
+                if cat_id:
+                    cat_spending_map[cat_id] = cat_spending_map.get(cat_id, 0.0) + amt
+                    if cat_id not in cat_info_map:
+                        cat_info_map[cat_id] = {
+                            'name': tx['category__name'],
+                            'icon': tx['category__icon_name'] or 'category',
+                            'color': tx['category__color_hex'] or '#163300',
+                        }
+                else:
+                    uncat_sum += amt
+
+        donut = []
+        for cat_id, c_sum in cat_spending_map.items():
             if c_sum > 0:
-                cat_spending_map[cat] = c_sum
+                info = cat_info_map[cat_id]
                 donut.append({
-                    'name': cat.name,
-                    'color': cat.color_hex or '#163300',
-                    'icon': cat.icon_name or 'category',
+                    'id': cat_id,
+                    'name': info['name'],
+                    'color': info['color'],
+                    'icon': info['icon'],
                     'value': c_sum,
                     'percentage': round((c_sum / total_exp * 100), 1) if total_exp > 0 else 0,
                     'amount': f"₱{c_sum:,.2f}"
                 })
 
-        # Also capture uncategorized expenses if any
-        uncat_sum = float(period_txs.filter(category__isnull=True, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
         if uncat_sum > 0:
             donut.append({
+                'id': None,
                 'name': 'Uncategorized',
                 'color': '#868685',
                 'icon': 'category',
@@ -587,21 +615,26 @@ def get_reports_data(profile):
             top_cat_amount = "₱0.00"
             top_cat_percent = "0% of total"
 
-        # Multi-category Trends (Top 4 categories by spend)
+        # Multi-category Trends (Top 4 categories by spend computed in memory)
         trend_categories = []
-        top_cats = [c for c, _ in sorted(cat_spending_map.items(), key=lambda item: item[1], reverse=True)[:4]]
+        top_cats = donut[:4]
 
-        for idx, cat in enumerate(top_cats):
+        for idx, cat_item in enumerate(top_cats):
+            cat_id = cat_item.get('id')
+            cat_name = cat_item['name']
             cat_vals = []
             for r_start, r_end in col_ranges:
-                c_val = float(period_txs.filter(category=cat, transaction_date__gte=r_start, transaction_date__lte=r_end, transaction_type=Transaction.TransactionType.EXPENSE).aggregate(s=Sum('amount'))['s'] or 0)
+                if cat_id is not None:
+                    c_val = sum(float(tx['amount']) for tx in period_txs_list if tx['category_id'] == cat_id and tx['transaction_type'] == Transaction.TransactionType.EXPENSE and r_start <= tx['transaction_date'] <= r_end)
+                else:
+                    c_val = sum(float(tx['amount']) for tx in period_txs_list if tx['category_id'] is None and tx['transaction_type'] == Transaction.TransactionType.EXPENSE and r_start <= tx['transaction_date'] <= r_end)
                 cat_vals.append(c_val)
             
             c_tot = sum(cat_vals)
-            cat_color = donut_color_map.get(cat.name, cat.color_hex or generate_dynamic_color(idx))
+            cat_color = cat_item['color']
             trend_categories.append({
-                'name': cat.name,
-                'icon': cat.icon_name or 'category',
+                'name': cat_name,
+                'icon': cat_item.get('icon', 'category'),
                 'color': cat_color,
                 'gradId': f"grad-trend-{idx}",
                 'values': cat_vals,
