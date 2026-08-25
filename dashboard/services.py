@@ -121,13 +121,18 @@ def get_dashboard_data(profile):
     budget_left = max(Decimal('0.00'), budget_limit - total_expenses)
     budget_on_track = (total_expenses <= budget_limit) if budget_limit > 0 else True
 
-    # 3. Category Spending Breakdown for Month
-    expense_txs = month_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE, category__isnull=False)
+    # 3. Category Spending Breakdown for Month (optimized to avoid N+1 queries)
+    expense_txs = month_txs.filter(
+        transaction_type=Transaction.TransactionType.EXPENSE,
+        category__isnull=False,
+    )
+    # Aggregate spent per category in a single query
+    spent_per_cat = expense_txs.values('category').annotate(total=Sum('amount'))
+    spent_map = {item['category']: item['total'] for item in spent_per_cat}
     categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE)
-
     category_breakdown = []
     for cat in categories:
-        cat_spent = expense_txs.filter(category=cat).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+        cat_spent = spent_map.get(cat.id, Decimal('0.00'))
         if cat_spent > 0 or total_expenses == 0:
             pct = int((cat_spent / total_expenses * 100)) if total_expenses > 0 else 0
             category_breakdown.append({

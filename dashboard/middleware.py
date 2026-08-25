@@ -3,6 +3,9 @@ import base64
 import jwt
 from django.conf import settings
 from django.http import JsonResponse
+import time
+import logging
+from django.db import connection
 from django.shortcuts import redirect
 
 _jwks_client = None
@@ -75,6 +78,32 @@ class ClerkAuthenticationMiddleware:
             return redirect('/?sign_in=true')
 
         return self.get_response(request)
+
+class PerformanceLoggingMiddleware:
+    """Logs request processing time and DB query count for each request."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.logger = logging.getLogger('performance')
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+            self.logger.setLevel(logging.INFO)
+
+    def __call__(self, request):
+        start = time.perf_counter()
+        # Reset query log if available
+        if hasattr(connection, 'queries'):
+            connection.queries_log.clear()
+        response = self.get_response(request)
+        duration = (time.perf_counter() - start) * 1000
+        query_count = len(connection.queries) if hasattr(connection, 'queries') else 0
+        self.logger.info(
+            f"[Performance] {request.method} {request.path} - {duration:.2f}ms, {query_count} DB queries"
+        )
+        return response
 
     @staticmethod
     def _verify_session_token(token):
