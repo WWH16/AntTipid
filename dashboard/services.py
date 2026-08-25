@@ -1,4 +1,5 @@
 import uuid
+import colorsys
 from decimal import Decimal
 from datetime import date, datetime, timedelta
 from django.utils import timezone
@@ -14,6 +15,14 @@ from .models import (
     Budget,
     RecurringRule,
 )
+
+
+def generate_dynamic_color(index):
+    """Dynamically generate distinct, visually appealing hex colors using golden-ratio HSL distribution."""
+    golden_ratio_conjugate = 0.618033988749895
+    hue = (index * golden_ratio_conjugate) % 1.0
+    r, g, b = colorsys.hls_to_rgb(hue, 0.45, 0.68)
+    return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
 
 
 def get_current_user_profile(request):
@@ -467,7 +476,7 @@ def get_reports_data(profile):
                     'color': cat.color_hex or '#163300',
                     'icon': cat.icon_name or 'category',
                     'value': c_sum,
-                    'percentage': int((c_sum / total_exp * 100)) if total_exp > 0 else 0,
+                    'percentage': round((c_sum / total_exp * 100), 1) if total_exp > 0 else 0,
                     'amount': f"₱{c_sum:,.2f}"
                 })
 
@@ -479,11 +488,24 @@ def get_reports_data(profile):
                 'color': '#868685',
                 'icon': 'category',
                 'value': uncat_sum,
-                'percentage': int((uncat_sum / total_exp * 100)) if total_exp > 0 else 0,
+                'percentage': round((uncat_sum / total_exp * 100), 1) if total_exp > 0 else 0,
                 'amount': f"₱{uncat_sum:,.2f}"
             })
 
         donut.sort(key=lambda x: x['value'], reverse=True)
+
+        used_colors = set()
+        for idx, d in enumerate(donut):
+            if d['name'] == 'Uncategorized':
+                d['color'] = '#868685'
+            else:
+                c = d.get('color')
+                if not c or c in used_colors or (c in ('#163300', '#5C8F3A') and len(donut) > 1):
+                    c = generate_dynamic_color(idx)
+                d['color'] = c
+                used_colors.add(c)
+
+        donut_color_map = {d['name']: d['color'] for d in donut}
 
         # Top Category KPI
         if donut:
@@ -509,10 +531,11 @@ def get_reports_data(profile):
                 cat_vals.append(c_val)
             
             c_tot = sum(cat_vals)
+            cat_color = donut_color_map.get(cat.name, cat.color_hex or generate_dynamic_color(idx))
             trend_categories.append({
                 'name': cat.name,
                 'icon': cat.icon_name or 'category',
-                'color': cat.color_hex or '#163300',
+                'color': cat_color,
                 'gradId': f"grad-trend-{idx}",
                 'values': cat_vals,
                 'formattedValues': [f"₱{v:,.0f}" for v in cat_vals],
@@ -568,7 +591,7 @@ def get_reports_data(profile):
             'donutTotal': f"₱{total_exp:,.2f}",
             'donutPeriod': period_label,
             'donut': donut,
-            'categories': [{'name': d['name'], 'pct': d['percentage'], 'amount': d['amount']} for d in donut],
+            'categories': [{'name': d['name'], 'pct': d['percentage'], 'amount': d['amount'], 'color': d['color'], 'value': d['value']} for d in donut],
             'trendPeriod': period_label,
             'trendSubtext': f"Spending trajectory for {period_label}",
             'trendYTicks': trend_y_ticks,
