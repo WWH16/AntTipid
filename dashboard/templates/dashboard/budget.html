@@ -6,9 +6,10 @@
 {% block extra_head %}
 <style>
 .progress-ring__circle {
-    transition: stroke-dashoffset 1s ease-in-out;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.12));
 }
 @media (prefers-reduced-motion: reduce) {
     .progress-ring__circle { transition: none; }
@@ -57,30 +58,56 @@
         <!-- ═══════════════════════════════════════ -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
-            <!-- Overall Budget Ring (Hero Bento Card) -->
-            <div class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-all duration-200 flex items-center gap-4 relative overflow-hidden group">
-                <div class="absolute -right-6 -top-6 w-28 h-28 bg-warning/10 rounded-full blur-xl pointer-events-none"></div>
-                
-                <!-- SVG Ring with Gold Stroke -->
-                <div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-surface-container-low stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
-                        <circle class="text-warning stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="{{ overall_dashoffset|default:'251.2' }}" stroke-linecap="round"></circle>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest tabular-nums">{{ overall_percentage }}%</span>
-                        <span class="font-body-sm text-[8px] sm:text-[9px] text-on-surface-variant font-medium">spent</span>
+            <!-- Overall Budget Ring (Hero Bento Card - Mobile Adapted & Clickable) -->
+            <div id="hero-budget-card" role="button" tabindex="0" aria-label="Edit overall monthly limit" data-overall-limit="{% if has_custom_overall %}{{ overall_limit|floatformat:2 }}{% endif %}" class="sm:col-span-2 bg-surface-container-lowest border border-outline-variant/60 hover:border-positive/50 rounded-2xl p-3.5 sm:p-5 shadow-2xs hover:shadow-sm active:scale-[0.99] transition-all duration-200 flex items-center justify-between gap-2.5 sm:gap-4 relative overflow-hidden group cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-positive/50">
+                <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    <!-- SVG Progress Ring with Dynamic Noticeable Color (Mobile Scaled) -->
+                    <div class="relative w-14 h-14 sm:w-20 sm:h-20 shrink-0">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <!-- High Contrast Background Track Circle -->
+                            <circle cx="50" cy="50" r="38" fill="transparent" stroke="currentColor" class="text-outline-variant/30" stroke-width="9"></circle>
+                            <!-- Dynamic Noticeable Progress Ring Circle -->
+                            <circle id="overall-progress-ring" cx="50" cy="50" r="38" fill="transparent" stroke="{{ overall_stroke_color|default:'#10B981' }}" stroke-width="9" stroke-dasharray="238.76" stroke-dashoffset="{{ overall_dashoffset|default:'238.76' }}" stroke-linecap="round" class="progress-ring__circle"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            {% if overall_limit > 0 %}
+                            <span class="font-label-md text-[11px] sm:text-sm font-extrabold text-deep-forest tabular-nums leading-none">{{ overall_percentage }}%</span>
+                            <span class="font-body-sm text-[8px] sm:text-[9px] text-on-surface-variant font-medium mt-0.5">spent</span>
+                            {% else %}
+                            <span class="font-label-md text-xs font-bold text-on-surface-variant leading-none">--</span>
+                            <span class="font-body-sm text-[8px] text-on-surface-variant font-medium mt-0.5">no limit</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Summary Metrics & Header -->
+                    <div class="flex flex-col min-w-0 z-10 flex-1 gap-0.5">
+                        <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            <span class="font-label-sm text-[10px] sm:text-[11px] text-deep-forest uppercase tracking-[0.05em] font-extrabold truncate">Monthly Limit</span>
+                            <span class="px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full font-label-sm text-[9px] font-bold border {{ overall_badge_bg }} shrink-0">
+                                {{ overall_status_label }}
+                            </span>
+                        </div>
+                        
+                        {% if overall_limit > 0 %}
+                        <span class="font-headline-md text-base sm:text-xl font-extrabold text-deep-forest tracking-tight tabular-nums truncate block">
+                            ₱{{ overall_remaining|floatformat:2 }}
+                        </span>
+                        <span class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium truncate block">
+                            left of ₱{{ total_limit|floatformat:2 }}
+                        </span>
+                        {% else %}
+                        <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight truncate block">No limit</span>
+                        <span class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium block">Tap to set target</span>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Summary Metrics -->
-                <div class="flex flex-col min-w-0 z-10 flex-1">
-                    <div class="flex items-center gap-1 mb-1">
-                        <span class="px-2 py-0.5 rounded-full bg-warning/15 text-warning-deep font-label-sm text-[10px] font-bold border border-warning/30">Remaining</span>
-                    </div>
-                    <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight tabular-nums truncate">₱{{ overall_remaining|floatformat:2 }}</span>
-                    <p class="font-body-sm text-[11px] text-on-surface-variant font-medium truncate">of <span class="font-bold text-deep-forest">₱{{ total_limit|floatformat:2 }}</span> monthly limit</p>
-                </div>
+                <!-- Minimized Mobile Edit Action Badge -->
+                <span id="btn-edit-overall-limit" class="text-on-surface-variant group-hover:text-deep-forest font-label-sm text-[10px] sm:text-[11px] font-bold px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-surface-container-low group-hover:bg-primary-pale group-hover:text-positive-deep flex items-center gap-1 shrink-0 transition-all shadow-2xs z-10">
+                    <span class="material-symbols-outlined text-[13px]">edit</span>
+                    <span class="hidden min-[360px]:inline">Edit</span>
+                </span>
             </div>
 
             <!-- Total Spent Metric -->
@@ -467,27 +494,12 @@
                     </div>
                 </div>
 
-                <!-- Strategy Selector -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-label-sm text-[11px] text-deep-forest font-bold">Strategy</label>
-                    <div class="grid grid-cols-2 gap-1.5">
-                        <button type="button" id="modal-strat-nobudget" class="p-1.5 sm:p-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/50 text-body flex flex-col items-start text-left cursor-pointer transition-all">
-                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-positive-deep">track_changes</span> Track Only</span>
-                            <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">No limit</span>
-                        </button>
-                        <button type="button" id="modal-strat-budget" class="p-1.5 sm:p-2 rounded-xl border border-primary bg-primary-pale text-positive-deep flex flex-col items-start text-left cursor-pointer transition-all">
-                            <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> Set Limit</span>
-                            <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">Monthly cap</span>
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Monthly Limit -->
                 <div id="group-adjust-target">
                     <label for="input-adjust-target" class="font-label-sm text-[11px] text-deep-forest block mb-1 font-bold">Monthly Limit (₱)</label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
-                        <input id="input-adjust-target" class="w-full pl-7 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5000" type="number" step="100" min="0">
+                        <input id="input-adjust-target" class="w-full pl-7 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5000 (leave 0 or blank for no limit)" type="number" step="100" min="0">
                     </div>
                 </div>
 
@@ -952,6 +964,7 @@
         const btnDeleteCategory = document.getElementById('btn-delete-budget-category');
         const btnSubmitBudgetLabel = document.getElementById('btn-submit-budget-label');
         let activeCategoryId = '';
+        let isOverallMode = false;
 
         function setModalBudgetStrategy(hasBudget) {
             modalHasBudget = hasBudget;
@@ -997,7 +1010,6 @@
                     if (labelSelected) labelSelected.textContent = item.label;
                     if (modalHeaderIcon) modalHeaderIcon.textContent = item.icon;
 
-                    // Option 1 Smart Auto-fill: If in new category mode and name is blank or matches a preset, autofill
                     if (isNewCategoryMode && inputCatName) {
                         const currentVal = inputCatName.value.trim().toLowerCase();
                         const isBlank = currentVal === '';
@@ -1021,15 +1033,29 @@
 
         function openModal(options) {
             isNewCategoryMode = !!options.isNew;
+            isOverallMode = !!options.isOverall;
             activeCategoryName = options.categoryName || '';
             activeCategoryId = options.categoryId || '';
             selectedIcon = options.icon || 'local_grocery_store';
 
-            const isUnbudgeted = options.unbudgeted === true || options.unbudgeted === 'true' || (!options.target && !isNewCategoryMode);
+            const isUnbudgeted = !isOverallMode && (options.unbudgeted === true || options.unbudgeted === 'true' || (!options.target && !isNewCategoryMode));
             setModalBudgetStrategy(!isUnbudgeted);
             renderBudgetIconPicker();
 
-            if (isNewCategoryMode) {
+            if (isOverallMode) {
+                if (modalTitle) modalTitle.textContent = 'Edit Monthly Budget Limit';
+                if (modalSubtitle) modalSubtitle.textContent = 'Set your total spending target for the month';
+                if (modalHeaderIcon) modalHeaderIcon.textContent = 'tune';
+                if (groupCatName) groupCatName.classList.add('hidden');
+                if (inputCatName) {
+                    inputCatName.required = false;
+                    inputCatName.value = 'Overall Monthly Budget';
+                }
+                if (groupCatIcon) groupCatIcon.classList.add('hidden');
+                if (inputTarget) inputTarget.value = options.target || '';
+                if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Save Monthly Limit';
+                if (btnDeleteCategory) btnDeleteCategory.classList.add('hidden');
+            } else if (isNewCategoryMode) {
                 if (modalTitle) modalTitle.textContent = 'New Category';
                 if (modalSubtitle) modalSubtitle.textContent = 'Create category with optional monthly limit';
                 if (modalHeaderIcon) modalHeaderIcon.textContent = selectedIcon;
@@ -1069,7 +1095,9 @@
                 modalWrapper.classList.add('opacity-100');
                 modalContent.classList.remove('translate-y-full', 'scale-95', 'opacity-0');
                 modalContent.classList.add('translate-y-0', 'scale-100', 'opacity-100');
-                if (inputCatName) {
+                if (isOverallMode) {
+                    if (inputTarget) inputTarget.focus();
+                } else if (inputCatName && isNewCategoryMode) {
                     inputCatName.focus();
                 } else if (inputTarget && modalHasBudget) {
                     inputTarget.focus();
@@ -1178,6 +1206,34 @@
             });
         }
 
+        // Overall Limit Hero Card Click & Keydown Trigger
+        const heroBudgetCard = document.getElementById('hero-budget-card');
+        const handleHeroCardClick = (e) => {
+            openModal({
+                isOverall: true,
+                target: (heroBudgetCard ? heroBudgetCard.dataset.overallLimit : '') || '',
+            });
+        };
+
+        if (heroBudgetCard) {
+            heroBudgetCard.addEventListener('click', handleHeroCardClick);
+            heroBudgetCard.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleHeroCardClick(e);
+                }
+            });
+        }
+
+        // Auto-open Edit Overall Limit Modal if URL query param edit_limit=true is set
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit_limit') === 'true') {
+            openModal({
+                isOverall: true,
+                target: heroBudgetCard ? (heroBudgetCard.dataset.overallLimit || '') : '',
+            });
+        }
+
         // Existing Category Cards Trigger Adjust Modal
         document.querySelectorAll('.category-budget-card').forEach(card => {
             const handleCardClick = () => {
@@ -1233,11 +1289,12 @@
 
         document.getElementById('form-adjust-budget')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const targetAmount = modalHasBudget ? (parseFloat(inputTarget.value) || 0) : 0;
-            const categoryName = inputCatName ? inputCatName.value.trim() : activeCategoryName;
-            if (!categoryName) return;
+            const targetAmount = parseFloat(inputTarget.value) || 0;
+            const hasBudget = targetAmount > 0;
+            const categoryName = isOverallMode ? 'Overall Monthly Budget' : (inputCatName ? inputCatName.value.trim() : activeCategoryName);
+            if (!isOverallMode && !categoryName) return;
 
-            const categoryId = (!isNewCategoryMode && activeCategoryId && !activeCategoryId.startsWith('unbudgeted-')) ? activeCategoryId : undefined;
+            const categoryId = (!isOverallMode && !isNewCategoryMode && activeCategoryId && !activeCategoryId.startsWith('unbudgeted-')) ? activeCategoryId : undefined;
 
             try {
                 if (submitBtn) {
@@ -1254,7 +1311,8 @@
                         category_id: categoryId,
                         category: categoryName,
                         amount: targetAmount,
-                        has_budget: modalHasBudget,
+                        has_budget: hasBudget,
+                        is_overall: isOverallMode,
                         icon: selectedIcon,
                     })
                 });
@@ -1262,11 +1320,11 @@
                 if (result.success) {
                     window.location.reload();
                 } else {
-                    alert(result.error || 'Failed to save category.');
+                    alert(result.error || 'Failed to save budget.');
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         if (btnSubmitBudgetLabel) {
-                            btnSubmitBudgetLabel.textContent = isNewCategoryMode ? 'Create Category' : 'Save Changes';
+                            btnSubmitBudgetLabel.textContent = isOverallMode ? 'Save Monthly Limit' : (isNewCategoryMode ? 'Create Category' : 'Save Changes');
                         }
                     }
                 }

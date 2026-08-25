@@ -356,7 +356,7 @@ def api_delete_transaction(request, pk):
 @csrf_exempt
 @require_POST
 def api_save_budget(request):
-    """API endpoint to create or update category budget limits."""
+    """API endpoint to create or update category budget limits or overall monthly limit."""
     profile = get_current_user_profile(request)
     if not profile:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -365,6 +365,7 @@ def api_save_budget(request):
         data = json.loads(request.body.decode('utf-8'))
         category_id = data.get('category_id')
         category_name = data.get('category')
+        is_overall = data.get('is_overall', False)
         amount_limit = Decimal(str(data.get('amount_limit') or data.get('amount') or 0))
 
         today = date.today()
@@ -377,7 +378,9 @@ def api_save_budget(request):
         category_icon = data.get('icon') or data.get('icon_name') or 'category'
         category_color = data.get('color') or data.get('color_hex') or '#5C8F3A'
 
-        if category_id:
+        if is_overall or (category_name and category_name.strip().lower() == 'overall monthly budget'):
+            category = None
+        elif category_id:
             category = Category.objects.filter(id=category_id, user=profile).first()
             if category:
                 if category_name and category_name.strip():
@@ -411,9 +414,8 @@ def api_save_budget(request):
             has_budget = (amount_limit > 0)
 
         if not has_budget or amount_limit <= 0:
-            if category:
-                Budget.objects.filter(user=profile, category=category).delete()
-            return JsonResponse({'success': True, 'unbudgeted': True})
+            Budget.objects.filter(user=profile, category=category).delete()
+            return JsonResponse({'success': True, 'unbudgeted': True, 'is_overall': category is None})
 
         budget, created = Budget.objects.update_or_create(
             user=profile,
@@ -428,7 +430,7 @@ def api_save_budget(request):
             }
         )
 
-        return JsonResponse({'success': True, 'id': str(budget.id)})
+        return JsonResponse({'success': True, 'id': str(budget.id), 'is_overall': category is None})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 

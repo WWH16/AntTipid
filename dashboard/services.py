@@ -107,12 +107,19 @@ def get_dashboard_data(profile):
 
     # 2. Monthly Budget stats
     overall_budget = Budget.objects.filter(user=profile, category=None, is_active=True).first()
-    budget_limit = overall_budget.amount_limit if overall_budget else Decimal('0.00')
+    has_custom_overall = bool(overall_budget and overall_budget.amount_limit > 0)
+    if has_custom_overall:
+        budget_limit = overall_budget.amount_limit
+    else:
+        # Fallback to total sum of category budget limits
+        cat_sum = Budget.objects.filter(user=profile, is_active=True).exclude(category=None).aggregate(sum=Sum('amount_limit'))['sum'] or Decimal('0.00')
+        budget_limit = cat_sum
+
     budget_percent = 0
     if budget_limit > 0:
         budget_percent = min(100, int((total_expenses / budget_limit) * 100))
     budget_left = max(Decimal('0.00'), budget_limit - total_expenses)
-    budget_on_track = total_expenses <= budget_limit
+    budget_on_track = (total_expenses <= budget_limit) if budget_limit > 0 else True
 
     # 3. Category Spending Breakdown for Month
     expense_txs = month_txs.filter(transaction_type=Transaction.TransactionType.EXPENSE, category__isnull=False)
@@ -171,6 +178,7 @@ def get_dashboard_data(profile):
         'budget_left': budget_left,
         'budget_percent': budget_percent,
         'budget_on_track': budget_on_track,
+        'has_custom_overall': has_custom_overall,
         'category_breakdown': category_breakdown[:5],
         'weekly_spending': weekly_spending,
         'recent_transactions': recent_transactions,
@@ -295,9 +303,55 @@ def get_budget_data(profile, selected_month=None):
     )
 
     total_spent = expense_txs.aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
-    overall_limit = overall_budget.amount_limit if overall_budget else Decimal('0.00')
-    overall_pct = min(100, int((total_spent / overall_limit) * 100)) if overall_limit > 0 else 0
+
+    has_custom_overall = bool(overall_budget and overall_budget.amount_limit > 0)
+    if has_custom_overall:
+        overall_limit = overall_budget.amount_limit
+    else:
+        # Fallback to total sum of category budgets
+        cat_limits_sum = category_budgets.aggregate(sum=Sum('amount_limit'))['sum'] or Decimal('0.00')
+        overall_limit = cat_limits_sum
+
+    if overall_limit > 0:
+        actual_pct_val = float((total_spent / overall_limit) * 100)
+        overall_pct = min(100, int(actual_pct_val))
+    else:
+        actual_pct_val = 0.0
+        overall_pct = 0
+
     overall_left = max(Decimal('0.00'), overall_limit - total_spent)
+    is_over_limit = (total_spent > overall_limit) if overall_limit > 0 else False
+    is_warning_limit = (actual_pct_val >= 80) and not is_over_limit and (overall_limit > 0)
+
+    # Determine dynamic color scheme for circle ring & status indicators
+    if overall_limit == 0:
+        overall_status_label = 'No Limit Set'
+        overall_status_color = 'neutral'
+        overall_stroke_color = '#94A3B8'  # Slate Gray
+        overall_badge_bg = 'bg-slate-100 text-slate-700 border-slate-300'
+        overall_badge_text = 'text-slate-700'
+    elif is_over_limit:
+        overall_status_label = 'Over Budget'
+        overall_status_color = 'expense'
+        overall_stroke_color = '#EF4444'  # Vibrant Alert Red
+        overall_badge_bg = 'bg-expense/15 text-expense border-expense/30'
+        overall_badge_text = 'text-expense'
+    elif is_warning_limit:
+        overall_status_label = 'Nearing Limit'
+        overall_status_color = 'warning'
+        overall_stroke_color = '#F59E0B'  # Bold Warning Amber
+        overall_badge_bg = 'bg-warning/20 text-warning-deep border-warning/40'
+        overall_badge_text = 'text-warning-deep'
+    else:
+        overall_status_label = 'On Track'
+        overall_status_color = 'positive'
+        overall_stroke_color = '#10B981'  # Vibrant Emerald Green
+        overall_badge_bg = 'bg-primary-pale text-positive-deep border-positive/30'
+        overall_badge_text = 'text-positive-deep'
+
+    # Stroke dashoffset for SVG ring (viewBox circumference for r=38 is 238.76)
+    capped_pct = min(100.0, actual_pct_val)
+    overall_dashoffset = max(0.0, 238.76 - (238.76 * capped_pct / 100.0))
 
     budget_cards = []
     for b in category_budgets:
@@ -365,7 +419,6 @@ def get_budget_data(profile, selected_month=None):
 
     exceeded_count = sum(1 for c in budget_cards if c['is_exceeded'])
     warning_count = sum(1 for c in budget_cards if c['is_warning'])
-    overall_dashoffset = max(0, 251.2 - (251.2 * float(overall_pct) / 100.0))
 
     categories = Category.objects.filter(user=profile, category_type=Category.CategoryType.EXPENSE).order_by('name')
 
@@ -379,6 +432,13 @@ def get_budget_data(profile, selected_month=None):
         'overall_pct': overall_pct,
         'overall_percentage': overall_pct,
         'overall_dashoffset': f"{overall_dashoffset:.1f}",
+        'overall_stroke_color': overall_stroke_color,
+        'overall_status_label': overall_status_label,
+        'overall_badge_bg': overall_badge_bg,
+        'overall_badge_text': overall_badge_text,
+        'has_custom_overall': has_custom_overall,
+        'is_over_limit': is_over_limit,
+        'is_warning_limit': is_warning_limit,
         'exceeded_count': exceeded_count,
         'warning_count': warning_count,
         'budget_cards': budget_cards,
