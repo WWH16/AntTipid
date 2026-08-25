@@ -207,7 +207,7 @@
                 <div class="w-7 h-7 rounded-full bg-soft-green/30 border border-deep-forest/20 flex items-center justify-center p-0.5 overflow-hidden shrink-0">
                     <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
                 </div>
-                <span class="font-headline-md text-sm font-bold text-deep-forest">
+                <span class="font-bold text-sm text-deep-forest tracking-tight">
                     {% block mobile_header_title %}{% if active_nav == 'dashboard' %}Dashboard{% elif active_nav == 'transactions' %}History & Receipts{% elif active_nav == 'budgets' %}Budgets{% elif active_nav == 'reports' %}Reports{% elif active_nav == 'scan_receipt' %}Scan Receipt{% elif active_nav == 'add_transaction' %}Add Transaction{% else %}AntTipid{% endif %}{% endblock %}
                 </span>
             </div>
@@ -225,7 +225,7 @@
         <header class="bg-surface/80 backdrop-blur-md w-full h-16 justify-between items-center px-6 md:px-8 xl:px-12 sticky top-0 z-30 border-b border-surface-variant/50 hidden md:flex shrink-0">
             <!-- Left: Current Page Title -->
             <div class="flex items-center gap-3">
-                <h1 class="font-headline-md text-base font-bold text-on-surface tracking-tight">
+                <h1 class="font-extrabold text-lg text-deep-forest tracking-tight">
                     {% block header_title %}{% if active_nav == 'dashboard' %}Dashboard Overview{% elif active_nav == 'transactions' %}History & Receipts{% elif active_nav == 'budgets' %}Budget Planner{% elif active_nav == 'reports' %}Financial Insights{% elif active_nav == 'scan_receipt' %}Scan Receipt{% elif active_nav == 'add_transaction' %}Add Transaction{% else %}Overview{% endif %}{% endblock %}
                 </h1>
             </div>
