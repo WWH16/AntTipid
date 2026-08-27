@@ -618,13 +618,13 @@ def api_save_scanned_receipt(request):
                 if pil_img.mode in ('RGBA', 'P'):
                     pil_img = pil_img.convert('RGB')
                 
-                # Maximum dimension 1400px for optimal storage savings
-                max_dim = 1400
+                # Maximum dimension 1000px for optimal storage savings
+                max_dim = 1000
                 if pil_img.width > max_dim or pil_img.height > max_dim:
                     pil_img.thumbnail((max_dim, max_dim), PILImage.Resampling.LANCZOS)
                 
                 out_buf = BytesIO()
-                pil_img.save(out_buf, format='JPEG', quality=75, optimize=True)
+                pil_img.save(out_buf, format='JPEG', quality=70, optimize=True)
                 file_name = f"receipt_{tx_date}_{uuid.uuid4().hex[:6]}.jpg"
                 image_file = ContentFile(out_buf.getvalue(), name=file_name)
             except Exception as img_err:
@@ -738,7 +738,7 @@ def api_scan_receipt_view(request):
 
         client = genai.Client(
             api_key=gemini_key,
-            http_options=types.HttpOptions(timeout=25_000),
+            http_options=types.HttpOptions(timeout=14_000),
         )
         user_cat_names = list(Category.objects.filter(user=profile).values_list('name', flat=True)) if profile else []
         if user_cat_names:
@@ -787,12 +787,11 @@ def api_scan_receipt_view(request):
 
         raw_bytes = image_bytes if 'image_bytes' in locals() else base64.b64decode(image_base64)
 
-        # Cascade through candidate models starting with gemini-3.6-flash
+        # Ultra-fast model cascade optimized for sub-3s serverless execution
         candidate_models = [
-            "gemini-3.6-flash",
-            "gemini-2.5-flash",
-            "gemini-2.0-flash",
-            "gemini-1.5-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.5-flash",
+            "gemini-flash-latest",
         ]
 
         response = None
@@ -860,6 +859,12 @@ def api_scan_receipt_view(request):
                 'error_type': 'auth_error',
                 'detail': err_str
             }, status=401)
+        elif 'deadline' in err_lower or 'timeout' in err_lower or '504' in err_lower or 'timed out' in err_lower:
+            return JsonResponse({
+                'error': 'Receipt scanning timed out. Please try taking or uploading a smaller picture or enter details manually.',
+                'error_type': 'timeout_error',
+                'detail': err_str
+            }, status=504)
         else:
             return JsonResponse({
                 'error': f'Receipt scanning error: {err_str}',
