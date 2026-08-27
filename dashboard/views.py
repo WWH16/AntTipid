@@ -694,7 +694,7 @@ def api_scan_receipt_view(request):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
     profile = get_current_user_profile(request)
-    gemini_key = NONE
+    gemini_key = os.getenv('GEMINI_API_KEY')
     image_base64 = None
     mime_type = 'image/jpeg'
 
