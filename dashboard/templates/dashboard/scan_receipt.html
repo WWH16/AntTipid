@@ -507,9 +507,9 @@
             <button type="button" id="btn-cancel-delete-item" class="px-3.5 sm:px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">
                 Keep Item
             </button>
-            <button type="button" id="btn-confirm-delete-item" class="px-3.5 sm:px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">delete</span>
-                <span>Remove Item</span>
+            <button type="button" id="btn-confirm-delete-item" class="px-3.5 sm:px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-[16px]" id="btn-confirm-delete-item-icon">delete</span>
+                <span id="btn-confirm-delete-item-text">Remove Item</span>
             </button>
         </div>
 
@@ -1342,6 +1342,18 @@
             if (deleteItemNameLabel) {
                 deleteItemNameLabel.textContent = `"${desc}"`;
             }
+            if (confirmDeleteItemBtn) {
+                confirmDeleteItemBtn.disabled = false;
+                const icon = document.getElementById('btn-confirm-delete-item-icon');
+                const text = document.getElementById('btn-confirm-delete-item-text');
+                if (icon) {
+                    icon.textContent = 'delete';
+                    icon.classList.remove('animate-spin');
+                }
+                if (text) text.textContent = 'Remove Item';
+            }
+            if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = false;
+
             if (!deleteItemModal) return;
             deleteItemModal.classList.remove('hidden');
             requestAnimationFrame(() => {
@@ -1373,12 +1385,24 @@
         if (cancelDeleteItemBtn) cancelDeleteItemBtn.addEventListener('click', hideDeleteItemModal);
         if (confirmDeleteItemBtn) {
             confirmDeleteItemBtn.addEventListener('click', () => {
-                if (pendingDeleteItemIndex !== null && pendingDeleteItemIndex >= 0 && pendingDeleteItemIndex < reviewData.items.length) {
-                    reviewData.items.splice(pendingDeleteItemIndex, 1);
-                    renderItems();
-                    saveActiveState();
+                const icon = document.getElementById('btn-confirm-delete-item-icon');
+                const text = document.getElementById('btn-confirm-delete-item-text');
+                confirmDeleteItemBtn.disabled = true;
+                if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = true;
+                if (icon) {
+                    icon.textContent = 'progress_activity';
+                    icon.classList.add('animate-spin');
                 }
-                hideDeleteItemModal();
+                if (text) text.textContent = 'Removing...';
+
+                setTimeout(() => {
+                    if (pendingDeleteItemIndex !== null && pendingDeleteItemIndex >= 0 && pendingDeleteItemIndex < reviewData.items.length) {
+                        reviewData.items.splice(pendingDeleteItemIndex, 1);
+                        renderItems();
+                        saveActiveState();
+                    }
+                    hideDeleteItemModal();
+                }, 150);
             });
         }
 

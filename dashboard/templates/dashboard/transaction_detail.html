@@ -273,7 +273,10 @@
         </div>
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
             <button type="button" id="btn-cancel-delete-modal" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-modal" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">Delete Transaction</button>
+            <button type="button" id="btn-confirm-delete-modal" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-[18px]" id="btn-confirm-delete-modal-icon">delete</span>
+                <span id="btn-confirm-delete-modal-text">Delete Transaction</span>
+            </button>
         </div>
     </div>
 </div>
@@ -492,6 +495,17 @@
         // Delete Modal Handlers
         function openDeleteModal() {
             if (!deleteModal) return;
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.disabled = false;
+                const icon = document.getElementById('btn-confirm-delete-modal-icon');
+                const text = document.getElementById('btn-confirm-delete-modal-text');
+                if (icon) {
+                    icon.textContent = 'delete';
+                    icon.classList.remove('animate-spin');
+                }
+                if (text) text.textContent = 'Delete Transaction';
+            }
+            if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
             deleteModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 deleteModal.classList.remove('opacity-0');
@@ -530,7 +544,17 @@
 
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', async () => {
+                const icon = document.getElementById('btn-confirm-delete-modal-icon');
+                const text = document.getElementById('btn-confirm-delete-modal-text');
                 try {
+                    confirmDeleteBtn.disabled = true;
+                    if (cancelDeleteBtn) cancelDeleteBtn.disabled = true;
+                    if (icon) {
+                        icon.textContent = 'progress_activity';
+                        icon.classList.add('animate-spin');
+                    }
+                    if (text) text.textContent = 'Deleting...';
+
                     await fetch(`/api/transactions/${txId}/delete/`, {
                         method: 'POST',
                         headers: {
@@ -539,6 +563,14 @@
                     });
                 } catch(err) {
                     console.error('Delete transaction error:', err);
+                    confirmDeleteBtn.disabled = false;
+                    if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
+                    if (icon) {
+                        icon.textContent = 'delete';
+                        icon.classList.remove('animate-spin');
+                    }
+                    if (text) text.textContent = 'Delete Transaction';
+                    return;
                 }
                 window.location.href = "{% url 'transactions' %}?toast=deleted";
             });

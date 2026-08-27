@@ -346,8 +346,8 @@
             <button type="button" id="btn-cancel-delete-cat" class="flex-1 py-2 px-3 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-deep-forest font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer">
                 Cancel
             </button>
-            <button type="button" id="btn-confirm-delete-cat" class="flex-1 py-2 px-3 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">delete</span>
+            <button type="button" id="btn-confirm-delete-cat" class="flex-1 py-2 px-3 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-[16px]" id="btn-confirm-delete-cat-icon">delete</span>
                 <span id="btn-confirm-delete-cat-text">Delete</span>
             </button>
         </div>
@@ -963,8 +963,14 @@
         function openDeleteCategoryConfirmModal(catId, catName) {
             pendingCatDeleteId = catId;
             if (labelDeleteCatConfirmName) labelDeleteCatConfirmName.textContent = `"${catName}"`;
+            const icon = document.getElementById('btn-confirm-delete-cat-icon');
+            if (icon) {
+                icon.textContent = 'delete';
+                icon.classList.remove('animate-spin');
+            }
             if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
             if (btnConfirmDeleteCat) btnConfirmDeleteCat.disabled = false;
+            if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = false;
 
             if (modalDeleteCatConfirm) {
                 modalDeleteCatConfirm.classList.remove('hidden');
@@ -1004,8 +1010,14 @@
         if (btnConfirmDeleteCat) {
             btnConfirmDeleteCat.addEventListener('click', async () => {
                 if (!pendingCatDeleteId) return;
+                const icon = document.getElementById('btn-confirm-delete-cat-icon');
                 try {
                     btnConfirmDeleteCat.disabled = true;
+                    if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = true;
+                    if (icon) {
+                        icon.textContent = 'progress_activity';
+                        icon.classList.add('animate-spin');
+                    }
                     if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Deleting...';
                     const res = await fetch(getApiUrl(`/api/categories/${pendingCatDeleteId}/delete/`), {
                         method: 'POST',
@@ -1017,12 +1029,18 @@
                         await fetchAndRenderCategories();
                     } else {
                         alert(data.error || 'Failed to delete category.');
-                        btnConfirmDeleteCat.disabled = false;
-                        if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
                     }
                 } catch (e) {
                     console.error(e);
                     closeDeleteCategoryConfirmModal();
+                } finally {
+                    btnConfirmDeleteCat.disabled = false;
+                    if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = false;
+                    if (icon) {
+                        icon.textContent = 'delete';
+                        icon.classList.remove('animate-spin');
+                    }
+                    if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
                 }
             });
         }
