@@ -610,6 +610,7 @@ def api_save_scanned_receipt(request):
 
         # Image compression & storage
         image_file = None
+        compressed_b64 = None
         if image_data:
             try:
                 raw_b64 = image_data.split(',', 1)[1] if ',' in image_data else image_data
@@ -625,15 +626,16 @@ def api_save_scanned_receipt(request):
                 
                 out_buf = BytesIO()
                 pil_img.save(out_buf, format='JPEG', quality=70, optimize=True)
+                compressed_bytes = out_buf.getvalue()
                 file_name = f"receipt_{tx_date}_{uuid.uuid4().hex[:6]}.jpg"
-                image_file = ContentFile(out_buf.getvalue(), name=file_name)
+                image_file = ContentFile(compressed_bytes, name=file_name)
+                compressed_b64 = f"data:image/jpeg;base64,{base64.b64encode(compressed_bytes).decode('utf-8')}"
             except Exception as img_err:
                 print("Receipt image compression notice:", img_err)
 
         with db_transaction.atomic():
-            receipt = Receipt.objects.create(
+            receipt = Receipt(
                 user=profile,
-                image=image_file,
                 merchant_name=merchant,
                 receipt_date=tx_date,
                 subtotal_amount=total - tax if total >= tax else total,
@@ -642,6 +644,20 @@ def api_save_scanned_receipt(request):
                 ocr_status=Receipt.OCRStatus.SUCCESS,
                 gemini_raw_json=data,
             )
+
+            if image_file:
+                try:
+                    receipt.image = image_file
+                    receipt.save()
+                except OSError as storage_err:
+                    # Read-only filesystem fallback (e.g. Serverless / Vercel / Lambda)
+                    print("Read-only filesystem fallback for receipt image:", storage_err)
+                    receipt.image = None
+                    if compressed_b64:
+                        receipt.image_url = compressed_b64
+                    receipt.save()
+            else:
+                receipt.save()
 
             for item in items_data:
                 desc = item.get('description', '').strip() or 'Item'

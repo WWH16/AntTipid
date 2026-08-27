@@ -98,7 +98,7 @@ class Receipt(models.Model):
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='receipts', db_index=True)
     image = models.ImageField(upload_to='receipts/%Y/%m/', blank=True, null=True)
-    image_url = models.URLField(max_length=1000, blank=True, null=True)
+    image_url = models.TextField(blank=True, null=True, help_text="Public image URL or Data URI fallback for serverless deployments")
     merchant_name = models.CharField(max_length=200, blank=True, default='')
     merchant_address = models.TextField(blank=True, default='')
     receipt_date = models.DateField(null=True, blank=True)
