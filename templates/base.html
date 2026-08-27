@@ -45,21 +45,31 @@
     <!-- Preconnect CDN -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js" crossorigin="anonymous"></script>
     <script>
+      window.clerkAppearance = {
+        variables: { colorPrimary: "#5C8F3A" }
+      };
+
       const pubKey = "{{ clerk_publishable_key }}".trim();
 
       if (pubKey && !pubKey.includes('YOUR_CLERK')) {
-        window.addEventListener('DOMContentLoaded', async () => {
+        window.clerkInitPromise = (async () => {
           try {
-            const ClerkClass = window.Clerk;
-            if (!ClerkClass) return;
+            let clerk = window.Clerk;
 
-            const clerk = new ClerkClass(pubKey);
-            await clerk.load();
-            window.Clerk = clerk;
+            if (!clerk || typeof clerk.load !== 'function') {
+              const module = await import('https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/+esm');
+              const ClerkClass = module.Clerk || module.default;
+              if (typeof ClerkClass === 'function') {
+                clerk = new ClerkClass(pubKey);
+                await clerk.load({ appearance: window.clerkAppearance });
+                window.Clerk = clerk;
+              }
+            } else if (typeof clerk.load === 'function' && !clerk.user) {
+              try { await clerk.load({ appearance: window.clerkAppearance }); } catch(e) {}
+            }
 
-            if (!clerk.user && !window.location.search.includes('preview=true')) {
+            if (!clerk || (!clerk.user && !window.location.search.includes('preview=true'))) {
               window.location.href = "{% url 'landing' %}?sign_in=true";
               return;
             }
@@ -75,33 +85,43 @@
                 if (userAvatar) clerk.mountUserButton(userAvatar);
                 if (userAvatarMobile) clerk.mountUserButton(userAvatarMobile);
 
-                const fullName = user.fullName || user.firstName || 'User Account';
                 const primaryEmail = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : '';
+                const emailPrefix = primaryEmail ? primaryEmail.split('@')[0] : '';
+                const fullName = user.fullName || user.firstName || user.username || emailPrefix || 'User Account';
                 
                 if (userNameEl) userNameEl.innerText = fullName;
                 if (userEmailEl) userEmailEl.innerText = primaryEmail;
 
                 const userGreeting = document.getElementById('dashboard-user-greeting');
                 if (userGreeting) {
-                  const firstName = user.firstName || 'there';
-                  userGreeting.innerText = `Welcome back, ${firstName}! 👋`;
+                  const greetingName = user.firstName || emailPrefix || 'there';
+                  userGreeting.innerText = `Welcome back, ${greetingName}! 👋`;
                 }
 
                 if (sidebarUserAvatar && user.imageUrl) {
                   sidebarUserAvatar.innerHTML = `<img src="${user.imageUrl}" alt="${fullName}" class="w-full h-full object-cover rounded-xl" />`;
                 }
+              } else if (window.location.search.includes('preview=true')) {
+                if (userNameEl) userNameEl.innerText = 'Dev Preview User';
+                if (userEmailEl) userEmailEl.innerText = 'preview@anttipid.ph';
+                const userGreeting = document.getElementById('dashboard-user-greeting');
+                if (userGreeting) {
+                  userGreeting.innerText = 'Welcome back, Dev User! 👋';
+                }
               }
             }
 
-            updateDashboardUserUI(clerk.user);
+            if (clerk) {
+              updateDashboardUserUI(clerk.user);
 
-            clerk.addListener(({ user }) => {
-              updateDashboardUserUI(user);
-            });
+              clerk.addListener(({ user }) => {
+                updateDashboardUserUI(user);
+              });
+            }
           } catch (err) {
             console.error("Clerk JS init error:", err);
           }
-        });
+        })();
       }
     </script>
 
@@ -185,8 +205,8 @@
                         <span class="material-symbols-outlined text-[18px]">person</span>
                     </div>
                     <div class="min-w-0 flex flex-col">
-                        <span id="clerk-user-name" class="font-label-md text-xs font-semibold text-white truncate">User Account</span>
-                        <span id="clerk-user-email" class="font-body-sm text-[10px] text-white/70 truncate">user@anttipid.ph</span>
+                        <span id="clerk-user-name" class="font-label-md text-xs font-semibold text-white truncate">{% if profile and profile.first_name %}{{ profile.first_name }} {{ profile.last_name }}{% elif profile and profile.email %}{{ profile.email }}{% else %}User Account{% endif %}</span>
+                        <span id="clerk-user-email" class="font-body-sm text-[10px] text-white/70 truncate">{% if profile and profile.email %}{{ profile.email }}{% else %}user@anttipid.ph{% endif %}</span>
                     </div>
                 </div>
                 <button type="button" onclick="openClerkUserProfile()" title="Account Settings" class="text-white/70 hover:text-white transition-colors cursor-pointer p-1">

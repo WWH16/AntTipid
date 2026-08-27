@@ -40,12 +40,18 @@ def get_current_user_profile(request):
     profile, created = UserProfile.objects.get_or_create(
         clerk_user_id=clerk_id,
         defaults={
-            'first_name': '',
-            'last_name': '',
-            'email': '',
+            'first_name': 'Dev' if clerk_id == 'user_dev_preview_default' else '',
+            'last_name': 'User' if clerk_id == 'user_dev_preview_default' else '',
+            'email': 'preview@anttipid.ph' if clerk_id == 'user_dev_preview_default' else '',
             'monthly_income_target': Decimal('0.00'),
         }
     )
+
+    if clerk_id == 'user_dev_preview_default' and not profile.first_name:
+        profile.first_name = 'Dev'
+        profile.last_name = 'User'
+        profile.email = 'preview@anttipid.ph'
+        profile.save(update_fields=['first_name', 'last_name', 'email'])
 
     # Seed default accounts and categories if this is a newly created user
     if created:

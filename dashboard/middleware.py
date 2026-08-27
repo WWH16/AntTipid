@@ -92,14 +92,13 @@ class ClerkAuthenticationMiddleware:
                 token,
                 signing_key.key,
                 algorithms=['RS256'],
-                issuer=f'https://{host}',
                 leeway=10,  # tolerate a few seconds of clock skew between this server and Clerk's
-                options={'require': ['exp', 'iat', 'sub']},
+                options={'require': ['exp', 'iat', 'sub'], 'verify_iss': False},
             )
-        except jwt.PyJWTError:
+            return payload.get('sub')
+        except jwt.PyJWTError as e:
+            logging.warning(f"Clerk JWT session token verification failed: {e}")
             return None
-
-        return payload.get('sub')
 
 
 class PerformanceLoggingMiddleware:
