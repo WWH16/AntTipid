@@ -11,6 +11,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.db import transaction as db_transaction
+from django.conf import settings
 from django.core.files.base import ContentFile
 
 from .models import (
@@ -633,9 +634,28 @@ def api_save_scanned_receipt(request):
             except Exception as img_err:
                 print("Receipt image compression notice:", img_err)
 
+        # Test media storage writability outside the DB transaction block
+        can_write_storage = False
+        if image_file:
+            try:
+                media_dir = getattr(settings, 'MEDIA_ROOT', None)
+                if media_dir:
+                    os.makedirs(media_dir, exist_ok=True)
+                    test_file = os.path.join(media_dir, '.write_test')
+                    with open(test_file, 'w') as f:
+                        f.write('1')
+                    if os.path.exists(test_file):
+                        os.remove(test_file)
+                    can_write_storage = True
+            except Exception as test_err:
+                print("Read-only filesystem detected, using image_url fallback:", test_err)
+                can_write_storage = False
+
         with db_transaction.atomic():
-            receipt = Receipt(
+            receipt = Receipt.objects.create(
                 user=profile,
+                image=image_file if can_write_storage else None,
+                image_url=compressed_b64 if (not can_write_storage and compressed_b64) else None,
                 merchant_name=merchant,
                 receipt_date=tx_date,
                 subtotal_amount=total - tax if total >= tax else total,
@@ -644,20 +664,6 @@ def api_save_scanned_receipt(request):
                 ocr_status=Receipt.OCRStatus.SUCCESS,
                 gemini_raw_json=data,
             )
-
-            if image_file:
-                try:
-                    receipt.image = image_file
-                    receipt.save()
-                except OSError as storage_err:
-                    # Read-only filesystem fallback (e.g. Serverless / Vercel / Lambda)
-                    print("Read-only filesystem fallback for receipt image:", storage_err)
-                    receipt.image = None
-                    if compressed_b64:
-                        receipt.image_url = compressed_b64
-                    receipt.save()
-            else:
-                receipt.save()
 
             for item in items_data:
                 desc = item.get('description', '').strip() or 'Item'
