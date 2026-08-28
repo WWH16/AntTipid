@@ -28,19 +28,22 @@
             <!-- Month Selector Pill / Controls -->
             <div class="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-container-lowest border border-outline-variant/60 rounded-full shadow-xs">
                 {% if has_prev_month %}
-                <a href="?month={{ prev_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Previous month ({{ prev_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer">
+                <a href="?month={{ prev_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Previous month ({{ prev_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer" title="Previous Month">
                     <span class="material-symbols-outlined text-[16px]">chevron_left</span>
                 </a>
-                {% else %}
-                <span class="w-6 h-6 rounded-full flex items-center justify-center text-outline-variant/60 opacity-30 select-none cursor-default" title="No earlier transactions">
-                    <span class="material-symbols-outlined text-[16px]">chevron_left</span>
-                </span>
                 {% endif %}
 
-                <span id="current-month-label" class="font-label-md text-xs font-bold text-deep-forest px-1.5 select-none">{{ current_month_label }}</span>
+                <!-- Direct Date Picker Trigger -->
+                <div class="relative inline-flex items-center">
+                    <button type="button" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-surface-container-low text-deep-forest active:scale-95 transition-all cursor-pointer font-label-md text-xs font-bold select-none group">
+                        <span id="current-month-label">{{ current_month_label }}</span>
+                        <span class="material-symbols-outlined text-[15px] text-on-surface-variant group-hover:text-deep-forest transition-transform">calendar_today</span>
+                    </button>
+                    <input type="month" id="input-budget-month-picker" value="{{ current_month_str }}" aria-label="Select month" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10">
+                </div>
 
                 {% if has_next_month %}
-                <a href="?month={{ next_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Next month ({{ next_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer">
+                <a href="?month={{ next_month_str }}{% if request.GET.preview %}&preview=true{% endif %}" aria-label="Next month ({{ next_month_str }})" class="w-6 h-6 rounded-full flex items-center justify-center text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer" title="Next Month">
                     <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </a>
                 {% endif %}
@@ -806,6 +809,20 @@
 
         if (btnClearFiltersDesktop) btnClearFiltersDesktop.addEventListener('click', resetAllFilters);
         if (btnResetEmptyFilters) btnResetEmptyFilters.addEventListener('click', resetAllFilters);
+
+        // ═══════════════════════════════════════
+        // DIRECT DATE PICKER CONTROLLER
+        // ═══════════════════════════════════════
+        const inputBudgetMonthPicker = document.getElementById('input-budget-month-picker');
+        if (inputBudgetMonthPicker) {
+            inputBudgetMonthPicker.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('month', e.target.value);
+                    window.location.search = urlParams.toString();
+                }
+            });
+        }
 
         // ═══════════════════════════════════════
         // MOBILE FILTER ACTION SHEET CONTROLLER
