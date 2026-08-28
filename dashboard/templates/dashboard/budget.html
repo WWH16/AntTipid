@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title %}Budgets | AntTipid{% endblock %}
 {% block meta_description %}Manage your monthly budget — track spending across categories and stay on target.{% endblock %}
@@ -94,10 +95,10 @@
                         
                         {% if overall_limit > 0 %}
                         <span class="font-headline-md text-base sm:text-xl font-extrabold text-deep-forest tracking-tight tabular-nums truncate block">
-                            ₱{{ overall_remaining|floatformat:2 }}
+                            ₱{{ overall_remaining|floatformat:2|intcomma }}
                         </span>
                         <span class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant font-medium truncate block">
-                            left of ₱{{ total_limit|floatformat:2 }}
+                            left of ₱{{ total_limit|floatformat:2|intcomma }}
                         </span>
                         {% else %}
                         <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight truncate block">No limit</span>
@@ -122,7 +123,7 @@
                     </div>
                 </div>
                 <div>
-                    <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tabular-nums truncate block">₱{{ overall_spent|floatformat:2 }}</span>
+                    <span class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tabular-nums truncate block">₱{{ overall_spent|floatformat:2|intcomma }}</span>
                     <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium">{{ overall_percentage }}% of allocated budget</span>
                 </div>
             </div>
@@ -256,15 +257,15 @@
                     <div class="relative">
                         {% if card.is_unbudgeted %}
                         <div class="flex justify-between items-baseline mb-1">
-                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
+                            <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest tabular-nums">₱{{ card.spent|floatformat:2|intcomma }}</span>
                             <span class="font-body-sm text-[10px] text-on-surface-variant">No limit set</span>
                         </div>
                         <span class="font-body-sm text-[10px] text-on-surface-variant font-medium block">Inevitable / variable tracking</span>
                         {% else %}
                         <div class="flex justify-between items-baseline mb-1.5">
                             <div>
-                                <span class="font-label-md text-xs sm:text-sm font-bold {% if card.is_exceeded %}text-expense{% else %}text-deep-forest{% endif %} tabular-nums">₱{{ card.spent|floatformat:2 }}</span>
-                                <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant ml-1 font-normal tabular-nums">/ ₱{{ card.limit|floatformat:2 }}</span>
+                                <span class="font-label-md text-xs sm:text-sm font-bold {% if card.is_exceeded %}text-expense{% else %}text-deep-forest{% endif %} tabular-nums">₱{{ card.spent|floatformat:2|intcomma }}</span>
+                                <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant ml-1 font-normal tabular-nums">/ ₱{{ card.limit|floatformat:2|intcomma }}</span>
                             </div>
                             <span class="font-label-md text-[11px] {% if card.is_exceeded %}text-expense{% elif card.is_warning %}text-warning-deep{% else %}text-positive-deep{% endif %} font-bold tabular-nums">{{ card.percentage }}%</span>
                         </div>
@@ -277,7 +278,7 @@
                             <span class="font-label-sm text-[10px] sm:text-[11px] font-bold">Over limit</span>
                         </div>
                         {% else %}
-                        <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium mt-1 block">₱{{ card.left|floatformat:2 }} left</span>
+                        <span class="font-body-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium mt-1 block">₱{{ card.left|floatformat:2|intcomma }} left</span>
                         {% endif %}
                         {% endif %}
                     </div>
@@ -495,7 +496,7 @@
                     <label for="input-adjust-target" class="font-label-sm text-[11px] text-deep-forest block mb-1 font-bold">Monthly Limit (₱)</label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
-                        <input id="input-adjust-target" class="w-full pl-7 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5000 (leave 0 or blank for no limit)" type="number" step="100" min="0">
+                        <input id="input-adjust-target" class="w-full pl-7 pr-3 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5,000 (leave 0 or blank for no limit)" type="text" inputmode="decimal">
                     </div>
                 </div>
 
@@ -946,6 +947,39 @@
         }
 
         // ═══════════════════════════════════════
+        // AUTOMATIC COMMA NUMBER FORMATTER
+        // ═══════════════════════════════════════
+        function formatNumberWithCommas(val) {
+            if (val === null || val === undefined || val === '') return '';
+            const cleanStr = val.toString().replace(/[^0-9.]/g, '');
+            if (!cleanStr) return '';
+            let parts = cleanStr.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
+            return parts.join('.');
+        }
+
+        function setupAutoCommaInput(inputEl) {
+            if (!inputEl) return;
+            inputEl.addEventListener('input', () => {
+                const startPos = inputEl.selectionStart;
+                const oldVal = inputEl.value;
+                const digitsBefore = oldVal.slice(0, startPos).replace(/[^0-9.]/g, '').length;
+                const newVal = formatNumberWithCommas(oldVal);
+                inputEl.value = newVal;
+
+                let newPos = 0;
+                let count = 0;
+                for (let i = 0; i < newVal.length; i++) {
+                    if (/[0-9.]/.test(newVal[i])) count++;
+                    newPos = i + 1;
+                    if (count >= digitsBefore) break;
+                }
+                inputEl.setSelectionRange(newPos, newPos);
+            });
+        }
+
+        // ═══════════════════════════════════════
         // ADJUST & NEW CATEGORY MODAL CONTROLLER
         // ═══════════════════════════════════════
         const BUDGET_ICON_SET = [
@@ -1062,7 +1096,7 @@
                     inputCatName.value = 'Overall Monthly Budget';
                 }
                 if (groupCatIcon) groupCatIcon.classList.add('hidden');
-                if (inputTarget) inputTarget.value = options.target || '';
+                if (inputTarget) inputTarget.value = options.target ? formatNumberWithCommas(options.target) : '';
                 if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Save Monthly Limit';
                 if (btnDeleteCategory) btnDeleteCategory.classList.add('hidden');
             } else if (isNewCategoryMode) {
@@ -1075,7 +1109,7 @@
                     inputCatName.value = '';
                 }
                 if (groupCatIcon) groupCatIcon.classList.remove('hidden');
-                if (inputTarget) inputTarget.value = options.target || '';
+                if (inputTarget) inputTarget.value = options.target ? formatNumberWithCommas(options.target) : '';
                 if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Create Category';
                 if (btnDeleteCategory) btnDeleteCategory.classList.add('hidden');
             } else {
@@ -1088,7 +1122,7 @@
                     inputCatName.value = activeCategoryName;
                 }
                 if (groupCatIcon) groupCatIcon.classList.add('hidden');
-                if (inputTarget) inputTarget.value = options.target || '';
+                if (inputTarget) inputTarget.value = options.target ? formatNumberWithCommas(options.target) : '';
                 if (btnSubmitBudgetLabel) btnSubmitBudgetLabel.textContent = 'Save Changes';
                 if (btnDeleteCategory) {
                     btnDeleteCategory.classList.toggle('hidden', !activeCategoryId || activeCategoryId.startsWith('unbudgeted-'));
@@ -1314,9 +1348,12 @@
             }
         });
 
+        if (inputTarget) setupAutoCommaInput(inputTarget);
+
         document.getElementById('form-adjust-budget')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const targetAmount = parseFloat(inputTarget.value) || 0;
+            const rawTargetVal = (inputTarget ? inputTarget.value : '').toString().replace(/,/g, '');
+            const targetAmount = parseFloat(rawTargetVal) || 0;
             const hasBudget = targetAmount > 0;
             const categoryName = isOverallMode ? 'Overall Monthly Budget' : (inputCatName ? inputCatName.value.trim() : activeCategoryName);
             if (!isOverallMode && !categoryName) return;

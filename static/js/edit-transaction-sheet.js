@@ -88,14 +88,44 @@
             if (activeIconEl) activeIconEl.style.fontVariationSettings = "'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24";
         }
 
+        function formatNumberWithCommas(val) {
+            if (val === null || val === undefined || val === '') return '';
+            const cleanStr = val.toString().replace(/[^0-9.]/g, '');
+            if (!cleanStr) return '';
+            let parts = cleanStr.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
+            return parts.join('.');
+        }
+
+        if (inputAmount) {
+            inputAmount.addEventListener('input', () => {
+                const startPos = inputAmount.selectionStart;
+                const oldVal = inputAmount.value;
+                const digitsBefore = oldVal.slice(0, startPos).replace(/[^0-9.]/g, '').length;
+                const newVal = formatNumberWithCommas(oldVal);
+                inputAmount.value = newVal;
+
+                let newPos = 0;
+                let count = 0;
+                for (let i = 0; i < newVal.length; i++) {
+                    if (/[0-9.]/.test(newVal[i])) count++;
+                    newPos = i + 1;
+                    if (count >= digitsBefore) break;
+                }
+                inputAmount.setSelectionRange(newPos, newPos);
+            });
+        }
+
         categoryBtns.forEach(btn => btn.addEventListener('click', () => setCategory(btn.dataset.category)));
 
         presetChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 const addVal = parseFloat(chip.dataset.add) || 0;
-                const currentVal = parseFloat(inputAmount.value) || 0;
-                inputAmount.value = (currentVal + addVal).toFixed(2);
-                inputAmount.focus();
+                const currentVal = parseFloat((inputAmount ? inputAmount.value : '').toString().replace(/,/g, '')) || 0;
+                const sum = (currentVal + addVal).toFixed(2);
+                if (inputAmount) inputAmount.value = formatNumberWithCommas(sum);
+                if (inputAmount) inputAmount.focus();
             });
         });
 
@@ -114,7 +144,7 @@
             content.style.transition = '';
             content.style.transform = '';
 
-            if (inputAmount) inputAmount.value = data.editAmount ? parseFloat(data.editAmount).toFixed(2) : '';
+            if (inputAmount) inputAmount.value = data.editAmount ? formatNumberWithCommas(parseFloat(data.editAmount).toFixed(2)) : '';
             if (inputTitle) inputTitle.value = data.editTitle || '';
             if (inputDate) inputDate.value = data.editDate || '';
             if (selectAccount && data.editAccount) selectAccount.value = data.editAccount;
@@ -172,7 +202,7 @@
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
                 const updatedData = {
-                    amount: parseFloat(inputAmount.value) || 0,
+                    amount: parseFloat((inputAmount ? inputAmount.value : '').toString().replace(/,/g, '')) || 0,
                     title: inputTitle ? inputTitle.value.trim() : '',
                     type: currentEditType,
                     category: currentEditCategory,

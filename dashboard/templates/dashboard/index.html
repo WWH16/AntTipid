@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Dashboard | AntTipid{% endblock %}
 {% block meta_description %}Your personal finance overview — track balances, monthly budgets, spending trends, and recent transactions.{% endblock %}
@@ -74,9 +75,9 @@
                             <div>
                                 <a href="{% url 'reports' %}" class="block group/link focus:outline-none" aria-label="View Net Cash Flow reports">
                                     <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">
-                                        {% if net_cash_flow >= 0 %}+₱{{ net_cash_flow|floatformat:2 }}{% else %}-₱{{ net_cash_flow|floatformat:2 }}{% endif %}
+                                        {% if net_cash_flow >= 0 %}+₱{{ net_cash_flow|floatformat:2|intcomma }}{% else %}-₱{{ net_cash_flow|floatformat:2|intcomma }}{% endif %}
                                     </p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱{{ total_income|floatformat:0 }} in · ₱{{ total_expenses|floatformat:0 }} out</span>
+                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱{{ total_income|floatformat:0|intcomma }} in · ₱{{ total_expenses|floatformat:0|intcomma }} out</span>
                                 </a>
                             </div>
                             <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Transaction">
@@ -99,7 +100,7 @@
                         <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
                                 <a href="{% url 'transactions' %}?type=income" class="block group/link focus:outline-none" aria-label="View Income history">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱{{ total_income|floatformat:2 }}</p>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱{{ total_income|floatformat:2|intcomma }}</p>
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Recorded this month</span>
                                 </a>
                             </div>
@@ -127,7 +128,7 @@
                         <div class="flex items-end justify-between gap-2 relative z-10">
                             <div>
                                 <a href="{% url 'transactions' %}?type=expense" class="block group/link focus:outline-none" aria-label="View expense breakdown">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱{{ total_expenses|floatformat:2 }}</p>
+                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱{{ total_expenses|floatformat:2|intcomma }}</p>
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across active categories</span>
                                 </a>
                             </div>
@@ -169,7 +170,7 @@
                         <div class="flex justify-between items-center gap-3">
                             <div>
                                 <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight">Monthly Budget</h3>
-                                <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2 }} left of ₱{{ budget_limit|floatformat:2 }}</p>
+                                <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2|intcomma }} left of ₱{{ budget_limit|floatformat:2|intcomma }}</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
@@ -180,7 +181,7 @@
                         </div>
                         <div class="space-y-2">
                             <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-deep-forest">₱{{ budget_spent|floatformat:2 }} spent <span class="font-normal text-body">({{ budget_percent }}%)</span></span>
+                                <span class="font-bold text-deep-forest">₱{{ budget_spent|floatformat:2|intcomma }} spent <span class="font-normal text-body">({{ budget_percent }}%)</span></span>
                                 <span class="font-bold {% if budget_on_track %}text-positive-deep{% else %}text-expense{% endif %} flex items-center gap-1">
                                     <span class="w-1.5 h-1.5 rounded-full {% if budget_on_track %}bg-positive{% else %}bg-expense{% endif %} animate-pulse"></span>
                                     {% if budget_on_track %}On Track{% else %}Over Limit{% endif %}
@@ -206,7 +207,7 @@
                     <div class="space-y-2.5 sm:space-y-3.5 border-t border-outline-variant/40 pt-3.5 sm:pt-4">
                         <div class="flex justify-between items-center">
                             <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Category Spending Breakdown</h4>
-                            <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱{{ total_expenses|floatformat:2 }} Total</span>
+                            <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱{{ total_expenses|floatformat:2|intcomma }} Total</span>
                         </div>
                         
                         {% for cat in category_breakdown %}
@@ -217,7 +218,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between font-label-sm text-xs mb-1.5">
                                     <span class="text-deep-forest font-bold">{{ cat.name }}</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱{{ cat.spent|floatformat:2 }} <span class="text-body font-medium text-[11px]">({{ cat.percentage }}%)</span></span>
+                                    <span class="text-deep-forest font-extrabold tabular-nums">₱{{ cat.spent|floatformat:2|intcomma }} <span class="text-body font-medium text-[11px]">({{ cat.percentage }}%)</span></span>
                                 </div>
                                 <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
                                     <div class="h-full rounded-full transition-all duration-500" style="width: {{ cat.percentage }}%; background-color: {{ cat.color }};"></div>
@@ -250,8 +251,8 @@
     {% for w in weekly_spending %}
         <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
             <span class="text-[10px] text-body font-medium md:hidden tabular-nums">{{ w.amount_k }}</span>
-            <div class="w-full bg-primary/40 hover:bg-primary/80 rounded-t-lg transition-all cursor-pointer relative group" style="height: {{ w.height_pct }}%;" tabindex="0" aria-label="{{ w.week_label }} spending: ₱{{ w.amount|floatformat:2 }}">
-                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">{{ w.week_label }}: ₱{{ w.amount|floatformat:2 }}</div>
+            <div class="w-full bg-primary/40 hover:bg-primary/80 rounded-t-lg transition-all cursor-pointer relative group" style="height: {{ w.height_pct }}%;" tabindex="0" aria-label="{{ w.week_label }} spending: ₱{{ w.amount|floatformat:2|intcomma }}">
+                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">{{ w.week_label }}: ₱{{ w.amount|floatformat:2|intcomma }}</div>
             </div>
             <span class="font-label-sm text-xs text-deep-forest font-bold">{{ w.week_label }}</span>
         </div>
@@ -262,7 +263,7 @@
                     </div>
 
                     <div class="flex justify-between items-center text-[11px] text-body pt-2 border-t border-outline-variant/30 font-medium">
-                        <span>Total: <strong class="text-deep-forest font-bold">₱{{ total_expenses|floatformat:2 }}</strong></span>
+                        <span>Total: <strong class="text-deep-forest font-bold">₱{{ total_expenses|floatformat:2|intcomma }}</strong></span>
                         <span class="text-positive-deep font-bold">Active Month</span>
                     </div>
                 </section>
@@ -295,7 +296,7 @@
                                 </div>
                             </div>
                             <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap ml-2 tabular-nums">
-                                {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
+                                {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
                             </span>
                         </a>
                         {% empty %}

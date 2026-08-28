@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}History | AntTipid{% endblock %}
 {% block meta_description %}Manage and track your financial history, non-receipt expenses, and scanned receipt archive.{% endblock %}
@@ -141,7 +142,7 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱{{ tx.amount|floatformat:2 }}</span>
+                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱{{ tx.amount|floatformat:2|intcomma }}</span>
                                     <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-primary-pale text-positive-deep text-[9px] font-extrabold border border-positive/30 whitespace-nowrap">
                                         <span class="material-symbols-outlined text-[10px] shrink-0">receipt_long</span> Receipt
                                     </span>
@@ -169,7 +170,7 @@
                                 </div>
                                 <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
                                     <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap tabular-nums">
-                                        {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
+                                        {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
                                     </span>
                                     <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-surface-container-high text-on-surface-variant text-[9px] font-bold border border-outline-variant/60 whitespace-nowrap">
                                         <span class="material-symbols-outlined text-[10px] shrink-0">edit_note</span> Manual
@@ -232,7 +233,7 @@
                                 </td>
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-body font-medium whitespace-nowrap">{{ tx.account.name }}</td>
                                 <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-right font-extrabold {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} tabular-nums whitespace-nowrap">
-                                    {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2 }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2 }}{% else %}-₱{{ tx.amount|floatformat:2 }}{% endif %}
+                                    {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
                                 </td>
                                 <td class="py-3 sm:py-3.5 px-2 text-right whitespace-nowrap">
                                     <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer ml-auto" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}" title="Delete transaction">
