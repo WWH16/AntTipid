@@ -81,6 +81,18 @@
             const userNameEl = document.getElementById('clerk-user-name');
             const userEmailEl = document.getElementById('clerk-user-email');
 
+            function getTimeBasedGreeting(name) {
+              const hour = new Date().getHours();
+              const displayName = name ? `, ${name}` : '';
+              if (hour >= 5 && hour < 12) {
+                return `Good morning${displayName}! ☕`;
+              } else if (hour >= 12 && hour < 18) {
+                return `Good afternoon${displayName}! ☀️`;
+              } else {
+                return `Good evening${displayName}! 🌙`;
+              }
+            }
+
             function updateDashboardUserUI(user) {
               if (user) {
                 if (userAvatar) clerk.mountUserButton(userAvatar);
@@ -95,8 +107,8 @@
 
                 const userGreeting = document.getElementById('dashboard-user-greeting');
                 if (userGreeting) {
-                  const greetingName = user.firstName || emailPrefix || 'there';
-                  userGreeting.innerText = `Welcome back, ${greetingName}! 👋`;
+                  const greetingName = user.firstName || emailPrefix || '';
+                  userGreeting.innerText = getTimeBasedGreeting(greetingName);
                 }
 
                 if (sidebarUserAvatar && user.imageUrl) {
@@ -107,7 +119,7 @@
                 if (userEmailEl) userEmailEl.innerText = 'preview@anttipid.ph';
                 const userGreeting = document.getElementById('dashboard-user-greeting');
                 if (userGreeting) {
-                  userGreeting.innerText = 'Welcome back, Dev User! 👋';
+                  userGreeting.innerText = getTimeBasedGreeting('Dev');
                 }
               }
             }

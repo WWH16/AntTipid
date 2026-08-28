@@ -14,9 +14,22 @@
         <div class="flex justify-between items-center gap-3">
             <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h2 id="dashboard-user-greeting" class="font-headline-lg text-lg sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight leading-tight truncate" title="Welcome back!">
-                        {% if profile and profile.first_name %}Hello, {{ profile.first_name }}! 👋{% else %}Good day! 👋{% endif %}
+                    <h2 id="dashboard-user-greeting" class="font-headline-lg text-lg sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight leading-tight truncate" title="Dashboard Greeting">
+                        {% if profile and profile.first_name %}Good day, {{ profile.first_name }}! 👋{% else %}Good day! 👋{% endif %}
                     </h2>
+                    <script>
+                        (function() {
+                            const el = document.getElementById('dashboard-user-greeting');
+                            if (el) {
+                                const hour = new Date().getHours();
+                                const serverName = "{{ profile.first_name|escapejs }}";
+                                const displayName = serverName ? `, ${serverName}` : '';
+                                if (hour >= 5 && hour < 12) el.innerText = `Good morning${displayName}! ☕`;
+                                else if (hour >= 12 && hour < 18) el.innerText = `Good afternoon${displayName}! ☀️`;
+                                else el.innerText = `Good evening${displayName}! 🌙`;
+                            }
+                        })();
+                    </script>
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-low border border-outline-variant/60 text-[10px] sm:text-[11px] font-bold text-body shrink-0">
                         {{ current_month_name|default:"This Month" }}
                     </span>
