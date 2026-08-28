@@ -80,7 +80,7 @@
                     <span class="font-label-sm text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Transaction Amount</span>
                     <div class="flex items-center justify-center gap-1">
                         <span class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
-                        <input type="number" id="input-amount" step="0.01" min="0" placeholder="0.00" class="w-48 sm:w-60 text-center font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest bg-transparent outline-none border-b-2 border-transparent focus:border-primary transition-all tabular-nums" required autofocus>
+                        <input type="text" inputmode="decimal" id="input-amount" placeholder="0.00" class="w-48 sm:w-60 text-center font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest bg-transparent outline-none border-b-2 border-transparent focus:border-primary transition-all tabular-nums" required autofocus>
                     </div>
                 </div>
 
@@ -496,6 +496,38 @@
         const selectAccount = document.getElementById('select-account');
         const inputNotes = document.getElementById('input-notes');
         const categoryGrid = document.getElementById('category-grid');
+
+        function formatNumberWithCommas(val) {
+            if (val === null || val === undefined || val === '') return '';
+            const cleanStr = val.toString().replace(/[^0-9.]/g, '');
+            if (!cleanStr) return '';
+            let parts = cleanStr.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
+            return parts.join('.');
+        }
+
+        function setupAutoCommaInput(inputEl) {
+            if (!inputEl) return;
+            inputEl.addEventListener('input', () => {
+                const startPos = inputEl.selectionStart;
+                const oldVal = inputEl.value;
+                const digitsBefore = oldVal.slice(0, startPos).replace(/[^0-9.]/g, '').length;
+                const newVal = formatNumberWithCommas(oldVal);
+                inputEl.value = newVal;
+
+                let newPos = 0;
+                let count = 0;
+                for (let i = 0; i < newVal.length; i++) {
+                    if (/[0-9.]/.test(newVal[i])) count++;
+                    newPos = i + 1;
+                    if (count >= digitsBefore) break;
+                }
+                inputEl.setSelectionRange(newPos, newPos);
+            });
+        }
+
+        if (inputAmount) setupAutoCommaInput(inputAmount);
 
         // Set default date to today
         if (inputDate && !inputDate.value) {
@@ -1591,7 +1623,7 @@
             if (rawData) {
                 try {
                     const scanned = JSON.parse(rawData);
-                    if (scanned.total && inputAmount) inputAmount.value = parseFloat(scanned.total).toFixed(2);
+                    if (scanned.total && inputAmount) inputAmount.value = formatNumberWithCommas(parseFloat(scanned.total).toFixed(2));
                     if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
                     if (scanned.date && inputDate) inputDate.value = scanned.date;
                     if (scanned.payment_method && selectAccount) {
@@ -1675,7 +1707,7 @@
             if (subheading) subheading.textContent = "Update this transaction's details";
 
             const amount = params.get('amount');
-            if (amount && inputAmount) inputAmount.value = parseFloat(amount).toFixed(2);
+            if (amount && inputAmount) inputAmount.value = formatNumberWithCommas(parseFloat(amount).toFixed(2));
 
             const title = params.get('title');
             if (title && inputTitle) inputTitle.value = title;
@@ -1705,7 +1737,8 @@
         const saveBtn = document.getElementById('btn-save-transaction');
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
-                const amount = parseFloat(inputAmount.value);
+                const rawAmountStr = (inputAmount ? inputAmount.value : '').toString().replace(/,/g, '');
+                const amount = parseFloat(rawAmountStr);
                 if (isNaN(amount) || amount <= 0) {
                     inputAmount.focus();
                     return;
