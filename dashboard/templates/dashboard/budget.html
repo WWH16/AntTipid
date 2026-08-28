@@ -1293,6 +1293,10 @@
                 isOverall: true,
                 target: heroBudgetCard ? (heroBudgetCard.dataset.overallLimit || '') : '',
             });
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('edit_limit');
+            const cleanSearch = cleanUrl.searchParams.toString();
+            window.history.replaceState({}, document.title, cleanUrl.pathname + (cleanSearch ? '?' + cleanSearch : ''));
         }
 
         // Existing Category Cards Trigger Adjust Modal

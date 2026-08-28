@@ -173,6 +173,10 @@
                                 <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2|intcomma }} left of ₱{{ budget_limit|floatformat:2|intcomma }}</p>
                             </div>
                             <div class="flex items-center gap-2">
+                                <button type="button" id="btn-dash-edit-budget-modal" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-primary-pale hover:text-positive-deep text-on-surface-variant font-label-sm text-xs font-bold transition-all shrink-0 cursor-pointer shadow-2xs">
+                                    <span class="material-symbols-outlined text-[13px]">edit</span>
+                                    <span>Edit</span>
+                                </button>
                                 <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
                                     <span>Manage</span>
                                     <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
@@ -197,10 +201,10 @@
                                 <h3 id="heading-monthly-budget" class="font-headline-md text-base text-deep-forest font-bold">Monthly Budget</h3>
                                 <p class="text-xs text-body font-medium mt-0.5">No limit set.</p>
                             </div>
-                            <a href="{% url 'budget' %}?edit_limit=true" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
+                            <button type="button" id="btn-dash-open-budget-modal" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
                                 <span class="material-symbols-outlined text-[16px]">tune</span>
                                 <span>Set Limit</span>
-                            </a>
+                            </button>
                         </div>
                     {% endif %}
                     <!-- Category Allocation Breakdown -->
@@ -312,6 +316,53 @@
     <!-- Mobile bottom spacer -->
     <div class="h-16 md:hidden" aria-hidden="true"></div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD SET/EDIT MONTHLY BUDGET MODAL                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="dashboard-budget-modal-wrapper" aria-labelledby="modal-dash-budget-title" aria-modal="true" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 hidden opacity-0 pointer-events-auto" role="dialog">
+    <div id="dashboard-budget-modal-backdrop" class="fixed inset-0 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 opacity-0"></div>
+
+    <div id="dashboard-budget-modal-content" class="relative z-[105] w-full max-w-md bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl shadow-2xl border border-outline-variant/60 overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 max-h-[85vh] flex flex-col">
+        <div id="dashboard-budget-modal-handle" class="w-full flex justify-center pt-2.5 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none select-none">
+            <div class="w-10 h-1 bg-outline-variant/80 rounded-full"></div>
+        </div>
+
+        <div class="p-4 sm:p-6 flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
+                        <span class="material-symbols-outlined text-[18px]">tune</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest" id="modal-dash-budget-title">Set Monthly Budget Limit</h3>
+                        <p class="font-body-sm text-[11px] text-on-surface-variant">Set your total spending target for this month</p>
+                    </div>
+                </div>
+                <button type="button" id="btn-close-dash-budget-modal" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+
+            <form id="form-dash-budget" class="flex flex-col gap-4" onsubmit="return false;">
+                <div>
+                    <label for="input-dash-budget-target" class="font-label-sm text-[11px] text-deep-forest block mb-1 font-bold">Monthly Limit (₱)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
+                        <input id="input-dash-budget-target" class="w-full pl-7 pr-3 py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5,000" type="text" inputmode="decimal" value="{% if budget_limit %}{{ budget_limit|floatformat:2|intcomma }}{% endif %}">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-2 border-t border-outline-variant/40">
+                    <button type="button" id="btn-cancel-dash-budget" class="flex-1 px-3 py-2 sm:py-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer">Cancel</button>
+                    <button type="submit" id="btn-submit-dash-budget" class="flex-1 px-3 py-2 sm:py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-xs active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                        <span id="btn-submit-dash-budget-label">Save Monthly Limit</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -320,58 +371,191 @@
         const track = document.getElementById('summary-carousel-track');
         const dots = document.querySelectorAll('#summary-carousel-indicators .carousel-dot');
         const slides = track ? track.querySelectorAll('.summary-card-slide') : [];
-        if (!track || !dots.length || !slides.length) return;
+        if (track && dots.length && slides.length) {
+            let currentIndex = 0;
 
-        let currentIndex = 0;
+            function updateActiveDot(index) {
+                if (currentIndex === index) return;
+                currentIndex = index;
+                dots.forEach((dot, idx) => {
+                    const isActive = idx === currentIndex;
+                    dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    dot.setAttribute('tabindex', isActive ? '0' : '-1');
+                    const span = dot.querySelector('.dot-indicator');
+                    if (span) {
+                        span.className = isActive
+                            ? 'dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300'
+                            : 'dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300';
+                    }
+                });
+            }
 
-        function updateActiveDot(index) {
-            if (currentIndex === index) return;
-            currentIndex = index;
-            dots.forEach((dot, idx) => {
-                const isActive = idx === currentIndex;
-                dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                dot.setAttribute('tabindex', isActive ? '0' : '-1');
-                const span = dot.querySelector('.dot-indicator');
-                if (span) {
-                    span.className = isActive
-                        ? 'dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300'
-                        : 'dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300';
+            function scrollToSlide(index) {
+                if (window.innerWidth >= 640 || !slides[index]) return;
+                slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                updateActiveDot(index);
+            }
+
+            dots.forEach((dot) => {
+                dot.addEventListener('click', () => {
+                    const index = parseInt(dot.getAttribute('data-slide-index'), 10);
+                    scrollToSlide(index);
+                });
+            });
+
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    if (window.innerWidth >= 640) return;
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                            const slideIndex = Array.prototype.indexOf.call(slides, entry.target);
+                            if (slideIndex !== -1) {
+                                updateActiveDot(slideIndex);
+                            }
+                        }
+                    });
+                }, {
+                    root: track,
+                    threshold: 0.5
+                });
+
+                slides.forEach((slide) => observer.observe(slide));
+            }
+        }
+
+        // ═══════════════════════════════════════
+        // DASHBOARD BUDGET MODAL CONTROLLER
+        // ═══════════════════════════════════════
+        const dashBudgetModalWrapper = document.getElementById('dashboard-budget-modal-wrapper');
+        const dashBudgetModalBackdrop = document.getElementById('dashboard-budget-modal-backdrop');
+        const dashBudgetModalContent = document.getElementById('dashboard-budget-modal-content');
+        const btnCloseDashBudgetModal = document.getElementById('btn-close-dash-budget-modal');
+        const btnCancelDashBudget = document.getElementById('btn-cancel-dash-budget');
+        const inputDashBudgetTarget = document.getElementById('input-dash-budget-target');
+        const formDashBudget = document.getElementById('form-dash-budget');
+        const btnSubmitDashBudget = document.getElementById('btn-submit-dash-budget');
+        const btnSubmitDashBudgetLabel = document.getElementById('btn-submit-dash-budget-label');
+
+        function formatNumberWithCommas(val) {
+            if (val === null || val === undefined || val === '') return '';
+            const cleanStr = val.toString().replace(/[^0-9.]/g, '');
+            if (!cleanStr) return '';
+            let parts = cleanStr.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
+            return parts.join('.');
+        }
+
+        function setupAutoCommaInput(inputEl) {
+            if (!inputEl) return;
+            inputEl.addEventListener('input', () => {
+                const startPos = inputEl.selectionStart;
+                const oldVal = inputEl.value;
+                const digitsBefore = oldVal.slice(0, startPos).replace(/[^0-9.]/g, '').length;
+                const newVal = formatNumberWithCommas(oldVal);
+                inputEl.value = newVal;
+
+                let newPos = 0;
+                let count = 0;
+                for (let i = 0; i < newVal.length; i++) {
+                    if (/[0-9.]/.test(newVal[i])) count++;
+                    newPos = i + 1;
+                    if (count >= digitsBefore) break;
+                }
+                inputEl.setSelectionRange(newPos, newPos);
+            });
+        }
+
+        if (inputDashBudgetTarget) setupAutoCommaInput(inputDashBudgetTarget);
+
+        function openDashBudgetModal() {
+            if (!dashBudgetModalWrapper) return;
+            const currentLimit = "{% if budget_limit and budget_limit > 0 %}{{ budget_limit|floatformat:2 }}{% endif %}";
+            if (inputDashBudgetTarget) {
+                inputDashBudgetTarget.value = currentLimit ? formatNumberWithCommas(currentLimit) : '';
+            }
+            document.body.style.overflow = 'hidden';
+            dashBudgetModalWrapper.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                dashBudgetModalBackdrop?.classList.remove('opacity-0');
+                dashBudgetModalBackdrop?.classList.add('opacity-100');
+                dashBudgetModalWrapper.classList.remove('opacity-0');
+                dashBudgetModalWrapper.classList.add('opacity-100');
+                dashBudgetModalContent?.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
+                dashBudgetModalContent?.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
+                if (inputDashBudgetTarget) {
+                    inputDashBudgetTarget.focus();
+                    inputDashBudgetTarget.select();
                 }
             });
         }
 
-        function scrollToSlide(index) {
-            if (window.innerWidth >= 640 || !slides[index]) return;
-            slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-            updateActiveDot(index);
+        function closeDashBudgetModal() {
+            if (!dashBudgetModalWrapper) return;
+            dashBudgetModalBackdrop?.classList.remove('opacity-100');
+            dashBudgetModalBackdrop?.classList.add('opacity-0');
+            dashBudgetModalWrapper.classList.remove('opacity-100');
+            dashBudgetModalWrapper.classList.add('opacity-0');
+            dashBudgetModalContent?.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
+            dashBudgetModalContent?.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
+            setTimeout(() => {
+                dashBudgetModalWrapper.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
         }
 
-        dots.forEach((dot) => {
-            dot.addEventListener('click', () => {
-                const index = parseInt(dot.getAttribute('data-slide-index'), 10);
-                scrollToSlide(index);
-            });
-        });
+        document.getElementById('btn-dash-open-budget-modal')?.addEventListener('click', openDashBudgetModal);
+        document.getElementById('btn-dash-edit-budget-modal')?.addEventListener('click', openDashBudgetModal);
+        document.querySelectorAll('.btn-trigger-dash-budget-modal').forEach(b => b.addEventListener('click', openDashBudgetModal));
+        btnCloseDashBudgetModal?.addEventListener('click', closeDashBudgetModal);
+        btnCancelDashBudget?.addEventListener('click', closeDashBudgetModal);
+        dashBudgetModalBackdrop?.addEventListener('click', closeDashBudgetModal);
 
-        // IntersectionObserver for zero-layout-thrashing scroll tracking on mobile
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                if (window.innerWidth >= 640) return;
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-                        const slideIndex = Array.prototype.indexOf.call(slides, entry.target);
-                        if (slideIndex !== -1) {
-                            updateActiveDot(slideIndex);
-                        }
-                    }
+        if (dashBudgetModalWrapper) {
+            dashBudgetModalWrapper.addEventListener('click', (e) => {
+                if (e.target === dashBudgetModalWrapper) closeDashBudgetModal();
+            });
+        }
+
+        formDashBudget?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rawVal = (inputDashBudgetTarget ? inputDashBudgetTarget.value : '').toString().replace(/,/g, '');
+            const amount = parseFloat(rawVal) || 0;
+            const hasBudget = amount > 0;
+
+            try {
+                if (btnSubmitDashBudget) {
+                    btnSubmitDashBudget.disabled = true;
+                    if (btnSubmitDashBudgetLabel) btnSubmitDashBudgetLabel.textContent = 'Saving...';
+                }
+                const response = await fetch('{% url "api_save_budget" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({
+                        category: 'Overall Monthly Budget',
+                        amount: amount,
+                        is_overall: true,
+                        has_budget: hasBudget,
+                    })
                 });
-            }, {
-                root: track,
-                threshold: 0.5
-            });
-
-            slides.forEach((slide) => observer.observe(slide));
-        }
+                const res = await response.json();
+                if (res.success) {
+                    window.location.reload();
+                } else {
+                    alert(res.error || 'Failed to save monthly limit.');
+                    if (btnSubmitDashBudget) {
+                        btnSubmitDashBudget.disabled = false;
+                        if (btnSubmitDashBudgetLabel) btnSubmitDashBudgetLabel.textContent = 'Save Monthly Limit';
+                    }
+                }
+            } catch (err) {
+                console.error('Save dashboard budget error:', err);
+                window.location.reload();
+            }
+        });
     });
 </script>
 {% endblock %}
