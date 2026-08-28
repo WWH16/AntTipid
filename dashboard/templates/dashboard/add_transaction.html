@@ -84,10 +84,10 @@
                     </div>
                 </div>
 
-                <!-- ─── Category Selection Grid ─── -->
-                <div class="flex flex-col gap-2">
+                <!-- ─── Category Selection Grid (Hidden for Transfers) ─── -->
+                <div id="container-category-section" class="flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <label class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Category</label>
+                        <label id="label-category-section" class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Category</label>
                         <button type="button" id="btn-open-manage-categories" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
                             <span class="material-symbols-outlined text-[14px]">tune</span>
                             <span>Manage</span>
@@ -143,7 +143,7 @@
 
                     <!-- Title / Merchant -->
                     <div class="flex flex-col gap-1.5">
-                        <label for="input-title" class="font-label-sm text-xs font-bold text-deep-forest">Title / Merchant</label>
+                        <label for="input-title" id="label-input-title" class="font-label-sm text-xs font-bold text-deep-forest">Title / Merchant</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
                             <input type="text" id="input-title" placeholder="e.g. Jollibee Lunch, Grab Fare" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all" required>
@@ -159,10 +159,10 @@
                         </div>
                     </div>
 
-                    <!-- Account / Payment Method -->
+                    <!-- Account / Payment Method (Source Account) -->
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="select-account" class="font-label-sm text-xs font-bold text-deep-forest">Payment Method / Wallet</label>
+                            <label for="select-account" id="label-select-account" class="font-label-sm text-xs font-bold text-deep-forest">Payment Method / Wallet</label>
                             <button type="button" id="btn-open-manage-accounts" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
                                 <span class="material-symbols-outlined text-[14px]">tune</span>
                                 <span>Manage</span>
@@ -175,6 +175,23 @@
                                 <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }}</option>
                                 {% empty %}
                                 <option value="Cash">Cash</option>
+                                <option value="GCash">GCash</option>
+                                {% endfor %}
+                            </select>
+                            <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[18px] pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Destination Account (Visible only for Transfer) -->
+                    <div id="container-destination-account" class="hidden flex-col gap-1.5">
+                        <label for="select-destination-account" class="font-label-sm text-xs font-bold text-deep-forest">To (Destination Account)</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance</span>
+                            <select id="select-destination-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
+                                {% for acc in accounts %}
+                                <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }}</option>
+                                {% empty %}
+                                <option value="BPI Bank">BPI Bank</option>
                                 <option value="GCash">GCash</option>
                                 {% endfor %}
                             </select>
@@ -1376,6 +1393,43 @@
 
         // ─── Type Tabs (Expense, Income, Transfer) ───
         const typeTabs = document.querySelectorAll('.type-tab');
+        const containerCategorySection = document.getElementById('container-category-section');
+        const containerDestinationAccount = document.getElementById('container-destination-account');
+        const labelInputTitle = document.getElementById('label-input-title');
+        const labelSelectAccount = document.getElementById('label-select-account');
+        const selectDestinationAccount = document.getElementById('select-destination-account');
+
+        function updateFormForType(type) {
+            if (type === 'expense') {
+                if (labelInputTitle) labelInputTitle.textContent = 'Title / Merchant';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Jollibee Lunch, Grab Fare, SM Groceries';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'Payment Method / Wallet';
+                if (containerCategorySection) containerCategorySection.classList.remove('hidden');
+                if (containerDestinationAccount) {
+                    containerDestinationAccount.classList.add('hidden');
+                    containerDestinationAccount.classList.remove('flex');
+                }
+            } else if (type === 'income') {
+                if (labelInputTitle) labelInputTitle.textContent = 'Income Source / Payer';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Monthly Salary, Client Payment, Freelance Project';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'Deposit To (Wallet / Bank)';
+                if (containerCategorySection) containerCategorySection.classList.remove('hidden');
+                if (containerDestinationAccount) {
+                    containerDestinationAccount.classList.add('hidden');
+                    containerDestinationAccount.classList.remove('flex');
+                }
+            } else if (type === 'transfer') {
+                if (labelInputTitle) labelInputTitle.textContent = 'Transfer Description';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Fund Transfer to BPI, Cash-in from GCash';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'From (Source Account)';
+                if (containerCategorySection) containerCategorySection.classList.add('hidden');
+                if (containerDestinationAccount) {
+                    containerDestinationAccount.classList.remove('hidden');
+                    containerDestinationAccount.classList.add('flex');
+                }
+            }
+        }
+
         typeTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 typeTabs.forEach(t => {
@@ -1397,6 +1451,7 @@
                 } else if (type === 'transfer') {
                     tab.classList.add('bg-amber-800/15', 'text-amber-800', 'border', 'border-amber-800/30', 'shadow-xs');
                 }
+                updateFormForType(type);
                 markDirty();
             });
         });
@@ -1597,6 +1652,16 @@
             }
         })();
 
+        // ─── Initial URL Query Params Handling (e.g. ?type=income) ───
+        (function checkTypeUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            if (type) {
+                const tab = document.getElementById(`tab-type-${type.toLowerCase()}`);
+                if (tab) tab.click();
+            }
+        })();
+
         // ─── Edit Transaction Pre-Fill ───
         (function checkEditUrlParams() {
             const params = new URLSearchParams(window.location.search);
@@ -1652,6 +1717,7 @@
                 const activeCatBtn = document.querySelector('.category-btn[aria-pressed="true"]');
                 const category = activeCatBtn ? activeCatBtn.dataset.category : '';
                 const account = selectAccount ? selectAccount.value : 'Cash';
+                const destinationAccount = (txType === 'transfer' && selectDestinationAccount) ? selectDestinationAccount.value : '';
                 const dateVal = inputDate && inputDate.value ? inputDate.value : new Date().toISOString().split('T')[0];
                 const notes = inputNotes ? inputNotes.value.trim() : '';
 
@@ -1673,8 +1739,9 @@
                             amount,
                             title,
                             type: txType,
-                            category,
+                            category: txType === 'transfer' ? '' : category,
                             account,
+                            destination_account: destinationAccount,
                             date: dateVal,
                             notes,
                         }),

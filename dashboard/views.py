@@ -260,21 +260,38 @@ def api_create_transaction(request):
         tx_type = data.get('type', 'expense').upper()
         category_name = data.get('category', '').strip()
         account_name = data.get('account', 'Cash').strip()
+        dest_account_name = data.get('destination_account', '').strip()
         tx_date_str = data.get('date', '').strip()
         notes = data.get('notes', '').strip()
 
         tx_date = datetime.strptime(tx_date_str, '%Y-%m-%d').date() if tx_date_str else date.today()
 
-        account = Account.objects.filter(user=profile, name__icontains=account_name.split()[0]).first()
+        account = Account.objects.filter(user=profile, name__icontains=account_name.split()[0]).first() if account_name else None
         if not account:
             account = Account.objects.filter(user=profile, account_type=Account.AccountType.CASH).first()
 
-        category = Category.objects.filter(user=profile, name__icontains=category_name).first() if category_name else None
+        dest_account = None
+        if tx_type == 'TRANSFER' and dest_account_name:
+            dest_account = Account.objects.filter(user=profile, name__icontains=dest_account_name.split()[0]).first()
+
+        category = None
+        if category_name and tx_type != 'TRANSFER':
+            category = Category.objects.filter(user=profile, name__icontains=category_name).first()
+            if not category:
+                cat_type = Category.CategoryType.INCOME if tx_type == 'INCOME' else Category.CategoryType.EXPENSE
+                category = Category.objects.create(
+                    user=profile,
+                    name=category_name,
+                    category_type=cat_type,
+                    icon_name='payments' if tx_type == 'INCOME' else 'category',
+                    color_hex='#5C8F3A'
+                )
 
         with db_transaction.atomic():
             tx = Transaction.objects.create(
                 user=profile,
                 account=account,
+                destination_account=dest_account,
                 category=category,
                 transaction_type=tx_type if tx_type in ('EXPENSE', 'INCOME', 'TRANSFER') else 'EXPENSE',
                 amount=amount,
@@ -333,6 +350,12 @@ def api_update_transaction(request, pk):
             acc = Account.objects.filter(user=profile, name__icontains=data['account'].split()[0]).first()
             if acc and acc != tx.account:
                 tx.account = acc
+
+        if 'destination_account' in data and data['destination_account']:
+            dest_name = data['destination_account'].strip()
+            dest_acc = Account.objects.filter(user=profile, name__icontains=dest_name.split()[0]).first()
+            if dest_acc:
+                tx.destination_account = dest_acc
 
         tx.save()
         return JsonResponse({'success': True, 'id': str(tx.id)})

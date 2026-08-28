@@ -80,7 +80,7 @@
                                     <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱{{ total_income|floatformat:0|intcomma }} in · ₱{{ total_expenses|floatformat:0|intcomma }} out</span>
                                 </a>
                             </div>
-                            <a href="{% url 'add_transaction' %}" id="btn-card-add-income" aria-label="Add new transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Transaction">
+                            <a href="{% url 'add_transaction' %}?type=income" id="btn-card-add-income" aria-label="Add new income transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Income Transaction">
                                 <span class="material-symbols-outlined text-[15px] text-primary font-bold group-hover/btn:rotate-90 transition-transform">add</span>
                                 <span>Add</span>
                             </a>
