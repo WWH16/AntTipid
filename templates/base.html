@@ -101,7 +101,7 @@
                 const primaryEmail = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : '';
                 const emailPrefix = primaryEmail ? primaryEmail.split('@')[0] : '';
                 const fullName = user.fullName || user.firstName || user.username || emailPrefix || 'User Account';
-                
+
                 if (userNameEl) userNameEl.innerText = fullName;
                 if (userEmailEl) userEmailEl.innerText = primaryEmail;
 
@@ -160,57 +160,6 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:flex-row">
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- APP LAUNCH SPLASH SCREEN (Configurable Timer)-->
-    <!-- ═══════════════════════════════════════════ -->
-    <div id="app-splash-screen" class="fixed inset-0 z-[99999] bg-[#F8F5EA] flex flex-col items-center justify-between p-8 sm:p-12 transition-opacity duration-300 pointer-events-none select-none">
-        <div class="h-10"></div>
-        <div class="flex flex-col items-center gap-4 text-center">
-            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-surface-container-lowest border border-outline-variant/60 shadow-xl flex items-center justify-center p-3 animate-pulse">
-                <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid" class="w-full h-full object-contain">
-            </div>
-            <div class="flex flex-col items-center gap-1">
-                <h1 class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-[#163300] tracking-tight">
-                    <span>Ant</span><span class="text-[#5C8F3A]">Tipid</span>
-                </h1>
-                <p class="font-label-sm text-xs text-body font-medium tracking-tight">A Personal Expense and Budget Tracker</p>
-            </div>
-        </div>
-        <div class="flex flex-col items-center gap-2 pb-4">
-            <div class="w-6 h-6 border-2 border-[#163300]/20 border-t-[#163300] rounded-full animate-spin"></div>
-        </div>
-    </div>
-
-    <script>
-        (function() {
-            // Set exact display duration in milliseconds (e.g. 1500 = 1.5 seconds)
-            const SPLASH_DURATION_MS = 1500;
-            const splashEl = document.getElementById('app-splash-screen');
-            if (!splashEl) return;
-
-            const startTime = Date.now();
-
-            function hideSplash() {
-                const elapsedTime = Date.now() - startTime;
-                const remainingTime = Math.max(0, SPLASH_DURATION_MS - elapsedTime);
-
-                setTimeout(() => {
-                    splashEl.classList.add('opacity-0');
-                    setTimeout(() => {
-                        splashEl.style.display = 'none';
-                        splashEl.remove();
-                    }, 300);
-                }, remainingTime);
-            }
-
-            if (document.readyState === 'complete') {
-                hideSplash();
-            } else {
-                window.addEventListener('load', hideSplash);
-            }
-        })();
-    </script>
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- DESKTOP SIDEBAR NAVIGATION (md+)           -->
@@ -344,7 +293,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <div id="modal-add-choice-desktop" role="dialog" aria-modal="true" aria-labelledby="modal-add-choice-desktop-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
         <div id="modal-add-choice-desktop-content" class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-5 relative z-[125]">
-            
+
             <!-- Modal Header -->
             <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
                 <div class="flex items-center gap-3">
@@ -363,7 +312,7 @@
 
             <!-- Choices 2-Column Grid -->
             <div class="grid grid-cols-2 gap-4">
-                
+
                 <!-- Choice 1: Scan Receipt -->
                 <a href="{% url 'scan_receipt' %}" id="choice-scan-receipt-desktop" class="flex flex-col justify-between p-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low/40 hover:bg-surface-container-low hover:border-positive/50 hover:shadow-xs transition-all group active:scale-[0.98] cursor-pointer min-h-[140px]">
                     <div class="flex items-start justify-between">
@@ -411,7 +360,7 @@
 
         <!-- Action Sheet Drawer -->
         <div id="modal-add-choice-mobile-content" class="w-full bg-surface-container-lowest rounded-t-2xl border border-outline-variant/60 shadow-2xl relative z-[105] transform translate-y-full opacity-0 transition-all duration-200 ease-out flex flex-col max-h-[85vh] overflow-hidden">
-            
+
             <!-- Mobile Drag Handle Bar (---) -->
             <div id="modal-add-choice-mobile-handle" class="w-full pt-3 pb-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0">
                 <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full shadow-2xs"></div>
