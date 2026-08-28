@@ -4,18 +4,20 @@
   "description": "A personal expense and budget tracker with OCR receipt scanning.",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#5C8F3A",
+  "theme_color": "#163300",
   "background_color": "#F8F5EA",
   "icons": [
     {
       "src": "/static/images/AntTipidFavicon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/static/images/AntTipidLogo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

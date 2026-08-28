@@ -8,10 +8,10 @@
     <meta name="description" content="{% block meta_description %}AntTipid is your intelligent personal finance manager — track expenses, set budgets, and archive receipt scans with ease.{% endblock %}">
 
     <!-- PWA & Mobile Web App Meta Tags -->
-    <meta name="theme-color" content="#9FE870">
+    <meta name="theme-color" content="#163300">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AntTipid">
     <link rel="manifest" href="{% static 'manifest.json' %}">
 
@@ -160,6 +160,57 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:flex-row">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- APP LAUNCH SPLASH SCREEN (Configurable Timer)-->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="app-splash-screen" class="fixed inset-0 z-[99999] bg-[#F8F5EA] flex flex-col items-center justify-between p-8 sm:p-12 transition-opacity duration-300 pointer-events-none select-none">
+        <div class="h-10"></div>
+        <div class="flex flex-col items-center gap-4 text-center">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-surface-container-lowest border border-outline-variant/60 shadow-xl flex items-center justify-center p-3 animate-pulse">
+                <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid" class="w-full h-full object-contain">
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <h1 class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-[#163300] tracking-tight">
+                    <span>Ant</span><span class="text-[#5C8F3A]">Tipid</span>
+                </h1>
+                <p class="font-label-sm text-xs text-body font-medium tracking-tight">A Personal Expense and Budget Tracker</p>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-2 pb-4">
+            <div class="w-6 h-6 border-2 border-[#163300]/20 border-t-[#163300] rounded-full animate-spin"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Set exact display duration in milliseconds (e.g. 1500 = 1.5 seconds)
+            const SPLASH_DURATION_MS = 1500;
+            const splashEl = document.getElementById('app-splash-screen');
+            if (!splashEl) return;
+
+            const startTime = Date.now();
+
+            function hideSplash() {
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = Math.max(0, SPLASH_DURATION_MS - elapsedTime);
+
+                setTimeout(() => {
+                    splashEl.classList.add('opacity-0');
+                    setTimeout(() => {
+                        splashEl.style.display = 'none';
+                        splashEl.remove();
+                    }, 300);
+                }, remainingTime);
+            }
+
+            if (document.readyState === 'complete') {
+                hideSplash();
+            } else {
+                window.addEventListener('load', hideSplash);
+            }
+        })();
+    </script>
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- DESKTOP SIDEBAR NAVIGATION (md+)           -->
