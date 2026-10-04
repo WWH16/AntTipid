@@ -1,14 +1,14 @@
-const CACHE_STATIC_NAME = 'antipid-static-v1';
-const CACHE_IMAGES_NAME = 'antipid-images-v1';
+const CACHE_STATIC_NAME = 'antipid-static-v2';
+const CACHE_IMAGES_NAME = 'antipid-images-v2';
 
 const STATIC_ASSETS = [
     '/',
-    '/dashboard/',
     '/static/manifest.json',
     '/static/images/AntTipidFavicon.png',
-    '/static/images/AntTipidLogo.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
-    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200'
+    '/static/images/AntTipidLogo-128.png',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
+    // Must match the URL in templates/base.html exactly, or the cache never hits.
+    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400..700,0..1,0&display=block'
 ];
 
 // Install Event
@@ -38,28 +38,43 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch Event
+// Pages are network-first so balances are never served stale; a cached copy is only
+// the offline fallback. Static assets and fonts are cache-first.
 self.addEventListener('fetch', (event) => {
-    // Only cache GET requests
-    if (event.request.method !== 'GET') return;
-    
-    // Ignore API calls to prevent caching transaction details
-    if (event.request.url.includes('/api/')) return;
+    const request = event.request;
+    if (request.method !== 'GET') return;
 
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(event.request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_STATIC_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
+    const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.csv')) return;
+
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request).then((networkResponse) => {
+                if (networkResponse && networkResponse.ok) {
+                    const copy = networkResponse.clone();
+                    caches.open(CACHE_STATIC_NAME).then((cache) => cache.put(request, copy));
                 }
                 return networkResponse;
-            }).catch(() => {
-                // Offline fallback if needed
+            }).catch(() => caches.match(request))
+        );
+        return;
+    }
+
+    const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+    const isStatic = url.origin === self.location.origin && url.pathname.startsWith('/static/');
+    if (!isFont && !isStatic) return;
+
+    const cacheName = /\.(png|jpe?g|webp|svg|gif)$/i.test(url.pathname) ? CACHE_IMAGES_NAME : CACHE_STATIC_NAME;
+    event.respondWith(
+        caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            return fetch(request).then((networkResponse) => {
+                // Font files come back opaque/cors from gstatic; cache those too.
+                if (networkResponse && (networkResponse.ok || networkResponse.type === 'opaque')) {
+                    const copy = networkResponse.clone();
+                    caches.open(cacheName).then((cache) => cache.put(request, copy));
+                }
+                return networkResponse;
             });
         })
     );

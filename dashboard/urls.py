@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.landing_view, name='landing'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('transactions/', views.transactions_view, name='transactions'),
+    path('transactions/export.csv', views.export_transactions_csv, name='export_transactions_csv'),
     path('budget/', views.budget_view, name='budget'),
     path('reports/', views.reports_view, name='reports'),
     path('receipt-detail/', views.receipt_detail_view, name='receipt_detail'),
@@ -13,7 +14,6 @@ urlpatterns = [
     path('transaction-detail/<int:pk>/', views.transaction_detail_view, name='transaction_detail_pk'),
     path('add/', views.add_transaction_view, name='add_transaction'),
     path('scan-receipt/', views.scan_receipt_view, name='scan_receipt'),
-    path('scan/', views.scan_receipt_view, name='scan_alias'),
     
     # JSON API Endpoints
     path('api/scan-receipt/', views.api_scan_receipt_view, name='api_scan_receipt'),

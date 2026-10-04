@@ -2,24 +2,24 @@
 <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-2 pb-safe bg-deep-forest text-white border-t border-deep-forest/80 shadow-[0_-4px_20px_rgba(35,69,42,0.25)] z-50 md:hidden">
     <a id="bnav-home" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'dashboard' %}text-white font-bold{% else %}text-white/70 font-medium{% endif %} hover:text-white active:scale-90 transition-all w-[20%]" href="{% url 'dashboard' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'dashboard' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
-        <span class="font-label-sm text-[10px] leading-tight mt-0.5">Dashboard</span>
+        <span class="text-xs leading-tight mt-0.5">Dashboard</span>
     </a>
     <a id="bnav-history" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'transactions' %}text-white font-bold{% else %}text-white/70 font-medium{% endif %} hover:text-white active:scale-90 transition-all w-[20%]" href="{% url 'transactions' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'transactions' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>receipt_long</span>
-        <span class="font-label-sm text-[10px] leading-tight mt-0.5">History</span>
+        <span class="text-xs leading-tight mt-0.5">History</span>
     </a>
     <a id="bnav-add" class="flex flex-col items-center justify-center w-[20%] -mt-6" href="{% url 'add_transaction' %}">
         <div class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg active:scale-90 hover:bg-primary-hover transition-all ring-4 ring-deep-forest">
             <span class="material-symbols-outlined text-[26px]">add</span>
         </div>
-        <span class="font-label-sm text-[10px] leading-tight mt-1 text-white font-bold uppercase tracking-wider">Add</span>
+        <span class="text-xs leading-tight mt-1 text-white font-bold uppercase tracking-wider">Add</span>
     </a>
     <a id="bnav-budget" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'budgets' %}text-white font-bold{% else %}text-white/70 font-medium{% endif %} hover:text-white active:scale-90 transition-all w-[20%]" href="{% url 'budget' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'budgets' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
-        <span class="font-label-sm text-[10px] leading-tight mt-0.5">Budgets</span>
+        <span class="text-xs leading-tight mt-0.5">Budgets</span>
     </a>
     <a id="bnav-reports" class="flex flex-col items-center justify-center py-1 min-h-[44px] {% if active_nav == 'reports' %}text-white font-bold{% else %}text-white/70 font-medium{% endif %} hover:text-white active:scale-90 transition-all w-[20%]" href="{% url 'reports' %}">
         <span class="material-symbols-outlined text-[22px]" {% if active_nav == 'reports' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>analytics</span>
-        <span class="font-label-sm text-[10px] leading-tight mt-0.5">Reports</span>
+        <span class="text-xs leading-tight mt-0.5">Reports</span>
     </a>
 </nav>

@@ -57,7 +57,9 @@ module.exports = {
         "negative-darkest": "#A7000D",
         "negative-bg": "#320707",
         "expense": "#D03238",
+        "expense-dark": "#A72027",
         "error": "#D03238",
+        "on-error": "#FFFFFF",
 
         // Tertiary Brand Accents
         "accent-orange": "#FFC091",
@@ -110,6 +112,10 @@ module.exports = {
         "soft": "0 2px 12px rgba(14, 15, 12, 0.04)",
         "elevated": "0 8px 24px rgba(14, 15, 12, 0.08)",
         "xs": "0 1px 3px rgba(14, 15, 12, 0.04)",
+        "2xs": "0 1px 2px rgba(14, 15, 12, 0.04)",
+      },
+      backdropBlur: {
+        "xs": "2px",
       },
     },
   },

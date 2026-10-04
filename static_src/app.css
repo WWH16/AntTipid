@@ -1,3 +1,5 @@
+@import "./shared.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,6 +14,91 @@
   }
 }
 
+@layer components {
+
+  /* Toasts (static/js/ui.js) */
+  .ant-toast-region {
+    position: fixed;
+    z-index: 200;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    width: min(calc(100% - 32px), 420px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  /* Pages with a sticky bottom action bar: keep toasts clear of it. */
+  body:has(.form-action-bar) .ant-toast-region,
+  body:has([data-sticky-actions]) .ant-toast-region {
+    bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 768px) {
+    body:has(.form-action-bar) .ant-toast-region,
+    body:has([data-sticky-actions]) .ant-toast-region,
+    .ant-toast-region {
+      left: auto;
+      right: 24px;
+      transform: none;
+      bottom: 24px;
+    }
+  }
+  .ant-toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px 10px 14px;
+    border-radius: 16px;
+    background: theme('colors.ink');
+    color: theme('colors.canvas');
+    box-shadow: 0 8px 24px rgba(14, 15, 12, 0.18);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ant-toast.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .ant-toast__icon {
+    font-size: 20px;
+    color: theme('colors.primary');
+  }
+  .ant-toast--error .ant-toast__icon {
+    color: #FF8A8E;
+  }
+  .ant-toast__text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .ant-toast__action {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: theme('colors.primary');
+  }
+  .ant-toast__action:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .ant-toast__close {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .ant-toast__close .material-symbols-outlined {
+    font-size: 18px;
+  }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -20,5 +107,38 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Safe-area insets for the installed PWA (viewport-fit=cover). */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-safe {
+    bottom: env(safe-area-inset-bottom);
+  }
 }
 
+/* Reduced motion: keep state changes, drop travel and looping effects. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-ping,
+  .animate-bounce,
+  .pulse-ring,
+  .scanning-line {
+    animation: none !important;
+  }
+  .animate-spin {
+    animation-duration: 1.5s !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
+  .ant-toast {
+    transform: none;
+  }
+}

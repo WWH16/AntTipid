@@ -22,7 +22,6 @@ from .models import (
     Receipt,
     ReceiptItem,
     Budget,
-    RecurringRule,
 )
 from .services import (
     get_current_user_profile,
@@ -32,6 +31,44 @@ from .services import (
     get_reports_data,
 )
 
+def _resolve_account(profile, value):
+    """Find the user's account by id, then exact name, then partial name.
+
+    Exact matching comes first so similarly named accounts ("BPI Savings" vs
+    "BPI Checking") never resolve to the wrong one."""
+    value = str(value or '').strip()
+    if not value:
+        return None
+    qs = Account.objects.filter(user=profile)
+    if value.isdigit():
+        acc = qs.filter(id=int(value)).first()
+        if acc:
+            return acc
+    return (
+        qs.filter(name__iexact=value).first()
+        or qs.filter(name__icontains=value).first()
+        or qs.filter(name__icontains=value.split()[0]).first()
+    )
+
+
+def _resolve_category(profile, name):
+    """Find the user's category by exact name, then partial name."""
+    name = str(name or '').strip()
+    if not name:
+        return None
+    qs = Category.objects.filter(user=profile)
+    return qs.filter(name__iexact=name).first() or qs.filter(name__icontains=name).first()
+
+
+def _new_category(profile, name, tx_type='EXPENSE', icon=None, color='#163300'):
+    is_income = tx_type == 'INCOME'
+    return Category.objects.create(
+        user=profile,
+        name=name,
+        category_type=Category.CategoryType.INCOME if is_income else Category.CategoryType.EXPENSE,
+        icon_name=icon or ('payments' if is_income else 'category'),
+        color_hex=color,
+    )
 
 def landing_view(request):
     """Render the AntTipid Landing Page."""
@@ -59,15 +96,67 @@ def transactions_view(request):
     profile = get_current_user_profile(request)
     data = get_transactions_data(profile, request.GET) if profile else {}
 
+    # Current filters without the page number, for building pagination links.
+    filter_params = request.GET.copy()
+    for transient in ('page', 'toast', 'mode'):
+        filter_params.pop(transient, None)
+
     context = {
         'active_nav': 'transactions',
         'profile': profile,
         'selected_type': request.GET.get('type', ''),
         'selected_category': request.GET.get('category', ''),
+        'selected_account': request.GET.get('account', ''),
+        'selected_source': request.GET.get('source', ''),
         'search_query': request.GET.get('q', ''),
+        'filter_querystring': filter_params.urlencode(),
         **data,
     }
     return render(request, 'dashboard/transactions.html', context)
+
+
+def export_transactions_csv(request):
+    """Download the user's transactions as CSV. Optional ?period=week|month|year."""
+    import csv
+
+    profile = get_current_user_profile(request)
+    if not profile:
+        return redirect('landing')
+
+    qs = Transaction.objects.filter(user=profile).select_related(
+        'account', 'destination_account', 'category'
+    ).order_by('-transaction_date', '-created_at')
+
+    today = date.today()
+    period = request.GET.get('period', '').strip().lower()
+    if period == 'week':
+        start = today - timedelta(days=(today.weekday() + 1) % 7)
+        qs = qs.filter(transaction_date__gte=start, transaction_date__lte=start + timedelta(days=6))
+    elif period == 'month':
+        qs = qs.filter(transaction_date__year=today.year, transaction_date__month=today.month)
+    elif period == 'year':
+        qs = qs.filter(transaction_date__year=today.year)
+
+    filename = f"anttipid-transactions-{period or 'all'}-{today.isoformat()}.csv"
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response.write('﻿')  # BOM so Excel reads UTF-8 (peso sign) correctly
+
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Type', 'Title', 'Category', 'Account', 'To Account', 'Amount (PHP)', 'Source', 'Notes'])
+    for tx in qs:
+        writer.writerow([
+            tx.transaction_date.isoformat() if tx.transaction_date else '',
+            tx.get_transaction_type_display(),
+            tx.title,
+            tx.category.name if tx.category else '',
+            tx.account.name if tx.account else '',
+            tx.destination_account.name if tx.destination_account else '',
+            f"{tx.amount:.2f}",
+            tx.get_source_display(),
+            tx.notes or '',
+        ])
+    return response
 
 
 def budget_view(request):
@@ -158,69 +247,43 @@ def transaction_detail_view(request, pk=None):
 
 
 def add_transaction_view(request):
-    """Render and process the manual transaction entry screen."""
+    """Render the manual transaction entry screen."""
     profile = get_current_user_profile(request)
 
-    if request.method == 'POST':
-        try:
-            amount_str = request.POST.get('amount', '0').replace('₱', '').replace(',', '').strip()
-            amount = Decimal(amount_str)
-            title = request.POST.get('title', '').strip() or 'Untitled Transaction'
-            tx_type = request.POST.get('type', 'expense').upper()
-            category_name = request.POST.get('category', '').strip()
-            account_name = request.POST.get('account', 'Cash Wallet').strip()
-            tx_date_str = request.POST.get('date', '').strip()
-            notes = request.POST.get('notes', '').strip()
-
-            tx_date = datetime.strptime(tx_date_str, '%Y-%m-%d').date() if tx_date_str else date.today()
-
-            # Resolve Account
-            account = Account.objects.filter(user=profile, name__icontains=account_name.split()[0]).first()
-            if not account:
-                account = Account.objects.filter(user=profile, account_type=Account.AccountType.CASH).first()
-
-            # Resolve Category
-            category = None
-            if category_name:
-                category = Category.objects.filter(user=profile, name__iexact=category_name).first()
-                if not category:
-                    category = Category.objects.create(
-                        user=profile,
-                        name=category_name,
-                        category_type=Category.CategoryType.INCOME if tx_type == 'INCOME' else Category.CategoryType.EXPENSE,
-                        icon_name='payments' if tx_type == 'INCOME' else 'shopping_bag',
-                        color_hex='#5C8F3A'
-                    )
-
-            with db_transaction.atomic():
-                tx = Transaction.objects.create(
-                    user=profile,
-                    account=account,
-                    category=category,
-                    transaction_type=tx_type if tx_type in ('EXPENSE', 'INCOME', 'TRANSFER') else 'EXPENSE',
-                    amount=amount,
-                    title=title,
-                    transaction_date=tx_date,
-                    notes=notes,
-                    source=Transaction.SourceType.MANUAL,
-                )
-
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': True, 'id': str(tx.id)})
-            return redirect('transactions')
-
-        except Exception as e:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'error': str(e)}, status=400)
 
     categories = Category.objects.filter(user=profile).order_by('name') if profile else []
     accounts = Account.objects.filter(user=profile, is_active=True).order_by('name') if profile else []
+
+    # Recent distinct entries power one-tap "log it again" chips.
+    recent_entries = []
+    if profile:
+        seen_titles = set()
+        recent_qs = (
+            Transaction.objects.filter(user=profile, transaction_type=Transaction.TransactionType.EXPENSE)
+            .select_related('category', 'account')
+            .order_by('-transaction_date', '-created_at')[:40]
+        )
+        for tx in recent_qs:
+            key = (tx.title or '').strip().lower()
+            if not key or key in seen_titles:
+                continue
+            seen_titles.add(key)
+            recent_entries.append({
+                'title': tx.title,
+                'amount': str(tx.amount),
+                'category_id': str(tx.category_id) if tx.category_id else '',
+                'account_id': str(tx.account_id) if tx.account_id else '',
+            })
+            if len(recent_entries) >= 6:
+                break
 
     context = {
         'active_nav': 'add_transaction',
         'profile': profile,
         'categories': categories,
         'accounts': accounts,
+        'recent_entries': recent_entries,
+        'recent_entries_json': json.dumps(recent_entries),
     }
     return render(request, 'dashboard/add_transaction.html', context)
 
@@ -266,26 +329,19 @@ def api_create_transaction(request):
 
         tx_date = datetime.strptime(tx_date_str, '%Y-%m-%d').date() if tx_date_str else date.today()
 
-        account = Account.objects.filter(user=profile, name__icontains=account_name.split()[0]).first() if account_name else None
+        account = _resolve_account(profile, account_name) if account_name else None
         if not account:
             account = Account.objects.filter(user=profile, account_type=Account.AccountType.CASH).first()
 
         dest_account = None
         if tx_type == 'TRANSFER' and dest_account_name:
-            dest_account = Account.objects.filter(user=profile, name__icontains=dest_account_name.split()[0]).first()
+            dest_account = _resolve_account(profile, dest_account_name)
 
         category = None
         if category_name and tx_type != 'TRANSFER':
-            category = Category.objects.filter(user=profile, name__icontains=category_name).first()
+            category = _resolve_category(profile, category_name)
             if not category:
-                cat_type = Category.CategoryType.INCOME if tx_type == 'INCOME' else Category.CategoryType.EXPENSE
-                category = Category.objects.create(
-                    user=profile,
-                    name=category_name,
-                    category_type=cat_type,
-                    icon_name='payments' if tx_type == 'INCOME' else 'category',
-                    color_hex='#5C8F3A'
-                )
+                category = _new_category(profile, category_name, tx_type)
 
         with db_transaction.atomic():
             tx = Transaction.objects.create(
@@ -337,23 +393,17 @@ def api_update_transaction(request, pk):
             cat_name = data['category'].strip()
             cat = Category.objects.filter(user=profile, name__iexact=cat_name).first()
             if not cat:
-                cat = Category.objects.create(
-                    user=profile,
-                    name=cat_name,
-                    category_type=Category.CategoryType.INCOME if tx.transaction_type == 'INCOME' else Category.CategoryType.EXPENSE,
-                    icon_name='payments' if tx.transaction_type == 'INCOME' else 'shopping_bag',
-                    color_hex='#5C8F3A'
-                )
+                cat = _new_category(profile, cat_name, tx.transaction_type)
             tx.category = cat
 
         if 'account' in data and data['account']:
-            acc = Account.objects.filter(user=profile, name__icontains=data['account'].split()[0]).first()
+            acc = _resolve_account(profile, data['account'])
             if acc and acc != tx.account:
                 tx.account = acc
 
         if 'destination_account' in data and data['destination_account']:
             dest_name = data['destination_account'].strip()
-            dest_acc = Account.objects.filter(user=profile, name__icontains=dest_name.split()[0]).first()
+            dest_acc = _resolve_account(profile, dest_name)
             if dest_acc:
                 tx.destination_account = dest_acc
 
@@ -392,15 +442,8 @@ def api_save_budget(request):
         is_overall = data.get('is_overall', False)
         amount_limit = Decimal(str(data.get('amount_limit') or data.get('amount') or 0))
 
-        today = date.today()
-        start_of_month = today.replace(day=1)
-        if today.month == 12:
-            end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-        else:
-            end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-
         category_icon = data.get('icon') or data.get('icon_name') or 'category'
-        category_color = data.get('color') or data.get('color_hex') or '#5C8F3A'
+        category_color = data.get('color') or data.get('color_hex') or '#163300'
 
         if is_overall or (category_name and category_name.strip().lower() == 'overall monthly budget'):
             category = None
@@ -417,13 +460,7 @@ def api_save_budget(request):
         elif category_name:
             category = Category.objects.filter(name__iexact=category_name, user=profile).first()
             if not category:
-                category = Category.objects.create(
-                    user=profile,
-                    name=category_name,
-                    category_type=Category.CategoryType.EXPENSE,
-                    icon_name=category_icon,
-                    color_hex=category_color
-                )
+                category = _new_category(profile, category_name, icon=category_icon, color=category_color)
             elif data.get('icon') or data.get('color'):
                 if data.get('icon'):
                     category.icon_name = data.get('icon')
@@ -444,12 +481,9 @@ def api_save_budget(request):
         budget, created = Budget.objects.update_or_create(
             user=profile,
             category=category,
-            period_type=Budget.PeriodType.MONTHLY,
             defaults={
                 'name': f"{category.name} Budget" if category else 'Overall Monthly Budget',
                 'amount_limit': amount_limit,
-                'start_date': start_of_month,
-                'end_date': end_of_month,
                 'is_active': True,
             }
         )
@@ -550,7 +584,7 @@ def api_save_scanned_receipt(request):
         if payment_method:
             account = Account.objects.filter(user=profile, name__iexact=payment_method).first()
             if not account:
-                account = Account.objects.filter(user=profile, name__icontains=payment_method.split()[0]).first()
+                account = _resolve_account(profile, payment_method)
             if not account:
                 pm_lower = payment_method.lower()
                 if 'gcash' in pm_lower or 'maya' in pm_lower or 'wallet' in pm_lower:
@@ -564,19 +598,19 @@ def api_save_scanned_receipt(request):
                 pm_upper = payment_method.upper()
                 acc_type = Account.AccountType.CASH
                 acc_icon = 'payments'
-                acc_color = '#5C8F3A'
+                acc_color = '#163300'
                 if any(w in pm_upper for w in ['GCASH', 'MAYA', 'WALLET', 'PAY', 'SHOPEE', 'GRAB']):
                     acc_type = Account.AccountType.E_WALLET
                     acc_icon = 'account_balance_wallet'
-                    acc_color = '#005CEE'
+                    acc_color = '#0A7EA8'
                 elif any(w in pm_upper for w in ['CARD', 'VISA', 'MASTER', 'AMEX', 'DEBIT', 'CREDIT']):
                     acc_type = Account.AccountType.CREDIT_CARD
                     acc_icon = 'credit_card'
-                    acc_color = '#D97706'
+                    acc_color = '#B86700'
                 elif any(w in pm_upper for w in ['BANK', 'TRANSFER', 'INSTAPAY', 'PESONET', 'BDO', 'BPI', 'UB', 'METROBANK']):
                     acc_type = Account.AccountType.BANK_ACCOUNT
                     acc_icon = 'account_balance'
-                    acc_color = '#8B5CF6'
+                    acc_color = '#6B4FA0'
 
                 account = Account.objects.create(
                     user=profile,
@@ -597,7 +631,7 @@ def api_save_scanned_receipt(request):
         if category_name:
             category = Category.objects.filter(user=profile, name__iexact=category_name).first()
             if not category:
-                category = Category.objects.filter(user=profile, name__icontains=category_name).first()
+                category = _resolve_category(profile, category_name)
             if not category:
                 lower_cat = category_name.lower()
                 cat_icon = 'category'
@@ -624,13 +658,7 @@ def api_save_scanned_receipt(request):
                 elif any(w in lower_cat for w in ['gym', 'fit', 'sport']):
                     cat_icon = 'fitness_center'
 
-                category = Category.objects.create(
-                    user=profile,
-                    name=category_name,
-                    category_type=Category.CategoryType.EXPENSE,
-                    icon_name=cat_icon,
-                    color_hex='#5C8F3A'
-                )
+                category = _new_category(profile, category_name, icon=cat_icon)
 
         # Image compression & storage
         image_file = None
@@ -715,7 +743,6 @@ def api_save_scanned_receipt(request):
                 transaction_date=tx_date,
                 notes=notes,
                 source=Transaction.SourceType.OCR_SCAN,
-                status=Transaction.Status.CLEARED,
             )
 
         return JsonResponse({
@@ -1110,39 +1137,22 @@ def api_create_category(request):
 
         category_type = data.get('category_type') or Category.CategoryType.EXPENSE
         icon_name = data.get('icon_name') or data.get('icon') or 'category'
-        color_hex = data.get('color_hex') or data.get('color') or '#5C8F3A'
+        color_hex = data.get('color_hex') or data.get('color') or '#163300'
         has_budget = bool(data.get('has_budget', False))
         raw_limit = data.get('amount_limit') or data.get('amount')
 
-        category = Category.objects.create(
-            user=profile,
-            name=name,
-            category_type=category_type,
-            icon_name=icon_name,
-            color_hex=color_hex
-        )
+        category = _new_category(profile, name, category_type, icon_name, color_hex)
 
         budget_id = None
         if has_budget and raw_limit:
             try:
                 limit_val = Decimal(str(raw_limit))
                 if limit_val > 0:
-                    today = date.today()
-                    start_of_month = today.replace(day=1)
-                    if today.month == 12:
-                        end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-                    else:
-                        end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-
                     budget = Budget.objects.create(
                         user=profile,
                         category=category,
                         name=f"{category.name} Budget",
-                        period_type=Budget.PeriodType.MONTHLY,
                         amount_limit=limit_val,
-                        start_date=start_of_month,
-                        end_date=end_of_month,
-                        is_active=True
                     )
                     budget_id = str(budget.id)
             except Exception:
@@ -1199,22 +1209,12 @@ def api_update_category(request, pk):
                 Budget.objects.filter(user=profile, category=category).delete()
             else:
                 limit_val = Decimal(str(raw_limit))
-                today = date.today()
-                start_of_month = today.replace(day=1)
-                if today.month == 12:
-                    end_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-                else:
-                    end_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-
                 Budget.objects.update_or_create(
                     user=profile,
                     category=category,
-                    period_type=Budget.PeriodType.MONTHLY,
                     defaults={
                         'name': f"{category.name} Budget",
                         'amount_limit': limit_val,
-                        'start_date': start_of_month,
-                        'end_date': end_of_month,
                         'is_active': True
                     }
                 )

@@ -7,7 +7,6 @@ from .models import (
     ReceiptItem,
     Transaction,
     Budget,
-    RecurringRule,
 )
 
 
@@ -53,23 +52,15 @@ class ReceiptItemAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'transaction_type', 'amount', 'account', 'category', 'transaction_date', 'source', 'status')
-    list_filter = ('transaction_type', 'source', 'status', 'transaction_date')
+    list_display = ('title', 'user', 'transaction_type', 'amount', 'account', 'category', 'transaction_date', 'source')
+    list_filter = ('transaction_type', 'source', 'transaction_date')
     search_fields = ('title', 'notes', 'user__email')
     date_hierarchy = 'transaction_date'
 
 
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'category', 'period_type', 'amount_limit', 'start_date', 'end_date', 'is_active')
-    list_filter = ('period_type', 'is_active')
+    list_display = ('name', 'user', 'category', 'amount_limit', 'is_active')
+    list_filter = ('is_active',)
     search_fields = ('name', 'user__email')
-
-
-@admin.register(RecurringRule)
-class RecurringRuleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'transaction_type', 'amount', 'frequency', 'next_run_date', 'is_active')
-    list_filter = ('frequency', 'transaction_type', 'is_active')
-    search_fields = ('title', 'user__email')
-
 

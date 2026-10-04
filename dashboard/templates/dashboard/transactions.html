@@ -3,792 +3,665 @@
 {% load humanize %}
 
 {% block title %}History | AntTipid{% endblock %}
-{% block meta_description %}Manage and track your financial history, non-receipt expenses, and scanned receipt archive.{% endblock %}
+{% block meta_description %}Search and filter your spending, income, transfers and scanned receipts.{% endblock %}
 
 {% block content %}
+{% with qs_q=search_query|urlencode qs_c=selected_category|urlencode qs_a=selected_account|urlencode qs_s=selected_source|urlencode sel_type=selected_type|lower sel_source=selected_source|upper fc=selected_category|yesno:"1,0" fa=selected_account|yesno:"1,0" fs=selected_source|yesno:"1,0" %}
+{% with sheet_filter_count=fc|add:fa|add:fs %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
-    <div class="max-w-7xl mx-auto flex flex-col gap-6">
-
+    <div class="max-w-7xl mx-auto flex flex-col gap-4 md:gap-6">
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- SEARCH & FILTER BAR                     -->
+        <!-- SEARCH, TYPE & FILTERS (one GET form)    -->
         <!-- ═══════════════════════════════════════ -->
-        <!-- Mobile Search & Filter Bar (<md) -->
-        <div class="md:hidden sticky top-[56px] z-30 pt-2 pb-2.5 bg-background/95 backdrop-blur-md -mx-margin-mobile px-margin-mobile border-b border-outline-variant/40">
-            <div class="flex items-center gap-2">
-                <!-- Search Input with Clear Button -->
-                <div class="relative flex-1 flex items-center">
-                    <label for="input-search-mobile" class="sr-only">Search transactions or receipts</label>
-                    <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
-                        <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
-                    </div>
-                    <input id="input-search-mobile" aria-label="Search transactions or receipts" class="w-full pl-10 pr-9 h-10 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-xs transition-all text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
-                    <button type="button" id="btn-clear-search-mobile" aria-label="Clear search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-deep-forest flex items-center justify-center transition-all cursor-pointer">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
-                    </button>
+        <div class="sticky top-[calc(3.5rem+env(safe-area-inset-top))] md:static z-20 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 py-2 md:py-0 bg-canvas-soft/95 backdrop-blur-md md:bg-transparent md:backdrop-blur-none flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3">
+            <form id="history-filters" method="get" action="{% url 'transactions' %}" role="search" aria-label="Search history" class="flex items-center gap-2 w-full md:w-auto md:flex-1 md:max-w-md">
+                <div class="relative flex-1 min-w-0">
+                    <label for="history-search" class="sr-only">Search history</label>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-mute pointer-events-none select-none" aria-hidden="true">search</span>
+                    <input id="history-search" name="q" type="search" value="{{ search_query }}" enterkeyhint="search" autocomplete="off" placeholder="Search title, category or notes" class="w-full h-11 pl-10 pr-3 bg-canvas border border-outline-variant rounded-md text-sm text-ink font-medium placeholder:text-mute">
                 </div>
-                
-                <!-- Filter Action Sheet Trigger Button -->
-                <button type="button" id="btn-open-filter-mobile" class="h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0" aria-label="Open filter action sheet">
-                    <span class="material-symbols-outlined text-[18px]">tune</span>
-                    <span class="font-label-sm text-xs font-bold">Filter</span>
-                    <span id="badge-active-filters-mobile" class="hidden min-w-[18px] h-[18px] px-1 bg-deep-forest text-primary rounded-full text-[10px] font-extrabold flex items-center justify-center">0</span>
+                <input type="hidden" name="type" value="{{ sel_type }}">
+                <button type="button" id="btn-open-filters" aria-haspopup="dialog" aria-controls="filter-sheet" {% if sheet_filter_count %}aria-label="Filters, {{ sheet_filter_count }} active"{% endif %} class="h-11 px-3.5 rounded-md flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer {% if sheet_filter_count %}bg-primary-pale text-ink{% else %}bg-canvas text-ink hover:bg-surface-container-low{% endif %}">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">tune</span>
+                    <span class="text-sm font-semibold">Filters</span>
+                    {% if sheet_filter_count %}
+                    <span class="min-w-[20px] h-5 px-1.5 rounded-full bg-deep-forest text-white text-xs font-semibold flex items-center justify-center tabular-nums" aria-hidden="true">{{ sheet_filter_count }}</span>
+                    {% endif %}
                 </button>
-            </div>
+            </form>
 
-            <!-- Horizontal Dynamic Category Filter Chips Strip -->
-            <div id="mobile-quick-filter-strip" class="flex items-center gap-1.5 pt-2 pb-0.5 overflow-x-auto no-scrollbar -mx-margin-mobile px-margin-mobile">
-                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
-                    All
-                </button>
-                {% for cat in categories %}
-                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    {{ cat.name }}
-                </button>
-                {% endfor %}
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <!-- Type segmented control: real links so the state lives in the URL -->
+                <nav aria-label="Transaction type" class="flex-1 md:flex-none">
+                    <ul class="grid grid-cols-4 md:inline-grid gap-1 p-1 bg-canvas rounded-pill" role="list">
+                        <li><a href="?{% if search_query %}q={{ qs_q }}&amp;{% endif %}{% if selected_category %}category={{ qs_c }}&amp;{% endif %}{% if selected_account %}account={{ qs_a }}&amp;{% endif %}{% if selected_source %}source={{ qs_s }}{% endif %}" {% if not sel_type %}aria-current="page"{% endif %} class="tap flex items-center justify-center min-h-[36px] px-3 md:px-4 rounded-pill text-sm font-semibold whitespace-nowrap transition-colors {% if not sel_type %}bg-deep-forest text-white{% else %}text-body hover:bg-canvas-soft hover:text-ink{% endif %}">All</a></li>
+                        <li><a href="?{% if search_query %}q={{ qs_q }}&amp;{% endif %}{% if selected_category %}category={{ qs_c }}&amp;{% endif %}{% if selected_account %}account={{ qs_a }}&amp;{% endif %}{% if selected_source %}source={{ qs_s }}&amp;{% endif %}type=expense" {% if sel_type == 'expense' %}aria-current="page"{% endif %} class="tap flex items-center justify-center min-h-[36px] px-3 md:px-4 rounded-pill text-sm font-semibold whitespace-nowrap transition-colors {% if sel_type == 'expense' %}bg-deep-forest text-white{% else %}text-body hover:bg-canvas-soft hover:text-ink{% endif %}">Expense</a></li>
+                        <li><a href="?{% if search_query %}q={{ qs_q }}&amp;{% endif %}{% if selected_category %}category={{ qs_c }}&amp;{% endif %}{% if selected_account %}account={{ qs_a }}&amp;{% endif %}{% if selected_source %}source={{ qs_s }}&amp;{% endif %}type=income" {% if sel_type == 'income' %}aria-current="page"{% endif %} class="tap flex items-center justify-center min-h-[36px] px-3 md:px-4 rounded-pill text-sm font-semibold whitespace-nowrap transition-colors {% if sel_type == 'income' %}bg-deep-forest text-white{% else %}text-body hover:bg-canvas-soft hover:text-ink{% endif %}">Income</a></li>
+                        <li><a href="?{% if search_query %}q={{ qs_q }}&amp;{% endif %}{% if selected_category %}category={{ qs_c }}&amp;{% endif %}{% if selected_account %}account={{ qs_a }}&amp;{% endif %}{% if selected_source %}source={{ qs_s }}&amp;{% endif %}type=transfer" {% if sel_type == 'transfer' %}aria-current="page"{% endif %} class="tap flex items-center justify-center min-h-[36px] px-3 md:px-4 rounded-pill text-sm font-semibold whitespace-nowrap transition-colors {% if sel_type == 'transfer' %}bg-deep-forest text-white{% else %}text-body hover:bg-canvas-soft hover:text-ink{% endif %}">Transfer</a></li>
+                    </ul>
+                </nav>
+
+                {% if search_query or selected_type or selected_category or selected_account or selected_source %}
+                <a href="{% url 'transactions' %}" class="shrink-0 inline-flex items-center min-h-[44px] text-sm font-semibold text-deep-forest underline underline-offset-4 hover:text-ink">Clear</a>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Desktop Filters (md+) -->
-        <div class="hidden md:flex flex-col gap-3">
-            <div class="flex flex-wrap gap-2.5 items-center">
-                <!-- Desktop Search Bar -->
-                <div class="relative flex-1 max-w-xs min-w-[220px] flex items-center">
-                    <label for="input-search-desktop" class="sr-only">Search transactions or receipts</label>
-                    <div class="absolute left-3 top-0 bottom-0 flex items-center justify-center pointer-events-none text-on-surface-variant/70">
-                        <span class="material-symbols-outlined text-[20px] select-none leading-none">search</span>
-                    </div>
-                    <input id="input-search-desktop" aria-label="Search transactions or receipts" class="w-full pl-10 pr-3 py-1.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl text-body-sm text-deep-forest font-medium placeholder:text-on-surface-variant/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs text-xs sm:text-sm" placeholder="Search transactions or receipts..." type="text">
-                </div>
-
-                <span class="material-symbols-outlined text-positive-deep text-[20px] mr-0.5" aria-hidden="true">filter_list</span>
-                
-                <!-- Filter: Sort (Desktop) -->
-                <label for="select-sort-desktop" class="sr-only">Sort transactions</label>
-                <select id="select-sort-desktop" aria-label="Sort transactions" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                    <option value="newest">Sort: Newest</option>
-                    <option value="oldest">Sort: Oldest</option>
-                    <option value="highest">Sort: Highest Amount</option>
-                    <option value="lowest">Sort: Lowest Amount</option>
-                </select>
-
-                <!-- Filter: Type -->
-                <label for="select-type-desktop" class="sr-only">Filter by transaction type</label>
-                <select id="select-type-desktop" aria-label="Filter by transaction type" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                    <option value="all">Type: All</option>
-                    <option value="income">Type: Income</option>
-                    <option value="expense">Type: Expense</option>
-                </select>
-
-                <!-- Filter: Category -->
-                <label for="select-category-desktop" class="sr-only">Filter by category</label>
-                <select id="select-category-desktop" aria-label="Filter by category" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                    <option value="all">Category: All</option>
-                    {% for cat in categories %}
-                    <option value="{{ cat.name }}">{{ cat.name }}</option>
+        {% if transactions %}
+        <!-- ═══════════════════════════════════════ -->
+        <!-- MOBILE LIST (<md), grouped by date       -->
+        <!-- ═══════════════════════════════════════ -->
+        <div id="history-list-mobile" class="md:hidden flex flex-col gap-4">
+            {% for group_title, tx_list in grouped_mobile.items %}
+            <section class="tx-group" aria-labelledby="tx-group-{{ forloop.counter }}">
+                <h2 id="tx-group-{{ forloop.counter }}" class="text-sm font-semibold text-body mb-2 px-1">{{ group_title }}</h2>
+                <ul class="bg-canvas rounded-2xl overflow-hidden divide-y divide-outline-variant/60" role="list">
+                    {% for tx in tx_list %}
+                    <li class="tx-item relative overflow-hidden" data-tx-id="{{ tx.id }}" data-title="{{ tx.title }}" data-amount-label="₱{{ tx.amount|floatformat:2|intcomma }}" data-delete-url="{% url 'api_delete_transaction' tx.id %}"{% if tx.receipt %} data-receipt-delete-url="{% url 'api_delete_receipt' tx.receipt.id %}"{% endif %}>
+                        <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-negative text-on-error cursor-pointer" tabindex="-1" aria-hidden="true" aria-label="Delete {{ tx.title }}">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">delete</span>
+                            <span class="text-xs font-semibold">Delete</span>
+                        </button>
+                        <a href="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" class="tx-item-fg relative z-10 flex items-center justify-between gap-3 p-3.5 bg-canvas active:bg-surface-container-low focus-visible:outline-offset-[-2px]" style="transition: transform 0.25s ease;">
+                            <span class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="w-10 h-10 rounded-md flex items-center justify-center shrink-0 {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep{% else %}bg-canvas-soft text-deep-forest{% endif %}" aria-hidden="true">
+                                    <span class="material-symbols-outlined text-[20px]">{% if tx.receipt %}receipt_long{% elif tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'payments' }}{% endif %}</span>
+                                </span>
+                                <span class="min-w-0 flex-1 flex flex-col">
+                                    <span class="text-sm text-ink font-semibold truncate">{{ tx.title }}</span>
+                                    <span class="text-xs text-body truncate mt-0.5">{{ tx.category.name|default:tx.get_transaction_type_display }} · {{ tx.account.name }}</span>
+                                </span>
+                            </span>
+                            <span class="flex flex-col items-end shrink-0 text-right">
+                                {% if tx.transaction_type == 'INCOME' %}
+                                <span class="text-sm text-positive-deep font-semibold whitespace-nowrap tabular-nums">+₱{{ tx.amount|floatformat:2|intcomma }}</span>
+                                {% elif tx.transaction_type == 'TRANSFER' %}
+                                <span class="text-sm text-ink font-semibold whitespace-nowrap tabular-nums">₱{{ tx.amount|floatformat:2|intcomma }}</span>
+                                {% else %}
+                                <span class="text-sm text-ink font-semibold whitespace-nowrap tabular-nums">-₱{{ tx.amount|floatformat:2|intcomma }}</span>
+                                {% endif %}
+                                {% if tx.receipt %}
+                                <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-sm bg-canvas-soft text-body text-xs font-medium whitespace-nowrap">
+                                    <span class="material-symbols-outlined text-xs" aria-hidden="true">receipt_long</span>Receipt
+                                </span>
+                                {% endif %}
+                            </span>
+                        </a>
+                    </li>
                     {% endfor %}
-                </select>
+                </ul>
+            </section>
+            {% endfor %}
+        </div>
 
-                <!-- Filter: Source -->
-                <label for="select-source-desktop" class="sr-only">Filter by source</label>
-                <select id="select-source-desktop" aria-label="Filter by source" class="px-3 py-1.5 rounded-xl border border-outline-variant/60 font-label-sm text-xs text-deep-forest bg-surface-container-lowest hover:bg-primary-pale/40 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer font-bold shadow-xs">
-                    <option value="all">Source: All</option>
-                    <option value="manual">Source: Manual</option>
-                    <option value="receipt">Source: Receipt</option>
-                </select>
-
-                <button id="btn-clear-filters-desktop" class="ml-auto font-label-sm text-xs text-deep-forest hover:text-positive-deep hover:underline font-bold cursor-pointer">Clear Filters</button>
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DESKTOP TABLE (md+)                      -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="hidden md:block bg-canvas rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-sm min-w-[760px] lg:min-w-full">
+                    <caption class="sr-only">History{% if num_pages > 1 %}, page {{ page }} of {{ num_pages }}{% endif %}</caption>
+                    <thead class="border-b border-outline-variant">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap w-32">Date</th>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap min-w-[200px]">Title</th>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap w-40">Category</th>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap w-40">Payment method</th>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap w-36">Source</th>
+                            <th scope="col" class="py-3 px-4 text-sm text-body font-semibold whitespace-nowrap text-right w-36">Amount</th>
+                            <th scope="col" class="py-3 px-2 w-14"><span class="sr-only">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-outline-variant/60">
+                        {% for tx in transactions %}
+                        <tr class="tx-row hover:bg-surface-container-low focus-within:bg-surface-container-low transition-colors cursor-pointer" data-tx-id="{{ tx.id }}" data-title="{{ tx.title }}" data-amount-label="₱{{ tx.amount|floatformat:2|intcomma }}" data-delete-url="{% url 'api_delete_transaction' tx.id %}"{% if tx.receipt %} data-receipt-delete-url="{% url 'api_delete_receipt' tx.receipt.id %}"{% endif %}>
+                            <td class="py-3.5 px-4 text-body whitespace-nowrap tabular-nums">{{ tx.transaction_date|date:"M d, Y" }}</td>
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="w-9 h-9 rounded-md flex items-center justify-center shrink-0 {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep{% else %}bg-canvas-soft text-deep-forest{% endif %}" aria-hidden="true">
+                                        <span class="material-symbols-outlined text-[18px]">{% if tx.receipt %}receipt_long{% elif tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'category' }}{% endif %}</span>
+                                    </span>
+                                    <div class="min-w-0 flex flex-col">
+                                        <a href="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" class="tx-link font-semibold text-ink truncate hover:underline underline-offset-2">{{ tx.title }}</a>
+                                        {% if tx.notes %}<span class="text-xs text-body truncate">{{ tx.notes }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-canvas-soft text-ink text-xs font-medium whitespace-nowrap max-w-[150px] truncate align-middle">{{ tx.category.name|default:tx.get_transaction_type_display }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-body whitespace-nowrap">{{ tx.account.name }}</td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                {% if tx.receipt and tx.receipt.image %}
+                                <button type="button" class="btn-preview-receipt tap relative z-10 inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-canvas-soft text-ink text-xs font-medium hover:bg-surface-container-high transition-colors cursor-pointer" aria-label="Preview receipt image for {{ tx.title }}" data-img="{{ tx.receipt.image.url }}" data-title="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'M d, Y' }}" data-amount-label="₱{{ tx.amount|floatformat:2|intcomma }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}">
+                                    <span class="material-symbols-outlined text-[14px]" aria-hidden="true">image</span>{{ tx.get_source_display }}
+                                </button>
+                                {% elif tx.receipt and tx.receipt.image_url %}
+                                <button type="button" class="btn-preview-receipt tap relative z-10 inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-canvas-soft text-ink text-xs font-medium hover:bg-surface-container-high transition-colors cursor-pointer" aria-label="Preview receipt image for {{ tx.title }}" data-img="{{ tx.receipt.image_url }}" data-title="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'M d, Y' }}" data-amount-label="₱{{ tx.amount|floatformat:2|intcomma }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}">
+                                    <span class="material-symbols-outlined text-[14px]" aria-hidden="true">image</span>{{ tx.get_source_display }}
+                                </button>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1 text-xs text-body font-medium">
+                                    <span class="material-symbols-outlined text-[14px]" aria-hidden="true">{% if tx.receipt %}receipt_long{% else %}edit_note{% endif %}</span>{{ tx.get_source_display }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3.5 px-4 text-right font-semibold tabular-nums whitespace-nowrap {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% else %}text-ink{% endif %}">
+                                {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
+                            </td>
+                            <td class="py-3.5 px-2 text-right whitespace-nowrap">
+                                <button type="button" class="tx-row-delete-btn tap w-9 h-9 rounded-md flex items-center justify-center text-body hover:bg-negative/10 hover:text-negative-deep transition-colors cursor-pointer ml-auto" aria-label="Delete {{ tx.title }}" title="Delete">
+                                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            {% if categories %}
-            <!-- Dynamic Category Chips Row (Desktop) -->
-            <div id="desktop-quick-filter-strip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                <button type="button" data-quick-filter="all" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest">
-                    All
-                </button>
-                {% for cat in categories %}
-                <button type="button" data-quick-filter="cat:{{ cat.name }}" class="quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95">
-                    {{ cat.name }}
-                </button>
-                {% endfor %}
-            </div>
+        <!-- ═══════════════════════════════════════ -->
+        <!-- PAGINATION (server-side, 50 per page)    -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-body tabular-nums">Showing {{ page_first_index|intcomma }}–{{ page_last_index|intcomma }} of {{ total_count|intcomma }}</p>
+            {% if num_pages > 1 %}
+            <nav aria-label="History pages" class="flex items-center gap-2">
+                {% if has_prev_page %}
+                <a href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ prev_page }}" rel="prev" data-page-link class="inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-canvas text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>Previous
+                </a>
+                {% else %}
+                <span aria-disabled="true" class="inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-canvas/60 text-mute text-sm font-semibold cursor-not-allowed">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>Previous
+                </span>
+                {% endif %}
+                <span class="text-sm text-body tabular-nums px-1">Page {{ page }} of {{ num_pages }}</span>
+                {% if has_next_page %}
+                <a href="?{% if filter_querystring %}{{ filter_querystring }}&amp;{% endif %}page={{ next_page }}" rel="next" data-page-link class="inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-canvas text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors">
+                    Next<span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
+                </a>
+                {% else %}
+                <span aria-disabled="true" class="inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-canvas/60 text-mute text-sm font-semibold cursor-not-allowed">
+                    Next<span class="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
+                </span>
+                {% endif %}
+            </nav>
             {% endif %}
         </div>
 
+        {% else %}
         <!-- ═══════════════════════════════════════ -->
-        <!-- VIEW SECTION 1: ALL TRANSACTIONS (LIST / TABLE) -->
+        <!-- EMPTY STATES                             -->
         <!-- ═══════════════════════════════════════ -->
-            <!-- MOBILE TRANSACTIONS & RECEIPTS LIST (<md) -->
-            <div id="container-mobile-transactions" class="space-y-4 md:hidden">
-                {% for group_title, tx_list in grouped_mobile.items %}
-                <div class="transaction-group" data-date-group="{{ group_title|slugify }}">
-                    <h2 class="font-label-sm text-[11px] text-deep-forest mb-2 uppercase tracking-[0.06em] font-bold">{{ group_title }}</h2>
-                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-xs overflow-hidden divide-y divide-outline-variant/30">
-                        {% for tx in tx_list %}
-                        {% if tx.receipt %}
-                        <div class="tx-item receipt-row-item relative overflow-hidden" data-source="receipt" data-type="expense" data-category="{{ tx.category.name|default:'Uncategorized' }}" data-merchant="{{ tx.title }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id }}" data-detail-url="{% url 'receipt_detail_pk' tx.receipt.id %}" data-receipt-img="{% if tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="expense" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}">
-                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
-                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
-                            </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3 sm:p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
-                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-3">
-                                    <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                        <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:'Uncategorized' }} • {{ tx.account.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
-                                    <span class="font-label-md text-xs sm:text-sm text-expense font-extrabold whitespace-nowrap tabular-nums">-₱{{ tx.amount|floatformat:2|intcomma }}</span>
-                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-primary-pale text-positive-deep text-[9px] font-extrabold border border-positive/30 whitespace-nowrap">
-                                        <span class="material-symbols-outlined text-[10px] shrink-0">receipt_long</span> Receipt
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        {% else %}
-                        <!-- Manual / Transfer Transaction -->
-                        <div class="tx-item relative overflow-hidden" data-source="manual" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:tx.get_transaction_type_display }}" data-category-icon="{% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'payments' }}{% endif %}" data-title="{{ tx.title }}" data-account="{{ tx.account.name }}" data-notes="{{ tx.notes|default:'' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-formatted-date="{{ tx.transaction_date|date:'M d, Y' }}" data-detail-url="{% url 'transaction_detail_pk' tx.id %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes|default:'' }}">
-                            <button type="button" class="tx-swipe-delete-btn absolute inset-y-0 right-0 w-20 flex flex-col items-center justify-center gap-0.5 bg-expense text-white cursor-pointer" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}">
-                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                <span class="font-label-sm text-[10px] font-bold">Delete</span>
-                            </button>
-                            <div class="tx-item-fg flex items-center justify-between p-3 sm:p-3.5 bg-surface-container-lowest hover:bg-primary-pale/30 active:bg-surface-container-low transition-colors cursor-pointer group relative z-10" style="transition: transform 0.25s ease;">
-                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-3">
-                                    <div class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                        <span class="material-symbols-outlined text-[18px]">
-                                            {% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'payments' }}{% endif %}
-                                        </span>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="tx-name font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                        <p class="tx-cat font-body-sm text-[11px] text-body truncate font-medium mt-0.5">{{ tx.category.name|default:tx.get_transaction_type_display }} • {{ tx.account.name }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-end shrink-0 text-right min-w-[70px]">
-                                    <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap tabular-nums">
-                                        {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
-                                    </span>
-                                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 mt-1 rounded bg-surface-container-high text-on-surface-variant text-[9px] font-bold border border-outline-variant/60 whitespace-nowrap">
-                                        <span class="material-symbols-outlined text-[10px] shrink-0">edit_note</span> Manual
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% empty %}
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-8 text-center text-xs text-body font-medium">
-                    <p>No transactions recorded yet.</p>
-                    <a href="{% url 'add_transaction' %}" class="mt-4 inline-block px-4 py-2 bg-primary text-on-primary rounded-md font-bold hover:bg-primary-hover transition">Add your first transaction</a>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- DESKTOP TRANSACTIONS & RECEIPTS TABLE (md+) -->
-            <div id="container-desktop-transactions" class="hidden md:flex flex-col bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs overflow-hidden min-h-[400px]">
-                <div class="overflow-x-auto flex-1 w-full">
-                    <table class="w-full text-left border-collapse min-w-[760px] lg:min-w-full">
-                        <thead class="bg-surface-container-low/60 border-b border-outline-variant/40 sticky top-0 z-10">
-                            <tr>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-28">Date</th>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap min-w-[180px]">Merchant / Description</th>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-36">Category</th>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-28">Source</th>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap w-36">Account</th>
-                                <th class="py-3 px-3 sm:px-4 font-label-sm text-xs text-deep-forest font-bold whitespace-nowrap text-right w-32">Amount</th>
-                                <th class="py-3 px-2 w-14 text-right"><span class="sr-only">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-desktop-transactions" class="font-body-sm text-xs sm:text-sm divide-y divide-outline-variant/30">
-                            {% for tx in transactions %}
-                            <tr class="tx-row {% if tx.receipt %}receipt-row-item{% endif %} hover:bg-primary-pale/30 transition-colors cursor-pointer group" data-source="{% if tx.receipt %}receipt{% else %}manual{% endif %}" data-type="{{ tx.transaction_type|lower }}" data-category="{{ tx.category.name|default:'General' }}" data-category-icon="{% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'category' }}{% endif %}" data-merchant="{{ tx.title }}" data-title="{{ tx.title }}" data-account="{{ tx.account.name }}" data-notes="{{ tx.notes|default:'' }}" data-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-formatted-date="{{ tx.transaction_date|date:'M d, Y' }}" data-amount="{{ tx.amount|floatformat:2 }}" data-receipt-id="{{ tx.receipt.id|default:'' }}" data-detail-url="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" data-receipt-img="{% if tx.receipt and tx.receipt.image %}{{ tx.receipt.image.url }}{% elif tx.receipt and tx.receipt.image_url %}{{ tx.receipt.image_url }}{% endif %}" data-items="{% if tx.receipt %}{{ tx.receipt.items.count }} items{% endif %}" data-edit-id="{{ tx.id }}" data-edit-type="{{ tx.transaction_type|lower }}" data-edit-amount="{{ tx.amount|floatformat:2 }}" data-edit-title="{{ tx.title }}" data-edit-category="{{ tx.category.name|default:'' }}" data-edit-date="{{ tx.transaction_date|date:'Y-m-d' }}" data-edit-account="{{ tx.account.name }}" data-edit-notes="{{ tx.notes|default:'' }}">
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-body whitespace-nowrap font-medium">{{ tx.transaction_date|date:"M d, Y" }}</td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4">
-                                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                                        <div class="w-8 h-8 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <span class="material-symbols-outlined text-[18px]">
-                                                {% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'category' }}{% endif %}
-                                            </span>
-                                        </div>
-                                        <div class="min-w-0 flex flex-col">
-                                            <span class="font-bold text-deep-forest tx-name group-hover:text-positive-deep transition-colors truncate">{{ tx.title }}</span>
-                                            {% if tx.notes %}<span class="text-[11px] text-on-surface-variant font-medium truncate">{{ tx.notes }}</span>{% endif %}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 whitespace-nowrap">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-surface-container text-deep-forest font-label-sm text-xs font-bold border border-outline-variant/60 tx-cat whitespace-nowrap max-w-[140px] truncate">{{ tx.category.name|default:tx.get_transaction_type_display }}</span>
-                                </td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md {% if tx.receipt %}bg-primary-pale text-positive-deep border border-positive/30{% else %}bg-surface-container-high text-on-surface-variant border border-outline-variant/60{% endif %} font-label-sm text-[11px] font-bold whitespace-nowrap shrink-0">
-                                        <span class="material-symbols-outlined text-[13px] shrink-0">{% if tx.receipt %}receipt_long{% else %}edit_note{% endif %}</span>
-                                        {{ tx.get_source_display }}
-                                    </span>
-                                </td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-body font-medium whitespace-nowrap">{{ tx.account.name }}</td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-right font-extrabold {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} tabular-nums whitespace-nowrap">
-                                    {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
-                                </td>
-                                <td class="py-3 sm:py-3.5 px-2 text-right whitespace-nowrap">
-                                    <button type="button" class="tx-row-delete-btn w-8 h-8 rounded-lg flex items-center justify-center text-body hover:bg-expense/15 hover:text-expense transition-all cursor-pointer ml-auto" aria-label="Delete {{ tx.title }}" data-tx-id="{{ tx.id }}" title="Delete transaction">
-                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                    </button>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="py-8 text-center text-xs text-body font-medium">No transactions found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination Footer -->
-                <div class="border-t border-outline-variant/40 p-4 flex items-center justify-between bg-surface-container-lowest">
-                    <span id="tx-pagination-status" class="font-body-sm text-xs text-on-surface-variant font-semibold">{% if transactions %}Showing 1-{{ transactions|length }} of {{ transactions|length }} items{% else %}0 items{% endif %}</span>
-                    <div class="flex gap-2">
-                        <button class="p-1.5 rounded-lg border border-outline-variant/60 text-on-surface-variant disabled:opacity-40 cursor-pointer" disabled>
-                            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                        </button>
-                        <button class="p-1.5 rounded-lg border border-outline-variant/60 text-deep-forest hover:bg-soft-green/30 transition-colors cursor-pointer">
-                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Unified Filter Empty State (Hidden when items visible) -->
-            <div id="empty-state-unified" class="hidden flex-col items-center justify-center text-center py-12 px-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/60 my-2">
-                <div class="w-12 h-12 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center mb-3">
-                    <span class="material-symbols-outlined text-[24px]">receipt_long</span>
-                </div>
-                <h3 class="font-headline-md text-base text-deep-forest font-bold">No Activity Found</h3>
-                <p class="font-body-sm text-xs text-body mt-1 max-w-xs font-medium">No transactions or scanned receipts match your active search keyword or filters.</p>
-                <button type="button" id="btn-reset-unified-filters" class="mt-4 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-95 cursor-pointer">Reset Filters</button>
-            </div>
-
+        <div class="bg-canvas rounded-2xl px-6 py-12 flex flex-col items-center text-center gap-4">
+            {% if search_query or selected_type or selected_category or selected_account or selected_source %}
+            <h2 class="text-base font-semibold text-ink">Nothing in your history matches these filters.</h2>
+            <a href="{% url 'transactions' %}" class="inline-flex items-center justify-center min-h-[48px] px-6 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors">Clear filters</a>
+            {% else %}
+            <h2 class="text-base font-semibold text-ink">Every expense, income and transfer you add will show up here.</h2>
+            <a href="{% url 'add_transaction' %}" class="inline-flex items-center justify-center min-h-[48px] px-6 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors">Add a transaction</a>
+            {% endif %}
         </div>
+        {% endif %}
 
     </div>
-
-    <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
-    <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
 
 <!-- ═════════════════════════════════════════════════ -->
-<!-- MOBILE FILTER & SORT BOTTOM ACTION SHEET -->
+<!-- FILTER SHEET: bottom sheet on mobile, dialog on md+ -->
+<!-- Fields belong to #history-filters via form="…"     -->
 <!-- ═════════════════════════════════════════════════ -->
-<div id="filter-sheet-wrapper" role="dialog" aria-modal="true" aria-labelledby="filter-sheet-title" class="fixed inset-0 z-[120] flex items-end justify-center p-0 md:hidden hidden">
-    <!-- Backdrop (Tap to close) -->
-    <div id="filter-sheet-backdrop" class="absolute inset-0 bg-deep-forest/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
-    
-    <!-- Action Sheet Drawer Content (Pops up from below on mobile with rounded-t-2xl radius) -->
-    <div id="filter-sheet-content" class="bg-surface-container-lowest w-full sm:max-w-[440px] rounded-t-2xl sm:rounded-2xl border border-outline-variant/60 shadow-2xl relative z-[125] transform translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-300 ease-out flex flex-col max-h-[85vh] overflow-hidden">
-        
-        <!-- Mobile Drag Handle Bar -->
-        <div id="filter-sheet-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 sm:hidden">
-            <div class="w-12 h-1.5 bg-outline-variant/80 rounded-full"></div>
+<div id="filter-sheet" class="fixed inset-0 z-[120] hidden flex items-end md:items-center justify-center md:p-4">
+    <div id="filter-sheet-backdrop" class="absolute inset-0 bg-ink/50 opacity-0 transition-opacity duration-300" aria-hidden="true"></div>
+
+    <div id="filter-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="filter-sheet-title" class="relative bg-canvas w-full md:max-w-[440px] rounded-t-2xl md:rounded-2xl border border-outline-variant shadow-elevated flex flex-col max-h-[85vh] overflow-hidden translate-y-full md:translate-y-0 md:scale-95 opacity-0 transition-all duration-300 ease-out">
+        <div id="filter-sheet-handle" class="w-full py-2 flex justify-center items-center cursor-grab active:cursor-grabbing select-none touch-none shrink-0 md:hidden" aria-hidden="true">
+            <div class="w-12 h-1.5 bg-outline-variant rounded-full"></div>
         </div>
 
-        <!-- Header -->
-        <div class="px-5 pt-1 pb-3 flex items-center justify-between border-b border-outline-variant/30 shrink-0">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[18px]">tune</span>
-                </div>
-                <div>
-                    <h3 id="filter-sheet-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Filters & Sort</h3>
-                    <p class="font-body-sm text-[11px] text-body font-medium">Refine history & receipts</p>
-                </div>
-            </div>
-            <button type="button" id="btn-close-filter-sheet" aria-label="Close filters" class="w-8 h-8 rounded-xl flex items-center justify-center text-body hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+        <div class="px-5 pt-1 md:pt-5 pb-3 flex items-center justify-between border-b border-outline-variant/60 shrink-0">
+            <h2 id="filter-sheet-title" class="text-base font-bold text-ink">Filters</h2>
+            <button type="button" id="btn-close-filters" aria-label="Close filters" class="tap w-9 h-9 rounded-md flex items-center justify-center text-body hover:bg-surface-container-low hover:text-ink transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
             </button>
         </div>
 
-        <!-- Scrollable Action Sheet Body -->
-        <div class="p-5 overflow-y-auto space-y-4 flex-1 overscroll-contain">
-            <!-- 1. Source Selection -->
-            <div class="space-y-1.5">
-                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Source</label>
-                <div class="grid grid-cols-3 gap-2" id="action-sheet-source-pills">
-                    <button type="button" data-sheet-source="all" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
-                        All Sources
-                    </button>
-                    <button type="button" data-sheet-source="manual" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Manual
-                    </button>
-                    <button type="button" data-sheet-source="receipt" class="sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Receipts
-                    </button>
-                </div>
-            </div>
-
-            <!-- 2. Transaction Type -->
-            <div class="space-y-1.5">
-                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Transaction Type</label>
-                <div class="grid grid-cols-3 gap-2" id="action-sheet-type-pills">
-                    <button type="button" data-sheet-type="all" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
-                        All Types
-                    </button>
-                    <button type="button" data-sheet-type="expense" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Expenses
-                    </button>
-                    <button type="button" data-sheet-type="income" class="sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        Income
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. Sort Order -->
-            <div class="space-y-1.5">
-                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Sort Order</label>
-                <div class="grid grid-cols-2 gap-2" id="action-sheet-sort-pills">
-                    <button type="button" data-sheet-sort="newest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between">
-                        <span>Newest First</span>
-                        <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                    </button>
-                    <button type="button" data-sheet-sort="oldest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
-                        <span>Oldest First</span>
-                        <span class="material-symbols-outlined text-[16px]">history</span>
-                    </button>
-                    <button type="button" data-sheet-sort="highest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
-                        <span>Highest Amount</span>
-                        <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
-                    </button>
-                    <button type="button" data-sheet-sort="lowest" class="sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between">
-                        <span>Lowest Amount</span>
-                        <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. Category Filter -->
-            <div class="space-y-1.5">
-                <label class="font-label-sm text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider">Category</label>
-                <div class="flex flex-wrap gap-1.5" id="action-sheet-category-chips">
-                    <button type="button" data-sheet-cat="all" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs">
-                        All Categories
-                    </button>
+        <div class="p-5 overflow-y-auto flex flex-col gap-5 flex-1 overscroll-contain">
+            <div class="flex flex-col gap-1.5">
+                <label for="filter-category" class="text-sm font-semibold text-ink">Category</label>
+                <select id="filter-category" name="category" form="history-filters" class="w-full h-11 px-3 rounded-md border border-outline-variant bg-canvas text-sm text-ink cursor-pointer">
+                    <option value=""{% if not selected_category %} selected{% endif %}>All categories</option>
                     {% for cat in categories %}
-                    <button type="button" data-sheet-cat="{{ cat.name }}" class="sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high">
-                        {{ cat.name }}
-                    </button>
+                    <option value="{{ cat.id }}"{% if selected_category == cat.id|stringformat:"s" %} selected{% endif %}>{{ cat.name }}</option>
                     {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="filter-account" class="text-sm font-semibold text-ink">Payment method</label>
+                <select id="filter-account" name="account" form="history-filters" class="w-full h-11 px-3 rounded-md border border-outline-variant bg-canvas text-sm text-ink cursor-pointer">
+                    <option value=""{% if not selected_account %} selected{% endif %}>All payment methods</option>
+                    {% for acc in accounts %}
+                    <option value="{{ acc.id }}"{% if selected_account == acc.id|stringformat:"s" %} selected{% endif %}>{{ acc.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <fieldset class="flex flex-col gap-1.5">
+                <legend class="text-sm font-semibold text-ink mb-1.5">Source</legend>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center justify-center min-h-[44px] px-3 rounded-md border border-outline-variant bg-canvas text-sm font-medium text-ink cursor-pointer transition-colors hover:bg-surface-container-low has-[:checked]:bg-deep-forest has-[:checked]:border-deep-forest has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-forest">
+                        <input type="radio" name="source" value="" form="history-filters" class="sr-only"{% if not selected_source %} checked{% endif %}>All sources
+                    </label>
+                    <label class="flex items-center justify-center min-h-[44px] px-3 rounded-md border border-outline-variant bg-canvas text-sm font-medium text-ink cursor-pointer transition-colors hover:bg-surface-container-low has-[:checked]:bg-deep-forest has-[:checked]:border-deep-forest has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-forest">
+                        <input type="radio" name="source" value="MANUAL" form="history-filters" class="sr-only"{% if sel_source == 'MANUAL' %} checked{% endif %}>Manual entry
+                    </label>
+                    <label class="flex items-center justify-center min-h-[44px] px-3 rounded-md border border-outline-variant bg-canvas text-sm font-medium text-ink cursor-pointer transition-colors hover:bg-surface-container-low has-[:checked]:bg-deep-forest has-[:checked]:border-deep-forest has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-forest">
+                        <input type="radio" name="source" value="OCR_SCAN" form="history-filters" class="sr-only"{% if sel_source == 'OCR_SCAN' %} checked{% endif %}>Receipt scan
+                    </label>
+                    <label class="flex items-center justify-center min-h-[44px] px-3 rounded-md border border-outline-variant bg-canvas text-sm font-medium text-ink cursor-pointer transition-colors hover:bg-surface-container-low has-[:checked]:bg-deep-forest has-[:checked]:border-deep-forest has-[:checked]:text-white has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-forest">
+                        <input type="radio" name="source" value="RECURRING" form="history-filters" class="sr-only"{% if sel_source == 'RECURRING' %} checked{% endif %}>Recurring
+                    </label>
                 </div>
-            </div>
+            </fieldset>
         </div>
 
-        <!-- Sticky Footer Action Bar -->
-        <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/40 flex items-center gap-3 shrink-0">
-            <button type="button" id="btn-sheet-reset" class="flex-1 py-3 px-4 rounded-2xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low active:scale-95 transition-all cursor-pointer text-center">
-                Clear All
-            </button>
-            <button type="button" id="btn-sheet-apply" class="flex-1 py-3 px-4 rounded-2xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5">
-                <span>Apply Filters</span>
-                <span class="material-symbols-outlined text-[16px]">check</span>
-            </button>
+        <div class="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-outline-variant/60 flex items-center gap-3 shrink-0">
+            <button type="button" id="btn-filter-clear" class="flex-1 min-h-[48px] px-4 rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">Clear filters</button>
+            <button type="submit" form="history-filters" class="flex-1 min-h-[48px] px-4 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors cursor-pointer">Show results</button>
         </div>
     </div>
 </div>
-
-{% include 'dashboard/components/edit_transaction_sheet.html' %}
-
-<!-- Page-load Success Toast (after returning from the Manual Entry / Edit page) -->
-<div id="nav-toast-success" class="fixed bottom-20 left-1/2 -translate-x-1/2 sm:bottom-auto sm:top-6 sm:right-6 md:top-8 md:right-8 sm:left-auto sm:translate-x-0 z-[130] bg-deep-forest text-white px-4 py-3 md:px-5 md:py-3.5 min-w-[280px] md:min-w-[320px] rounded-2xl shadow-2xl flex items-center gap-2.5 md:gap-3 hidden opacity-0 transition-all duration-300 font-label-sm text-xs md:text-sm border border-surface-variant/40 md:border-primary/30 pointer-events-auto">
-    <span class="material-symbols-outlined text-soft-green text-[18px] md:text-[22px] shrink-0">check_circle</span>
-    <span id="nav-toast-msg" class="flex-1 font-medium">Transaction saved</span>
-    <button type="button" id="btn-close-nav-toast" aria-label="Dismiss notification" class="shrink-0 -mr-1 w-6 h-6 md:w-7 md:h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer">
-        <span class="material-symbols-outlined text-[16px] md:text-[18px]">close</span>
-    </button>
-</div>
-
-<!-- Delete Transaction Confirmation Modal (Desktop table) -->
-<div id="modal-confirm-delete-row" role="dialog" aria-modal="true" aria-labelledby="modal-delete-row-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-row-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
-        <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[22px]">delete</span>
-            </div>
-            <div class="flex flex-col gap-1">
-                <h3 id="modal-delete-row-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
-                <p id="modal-delete-row-desc" class="font-body-sm text-sm text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
-            </div>
-        </div>
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-row" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-row" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[18px]" id="btn-confirm-delete-row-icon">delete</span>
-                <span id="btn-confirm-delete-row-text">Delete Transaction</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Transaction Confirmation Modal (Mobile swipe-to-delete) -->
-<div id="modal-confirm-delete-tx" role="dialog" aria-modal="true" aria-labelledby="modal-delete-tx-title" class="md:hidden fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-tx-content" class="w-full max-w-[360px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
-        <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[20px]">delete</span>
-            </div>
-            <div class="flex flex-col gap-1">
-                <h3 id="modal-delete-tx-title" class="font-headline-md text-sm font-bold text-deep-forest tracking-tight">Delete this transaction?</h3>
-                <p id="modal-delete-tx-desc" class="font-body-sm text-xs text-on-surface-variant leading-normal">This can't be undone. The transaction will be permanently removed.</p>
-            </div>
-        </div>
-        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-tx" class="px-3.5 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-tx" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[16px]" id="btn-confirm-delete-tx-icon">delete</span>
-                <span id="btn-confirm-delete-tx-text">Delete Transaction</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-
 
 <!-- ═══════════════════════════════════════ -->
-<!-- RECEIPT QUICK VIEW LIGHTBOX MODAL       -->
+<!-- DELETE CONFIRMATION DIALOG (shared)      -->
 <!-- ═══════════════════════════════════════ -->
-<div id="modal-preview-receipt-image" role="dialog" aria-modal="true" aria-labelledby="modal-preview-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-preview-receipt-content" class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-all duration-200 relative z-[125]">
-        <!-- Header -->
-        <div class="p-4 sm:p-5 border-b border-outline-variant/40 flex items-center justify-between bg-surface-container-low/40">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div id="modal-preview-icon-wrapper" class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[20px]" id="modal-preview-icon">receipt_long</span>
-                </div>
-                <div class="min-w-0">
-                    <h3 id="modal-preview-receipt-title" class="font-headline-md text-base font-bold text-deep-forest truncate">Receipt Scan</h3>
-                    <p id="modal-preview-receipt-meta" class="font-body-sm text-xs text-body font-medium truncate">Oct 24, 2026 • 14:30</p>
-                </div>
-            </div>
-            <button type="button" id="btn-close-preview-modal" aria-label="Close modal" class="w-8 h-8 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-deep-forest transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[20px]">close</span>
+<div id="delete-dialog" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4">
+    <div class="dialog-backdrop absolute inset-0 bg-ink/50 opacity-0 transition-opacity duration-200" aria-hidden="true"></div>
+    <div id="delete-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-desc" class="relative w-full max-w-[400px] bg-canvas rounded-2xl border border-outline-variant shadow-elevated p-6 flex flex-col gap-4 opacity-0 scale-95 transition-all duration-200">
+        <div class="flex flex-col gap-1.5">
+            <h2 id="delete-dialog-title" class="text-lg font-bold text-ink break-words">Delete this entry?</h2>
+            <p id="delete-dialog-desc" class="text-sm text-body">It will be removed from your history and totals.</p>
+        </div>
+        <div class="flex items-center justify-end gap-2">
+            <button type="button" id="btn-delete-cancel" class="min-h-[44px] px-4 rounded-xl bg-canvas-soft text-ink text-sm font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">Cancel</button>
+            <button type="button" id="btn-delete-confirm" class="min-h-[44px] px-4 rounded-xl bg-negative text-on-error text-sm font-semibold hover:bg-expense-dark transition-colors cursor-pointer inline-flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
+                <span>Delete</span>
             </button>
-        </div>
-
-        <!-- Image or PDF Viewport Container -->
-        <div class="relative bg-surface-container-low flex items-center justify-center min-h-[260px] max-h-[50vh] overflow-hidden p-2">
-            <img id="modal-preview-img" src="" alt="Receipt Scan Preview" class="max-h-[48vh] w-auto max-w-full object-contain rounded-xl shadow-xs" />
-            <div id="modal-preview-pdf-view" class="hidden flex-col items-center justify-center py-10 px-6 text-center gap-2 text-on-surface-variant">
-                <div class="w-16 h-16 rounded-2xl bg-sky-500/15 text-sky-700 border border-sky-500/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[36px]">picture_as_pdf</span>
-                </div>
-                <span class="font-headline-md text-base font-bold text-deep-forest mt-1">Digital PDF Invoice</span>
-                <p class="font-body-sm text-xs text-on-surface-variant max-w-xs font-medium">This digital invoice was imported directly from electronic billing records.</p>
-            </div>
-        </div>
-
-        <!-- Summary & Action Footer -->
-        <div class="p-4 sm:p-5 border-t border-outline-variant/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-container-lowest">
-            <div>
-                <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold block">Total Amount</span>
-                <span id="modal-preview-amount" class="font-headline-md text-lg sm:text-xl font-extrabold text-expense tabular-nums tracking-tight">₱1,248.50</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button type="button" id="btn-modal-preview-close" class="flex-1 sm:flex-none px-4 py-2 rounded-xl border border-outline-variant/60 font-label-md text-xs font-bold text-deep-forest hover:bg-surface-container-low transition-all cursor-pointer">
-                    Close
-                </button>
-                <a id="btn-modal-preview-details" href="{% url 'receipt_detail' %}" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span>View Itemized Details</span>
-                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                </a>
-            </div>
         </div>
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════ -->
+<!-- RECEIPT IMAGE PREVIEW DIALOG (desktop)   -->
+<!-- ═══════════════════════════════════════ -->
+<div id="receipt-preview" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4">
+    <div class="dialog-backdrop absolute inset-0 bg-ink/70 opacity-0 transition-opacity duration-200" aria-hidden="true"></div>
+    <div id="receipt-preview-panel" role="dialog" aria-modal="true" aria-labelledby="receipt-preview-title" class="relative w-full max-w-lg bg-canvas rounded-2xl border border-outline-variant shadow-elevated overflow-hidden flex flex-col opacity-0 scale-95 transition-all duration-200">
+        <div class="p-5 border-b border-outline-variant/60 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <h2 id="receipt-preview-title" class="text-base font-bold text-ink truncate">Receipt</h2>
+                <p id="receipt-preview-meta" class="text-sm text-body truncate"></p>
+            </div>
+            <button type="button" id="btn-receipt-preview-close" aria-label="Close receipt preview" class="tap w-9 h-9 rounded-md flex items-center justify-center text-body hover:bg-surface-container-low hover:text-ink transition-colors cursor-pointer shrink-0">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+            </button>
+        </div>
+        <div class="bg-surface-container-low flex items-center justify-center min-h-[260px] max-h-[55vh] overflow-hidden p-2">
+            <img id="receipt-preview-img" alt="" class="hidden max-h-[53vh] w-auto max-w-full object-contain rounded-md">
+        </div>
+        <div class="p-5 border-t border-outline-variant/60 flex items-center justify-between gap-3">
+            <div class="flex flex-col">
+                <span class="text-sm text-body">Total</span>
+                <span id="receipt-preview-amount" class="text-lg font-semibold text-ink tabular-nums"></span>
+            </div>
+            <a id="receipt-preview-details" href="{% url 'receipt_detail' %}" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors">
+                View receipt details
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endwith %}
+{% endwith %}
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{% static 'js/edit-transaction-sheet.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Edit Transaction Sheet (shared component, see edit-transaction-sheet.js)
-        const editSheet = window.initEditTransactionSheet();
-
-        // Page Toast: used both after redirecting back from Add/Edit, and for
-        // actions taken directly on this page (e.g. deleting a desktop row).
-        const navToast = document.getElementById('nav-toast-success');
-        const navToastMsg = document.getElementById('nav-toast-msg');
-        const btnCloseNavToast = document.getElementById('btn-close-nav-toast');
-        let navToastHideTimer = null;
-
+        // ─── Toast after returning from Add / Edit / Delete (?toast=…) ───
         const toastMessages = {
             updated: 'Transaction updated',
             deleted: 'Transaction deleted',
             saved: 'Transaction saved',
-            receipts_deleted: 'Selected receipts deleted',
         };
-
-        function dismissPageToast() {
-            if (!navToast) return;
-            if (navToastHideTimer) {
-                clearTimeout(navToastHideTimer);
-                navToastHideTimer = null;
-            }
-            navToast.classList.remove('opacity-100', 'translate-y-0');
-            navToast.classList.add('opacity-0', 'translate-y-2');
-            setTimeout(() => {
-                navToast.classList.add('hidden');
-            }, 300);
-        }
-
-        function showPageToast(kind) {
-            if (!navToast || !navToastMsg) return;
-            navToastMsg.textContent = toastMessages[kind] || toastMessages.saved;
-
-            if (navToastHideTimer) {
-                clearTimeout(navToastHideTimer);
-                navToastHideTimer = null;
-            }
-
-            navToast.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                navToast.classList.remove('opacity-0', 'translate-y-2');
-                navToast.classList.add('opacity-100', 'translate-y-0');
-            });
-            navToastHideTimer = setTimeout(dismissPageToast, 3500);
-        }
-
-        if (btnCloseNavToast) btnCloseNavToast.addEventListener('click', dismissPageToast);
-
-        // If we just landed here from Add/Edit, show that toast now.
-        (function showNavToastIfNeeded() {
+        (function consumeToastParam() {
             const params = new URLSearchParams(window.location.search);
             const kind = params.get('toast');
             if (!kind) return;
-
-            showPageToast(kind);
-
-            // Strip the ?toast= param so refreshing the page doesn't re-show it
+            if (toastMessages[kind]) antToast(toastMessages[kind], { type: 'success' });
             params.delete('toast');
             const cleanQuery = params.toString();
-            const cleanUrl = window.location.pathname + (cleanQuery ? `?${cleanQuery}` : '');
-            window.history.replaceState({}, '', cleanUrl);
-        })();
-
-        // Deleted transactions & receipts tracked in sessionStorage
-        function getDeletedTxIds() {
-            return JSON.parse(sessionStorage.getItem('anttipid_deleted_tx_ids') || '[]');
-        }
-
-        function markTransactionDeleted(id) {
-            if (!id) return;
-            const existing = getDeletedTxIds();
-            if (!existing.includes(id)) existing.push(id);
-            sessionStorage.setItem('anttipid_deleted_tx_ids', JSON.stringify(existing));
-        }
-
-        function getDeletedReceiptIds() {
-            return JSON.parse(sessionStorage.getItem('anttipid_deleted_receipt_ids') || '[]');
-        }
-
-        function markReceiptsDeleted(ids) {
-            if (!ids || !ids.length) return;
-            const existing = getDeletedReceiptIds();
-            ids.forEach(id => {
-                if (!existing.includes(id)) existing.push(id);
-            });
-            sessionStorage.setItem('anttipid_deleted_receipt_ids', JSON.stringify(existing));
-        }
-
-        // Persist deletions to the database via the API endpoints
-        async function deleteTransactionOnServer(id) {
-            const res = await fetch(`/api/transactions/${id}/delete/`, {
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            if (!res.ok) throw new Error(`Failed to delete transaction ${id}`);
-            return res.json();
-        }
-
-        async function deleteReceiptOnServer(id) {
-            const res = await fetch(`/api/receipts/${id}/delete/`, {
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            if (!res.ok) throw new Error(`Failed to delete receipt ${id}`);
-            return res.json();
-        }
-
-        (function hideDeletedItems() {
-            getDeletedTxIds().forEach(id => {
-                document.querySelectorAll(`[data-edit-id="${id}"]`).forEach(el => el.remove());
-            });
-            getDeletedReceiptIds().forEach(id => {
-                document.querySelectorAll(`[data-receipt-id="${id}"]`).forEach(el => el.remove());
+            window.history.replaceState(window.history.state, '', window.location.pathname + (cleanQuery ? `?${cleanQuery}` : ''));
+            // Pagination links were rendered with the toast param in them.
+            document.querySelectorAll('a[data-page-link]').forEach((a) => {
+                const url = new URL(a.href, window.location.href);
+                url.searchParams.delete('toast');
+                a.href = url.pathname + url.search;
             });
         })();
 
-        // Desktop table rows: tap row to open detail view or click delete
-        document.querySelectorAll('.tx-row').forEach(row => {
-            row.addEventListener('click', (e) => {
-                // If clicked a button or link inside the row, do not trigger row-level click
-                if (e.target.closest('button') || e.target.closest('a')) return;
-
-                if (row.dataset.detailUrl) {
-                    window.location.href = row.dataset.detailUrl;
-                } else if (row.dataset.source === 'receipt') {
-                    window.location.href = row.dataset.receiptId ? `/receipt-detail/${row.dataset.receiptId}/` : "{% url 'receipt_detail' %}";
-                } else if (row.dataset.editId) {
-                    window.location.href = `/transaction-detail/${row.dataset.editId}/`;
-                }
-            });
-
-            const rowDeleteBtn = row.querySelector('.tx-row-delete-btn');
-            if (rowDeleteBtn) {
-                rowDeleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    requestDeleteRow(row);
+        // ─── Filter form: keep URLs clean by dropping empty params ───
+        const filterForm = document.getElementById('history-filters');
+        if (filterForm) {
+            filterForm.addEventListener('formdata', (e) => {
+                Array.from(e.formData.entries()).forEach(([key, value]) => {
+                    if (value === '') e.formData.delete(key);
                 });
-            }
-        });
-
-        // Delete Confirmation Modal (desktop table)
-        const deleteRowModal = document.getElementById('modal-confirm-delete-row');
-        const deleteRowModalContent = document.getElementById('modal-confirm-delete-row-content');
-        const btnCancelDeleteRow = document.getElementById('btn-cancel-delete-row');
-        const btnConfirmDeleteRow = document.getElementById('btn-confirm-delete-row');
-        let pendingDeleteTableRow = null;
-
-        function requestDeleteRow(row) {
-            pendingDeleteTableRow = row;
-            if (!deleteRowModal) return;
-
-            const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
-            const modalTitle = document.getElementById('modal-delete-row-title');
-            const modalDesc = document.getElementById('modal-delete-row-desc');
-            const confirmBtnText = document.getElementById('btn-confirm-delete-row-text');
-            const confirmBtnIcon = document.getElementById('btn-confirm-delete-row-icon');
-
-            if (btnConfirmDeleteRow) btnConfirmDeleteRow.disabled = false;
-            if (btnCancelDeleteRow) btnCancelDeleteRow.disabled = false;
-            if (confirmBtnIcon) {
-                confirmBtnIcon.textContent = 'delete';
-                confirmBtnIcon.classList.remove('animate-spin');
-            }
-            if (modalTitle) modalTitle.textContent = isReceipt ? 'Delete this receipt?' : 'Delete this transaction?';
-            if (modalDesc) modalDesc.textContent = isReceipt
-                ? "This can't be undone. The scanned receipt and its itemized logs will be permanently removed."
-                : "This can't be undone. The transaction will be permanently removed.";
-            if (confirmBtnText) confirmBtnText.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
-
-            deleteRowModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                deleteRowModal.classList.remove('opacity-0');
-                deleteRowModal.classList.add('opacity-100');
-                if (deleteRowModalContent) {
-                    deleteRowModalContent.classList.remove('scale-95');
-                    deleteRowModalContent.classList.add('scale-100');
-                }
-                if (btnCancelDeleteRow) btnCancelDeleteRow.focus();
             });
         }
 
-        function closeDeleteRowModal() {
-            if (!deleteRowModal) return;
-            deleteRowModal.classList.remove('opacity-100');
-            deleteRowModal.classList.add('opacity-0');
-            if (deleteRowModalContent) {
-                deleteRowModalContent.classList.remove('scale-100');
-                deleteRowModalContent.classList.add('scale-95');
-            }
-            setTimeout(() => deleteRowModal.classList.add('hidden'), 200);
-        }
+        // ─── Small dialog helper: show/hide, focus trap, Escape, backdrop ───
+        const openDialogs = [];
 
-        if (btnCancelDeleteRow) {
-            btnCancelDeleteRow.addEventListener('click', () => {
-                closeDeleteRowModal();
-                pendingDeleteTableRow = null;
-            });
-        }
-        if (deleteRowModal) {
-            deleteRowModal.addEventListener('click', (e) => {
-                if (e.target === deleteRowModal) {
-                    closeDeleteRowModal();
-                    pendingDeleteTableRow = null;
+        function createDialog(root, panel, { initialFocus, onClose, openClasses = [], closedClasses = [], backdrop = null, duration = 200 } = {}) {
+            let release = null;
+            let hideTimer = null;
+            const api = {
+                isOpen: false,
+                open() {
+                    if (api.isOpen) return;
+                    api.isOpen = true;
+                    clearTimeout(hideTimer);
+                    root.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    requestAnimationFrame(() => {
+                        if (backdrop) { backdrop.classList.remove('opacity-0'); backdrop.classList.add('opacity-100'); }
+                        panel.classList.remove(...closedClasses);
+                        panel.classList.add(...openClasses);
+                    });
+                    release = antFocusTrap(panel, initialFocus);
+                    openDialogs.push(api);
+                },
+                close(reason) {
+                    if (!api.isOpen) return;
+                    api.isOpen = false;
+                    const idx = openDialogs.indexOf(api);
+                    if (idx !== -1) openDialogs.splice(idx, 1);
+                    if (backdrop) { backdrop.classList.remove('opacity-100'); backdrop.classList.add('opacity-0'); }
+                    panel.classList.remove(...openClasses);
+                    panel.classList.add(...closedClasses);
+                    hideTimer = setTimeout(() => {
+                        root.classList.add('hidden');
+                        if (!openDialogs.length) document.body.style.overflow = '';
+                    }, closedClasses.length ? duration : 0);
+                    if (release) { release(); release = null; }
+                    if (typeof onClose === 'function') onClose(reason);
+                },
+            };
+            root.addEventListener('click', (e) => {
+                if (e.target === root || (e.target.classList && e.target.classList.contains('dialog-backdrop')) || e.target === backdrop) {
+                    api.close('dismiss');
                 }
             });
+            return api;
         }
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && deleteRowModal && !deleteRowModal.classList.contains('hidden')) {
-                closeDeleteRowModal();
-                pendingDeleteTableRow = null;
-            }
+            if (e.key !== 'Escape' || !openDialogs.length) return;
+            e.preventDefault();
+            openDialogs[openDialogs.length - 1].close('dismiss');
         });
-        if (btnConfirmDeleteRow) {
-            btnConfirmDeleteRow.addEventListener('click', async () => {
-                if (!pendingDeleteTableRow) {
-                    closeDeleteRowModal();
-                    return;
-                }
-                const row = pendingDeleteTableRow;
-                const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
-                const confirmBtnIcon = document.getElementById('btn-confirm-delete-row-icon');
-                const confirmBtnText = document.getElementById('btn-confirm-delete-row-text');
 
-                try {
-                    btnConfirmDeleteRow.disabled = true;
-                    if (btnCancelDeleteRow) btnCancelDeleteRow.disabled = true;
-                    if (confirmBtnIcon) {
-                        confirmBtnIcon.textContent = 'progress_activity';
-                        confirmBtnIcon.classList.add('animate-spin');
-                    }
-                    if (confirmBtnText) confirmBtnText.textContent = 'Deleting...';
+        // ═════════════════════════════════════════════
+        // FILTER SHEET
+        // ═════════════════════════════════════════════
+        const filterSheet = document.getElementById('filter-sheet');
+        const filterSheetPanel = document.getElementById('filter-sheet-panel');
+        const filterSheetBackdrop = document.getElementById('filter-sheet-backdrop');
+        const btnOpenFilters = document.getElementById('btn-open-filters');
+        const btnCloseFilters = document.getElementById('btn-close-filters');
+        const btnFilterClear = document.getElementById('btn-filter-clear');
+        let filterSubmitting = false;
 
-                    if (isReceipt && row.dataset.receiptId) {
-                        await deleteReceiptOnServer(row.dataset.receiptId);
-                        markReceiptsDeleted([row.dataset.receiptId]);
-                    } else if (row.dataset.editId) {
-                        await deleteTransactionOnServer(row.dataset.editId);
-                        markTransactionDeleted(row.dataset.editId);
-                    }
-                } catch (err) {
-                    console.error('Delete failed:', err);
-                    pendingDeleteTableRow = null;
-                    closeDeleteRowModal();
-                    editSheet.showToast('Failed to delete. Please try again.');
-                    return;
-                } finally {
-                    btnConfirmDeleteRow.disabled = false;
-                    if (btnCancelDeleteRow) btnCancelDeleteRow.disabled = false;
-                    if (confirmBtnIcon) {
-                        confirmBtnIcon.textContent = 'delete';
-                        confirmBtnIcon.classList.remove('animate-spin');
-                    }
-                    if (confirmBtnText) confirmBtnText.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
-                }
+        // Put the sheet's fields back to their server-rendered values (closing without applying).
+        function restoreSheetFields() {
+            if (!filterSheetPanel) return;
+            filterSheetPanel.querySelectorAll('select').forEach((sel) => {
+                const def = Array.from(sel.options).find((o) => o.defaultSelected) || sel.options[0];
+                if (def) sel.value = def.value;
+            });
+            filterSheetPanel.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = r.defaultChecked; });
+        }
 
-                row.remove();
-                pendingDeleteTableRow = null;
-                closeDeleteRowModal();
-                if (typeof applyAllFilters === 'function') applyAllFilters();
-                editSheet.showToast(isReceipt ? 'Receipt deleted' : 'Transaction deleted');
+        const filterDialog = (filterSheet && filterSheetPanel) ? createDialog(filterSheet, filterSheetPanel, {
+            initialFocus: '#filter-category',
+            backdrop: filterSheetBackdrop,
+            openClasses: ['translate-y-0', 'md:scale-100', 'opacity-100'],
+            closedClasses: ['translate-y-full', 'md:scale-95', 'opacity-0'],
+            duration: 250,
+            onClose() {
+                filterSheetPanel.style.transform = '';
+                if (!filterSubmitting) restoreSheetFields();
+            },
+        }) : null;
+
+        if (btnOpenFilters && filterDialog) btnOpenFilters.addEventListener('click', () => filterDialog.open());
+        if (btnCloseFilters && filterDialog) btnCloseFilters.addEventListener('click', () => filterDialog.close('dismiss'));
+        if (filterForm) filterForm.addEventListener('submit', () => { filterSubmitting = true; });
+
+        // Back/forward cache: don't come back to a sheet left open mid-submit.
+        window.addEventListener('pageshow', (e) => {
+            if (!e.persisted) return;
+            filterSubmitting = false;
+            if (filterDialog && filterDialog.isOpen) filterDialog.close('dismiss');
+            else restoreSheetFields();
+        });
+
+        if (btnFilterClear && filterForm && filterSheetPanel) {
+            btnFilterClear.addEventListener('click', () => {
+                filterSheetPanel.querySelectorAll('select').forEach((sel) => { sel.value = ''; });
+                const allSources = filterSheetPanel.querySelector('input[name="source"][value=""]');
+                if (allSources) allSources.checked = true;
+                filterSubmitting = true;
+                if (typeof filterForm.requestSubmit === 'function') filterForm.requestSubmit();
+                else filterForm.submit();
             });
         }
 
-        // Mobile cards: swipe left to reveal Delete (Instagram-style), tap to edit/view
+        // Drag the handle down to close the sheet (mobile)
+        const dragHandle = document.getElementById('filter-sheet-handle');
+        if (dragHandle && filterSheetPanel && filterDialog) {
+            let dragStartY = 0;
+            let dragCurrentY = 0;
+            let isSheetDragging = false;
+
+            dragHandle.addEventListener('touchstart', (e) => {
+                dragStartY = e.touches[0].clientY;
+                dragCurrentY = dragStartY;
+                isSheetDragging = true;
+                filterSheetPanel.style.transition = 'none';
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isSheetDragging) return;
+                dragCurrentY = e.touches[0].clientY;
+                const deltaY = dragCurrentY - dragStartY;
+                if (deltaY > 0) filterSheetPanel.style.transform = `translateY(${deltaY}px)`;
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                if (!isSheetDragging) return;
+                isSheetDragging = false;
+                filterSheetPanel.style.transition = '';
+                if (dragCurrentY - dragStartY > 80) {
+                    filterDialog.close('dismiss');
+                } else {
+                    filterSheetPanel.style.transform = '';
+                }
+            });
+        }
+
+        // ═════════════════════════════════════════════
+        // ROW NAVIGATION (desktop): the title is the real link;
+        // clicking elsewhere on the row follows it for mouse users.
+        // ═════════════════════════════════════════════
+        const tableBody = document.getElementById('history-table-body');
+        if (tableBody) {
+            tableBody.addEventListener('click', (e) => {
+                if (e.target.closest('a, button')) return;
+                const row = e.target.closest('.tx-row');
+                if (!row) return;
+                const selection = window.getSelection ? String(window.getSelection()) : '';
+                if (selection.length) return;
+                const link = row.querySelector('.tx-link');
+                if (link) window.location.href = link.href;
+            });
+        }
+
+        // ═════════════════════════════════════════════
+        // DELETE: confirm (names item + amount), hide row, commit after Undo window
+        // ═════════════════════════════════════════════
+        const deleteDialogRoot = document.getElementById('delete-dialog');
+        const deleteDialogPanel = document.getElementById('delete-dialog-panel');
+        const deleteDialogTitle = document.getElementById('delete-dialog-title');
+        const deleteDialogDesc = document.getElementById('delete-dialog-desc');
+        const btnDeleteCancel = document.getElementById('btn-delete-cancel');
+        const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+        let pendingDelete = null;
+
+        const deleteDialog = (deleteDialogRoot && deleteDialogPanel) ? createDialog(deleteDialogRoot, deleteDialogPanel, {
+            initialFocus: '#btn-delete-cancel',
+            backdrop: deleteDialogRoot ? deleteDialogRoot.querySelector('.dialog-backdrop') : null,
+            openClasses: ['opacity-100', 'scale-100'],
+            closedClasses: ['opacity-0', 'scale-95'],
+            onClose(reason) {
+                if (reason !== 'confirm' && pendingDelete && pendingDelete.mobileRow) closeSwipeRow(pendingDelete.mobileRow);
+                if (reason !== 'confirm') pendingDelete = null;
+            },
+        }) : null;
+
+        function rowsForTx(txId) {
+            return document.querySelectorAll(`.tx-item[data-tx-id="${CSS.escape(txId)}"], .tx-row[data-tx-id="${CSS.escape(txId)}"]`);
+        }
+
+        function refreshGroups() {
+            document.querySelectorAll('.tx-group').forEach((group) => {
+                group.classList.toggle('hidden', !group.querySelector('.tx-item:not(.hidden)'));
+            });
+        }
+
+        // After a row disappears, keep keyboard focus somewhere sensible.
+        function focusNeighbourOf(el) {
+            if (!el) return;
+            const isRow = el.classList.contains('tx-row');
+            const selector = isRow ? '.tx-row:not(.hidden)' : '.tx-item:not(.hidden)';
+            const all = Array.from(document.querySelectorAll(selector));
+            const after = all.find((r) => el.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_FOLLOWING);
+            const before = all.reverse().find((r) => el.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_PRECEDING);
+            const target = after || before;
+            const focusable = target ? target.querySelector(isRow ? '.tx-link' : '.tx-item-fg') : document.getElementById('history-search');
+            if (focusable) focusable.focus({ preventScroll: true });
+        }
+
+        function requestDelete(sourceEl) {
+            if (!deleteDialog || !sourceEl) return;
+            const data = sourceEl.dataset;
+            pendingDelete = {
+                txId: data.txId,
+                title: data.title || 'this entry',
+                amountLabel: data.amountLabel || '',
+                deleteUrl: data.deleteUrl,
+                receiptDeleteUrl: data.receiptDeleteUrl || '',
+                sourceEl,
+                mobileRow: sourceEl.classList.contains('tx-item') ? sourceEl : null,
+            };
+            deleteDialogTitle.textContent = `Delete “${pendingDelete.title}”${pendingDelete.amountLabel ? ` · ${pendingDelete.amountLabel}` : ''}?`;
+            deleteDialogDesc.textContent = pendingDelete.receiptDeleteUrl
+                ? 'It will be removed from your history and totals, along with its scanned receipt.'
+                : 'It will be removed from your history and totals.';
+            deleteDialog.open();
+        }
+
+        function commitDelete(item, keepalive) {
+            const opts = { method: 'POST', keepalive, headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+            const checkOk = (res) => { if (!res.ok) throw new Error(`Delete failed (${res.status})`); return res; };
+            if (keepalive) {
+                // Page is going away: send both requests now; the browser finishes them.
+                const txRequest = fetch(item.deleteUrl, opts).then(checkOk);
+                if (item.receiptDeleteUrl) fetch(item.receiptDeleteUrl, opts).catch(() => {});
+                return txRequest;
+            }
+            return fetch(item.deleteUrl, opts).then(checkOk).then(() => {
+                // The entry is gone; clean up its receipt too (best effort).
+                if (item.receiptDeleteUrl) return fetch(item.receiptDeleteUrl, opts).catch(() => {});
+                return null;
+            });
+        }
+
+        if (btnDeleteCancel && deleteDialog) btnDeleteCancel.addEventListener('click', () => deleteDialog.close('dismiss'));
+
+        if (btnDeleteConfirm && deleteDialog) {
+            btnDeleteConfirm.addEventListener('click', () => {
+                const item = pendingDelete;
+                pendingDelete = null;
+                deleteDialog.close('confirm');
+                if (!item || !item.deleteUrl) return;
+
+                if (item.mobileRow) closeSwipeRow(item.mobileRow);
+                rowsForTx(item.txId).forEach((el) => el.classList.add('hidden'));
+                refreshGroups();
+                focusNeighbourOf(item.sourceEl);
+
+                antDeferred({
+                    message: `Deleted “${item.title}”`,
+                    errorMessage: `Couldn't delete “${item.title}”. Check your connection and try again.`,
+                    commit: ({ keepalive }) => commitDelete(item, keepalive),
+                    undo: () => {
+                        rowsForTx(item.txId).forEach((el) => el.classList.remove('hidden'));
+                        refreshGroups();
+                    },
+                });
+            });
+        }
+
+        document.querySelectorAll('.tx-row-delete-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                requestDelete(btn.closest('.tx-row'));
+            });
+        });
+
+        // ═════════════════════════════════════════════
+        // MOBILE: swipe left to reveal Delete; tap follows the row link
+        // ═════════════════════════════════════════════
         const SWIPE_DELETE_WIDTH = 80;
         const SWIPE_LOCK_THRESHOLD = 10;
         const SWIPE_HORIZONTAL_RATIO = 1.5;
         const SWIPE_DEAD_ZONE = 24;
+        const REANCHOR_INTERVAL = 120;
         let openSwipeRow = null;
 
         function computeSwipeTranslate(baseOffset, deltaX) {
             const sign = deltaX < 0 ? -1 : 1;
             const adjusted = sign * Math.max(0, Math.abs(deltaX) - SWIPE_DEAD_ZONE);
             return Math.max(-SWIPE_DELETE_WIDTH, Math.min(0, baseOffset + adjusted));
+        }
+
+        function setSwipeButtonReachable(row, reachable) {
+            const btn = row.querySelector('.tx-swipe-delete-btn');
+            if (!btn) return;
+            if (reachable) {
+                btn.removeAttribute('tabindex');
+                btn.removeAttribute('aria-hidden');
+            } else {
+                btn.setAttribute('tabindex', '-1');
+                btn.setAttribute('aria-hidden', 'true');
+            }
         }
 
         function closeSwipeRow(row) {
@@ -799,6 +672,7 @@
                 fg.style.transform = 'translateX(0px)';
             }
             row.dataset.swipeOpen = 'false';
+            setSwipeButtonReachable(row, false);
             if (openSwipeRow === row) openSwipeRow = null;
         }
 
@@ -811,12 +685,13 @@
                 fg.style.transform = `translateX(-${SWIPE_DELETE_WIDTH}px)`;
             }
             row.dataset.swipeOpen = 'true';
+            setSwipeButtonReachable(row, true);
             openSwipeRow = row;
         }
 
-        document.querySelectorAll('.tx-item').forEach(row => {
+        document.querySelectorAll('.tx-item').forEach((row) => {
             const fg = row.querySelector('.tx-item-fg');
-            const deleteBtn = row.querySelector('.tx-swipe-delete-btn');
+            const swipeDeleteBtn = row.querySelector('.tx-swipe-delete-btn');
             if (!fg) return;
 
             row.dataset.swipeOpen = 'false';
@@ -828,7 +703,6 @@
             let isDragging = false;
             let isHorizontal = null;
             let hasDragged = false;
-            const REANCHOR_INTERVAL = 120;
 
             fg.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
@@ -864,7 +738,6 @@
                 if (Math.abs(deltaX) <= SWIPE_DEAD_ZONE) return;
 
                 hasDragged = true;
-
                 const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
                 fg.style.transform = `translateX(${computeSwipeTranslate(baseOffset, deltaX)}px)`;
             }, { passive: false });
@@ -873,719 +746,83 @@
                 if (!isDragging) return;
                 isDragging = false;
                 fg.style.transition = 'transform 0.25s ease';
-
                 if (!isHorizontal) return;
 
                 const baseOffset = row.dataset.swipeOpen === 'true' ? -SWIPE_DELETE_WIDTH : 0;
-                const deltaX = currentX - startX;
-                const finalTranslate = computeSwipeTranslate(baseOffset, deltaX);
-
-                if (finalTranslate < -SWIPE_DELETE_WIDTH / 2) {
-                    openSwipeRowFn(row);
-                } else {
-                    closeSwipeRow(row);
-                }
+                const finalTranslate = computeSwipeTranslate(baseOffset, currentX - startX);
+                if (finalTranslate < -SWIPE_DELETE_WIDTH / 2) openSwipeRowFn(row);
+                else closeSwipeRow(row);
             });
 
-            fg.addEventListener('click', () => {
+            // The foreground is a real link; only cancel it right after a swipe or when closing an open row.
+            fg.addEventListener('click', (e) => {
                 if (hasDragged) {
                     hasDragged = false;
+                    e.preventDefault();
                     return;
                 }
                 if (row.dataset.swipeOpen === 'true') {
+                    e.preventDefault();
                     closeSwipeRow(row);
-                    return;
-                }
-                if (row.dataset.detailUrl) {
-                    window.location.href = row.dataset.detailUrl;
-                } else if (row.dataset.source === 'receipt') {
-                    window.location.href = row.dataset.receiptId ? `/receipt-detail/${row.dataset.receiptId}/` : "{% url 'receipt_detail' %}";
-                } else if (row.dataset.editId) {
-                    window.location.href = `/transaction-detail/${row.dataset.editId}/`;
                 }
             });
 
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => requestDeleteTx(row));
-            }
+            if (swipeDeleteBtn) swipeDeleteBtn.addEventListener('click', () => requestDelete(row));
         });
 
         document.addEventListener('click', (e) => {
-            if (!openSwipeRow) return;
-            if (openSwipeRow.contains(e.target)) return;
+            if (!openSwipeRow || openSwipeRow.contains(e.target)) return;
+            if (deleteDialog && deleteDialog.isOpen) return;
             closeSwipeRow(openSwipeRow);
         });
 
-        // Delete Confirmation Modal (mobile swipe-to-delete)
-        const deleteTxModal = document.getElementById('modal-confirm-delete-tx');
-        const deleteTxModalContent = document.getElementById('modal-confirm-delete-tx-content');
-        const btnCancelDeleteTx = document.getElementById('btn-cancel-delete-tx');
-        const btnConfirmDeleteTx = document.getElementById('btn-confirm-delete-tx');
-        let pendingDeleteRow = null;
-
-        function requestDeleteTx(row) {
-            pendingDeleteRow = row;
-            if (!deleteTxModal) return;
-
-            const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
-            const modalTitle = document.getElementById('modal-delete-tx-title');
-            const modalDesc = document.getElementById('modal-delete-tx-desc');
-            const confirmBtnText = document.getElementById('btn-confirm-delete-tx-text');
-            const confirmBtnIcon = document.getElementById('btn-confirm-delete-tx-icon');
-
-            if (btnConfirmDeleteTx) btnConfirmDeleteTx.disabled = false;
-            if (btnCancelDeleteTx) btnCancelDeleteTx.disabled = false;
-            if (confirmBtnIcon) {
-                confirmBtnIcon.textContent = 'delete';
-                confirmBtnIcon.classList.remove('animate-spin');
-            }
-            if (modalTitle) modalTitle.textContent = isReceipt ? 'Delete this receipt?' : 'Delete this transaction?';
-            if (modalDesc) modalDesc.textContent = isReceipt
-                ? "This can't be undone. The scanned receipt and its itemized logs will be permanently removed."
-                : "This can't be undone. The transaction will be permanently removed.";
-            if (confirmBtnText) confirmBtnText.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
-
-            deleteTxModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                deleteTxModal.classList.remove('opacity-0');
-                deleteTxModal.classList.add('opacity-100');
-                if (deleteTxModalContent) {
-                    deleteTxModalContent.classList.remove('scale-95');
-                    deleteTxModalContent.classList.add('scale-100');
-                }
-            });
-        }
-
-        function closeDeleteTxModal() {
-            if (!deleteTxModal) return;
-            deleteTxModal.classList.remove('opacity-100');
-            deleteTxModal.classList.add('opacity-0');
-            if (deleteTxModalContent) {
-                deleteTxModalContent.classList.remove('scale-100');
-                deleteTxModalContent.classList.add('scale-95');
-            }
-            setTimeout(() => deleteTxModal.classList.add('hidden'), 200);
-        }
-
-        if (btnCancelDeleteTx) {
-            btnCancelDeleteTx.addEventListener('click', () => {
-                closeDeleteTxModal();
-                if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
-                pendingDeleteRow = null;
-            });
-        }
-        if (deleteTxModal) {
-            deleteTxModal.addEventListener('click', (e) => {
-                if (e.target === deleteTxModal) {
-                    closeDeleteTxModal();
-                    if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
-                    pendingDeleteRow = null;
-                }
-            });
-        }
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && deleteTxModal && !deleteTxModal.classList.contains('hidden')) {
-                closeDeleteTxModal();
-                if (pendingDeleteRow) closeSwipeRow(pendingDeleteRow);
-                pendingDeleteRow = null;
-            }
-        });
-        if (btnConfirmDeleteTx) {
-            btnConfirmDeleteTx.addEventListener('click', async () => {
-                if (!pendingDeleteRow) {
-                    closeDeleteTxModal();
-                    return;
-                }
-                const row = pendingDeleteRow;
-                const isReceipt = row.dataset.source === 'receipt' || !!row.dataset.receiptId;
-                const confirmBtnIcon = document.getElementById('btn-confirm-delete-tx-icon');
-                const confirmBtnText = document.getElementById('btn-confirm-delete-tx-text');
-
-                try {
-                    btnConfirmDeleteTx.disabled = true;
-                    if (btnCancelDeleteTx) btnCancelDeleteTx.disabled = true;
-                    if (confirmBtnIcon) {
-                        confirmBtnIcon.textContent = 'progress_activity';
-                        confirmBtnIcon.classList.add('animate-spin');
-                    }
-                    if (confirmBtnText) confirmBtnText.textContent = 'Deleting...';
-
-                    if (isReceipt && row.dataset.receiptId) {
-                        await deleteReceiptOnServer(row.dataset.receiptId);
-                        markReceiptsDeleted([row.dataset.receiptId]);
-                    } else if (row.dataset.editId) {
-                        await deleteTransactionOnServer(row.dataset.editId);
-                        markTransactionDeleted(row.dataset.editId);
-                    }
-                } catch (err) {
-                    console.error('Delete failed:', err);
-                    pendingDeleteRow = null;
-                    closeDeleteTxModal();
-                    editSheet.showToast('Failed to delete. Please try again.');
-                    return;
-                } finally {
-                    btnConfirmDeleteTx.disabled = false;
-                    if (btnCancelDeleteTx) btnCancelDeleteTx.disabled = false;
-                    if (confirmBtnIcon) {
-                        confirmBtnIcon.textContent = 'delete';
-                        confirmBtnIcon.classList.remove('animate-spin');
-                    }
-                    if (confirmBtnText) confirmBtnText.textContent = isReceipt ? 'Delete Receipt' : 'Delete Transaction';
-                }
-
-                if (openSwipeRow === row) openSwipeRow = null;
-                row.remove();
-                pendingDeleteRow = null;
-                closeDeleteTxModal();
-                if (typeof applyAllFilters === 'function') applyAllFilters();
-
-                editSheet.showToast(isReceipt ? 'Receipt deleted' : 'Transaction deleted');
-            });
-        }
-
         // ═════════════════════════════════════════════
-        // RECEIPT QUICK VIEW LIGHTBOX MODAL HANDLER
+        // RECEIPT IMAGE PREVIEW (desktop Source column)
         // ═════════════════════════════════════════════
-        const previewModal = document.getElementById('modal-preview-receipt-image');
-        const previewModalContent = document.getElementById('modal-preview-receipt-content');
-        const previewModalTitle = document.getElementById('modal-preview-receipt-title');
-        const previewModalMeta = document.getElementById('modal-preview-receipt-meta');
-        const previewModalAmount = document.getElementById('modal-preview-amount');
-        const previewModalImg = document.getElementById('modal-preview-img');
-        const previewModalPdfView = document.getElementById('modal-preview-pdf-view');
-        const previewModalIcon = document.getElementById('modal-preview-icon');
-        const btnClosePreviewModal = document.getElementById('btn-close-preview-modal');
-        const btnModalPreviewClose = document.getElementById('btn-modal-preview-close');
+        const previewRoot = document.getElementById('receipt-preview');
+        const previewPanel = document.getElementById('receipt-preview-panel');
+        const previewTitle = document.getElementById('receipt-preview-title');
+        const previewMeta = document.getElementById('receipt-preview-meta');
+        const previewAmount = document.getElementById('receipt-preview-amount');
+        const previewImg = document.getElementById('receipt-preview-img');
+        const previewDetails = document.getElementById('receipt-preview-details');
+        const btnPreviewClose = document.getElementById('btn-receipt-preview-close');
 
-        function openReceiptPreview(data) {
-            if (!previewModal) return;
-            if (previewModalTitle) previewModalTitle.textContent = data.merchant || 'Scanned Receipt';
-            if (previewModalMeta) previewModalMeta.textContent = `${data.date || ''} • ${data.items || 'Scanned items'}`;
-            if (previewModalAmount) {
-                const amtNum = parseFloat(data.amount);
-                previewModalAmount.textContent = isNaN(amtNum) ? (data.amount || '₱0.00') : `₱${amtNum.toFixed(2)}`;
-            }
-
-            const detailsBtn = document.getElementById('btn-modal-preview-details');
-            if (detailsBtn) {
-                if (data.detailUrl) {
-                    detailsBtn.href = data.detailUrl;
-                } else if (data.receiptId) {
-                    detailsBtn.href = `/receipt-detail/${data.receiptId}/`;
+        const previewDialog = (previewRoot && previewPanel) ? createDialog(previewRoot, previewPanel, {
+            initialFocus: '#btn-receipt-preview-close',
+            backdrop: previewRoot ? previewRoot.querySelector('.dialog-backdrop') : null,
+            openClasses: ['opacity-100', 'scale-100'],
+            closedClasses: ['opacity-0', 'scale-95'],
+            onClose() {
+                if (previewImg) {
+                    previewImg.removeAttribute('src');
+                    previewImg.classList.add('hidden');
                 }
-            }
+            },
+        }) : null;
 
-            if (data.receiptType === 'pdf') {
-                if (previewModalImg) previewModalImg.classList.add('hidden');
-                if (previewModalPdfView) previewModalPdfView.classList.remove('hidden');
-                if (previewModalIcon) previewModalIcon.textContent = 'picture_as_pdf';
-            } else {
-                if (previewModalPdfView) previewModalPdfView.classList.add('hidden');
-                if (previewModalImg) {
-                    if (data.receiptImg && data.receiptImg.trim() && data.receiptImg !== 'undefined') {
-                        previewModalImg.src = data.receiptImg;
-                        previewModalImg.classList.remove('hidden');
-                    } else {
-                        previewModalImg.src = '';
-                        previewModalImg.classList.add('hidden');
-                    }
-                }
-                if (previewModalIcon) previewModalIcon.textContent = 'receipt_long';
-            }
-
-            previewModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                previewModal.classList.remove('opacity-0');
-                previewModal.classList.add('opacity-100');
-                if (previewModalContent) {
-                    previewModalContent.classList.remove('scale-95');
-                    previewModalContent.classList.add('scale-100');
-                }
-            });
-        }
-
-        function closeReceiptPreview() {
-            if (!previewModal) return;
-            previewModal.classList.remove('opacity-100');
-            previewModal.classList.add('opacity-0');
-            if (previewModalContent) {
-                previewModalContent.classList.remove('scale-100');
-                previewModalContent.classList.add('scale-95');
-            }
-            setTimeout(() => previewModal.classList.add('hidden'), 200);
-        }
-
-        document.querySelectorAll('.btn-preview-receipt-avatar').forEach(btn => {
+        document.querySelectorAll('.btn-preview-receipt').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openReceiptPreview(btn.dataset);
-            });
-        });
-
-        if (btnClosePreviewModal) btnClosePreviewModal.addEventListener('click', closeReceiptPreview);
-        if (btnModalPreviewClose) btnModalPreviewClose.addEventListener('click', closeReceiptPreview);
-        if (previewModal) {
-            previewModal.addEventListener('click', (e) => {
-                if (e.target === previewModal) closeReceiptPreview();
-            });
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (previewModal && !previewModal.classList.contains('hidden')) {
-                    closeReceiptPreview();
-                }
-            }
-        });
-
-        // ═════════════════════════════════════════════
-        // UNIFIED SEARCH & CATEGORY & SOURCE FILTER LOGIC
-        // ═════════════════════════════════════════════
-        let currentSearchQuery = '';
-        let currentCategory = 'all';
-        let currentType = 'all';
-        let currentSource = (new URLSearchParams(window.location.search).get('mode') === 'receipts') ? 'receipt' : 'all';
-        let currentSort = 'newest';
-
-        const searchDesktop = document.getElementById('input-search-desktop');
-        const searchMobileInput = document.getElementById('input-search-mobile');
-        const clearBtnMobile = document.getElementById('btn-clear-search-mobile');
-        const selectCatDesktop = document.getElementById('select-category-desktop');
-        const selectTypeDesktop = document.getElementById('select-type-desktop');
-        const selectSourceDesktop = document.getElementById('select-source-desktop');
-        const selectSortDesktop = document.getElementById('select-sort-desktop');
-        const btnClearFilters = document.getElementById('btn-clear-filters-desktop');
-        const btnResetUnifiedFilters = document.getElementById('btn-reset-unified-filters');
-        
-        // Mobile Bottom Action Sheet Elements
-        const filterSheetWrapper = document.getElementById('filter-sheet-wrapper');
-        const filterSheetBackdrop = document.getElementById('filter-sheet-backdrop');
-        const filterSheetContent = document.getElementById('filter-sheet-content');
-        const openMobileBtn = document.getElementById('btn-open-filter-mobile');
-        const closeMobileBtn = document.getElementById('btn-close-filter-sheet');
-        const applySheetBtn = document.getElementById('btn-sheet-apply');
-        const resetSheetBtn = document.getElementById('btn-sheet-reset');
-
-        function openFilterSheet() {
-            document.body.style.overflow = 'hidden';
-            if (!filterSheetWrapper) return;
-            syncUIState();
-            filterSheetWrapper.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                if (filterSheetBackdrop) {
-                    filterSheetBackdrop.classList.remove('opacity-0');
-                    filterSheetBackdrop.classList.add('opacity-100');
-                }
-                if (filterSheetContent) {
-                    filterSheetContent.classList.remove('translate-y-full', 'sm:scale-95', 'opacity-0');
-                    filterSheetContent.classList.add('translate-y-0', 'sm:scale-100', 'opacity-100');
-                }
-            });
-        }
-
-        function closeFilterSheet() {
-            if (filterSheetBackdrop) {
-                filterSheetBackdrop.classList.remove('opacity-100');
-                filterSheetBackdrop.classList.add('opacity-0');
-            }
-            if (filterSheetContent) {
-                filterSheetContent.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
-                filterSheetContent.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
-            }
-            setTimeout(() => {
-                if (filterSheetWrapper) filterSheetWrapper.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 250);
-        }
-
-        if (openMobileBtn) openMobileBtn.addEventListener('click', openFilterSheet);
-        if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeFilterSheet);
-        if (filterSheetBackdrop) filterSheetBackdrop.addEventListener('click', closeFilterSheet);
-
-        if (applySheetBtn) {
-            applySheetBtn.addEventListener('click', () => {
-                applyAllFilters();
-                closeFilterSheet();
-            });
-        }
-
-        if (resetSheetBtn) {
-            resetSheetBtn.addEventListener('click', () => {
-                resetAllFilterState();
-                closeFilterSheet();
-            });
-        }
-
-        function syncUIState() {
-            // 1. Mobile Search Clear Button
-            if (clearBtnMobile) {
-                if (currentSearchQuery.trim().length > 0) {
-                    clearBtnMobile.classList.remove('hidden');
+                if (!previewDialog) return;
+                const data = btn.dataset;
+                previewTitle.textContent = data.title || 'Receipt';
+                previewMeta.textContent = data.date || '';
+                previewAmount.textContent = data.amountLabel || '';
+                if (data.detailUrl) previewDetails.href = data.detailUrl;
+                if (data.img) {
+                    previewImg.src = data.img;
+                    previewImg.alt = `Receipt image for ${data.title || 'this entry'}`;
+                    previewImg.classList.remove('hidden');
                 } else {
-                    clearBtnMobile.classList.add('hidden');
+                    previewImg.removeAttribute('src');
+                    previewImg.classList.add('hidden');
                 }
-            }
-
-            // 2. Count Active Non-Default Filters
-            let activeFilterCount = 0;
-            if (currentSource !== 'all') activeFilterCount++;
-            if (currentType !== 'all') activeFilterCount++;
-            if (currentCategory !== 'all') activeFilterCount++;
-            if (currentSort !== 'newest') activeFilterCount++;
-
-            const badgeActiveMobile = document.getElementById('badge-active-filters-mobile');
-            if (badgeActiveMobile) {
-                if (activeFilterCount > 0) {
-                    badgeActiveMobile.textContent = activeFilterCount;
-                    badgeActiveMobile.classList.remove('hidden');
-                    if (openMobileBtn) {
-                        openMobileBtn.className = 'h-10 px-3.5 bg-primary-pale text-positive-deep border border-positive/40 rounded-xl flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
-                    }
-                } else {
-                    badgeActiveMobile.classList.add('hidden');
-                    if (openMobileBtn) {
-                        openMobileBtn.className = 'h-10 px-3.5 bg-surface-container-lowest border border-outline-variant/60 rounded-xl flex items-center gap-1.5 text-deep-forest hover:bg-primary-pale/40 active:scale-95 transition-all cursor-pointer font-bold shadow-xs shrink-0';
-                    }
-                }
-            }
-
-            // 3. Quick Chips Strip Active State
-            document.querySelectorAll('.quick-chip').forEach(chip => {
-                const filterKey = chip.dataset.quickFilter;
-                let isActive = false;
-                if (filterKey === 'all') {
-                    isActive = (currentCategory === 'all');
-                } else if (filterKey && filterKey.startsWith('cat:')) {
-                    const catVal = filterKey.replace('cat:', '');
-                    isActive = (currentCategory.toLowerCase() === catVal.toLowerCase());
-                }
-
-                chip.className = isActive
-                    ? 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 bg-deep-forest text-white border border-deep-forest'
-                    : 'quick-chip shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-surface-container-low active:scale-95';
-            });
-
-            // 4. Action Sheet Source Pills
-            document.querySelectorAll('.sheet-pill-source').forEach(p => {
-                const isMatch = (p.dataset.sheetSource === currentSource);
-                p.className = isMatch
-                    ? 'sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'sheet-pill-source py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
-            });
-
-            // 5. Action Sheet Type Pills
-            document.querySelectorAll('.sheet-pill-type').forEach(p => {
-                const isMatch = (p.dataset.sheetType === currentType);
-                p.className = isMatch
-                    ? 'sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'sheet-pill-type py-2 px-2.5 rounded-xl text-center font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
-            });
-
-            // 6. Action Sheet Sort Pills
-            document.querySelectorAll('.sheet-pill-sort').forEach(p => {
-                const isMatch = (p.dataset.sheetSort === currentSort);
-                p.className = isMatch
-                    ? 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs flex items-center justify-between'
-                    : 'sheet-pill-sort py-2 px-3 rounded-xl text-left font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high flex items-center justify-between';
-            });
-
-            // 7. Action Sheet Category Chips
-            document.querySelectorAll('.sheet-chip-cat').forEach(c => {
-                const isMatch = (c.dataset.sheetCat.toLowerCase() === currentCategory.toLowerCase());
-                c.className = isMatch
-                    ? 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-bold transition-all cursor-pointer bg-deep-forest text-white border border-deep-forest shadow-xs'
-                    : 'sheet-chip-cat px-3 py-1.5 rounded-full font-label-sm text-xs font-semibold transition-all cursor-pointer border border-outline-variant/60 bg-surface-container-low text-deep-forest hover:bg-surface-container-high';
-            });
-
-            // 8. Desktop Selects Sync
-            if (selectCatDesktop && selectCatDesktop.value !== currentCategory) selectCatDesktop.value = currentCategory;
-            if (selectTypeDesktop && selectTypeDesktop.value !== currentType) selectTypeDesktop.value = currentType;
-            if (selectSourceDesktop && selectSourceDesktop.value !== currentSource) selectSourceDesktop.value = currentSource;
-            if (selectSortDesktop && selectSortDesktop.value !== currentSort) selectSortDesktop.value = currentSort;
-        }
-
-        function checkCategoryMatch(itemCat, itemEditCat, targetCategory) {
-            if (targetCategory === 'all') return true;
-            const target = targetCategory.toLowerCase().trim();
-            const cat = (itemCat || '').toLowerCase().trim();
-            const editCat = (itemEditCat || '').toLowerCase().trim();
-
-            if (cat === target || editCat === target) return true;
-            if (cat && target && (cat.includes(target) || target.includes(cat))) return true;
-            if (editCat && target && (editCat.includes(target) || target.includes(editCat))) return true;
-
-            return false;
-        }
-
-        function applyAllFilters() {
-            const query = currentSearchQuery.toLowerCase().trim();
-
-            // 1. Sort & Filter Unified Mobile list items
-            document.querySelectorAll('#container-mobile-transactions .transaction-group').forEach(grp => {
-                const itemsList = grp.querySelector('.divide-y');
-                if (!itemsList) return;
-                const items = Array.from(itemsList.querySelectorAll('.tx-item'));
-                items.sort((a, b) => {
-                    const amtA = parseFloat(a.dataset.amount || a.dataset.editAmount || '0') || 0;
-                    const amtB = parseFloat(b.dataset.amount || b.dataset.editAmount || '0') || 0;
-                    const dateA = new Date(a.dataset.date || a.dataset.editDate || '2026-10-01').getTime();
-                    const dateB = new Date(b.dataset.date || b.dataset.editDate || '2026-10-01').getTime();
-
-                    if (currentSort === 'highest') return amtB - amtA;
-                    if (currentSort === 'lowest') return amtA - amtB;
-                    if (currentSort === 'oldest') return dateA - dateB;
-                    return dateB - dateA;
-                });
-                items.forEach(it => itemsList.appendChild(it));
-            });
-
-            const txMobileItems = document.querySelectorAll('#container-mobile-transactions .tx-item');
-            let visibleMobileCount = 0;
-            txMobileItems.forEach(item => {
-                const title = (item.dataset.editTitle || item.dataset.merchant || item.querySelector('.tx-name')?.textContent || '').toLowerCase();
-                const cat = (item.dataset.category || '').toLowerCase();
-                const editCat = (item.dataset.editCategory || '').toLowerCase();
-                const type = (item.dataset.type || item.dataset.editType || 'expense').toLowerCase();
-                const source = (item.dataset.source || 'manual').toLowerCase();
-                const amount = (item.dataset.amount || item.dataset.editAmount || '').toLowerCase();
-
-                const matchQuery = !query || title.includes(query) || cat.includes(query) || editCat.includes(query) || amount.includes(query);
-                const matchCat = checkCategoryMatch(cat, editCat, currentCategory);
-                const matchType = (currentType === 'all') || (type === currentType.toLowerCase());
-                const matchSource = (currentSource === 'all') || (source === currentSource.toLowerCase());
-
-                if (matchQuery && matchCat && matchType && matchSource) {
-                    item.classList.remove('hidden');
-                    visibleMobileCount++;
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-
-            // Hide empty date groups on mobile
-            document.querySelectorAll('#container-mobile-transactions .transaction-group').forEach(grp => {
-                const hasVisible = grp.querySelectorAll('.tx-item:not(.hidden)').length > 0;
-                grp.style.display = hasVisible ? '' : 'none';
-            });
-
-            // 2. Sort & Filter Unified Desktop table rows
-            const tbody = document.getElementById('tbody-desktop-transactions');
-            if (tbody) {
-                const rows = Array.from(tbody.querySelectorAll('.tx-row'));
-                rows.sort((a, b) => {
-                    const amtA = parseFloat(a.dataset.amount || a.dataset.editAmount || '0') || 0;
-                    const amtB = parseFloat(b.dataset.amount || b.dataset.editAmount || '0') || 0;
-                    const dateA = new Date(a.dataset.date || a.dataset.editDate || '2026-10-01').getTime();
-                    const dateB = new Date(b.dataset.date || b.dataset.editDate || '2026-10-01').getTime();
-
-                    if (currentSort === 'highest') return amtB - amtA;
-                    if (currentSort === 'lowest') return amtA - amtB;
-                    if (currentSort === 'oldest') return dateA - dateB;
-                    return dateB - dateA;
-                });
-                rows.forEach(r => tbody.appendChild(r));
-            }
-
-            const txDesktopRows = document.querySelectorAll('#tbody-desktop-transactions .tx-row');
-            let visibleDesktopCount = 0;
-            txDesktopRows.forEach(row => {
-                const title = (row.dataset.editTitle || row.dataset.merchant || row.querySelector('td:first-child p')?.textContent || '').toLowerCase();
-                const cat = (row.dataset.category || '').toLowerCase();
-                const editCat = (row.dataset.editCategory || '').toLowerCase();
-                const type = (row.dataset.type || row.dataset.editType || 'expense').toLowerCase();
-                const source = (row.dataset.source || 'manual').toLowerCase();
-                const amount = (row.dataset.amount || row.dataset.editAmount || '').toLowerCase();
-
-                const matchQuery = !query || title.includes(query) || cat.includes(query) || editCat.includes(query) || amount.includes(query);
-                const matchCat = checkCategoryMatch(cat, editCat, currentCategory);
-                const matchType = (currentType === 'all') || (type === currentType.toLowerCase());
-                const matchSource = (currentSource === 'all') || (source === currentSource.toLowerCase());
-
-                if (matchQuery && matchCat && matchType && matchSource) {
-                    row.classList.remove('hidden');
-                    visibleDesktopCount++;
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // 3. Update desktop pagination status
-            const txPaginationStatus = document.getElementById('tx-pagination-status');
-            if (txPaginationStatus) {
-                txPaginationStatus.textContent = visibleDesktopCount > 0 
-                    ? `Showing 1-${visibleDesktopCount} of ${txDesktopRows.length} items` 
-                    : '0 items';
-            }
-
-            // 4. Update unified empty state
-            const emptyStateUnified = document.getElementById('empty-state-unified');
-            const desktopContainer = document.getElementById('container-desktop-transactions');
-
-            const hasAnyVisible = visibleMobileCount > 0 || visibleDesktopCount > 0;
-            if (emptyStateUnified) {
-                if (!hasAnyVisible) {
-                    emptyStateUnified.classList.remove('hidden');
-                    emptyStateUnified.classList.add('flex');
-                    if (desktopContainer) desktopContainer.classList.add('md:hidden');
-                } else {
-                    emptyStateUnified.classList.add('hidden');
-                    emptyStateUnified.classList.remove('flex');
-                    if (desktopContainer) desktopContainer.classList.remove('md:hidden');
-                }
-            }
-
-            syncUIState();
-        }
-
-        function handleSearchInput(val) {
-            currentSearchQuery = val;
-            if (searchDesktop && searchDesktop.value !== val) searchDesktop.value = val;
-            if (searchMobileInput && searchMobileInput.value !== val) searchMobileInput.value = val;
-            applyAllFilters();
-        }
-
-        if (searchDesktop) searchDesktop.addEventListener('input', (e) => handleSearchInput(e.target.value));
-        if (searchMobileInput) searchMobileInput.addEventListener('input', (e) => handleSearchInput(e.target.value));
-
-        if (clearBtnMobile) {
-            clearBtnMobile.addEventListener('click', () => {
-                handleSearchInput('');
-                if (searchMobileInput) searchMobileInput.focus();
-            });
-        }
-
-        // Action Sheet Source Pills Click Listeners
-        document.querySelectorAll('.sheet-pill-source').forEach(pill => {
-            pill.addEventListener('click', () => {
-                currentSource = pill.dataset.sheetSource;
-                syncUIState();
+                previewDialog.open();
             });
         });
 
-        // Action Sheet Type Pills Click Listeners
-        document.querySelectorAll('.sheet-pill-type').forEach(pill => {
-            pill.addEventListener('click', () => {
-                currentType = pill.dataset.sheetType;
-                syncUIState();
-            });
-        });
-
-        // Action Sheet Sort Pills Click Listeners
-        document.querySelectorAll('.sheet-pill-sort').forEach(pill => {
-            pill.addEventListener('click', () => {
-                currentSort = pill.dataset.sheetSort;
-                syncUIState();
-            });
-        });
-
-        // Action Sheet Category Chips Click Listeners
-        document.querySelectorAll('.sheet-chip-cat').forEach(chip => {
-            chip.addEventListener('click', () => {
-                currentCategory = chip.dataset.sheetCat;
-                syncUIState();
-            });
-        });
-
-        // Quick filter chips click handler (with toggle behavior)
-        document.querySelectorAll('.quick-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const filterKey = chip.dataset.quickFilter;
-                
-                if (filterKey === 'all') {
-                    currentCategory = 'all';
-                } else if (filterKey && filterKey.startsWith('cat:')) {
-                    const catVal = filterKey.replace('cat:', '');
-                    currentCategory = (currentCategory.toLowerCase() === catVal.toLowerCase()) ? 'all' : catVal;
-                }
-                applyAllFilters();
-            });
-        });
-
-        if (selectCatDesktop) {
-            selectCatDesktop.addEventListener('change', (e) => {
-                currentCategory = e.target.value;
-                applyAllFilters();
-            });
-        }
-
-        if (selectTypeDesktop) {
-            selectTypeDesktop.addEventListener('change', (e) => {
-                currentType = e.target.value;
-                applyAllFilters();
-            });
-        }
-
-        if (selectSourceDesktop) {
-            selectSourceDesktop.addEventListener('change', (e) => {
-                currentSource = e.target.value;
-                applyAllFilters();
-            });
-        }
-
-        if (selectSortDesktop) {
-            selectSortDesktop.addEventListener('change', (e) => {
-                currentSort = e.target.value;
-                applyAllFilters();
-            });
-        }
-
-        function resetAllFilterState() {
-            currentSearchQuery = '';
-            currentCategory = 'all';
-            currentType = 'all';
-            currentSource = 'all';
-            currentSort = 'newest';
-            if (searchDesktop) searchDesktop.value = '';
-            if (searchMobileInput) searchMobileInput.value = '';
-            if (selectCatDesktop) selectCatDesktop.value = 'all';
-            if (selectTypeDesktop) selectTypeDesktop.value = 'all';
-            if (selectSourceDesktop) selectSourceDesktop.value = 'all';
-            if (selectSortDesktop) selectSortDesktop.value = 'newest';
-
-            applyAllFilters();
-        }
-
-        if (btnClearFilters) btnClearFilters.addEventListener('click', resetAllFilterState);
-        if (btnResetUnifiedFilters) btnResetUnifiedFilters.addEventListener('click', resetAllFilterState);
-
-        // Mobile Drag Down Handle on Bottom Action Sheet
-        const dragHandle = document.getElementById('filter-sheet-handle');
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
-
-        if (dragHandle) {
-            dragHandle.addEventListener('touchstart', (e) => {
-                startY = e.touches[0].clientY;
-                currentY = startY;
-                isDragging = true;
-                if (filterSheetContent) filterSheetContent.style.transition = 'none';
-            }, { passive: true });
-
-            window.addEventListener('touchmove', (e) => {
-                if (!isDragging || !filterSheetContent) return;
-                currentY = e.touches[0].clientY;
-                const deltaY = currentY - startY;
-                if (deltaY > 0) {
-                    filterSheetContent.style.transform = `translateY(${deltaY}px)`;
-                }
-            }, { passive: true });
-
-            window.addEventListener('touchend', () => {
-                if (!isDragging || !filterSheetContent) return;
-                isDragging = false;
-                filterSheetContent.style.transition = '';
-                const deltaY = currentY - startY;
-                if (deltaY > 80) {
-                    closeFilterSheet();
-                } else {
-                    filterSheetContent.style.transform = '';
-                }
-            });
-        }
-
-        // Initialize state on load
-        applyAllFilters();
+        if (btnPreviewClose && previewDialog) btnPreviewClose.addEventListener('click', () => previewDialog.close('dismiss'));
     });
 </script>
 {% endblock %}

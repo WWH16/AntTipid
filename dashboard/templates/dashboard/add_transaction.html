@@ -1,53 +1,49 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title %}Add Transaction | AntTipid{% endblock %}
 {% block meta_description %}Record a new income, expense, or account transfer with quick category presets.{% endblock %}
 
 {% block extra_head %}
 <style>
-/* Custom animations & transitions for interactive elements */
+/* Custom transitions for interactive elements */
 .type-tab {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.category-btn {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .category-btn:active {
     transform: scale(0.96);
 }
-.cat-preset-chip {
-    transition: all 0.15s ease;
-}
-.icon-picker-btn.active {
-    border-color: #163300;
-    background-color: #E2F4D0;
-    color: #163300;
+/* Keep toasts above the sticky Save bar (which sits above the bottom nav) on mobile. */
+@media (max-width: 767px) {
+    .ant-toast-region {
+        bottom: calc(150px + env(safe-area-inset-bottom));
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="px-3 sm:px-5 md:px-6 pt-4 pb-24 md:pb-8 max-w-4xl mx-auto w-full">
+<div class="px-3 sm:px-5 md:px-6 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 max-w-4xl mx-auto w-full">
     <div class="flex flex-col gap-4 sm:gap-6">
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- TOP APP BAR & DISCARD ACTION            -->
+        <!-- PAGE HEADER                              -->
         <!-- ═══════════════════════════════════════ -->
         <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <button type="button" id="btn-back" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low border border-outline-variant/60 text-ink hover:bg-surface-container transition-all cursor-pointer shadow-2xs active:scale-95">
-                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            <div class="flex items-center gap-3 min-w-0">
+                <button type="button" id="btn-back" aria-label="Back to History" class="tap w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-canvas text-ink hover:bg-surface-container-low transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_back</span>
                 </button>
-                <div>
-                    <h1 id="page-heading" class="font-headline-md text-lg sm:text-xl font-extrabold text-deep-forest tracking-tight">Add Transaction</h1>
-                    <p id="page-subheading" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant">Log an expense, income, or transfer</p>
+                <div class="min-w-0">
+                    <h2 id="page-heading" class="text-lg sm:text-xl font-bold text-deep-forest tracking-tight">Add Transaction</h2>
+                    <p id="page-subheading" class="text-sm text-body">Log an expense, income, or transfer</p>
                 </div>
             </div>
 
             <!-- Quick Scan Receipt Link -->
-            <a href="{% url 'scan_receipt' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary bg-primary-pale text-positive-deep font-sans text-xs font-bold hover:bg-primary/20 transition-all shadow-2xs active:scale-[0.98]">
-                <span class="material-symbols-outlined text-[16px]">document_scanner</span>
-                <span class="hidden sm:inline">Scan Receipt</span>
+            <a href="{% url 'scan_receipt' %}" class="shrink-0 inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-primary-pale text-positive-deep text-sm font-semibold hover:bg-primary-neutral transition-colors">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">document_scanner</span>
+                <span class="hidden sm:inline">Scan receipt</span>
                 <span class="sm:hidden">Scan</span>
             </a>
         </div>
@@ -55,86 +51,96 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- MAIN TRANSACTION FORM CARD              -->
         <!-- ═══════════════════════════════════════ -->
-        <div class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-5">
+        <div class="bg-canvas rounded-2xl p-4 sm:p-6 flex flex-col gap-5">
 
-            <!-- ─── Segmented Type Tabs (Expense, Income, Transfer) ─── -->
-            <div class="inline-flex bg-surface-container-low/60 p-1 rounded-2xl border border-outline-variant/50 w-full" id="type-tabs-container">
-                <button type="button" data-type="expense" id="tab-type-expense" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-expense/15 text-expense border border-expense/30 shadow-xs" aria-pressed="true">
-                    <span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+            <!-- ─── Segmented Type Control (Expense, Income, Transfer) ─── -->
+            <div role="group" aria-label="Transaction type" class="flex bg-canvas-soft p-1 rounded-xl w-full" id="type-tabs-container">
+                <button type="button" data-type="expense" id="tab-type-expense" class="type-tab flex-1 min-h-[44px] rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer bg-deep-forest text-white" aria-pressed="true">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_outward</span>
                     <span>Expense</span>
                 </button>
-                <button type="button" data-type="income" id="tab-type-income" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold text-body hover:text-ink transition-all flex items-center justify-center gap-1.5 cursor-pointer" aria-pressed="false">
-                    <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                <button type="button" data-type="income" id="tab-type-income" class="type-tab flex-1 min-h-[44px] rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer text-body hover:text-ink" aria-pressed="false">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_downward</span>
                     <span>Income</span>
                 </button>
-                <button type="button" data-type="transfer" id="tab-type-transfer" class="type-tab flex-1 py-2 rounded-xl font-label-md text-xs sm:text-sm font-bold text-body hover:text-ink transition-all flex items-center justify-center gap-1.5 cursor-pointer" aria-pressed="false">
-                    <span class="material-symbols-outlined text-[16px]">sync_alt</span>
+                <button type="button" data-type="transfer" id="tab-type-transfer" class="type-tab flex-1 min-h-[44px] rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer text-body hover:text-ink" aria-pressed="false">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">sync_alt</span>
                     <span>Transfer</span>
                 </button>
             </div>
 
-            <form id="form-transaction" class="flex flex-col gap-5" onsubmit="return false;">
-                
+            <form id="form-transaction" class="flex flex-col gap-5" novalidate>
+
                 <!-- ─── Big Amount Hero Input ─── -->
-                <div class="flex flex-col items-center justify-center py-4 bg-surface-container-low/30 rounded-2xl border border-outline-variant/40">
-                    <span class="font-label-sm text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Transaction Amount</span>
+                <div class="flex flex-col items-center justify-center gap-1 pt-2">
+                    <label for="input-amount" class="text-sm text-body">Amount in pesos</label>
                     <div class="flex items-center justify-center gap-1">
-                        <span class="font-headline-lg text-2xl sm:text-3xl font-extrabold text-deep-forest">₱</span>
-                        <input type="text" inputmode="decimal" id="input-amount" placeholder="0.00" class="w-48 sm:w-60 text-center font-headline-lg text-3xl sm:text-4xl font-extrabold text-deep-forest bg-transparent outline-none border-b-2 border-transparent focus:border-primary transition-all tabular-nums" required autofocus>
+                        <span class="text-3xl sm:text-4xl font-bold text-ink" aria-hidden="true">₱</span>
+                        <input type="text" inputmode="decimal" id="input-amount" data-focus="underline" placeholder="0.00" autocomplete="off" aria-describedby="amount-error" class="w-52 sm:w-64 text-center text-4xl sm:text-5xl font-black text-ink placeholder:text-mute bg-transparent outline-none border-b-2 border-outline-variant focus:border-deep-forest transition-colors tabular-nums" required autofocus>
                     </div>
+                    <p id="amount-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
                 </div>
+
+                {% if recent_entries %}
+                <!-- ─── Log Again Chips (recent expenses) ─── -->
+                <div id="log-again" class="flex flex-col gap-2" role="group" aria-labelledby="log-again-label">
+                    <p id="log-again-label" class="text-sm text-body">Log again</p>
+                    <div class="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible">
+                        {% for entry in recent_entries %}
+                        <button type="button" class="log-again-chip shrink-0 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-index="{{ forloop.counter0 }}">
+                            <span class="truncate max-w-[10rem]">{{ entry.title }}</span>
+                            <span class="tabular-nums text-body">₱{{ entry.amount|floatformat:2|intcomma }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <p id="log-again-status" class="sr-only" aria-live="polite"></p>
+                </div>
+                {{ recent_entries|json_script:"recent-entries-data" }}
+                {% endif %}
 
                 <!-- ─── Category Selection Grid (Hidden for Transfers) ─── -->
                 <div id="container-category-section" class="flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <label id="label-category-section" class="font-label-md text-[11px] font-bold text-deep-forest uppercase tracking-[0.06em]">Category</label>
-                        <button type="button" id="btn-open-manage-categories" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
-                            <span class="material-symbols-outlined text-[14px]">tune</span>
+                        <span id="label-category-section" class="text-sm font-semibold text-ink">Category</span>
+                        <button type="button" id="btn-open-manage-categories" aria-label="Manage categories" class="tap inline-flex items-center gap-1 text-sm font-semibold text-deep-forest hover:underline cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">tune</span>
                             <span>Manage</span>
                         </button>
                     </div>
 
-                    <!-- AI Category Suggestion Banner (shown when OCR detects unknown category) -->
-                    <div id="ai-category-suggestion-banner" class="hidden items-center justify-between p-2.5 px-3 rounded-2xl bg-primary-pale/90 border border-primary/40 text-deep-forest text-xs font-bold gap-2 transition-all shadow-2xs">
+                    <!-- AI Category Suggestion Banner (shown when a scanned receipt has an unknown category) -->
+                    <div id="ai-category-suggestion-banner" class="hidden items-center justify-between gap-2 p-2 pl-3 rounded-xl bg-canvas-soft text-ink text-sm">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span class="material-symbols-outlined text-[17px] text-positive-deep shrink-0">auto_awesome</span>
-                            <span class="truncate text-[11px] sm:text-xs">Receipt Category: <span class="font-extrabold text-positive-deep" id="ai-suggested-category-name">Pet Care</span></span>
+                            <span class="material-symbols-outlined text-[18px] text-deep-forest shrink-0" aria-hidden="true">auto_awesome</span>
+                            <span class="truncate">Receipt category: <span class="font-semibold" id="ai-suggested-category-name"></span></span>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button type="button" id="btn-create-suggested-category" class="px-2.5 py-1 rounded-xl bg-primary text-on-primary font-label-md text-[11px] font-bold hover:bg-primary-hover shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[13px]">add</span>
-                                <span>+ Create</span>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" id="btn-create-suggested-category" aria-label="Create this category" class="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                                <span>Create</span>
                             </button>
-                            <button type="button" id="btn-dismiss-suggested-category" class="w-6 h-6 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container transition-colors cursor-pointer" title="Dismiss">
-                                <span class="material-symbols-outlined text-[15px]">close</span>
+                            <button type="button" id="btn-dismiss-suggested-category" aria-label="Dismiss suggestion" class="tap w-8 h-8 rounded-full flex items-center justify-center text-body hover:text-ink hover:bg-surface-container transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
                             </button>
                         </div>
                     </div>
-                    
-                    <div id="category-grid" class="grid grid-cols-4 sm:grid-cols-4 gap-2">
+
+                    <p id="category-empty" class="{% if categories %}hidden {% endif %}text-sm text-body">No categories yet. Add one to sort your spending.</p>
+                    <p id="category-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
+
+                    <div id="category-grid" role="group" aria-labelledby="label-category-section" aria-describedby="category-error" class="grid grid-cols-4 gap-2">
                         {% for cat in categories %}
-                        <button type="button" class="category-btn {% if forloop.first %}active border-deep-forest bg-primary-pale text-deep-forest{% else %}border-surface-variant/60 bg-surface-container-low/40 text-on-surface-variant{% endif %} flex flex-col items-center gap-1.5 p-2.5 rounded-xl border shadow-xs transition-all text-center group cursor-pointer" data-category="{{ cat.name }}" data-type="{{ cat.category_type }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
-                            <div class="w-9 h-9 rounded-xl {% if forloop.first %}bg-primary text-on-primary{% else %}bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high{% endif %} flex items-center justify-center transition-colors shadow-xs">
-                                <span class="material-symbols-outlined text-[20px]">{{ cat.icon_name }}</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">{{ cat.name }}</span>
-                        </button>
-                        {% empty %}
-                        <button type="button" id="btn-empty-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                                <span class="material-symbols-outlined text-[20px]">add</span>
-                            </div>
+                        <button type="button" class="category-btn flex flex-col items-center gap-1.5 p-2 min-h-[72px] rounded-xl border transition-colors text-center cursor-pointer border-outline-variant bg-canvas text-body hover:border-deep-forest/40" data-id="{{ cat.id }}" data-category="{{ cat.name }}" data-type="{{ cat.category_type }}" aria-pressed="false">
+                            <span class="cat-icon w-9 h-9 rounded-xl flex items-center justify-center transition-colors bg-canvas-soft text-body">
+                                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">{{ cat.icon_name }}</span>
+                            </span>
+                            <span class="text-xs font-medium leading-tight truncate w-full">{{ cat.name }}</span>
                         </button>
                         {% endfor %}
-
-                        {% if categories %}
-                        <!-- Persistent Initial Add Button -->
-                        <button type="button" id="btn-grid-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                                <span class="material-symbols-outlined text-[20px]">add</span>
-                            </div>
+                        <button type="button" id="btn-grid-add-cat" aria-label="Add category" class="flex flex-col items-center justify-center gap-1.5 p-2 min-h-[72px] rounded-xl border border-dashed border-outline-variant text-body hover:text-deep-forest hover:border-deep-forest transition-colors text-center cursor-pointer">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+                            <span class="text-xs font-medium">Add</span>
                         </button>
-                        {% endif %}
                     </div>
                 </div>
 
@@ -143,82 +149,84 @@
 
                     <!-- Title / Merchant -->
                     <div class="flex flex-col gap-1.5">
-                        <label for="input-title" id="label-input-title" class="font-label-sm text-xs font-bold text-deep-forest">Title / Merchant</label>
+                        <label for="input-title" id="label-input-title" class="text-sm font-medium text-ink">Title (optional)</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">label</span>
-                            <input type="text" id="input-title" placeholder="e.g. Jollibee Lunch, Grab Fare" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all" required>
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">label</span>
+                            <input type="text" id="input-title" placeholder="e.g. Jollibee lunch, Grab fare" autocomplete="off" class="w-full pl-10 pr-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none transition-colors">
                         </div>
                     </div>
 
-                    <!-- Date & Time -->
+                    <!-- Date -->
                     <div class="flex flex-col gap-1.5">
-                        <label for="input-date" class="font-label-sm text-xs font-bold text-deep-forest">Date</label>
+                        <label for="input-date" class="text-sm font-medium text-ink">Date</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">calendar_today</span>
-                            <input type="date" id="input-date" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all" required>
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">calendar_today</span>
+                            <input type="date" id="input-date" class="w-full pl-10 pr-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink focus:border-deep-forest outline-none transition-colors" required>
                         </div>
                     </div>
 
                     <!-- Account / Payment Method (Source Account) -->
                     <div class="flex flex-col gap-1.5">
                         <div class="flex items-center justify-between">
-                            <label for="select-account" id="label-select-account" class="font-label-sm text-xs font-bold text-deep-forest">Payment Method / Wallet</label>
-                            <button type="button" id="btn-open-manage-accounts" class="text-[11px] font-bold text-positive-deep hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
-                                <span class="material-symbols-outlined text-[14px]">tune</span>
+                            <label for="select-account" id="label-select-account" class="text-sm font-medium text-ink">Payment method</label>
+                            <button type="button" id="btn-open-manage-accounts" aria-label="Manage payment methods" class="tap inline-flex items-center gap-1 text-sm font-semibold text-deep-forest hover:underline cursor-pointer">
+                                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">tune</span>
                                 <span>Manage</span>
                             </button>
                         </div>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance_wallet</span>
-                            <select id="select-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
+                        <div id="account-select-wrap" class="relative{% if not accounts %} hidden{% endif %}">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">account_balance_wallet</span>
+                            <select id="select-account" class="w-full pl-10 pr-9 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink focus:border-deep-forest appearance-none outline-none transition-colors cursor-pointer">
                                 {% for acc in accounts %}
                                 <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }}</option>
-                                {% empty %}
-                                <option value="Cash">Cash</option>
-                                <option value="GCash">GCash</option>
                                 {% endfor %}
                             </select>
-                            <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[18px] pointer-events-none">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">expand_more</span>
+                        </div>
+                        <div id="account-empty" class="{% if accounts %}hidden{% else %}flex{% endif %} flex-wrap items-center justify-between gap-2 rounded-xl bg-canvas-soft pl-3 pr-2 py-2">
+                            <span class="text-sm text-body">No payment methods yet</span>
+                            <button type="button" class="btn-empty-add-account inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                                <span>Add payment method</span>
+                            </button>
                         </div>
                     </div>
 
                     <!-- Destination Account (Visible only for Transfer) -->
                     <div id="container-destination-account" class="hidden flex-col gap-1.5">
-                        <label for="select-destination-account" class="font-label-sm text-xs font-bold text-deep-forest">To (Destination Account)</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">account_balance</span>
-                            <select id="select-destination-account" class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest appearance-none outline-none transition-all cursor-pointer">
+                        <label for="select-destination-account" class="text-sm font-medium text-ink">To account</label>
+                        <div id="dest-select-wrap" class="relative{% if not accounts %} hidden{% endif %}">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">account_balance</span>
+                            <select id="select-destination-account" aria-describedby="dest-error" class="w-full pl-10 pr-9 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink focus:border-deep-forest appearance-none outline-none transition-colors cursor-pointer">
                                 {% for acc in accounts %}
                                 <option value="{{ acc.name }}" data-id="{{ acc.id }}">{{ acc.name }}</option>
-                                {% empty %}
-                                <option value="BPI Bank">BPI Bank</option>
-                                <option value="GCash">GCash</option>
                                 {% endfor %}
                             </select>
-                            <span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant/60 text-[18px] pointer-events-none">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">expand_more</span>
                         </div>
+                        <div id="dest-empty" class="{% if accounts %}hidden{% else %}flex{% endif %} flex-wrap items-center justify-between gap-2 rounded-xl bg-canvas-soft pl-3 pr-2 py-2">
+                            <span class="text-sm text-body">No payment methods yet</span>
+                            <button type="button" class="btn-empty-add-account inline-flex items-center gap-1 min-h-[44px] px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                                <span>Add payment method</span>
+                            </button>
+                        </div>
+                        <p id="dest-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
                     </div>
 
                     <!-- Notes / Description -->
                     <div class="flex flex-col gap-1.5">
-                        <label for="input-notes" class="font-label-sm text-xs font-bold text-deep-forest">Notes (Optional)</label>
+                        <label for="input-notes" class="text-sm font-medium text-ink">Notes (optional)</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">notes</span>
-                            <input type="text" id="input-notes" placeholder="e.g. Split with Alex, Tax deductible" class="w-full pl-9 pr-3 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 font-body-sm text-xs sm:text-sm font-bold text-deep-forest outline-none transition-all">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">notes</span>
+                            <input type="text" id="input-notes" placeholder="e.g. Split with Alex" autocomplete="off" class="w-full pl-10 pr-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none transition-colors">
                         </div>
                     </div>
 
                 </div>
 
-                <!-- ─── Action Buttons ─── -->
-                <div class="flex items-center gap-3 pt-2">
-                    <button type="button" id="btn-discard" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-surface-container-lowest text-ink font-sans text-xs sm:text-sm font-bold hover:bg-surface-container-low transition-all cursor-pointer">
-                        Cancel
-                    </button>
-                    <button type="submit" id="btn-save-transaction" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-sans text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-2xs active:scale-[0.98] transition-all cursor-pointer">
-                        Save Transaction
-                    </button>
-                </div>
+                <!-- ─── Action Bar (sticky above the bottom nav on mobile, inline on desktop) ─── -->
+                {% include 'dashboard/components/form_action_bar.html' with cancel_id="btn-discard" cancel_label="Cancel" submit_id="btn-save-transaction" submit_label="Save transaction" %}
 
             </form>
         </div>
@@ -227,111 +235,105 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MODAL: MANAGE CATEGORIES & CREATE CATEGORY HUB             -->
+<!-- DIALOG: MANAGE CATEGORIES & CREATE CATEGORY                 -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-manage-categories-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 w-full max-w-lg shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-2.5 sm:gap-3 max-h-[85vh] overflow-hidden">
-        
+<div id="modal-manage-categories" class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0">
+    <div id="modal-manage-categories-content" role="dialog" aria-modal="true" aria-labelledby="modal-manage-categories-title" class="relative bg-canvas border border-outline-variant rounded-2xl p-4 sm:p-5 w-full max-w-lg shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-3 max-h-[85vh] overflow-hidden">
+
         <!-- Header -->
-        <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30 shrink-0">
-            <div class="flex items-center gap-2">
-                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
-                    <span class="material-symbols-outlined text-[17px] sm:text-[18px]">category</span>
-                </div>
-                <h3 class="font-headline-sm text-xs sm:text-sm font-extrabold text-deep-forest">Categories</h3>
-            </div>
-            <button type="button" id="btn-close-manage-categories" aria-label="Close" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+        <div class="flex items-center justify-between pb-2 border-b border-outline-variant shrink-0">
+            <h2 id="modal-manage-categories-title" class="text-base font-bold text-deep-forest">Categories</h2>
+            <button type="button" id="btn-close-manage-categories" aria-label="Close" class="tap w-9 h-9 rounded-full flex items-center justify-center text-body hover:text-ink hover:bg-surface-container-low transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
             </button>
         </div>
 
-        <!-- Segmented Tab Navigation -->
-        <div class="flex items-center p-0.5 bg-surface-container-low rounded-xl border border-outline-variant/40 shrink-0">
-            <button type="button" id="tab-btn-add-cat" class="flex-1 py-1.5 px-2.5 rounded-lg font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs">
-                <span class="material-symbols-outlined text-[15px] text-positive-deep">add_circle</span>
-                <span>Add Category</span>
+        <!-- Segmented View Switch -->
+        <div class="flex p-1 bg-canvas-soft rounded-xl shrink-0" role="group" aria-label="Category view">
+            <button type="button" id="tab-btn-add-cat" aria-pressed="true" class="cat-modal-tab flex-1 min-h-[44px] px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors bg-deep-forest text-white">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add_circle</span>
+                <span>Add category</span>
             </button>
-            <button type="button" id="tab-btn-list-cat" class="flex-1 py-1.5 px-2.5 rounded-lg font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest">
-                <span class="material-symbols-outlined text-[15px]">tune</span>
-                <span>Manage (<span id="modal-cat-count">0</span>)</span>
+            <button type="button" id="tab-btn-list-cat" aria-pressed="false" class="cat-modal-tab flex-1 min-h-[44px] px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-body hover:text-ink">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">tune</span>
+                <span>Manage (<span id="modal-cat-count">{{ categories|length }}</span>)</span>
             </button>
         </div>
 
-        <!-- Tab 1: Add New Category Pane -->
-        <div id="pane-add-category" class="flex flex-col gap-2.5 sm:gap-3 overflow-y-auto pr-0.5 flex-1">
+        <!-- Pane 1: Add New Category -->
+        <div id="pane-add-category" class="flex flex-col gap-4 overflow-y-auto pr-0.5 flex-1">
 
             <!-- Name Input -->
-            <div class="flex flex-col gap-1">
-                <label for="input-new-cat-name" class="text-[11px] font-bold text-deep-forest">Name</label>
-                <div class="relative">
-                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-on-surface-variant/60 text-[16px]">label</span>
-                    <input type="text" id="input-new-cat-name" placeholder="e.g. Health, Fitness, Subscriptions" class="w-full pl-8 pr-3 py-1.5 sm:py-2 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                </div>
+            <div class="flex flex-col gap-1.5">
+                <label for="input-new-cat-name" class="text-sm font-medium text-ink">Name</label>
+                <input type="text" id="input-new-cat-name" placeholder="e.g. Health, Subscriptions" autocomplete="off" aria-describedby="new-cat-name-error" class="w-full px-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none transition-colors">
+                <p id="new-cat-name-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
             </div>
 
             <!-- Icon Picker -->
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
-                    <label class="text-[11px] font-bold text-deep-forest">Icon</label>
-                    <span id="label-selected-icon" class="text-[10px] sm:text-[11px] font-bold text-positive-deep capitalize">Restaurant</span>
+                    <span id="label-icon-picker" class="text-sm font-medium text-ink">Icon</span>
+                    <span id="label-selected-icon" class="text-sm text-body">Groceries</span>
                 </div>
-                <div id="new-cat-icon-picker" class="grid grid-cols-4 sm:grid-cols-5 gap-1.5 p-1.5 bg-surface-container-low/30 rounded-xl border border-outline-variant/40 max-h-32 sm:max-h-40 overflow-y-auto">
+                <div id="new-cat-icon-picker" role="group" aria-labelledby="label-icon-picker" class="grid grid-cols-4 sm:grid-cols-5 gap-2">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
             <!-- Strategy Selector -->
-            <div class="flex flex-col gap-1">
-                <label class="text-[11px] font-bold text-deep-forest">Strategy</label>
-                <div class="grid grid-cols-2 gap-1.5">
-                    <button type="button" id="btn-strategy-nobudget" class="strategy-pill active p-1.5 sm:p-2 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all">
-                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-positive-deep">track_changes</span> Track Only</span>
-                        <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">No limit</span>
+            <div class="flex flex-col gap-1.5">
+                <span id="label-strategy" class="text-sm font-medium text-ink">Budget</span>
+                <div class="grid grid-cols-2 gap-2" role="group" aria-labelledby="label-strategy">
+                    <button type="button" id="btn-strategy-nobudget" aria-pressed="true" class="strategy-pill p-3 min-h-[56px] rounded-xl border flex flex-col items-start text-left cursor-pointer transition-colors border-deep-forest bg-primary-pale text-deep-forest">
+                        <span class="text-sm font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">track_changes</span> Track only</span>
+                        <span class="text-xs text-body leading-tight mt-0.5">No limit</span>
                     </button>
-                    <button type="button" id="btn-strategy-budget" class="strategy-pill p-1.5 sm:p-2 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all">
-                        <span class="text-xs font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">speed</span> Set Limit</span>
-                        <span class="text-[9px] text-on-surface-variant leading-tight mt-0.5">Monthly cap</span>
+                    <button type="button" id="btn-strategy-budget" aria-pressed="false" class="strategy-pill p-3 min-h-[56px] rounded-xl border flex flex-col items-start text-left cursor-pointer transition-colors border-outline-variant bg-canvas text-body hover:border-deep-forest/40">
+                        <span class="text-sm font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">speed</span> Set limit</span>
+                        <span class="text-xs text-body leading-tight mt-0.5">Monthly cap</span>
                     </button>
                 </div>
 
                 <!-- Target Limit Input -->
-                <div id="group-new-cat-limit" class="hidden flex flex-col gap-1 mt-0.5">
-                    <label for="input-new-cat-limit" class="text-[11px] font-bold text-deep-forest">Monthly Limit (₱)</label>
+                <div id="group-new-cat-limit" class="hidden flex-col gap-1.5 mt-1">
+                    <label for="input-new-cat-limit" class="text-sm font-medium text-ink">Monthly limit</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
-                        <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" class="w-full pl-7 pr-3 py-1.5 rounded-xl border border-outline-variant/80 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs sm:text-sm font-bold text-deep-forest outline-none focus:border-primary tabular-nums">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-base font-semibold text-ink pointer-events-none" aria-hidden="true">₱</span>
+                        <input type="number" id="input-new-cat-limit" placeholder="5000" step="100" min="1" inputmode="decimal" aria-describedby="new-cat-limit-error" class="w-full pl-8 pr-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none tabular-nums transition-colors">
                     </div>
+                    <p id="new-cat-limit-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
                 </div>
             </div>
 
             <!-- Submit Action -->
             <div class="pt-1">
-                <button type="button" id="btn-add-cat-submit" class="w-full py-2 sm:py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">add_circle</span>
-                    <span>Create Category</span>
+                <button type="button" id="btn-add-cat-submit" class="w-full min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-70 disabled:cursor-wait">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add_circle</span>
+                    <span>Create category</span>
                 </button>
             </div>
         </div>
 
-        <!-- Tab 2: Manage Existing Categories List Pane -->
-        <div id="pane-list-categories" class="hidden flex-col gap-2.5 overflow-hidden flex-1">
+        <!-- Pane 2: Manage Existing Categories -->
+        <div id="pane-list-categories" class="hidden flex-col gap-3 overflow-hidden flex-1">
             <!-- Search bar -->
             <div class="relative shrink-0">
-                <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[18px]">search</span>
-                <input type="text" id="input-search-modal-categories" placeholder="Search categories..." class="w-full pl-9 pr-8 py-2 rounded-xl border border-outline-variant/60 bg-surface-container-low/40 focus:bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary">
-                <button type="button" id="btn-clear-modal-cat-search" class="hidden absolute right-2.5 top-2 text-on-surface-variant hover:text-deep-forest cursor-pointer">
-                    <span class="material-symbols-outlined text-[16px]">close</span>
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-mute text-[20px] pointer-events-none" aria-hidden="true">search</span>
+                <input type="search" id="input-search-modal-categories" placeholder="Search categories" aria-label="Search categories" autocomplete="off" class="w-full pl-10 pr-10 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none transition-colors">
+                <button type="button" id="btn-clear-modal-cat-search" aria-label="Clear search" class="hidden tap absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-body hover:text-ink cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
                 </button>
             </div>
 
             <!-- Categories Scroll List -->
-            <div id="categories-list-container" class="overflow-y-auto pr-1 flex flex-col gap-2 flex-1 max-h-[50vh]">
+            <div id="categories-list-container" class="overflow-y-auto pr-1 flex flex-col flex-1 max-h-[50vh]">
                 <!-- Populated dynamically via JS -->
             </div>
 
             <!-- Footer -->
-            <div class="pt-2 border-t border-outline-variant/40 shrink-0">
-                <button type="button" id="btn-done-manage-categories" class="w-full py-2.5 rounded-xl bg-surface-container-low text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
+            <div class="pt-2 border-t border-outline-variant shrink-0">
+                <button type="button" id="btn-done-manage-categories" class="w-full min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">
                     Done
                 </button>
             </div>
@@ -341,30 +343,25 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MODAL: CONFIRM CATEGORY DELETION                            -->
+<!-- DIALOG: CONFIRM CATEGORY DELETION                           -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-delete-category-confirm" class="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-deep-forest/60 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-delete-category-content" class="relative z-[125] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-2xl transition-all duration-200 scale-95 flex flex-col gap-3.5 text-center">
-        <!-- Danger Icon Badge -->
-        <div class="w-12 h-12 rounded-2xl bg-expense/15 text-expense border border-expense/30 flex items-center justify-center mx-auto shadow-2xs">
+<div id="modal-delete-category-confirm" class="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-deep-forest/60 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0">
+    <div id="modal-delete-category-content" role="alertdialog" aria-modal="true" aria-labelledby="delete-cat-title" aria-describedby="delete-cat-desc" class="relative bg-canvas border border-outline-variant rounded-2xl p-5 sm:p-6 w-full max-w-sm shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 text-center">
+        <span class="w-12 h-12 rounded-full bg-negative/10 text-negative-deep flex items-center justify-center mx-auto" aria-hidden="true">
             <span class="material-symbols-outlined text-[24px]">delete_forever</span>
-        </div>
+        </span>
 
-        <!-- Title and Explanation -->
         <div class="flex flex-col gap-1">
-            <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest">Delete Category?</h3>
-            <p class="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                Are you sure you want to delete <span id="delete-cat-confirm-name" class="font-bold text-deep-forest">"Category"</span>? Past transactions with this category will keep their records.
-            </p>
+            <h2 id="delete-cat-title" class="text-base font-bold text-ink">Delete <span id="delete-cat-confirm-name">“Category”</span>?</h2>
+            <p id="delete-cat-desc" class="text-sm text-body">Past transactions in this category keep their records.</p>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex items-center gap-2 pt-1">
-            <button type="button" id="btn-cancel-delete-cat" class="flex-1 py-2 px-3 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-deep-forest font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer">
+            <button type="button" id="btn-cancel-delete-cat" class="flex-1 min-h-[48px] px-3 rounded-xl bg-canvas-soft text-ink hover:bg-surface-container-high text-base font-semibold transition-colors cursor-pointer disabled:opacity-50">
                 Cancel
             </button>
-            <button type="button" id="btn-confirm-delete-cat" class="flex-1 py-2 px-3 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[16px]" id="btn-confirm-delete-cat-icon">delete</span>
+            <button type="button" id="btn-confirm-delete-cat" class="flex-1 min-h-[48px] px-3 rounded-xl bg-negative text-on-error hover:bg-negative-deep text-base font-semibold transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-70 disabled:cursor-wait">
+                <span class="material-symbols-outlined text-[18px] motion-reduce:animate-none" id="btn-confirm-delete-cat-icon" aria-hidden="true">delete</span>
                 <span id="btn-confirm-delete-cat-text">Delete</span>
             </button>
         </div>
@@ -372,83 +369,76 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MODAL: MANAGE PAYMENT METHODS / WALLETS                  -->
+<!-- DIALOG: MANAGE PAYMENT METHODS                              -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-manage-accounts" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-manage-accounts-content" class="relative z-[105] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
-        
+<div id="modal-manage-accounts" class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0">
+    <div id="modal-manage-accounts-content" role="dialog" aria-modal="true" aria-labelledby="modal-manage-accounts-title" aria-describedby="modal-manage-accounts-desc" class="relative bg-canvas border border-outline-variant rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+
         <!-- Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40 shrink-0">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-sm text-sm sm:text-base font-extrabold text-deep-forest">Payment Methods</h3>
-                    <p class="font-body-sm text-[11px] text-on-surface-variant">Add, rename, or remove payment methods</p>
-                </div>
+        <div class="flex items-center justify-between gap-3 pb-3 border-b border-outline-variant shrink-0">
+            <div class="min-w-0">
+                <h2 id="modal-manage-accounts-title" class="text-base font-bold text-deep-forest">Payment methods</h2>
+                <p id="modal-manage-accounts-desc" class="text-sm text-body">Add, rename, or remove payment methods</p>
             </div>
-            <button type="button" id="btn-close-manage-accounts" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+            <button type="button" id="btn-close-manage-accounts" aria-label="Close" class="tap w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-body hover:text-ink hover:bg-surface-container-low transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
             </button>
         </div>
 
         <!-- Scrollable Body -->
         <div class="overflow-y-auto pr-1 flex flex-col gap-4 flex-1">
-            
+
             <!-- Existing Accounts List -->
-            <div class="flex flex-col gap-2">
-                <label class="font-label-sm text-[11px] font-bold text-deep-forest uppercase tracking-wider">Your Payment Methods</label>
-                <div id="accounts-list-container" class="flex flex-col gap-2">
+            <div class="flex flex-col gap-1">
+                <h3 class="text-sm font-semibold text-ink">Your payment methods</h3>
+                <div id="accounts-list-container" class="flex flex-col">
                     <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
             <!-- Add Account Form -->
-            <div class="flex flex-col gap-3 pt-3 border-t border-outline-variant/40 bg-surface-container-low/20 p-3.5 rounded-2xl border border-outline-variant/50">
-                <span class="font-label-sm text-xs font-bold text-deep-forest flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px] text-positive-deep">add_circle</span>
-                    <span>Add Payment Method</span>
-                </span>
+            <div class="flex flex-col gap-3 pt-4 border-t border-outline-variant">
+                <h3 class="text-sm font-semibold text-ink">Add a payment method</h3>
 
                 <!-- Quick Presets -->
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="GCash" data-type="E_WALLET">GCash</button>
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Maya" data-type="E_WALLET">Maya</button>
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Cash" data-type="CASH">Cash</button>
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="BPI Bank" data-type="BANK_ACCOUNT">BPI</button>
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="BDO Bank" data-type="BANK_ACCOUNT">BDO</button>
-                    <button type="button" class="acc-preset-chip text-[10px] font-bold px-2 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-deep-forest hover:border-primary hover:bg-primary-pale transition-all cursor-pointer" data-name="Credit Card" data-type="CREDIT_CARD">Credit Card</button>
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Quick picks">
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="GCash" data-type="E_WALLET">GCash</button>
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="Maya" data-type="E_WALLET">Maya</button>
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="Cash" data-type="CASH">Cash</button>
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="BPI Bank" data-type="BANK_ACCOUNT">BPI</button>
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="BDO Bank" data-type="BANK_ACCOUNT">BDO</button>
+                    <button type="button" class="acc-preset-chip min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-medium hover:bg-surface-container-high transition-colors cursor-pointer" data-name="Credit Card" data-type="CREDIT_CARD">Credit card</button>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-bold text-on-surface-variant uppercase">Method Name</label>
-                        <input type="text" id="input-new-acc-name" placeholder="e.g. UnionBank, GrabPay" class="px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1.5">
+                        <label for="input-new-acc-name" class="text-sm font-medium text-ink">Name</label>
+                        <input type="text" id="input-new-acc-name" placeholder="e.g. UnionBank, GrabPay" autocomplete="off" aria-describedby="new-acc-name-error" class="w-full px-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink placeholder:text-mute focus:border-deep-forest outline-none transition-colors">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-bold text-on-surface-variant uppercase">Type</label>
-                        <select id="select-new-acc-type" class="px-3 py-2 rounded-xl border border-outline-variant/80 bg-surface-container-lowest text-xs font-bold text-deep-forest outline-none focus:border-primary cursor-pointer">
-                            <option value="E_WALLET">E-Wallet</option>
+                    <div class="flex flex-col gap-1.5">
+                        <label for="select-new-acc-type" class="text-sm font-medium text-ink">Type</label>
+                        <select id="select-new-acc-type" class="w-full px-3 py-3 rounded-xl border border-outline-variant bg-canvas text-base text-ink focus:border-deep-forest outline-none cursor-pointer">
+                            <option value="E_WALLET">E-wallet</option>
                             <option value="CASH">Cash</option>
-                            <option value="BANK_ACCOUNT">Bank Account</option>
-                            <option value="CREDIT_CARD">Credit Card</option>
+                            <option value="BANK_ACCOUNT">Bank account</option>
+                            <option value="CREDIT_CARD">Credit card</option>
                             <option value="OTHER">Other</option>
                         </select>
                     </div>
                 </div>
+                <p id="new-acc-name-error" class="hidden text-sm font-medium text-negative-deep" role="alert"></p>
 
-                <button type="button" id="btn-add-acc-submit" class="w-full py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary-hover transition-all shadow-2xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 mt-1">
-                    <span class="material-symbols-outlined text-[16px]">add</span>
-                    <span>Add Method</span>
+                <button type="button" id="btn-add-acc-submit" class="w-full min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-70 disabled:cursor-wait">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+                    <span>Add payment method</span>
                 </button>
             </div>
 
         </div>
 
         <!-- Footer -->
-        <div class="pt-2 border-t border-outline-variant/40 shrink-0">
-            <button type="button" id="btn-done-manage-accounts" class="w-full py-2.5 rounded-full bg-surface-container-low text-deep-forest text-xs font-bold hover:bg-surface-container transition-all cursor-pointer">
+        <div class="pt-2 border-t border-outline-variant shrink-0">
+            <button type="button" id="btn-done-manage-accounts" class="w-full min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">
                 Done
             </button>
         </div>
@@ -456,22 +446,22 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MODAL: CONFIRM DISCARD CHANGES                           -->
+<!-- DIALOG: CONFIRM DISCARD CHANGES                             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="modal-confirm-discard" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0" aria-modal="true" role="dialog">
-    <div id="modal-confirm-content" class="relative z-[115] bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 text-center">
-        <div class="w-12 h-12 rounded-2xl bg-expense/15 text-expense flex items-center justify-center mx-auto">
+<div id="modal-confirm-discard" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-deep-forest/50 backdrop-blur-xs transition-opacity duration-200 hidden opacity-0">
+    <div id="modal-confirm-content" role="alertdialog" aria-modal="true" aria-labelledby="discard-title" aria-describedby="discard-desc" class="relative bg-canvas border border-outline-variant rounded-2xl p-5 sm:p-6 w-full max-w-sm shadow-elevated transition-transform duration-200 scale-95 flex flex-col gap-4 text-center">
+        <span class="w-12 h-12 rounded-full bg-negative/10 text-negative-deep flex items-center justify-center mx-auto" aria-hidden="true">
             <span class="material-symbols-outlined text-[24px]">warning</span>
-        </div>
+        </span>
         <div>
-            <h3 class="font-headline-sm text-base font-extrabold text-deep-forest">Discard Changes?</h3>
-            <p class="font-body-sm text-xs text-on-surface-variant mt-1">You have unsaved details in this transaction. Leaving now will discard them.</p>
+            <h2 id="discard-title" class="text-base font-bold text-ink">Discard this transaction?</h2>
+            <p id="discard-desc" class="text-sm text-body mt-1">You have details you haven't saved. Leaving now will discard them.</p>
         </div>
-        <div class="flex items-center gap-2.5 pt-2">
-            <button type="button" id="btn-keep-editing" class="flex-1 py-2.5 rounded-full border border-outline-variant/80 bg-surface-container-lowest text-ink font-sans text-xs font-bold hover:bg-surface-container-low transition-all cursor-pointer">
-                Keep Editing
+        <div class="flex items-center gap-2 pt-1">
+            <button type="button" id="btn-keep-editing" class="flex-1 min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">
+                Keep editing
             </button>
-            <button type="button" id="btn-confirm-discard" class="flex-1 py-2.5 rounded-full bg-expense text-on-error font-sans text-xs font-bold hover:bg-expense/90 shadow-2xs active:scale-[0.98] transition-all cursor-pointer">
+            <button type="button" id="btn-confirm-discard" class="flex-1 min-h-[48px] rounded-xl bg-negative text-on-error text-base font-semibold hover:bg-negative-deep active:scale-[0.98] transition-colors cursor-pointer">
                 Discard
             </button>
         </div>
@@ -485,18 +475,106 @@
         let isFormDirty = false;
         let pendingTargetUrl = null;
         let isEditMode = false;
+        let isSaving = false;
         let userAccountsCache = [];
         let userCategoriesCache = [];
+        const HISTORY_URL = "{% url 'transactions' %}";
 
         function markDirty() { isFormDirty = true; }
 
+        const formTransaction = document.getElementById('form-transaction');
         const inputAmount = document.getElementById('input-amount');
         const inputTitle = document.getElementById('input-title');
         const inputDate = document.getElementById('input-date');
         const selectAccount = document.getElementById('select-account');
+        const selectDestinationAccount = document.getElementById('select-destination-account');
         const inputNotes = document.getElementById('input-notes');
         const categoryGrid = document.getElementById('category-grid');
 
+        // ─── Feedback helpers: inline field errors + toasts (no alert/confirm) ───
+        function showFieldError(errorId, message, fieldEl) {
+            const el = document.getElementById(errorId);
+            if (el) { el.textContent = message; el.classList.remove('hidden'); }
+            if (fieldEl) fieldEl.setAttribute('aria-invalid', 'true');
+        }
+        function clearFieldError(errorId, fieldEl) {
+            const el = document.getElementById(errorId);
+            if (el) { el.textContent = ''; el.classList.add('hidden'); }
+            if (fieldEl) fieldEl.removeAttribute('aria-invalid');
+        }
+        function toastError(message) {
+            if (typeof window.antToast === 'function') window.antToast(message, { type: 'error' });
+        }
+        function toastSuccess(message) {
+            if (typeof window.antToast === 'function') window.antToast(message, { type: 'success' });
+        }
+        function setShown(el, shown, display) {
+            if (!el) return;
+            el.classList.toggle('hidden', !shown);
+            if (display) el.classList.toggle(display, shown);
+        }
+        async function readJson(res) {
+            try { return await res.json(); } catch (_) { return {}; }
+        }
+
+        // ─── Dialogs: fade/scale, scroll lock, focus trap, Escape closes the top one ───
+        const openDialogs = [];
+        function makeDialog(overlayId, contentId) {
+            const overlay = document.getElementById(overlayId);
+            const content = document.getElementById(contentId);
+            let release = null;
+            let closeTimer = null;
+            const dlg = {
+                isOpen() { return openDialogs.includes(dlg); },
+                open(initialFocus) {
+                    if (!overlay) return;
+                    clearTimeout(closeTimer);
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    requestAnimationFrame(() => {
+                        overlay.classList.remove('opacity-0');
+                        overlay.classList.add('opacity-100');
+                        if (content) {
+                            content.classList.remove('scale-95');
+                            content.classList.add('scale-100');
+                        }
+                    });
+                    if (!openDialogs.includes(dlg)) {
+                        openDialogs.push(dlg);
+                        release = typeof window.antFocusTrap === 'function' ? window.antFocusTrap(content, initialFocus) : null;
+                    }
+                },
+                close() {
+                    if (!overlay || !openDialogs.includes(dlg)) return;
+                    openDialogs.splice(openDialogs.indexOf(dlg), 1);
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0');
+                    if (content) {
+                        content.classList.remove('scale-100');
+                        content.classList.add('scale-95');
+                    }
+                    if (release) { release(); release = null; }
+                    closeTimer = setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        if (!openDialogs.length) document.body.style.overflow = '';
+                    }, 200);
+                },
+            };
+            if (overlay) {
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) dlg.close(); });
+            }
+            return dlg;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !openDialogs.length) return;
+            // Inline rename / delete-confirm rows handle their own Escape first.
+            if (e.target && e.target.closest && e.target.closest('.cat-edit, .acc-edit, .acc-confirm')) return;
+            e.preventDefault();
+            openDialogs[openDialogs.length - 1].close();
+        });
+
+        // ─── Amount: live comma formatting ───
         function formatNumberWithCommas(val) {
             if (val === null || val === undefined || val === '') return '';
             const cleanStr = val.toString().replace(/[^0-9.]/g, '');
@@ -527,7 +605,10 @@
             });
         }
 
-        if (inputAmount) setupAutoCommaInput(inputAmount);
+        if (inputAmount) {
+            setupAutoCommaInput(inputAmount);
+            inputAmount.addEventListener('input', () => clearFieldError('amount-error', inputAmount));
+        }
 
         // Set default date to today
         if (inputDate && !inputDate.value) {
@@ -538,8 +619,7 @@
         // CATEGORY SELECTION & MANAGEMENT ENGINE
         // ═══════════════════════════════════════════════════════════
 
-        const manageCatModal = document.getElementById('modal-manage-categories');
-        const manageCatContent = document.getElementById('modal-manage-categories-content');
+        const categoriesDialog = makeDialog('modal-manage-categories', 'modal-manage-categories-content');
         const openManageCatBtn = document.getElementById('btn-open-manage-categories');
         const closeManageCatBtn = document.getElementById('btn-close-manage-categories');
         const doneManageCatBtn = document.getElementById('btn-done-manage-categories');
@@ -584,12 +664,27 @@
         let selectedCatIcon = 'local_grocery_store';
         let newCatHasBudget = false;
 
-        function getApiUrl(path) {
-            const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
-            return `${path}${previewParam}`;
+
+        // Shared "selected / not selected" styling for option tiles and segments.
+        const SEG_ON = ['bg-deep-forest', 'text-white'];
+        const SEG_OFF = ['text-body', 'hover:text-ink'];
+        function setSegmentState(btn, on) {
+            if (!btn) return;
+            btn.classList.remove(...(on ? SEG_OFF : SEG_ON));
+            btn.classList.add(...(on ? SEG_ON : SEG_OFF));
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         }
 
-        // Render Dynamic Icon Picker Grid with Icon and Text Name
+        const TILE_ON = ['border-deep-forest', 'bg-primary-pale', 'text-deep-forest'];
+        const TILE_OFF = ['border-outline-variant', 'bg-canvas', 'text-body', 'hover:border-deep-forest/40'];
+        function setTileState(btn, on) {
+            if (!btn) return;
+            btn.classList.remove(...(on ? TILE_OFF : TILE_ON));
+            btn.classList.add(...(on ? TILE_ON : TILE_OFF));
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+
+        // Render icon picker (icon + text name)
         function renderCategoryIconPicker() {
             const picker = document.getElementById('new-cat-icon-picker');
             const labelSelected = document.getElementById('label-selected-icon');
@@ -597,38 +692,31 @@
             picker.innerHTML = '';
 
             CATEGORY_ICON_SET.forEach(item => {
-                const isSelected = item.icon === selectedCatIcon;
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.dataset.icon = item.icon;
-                btn.title = item.label;
-                btn.className = `icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px] ${
-                    isSelected 
-                        ? 'border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02]' 
-                        : 'border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest'
-                }`;
+                btn.className = 'icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1.5 min-h-[56px] rounded-xl border transition-colors cursor-pointer text-center';
                 btn.innerHTML = `
-                    <span class="material-symbols-outlined text-[18px] sm:text-[20px]">${item.icon}</span>
-                    <span class="font-label-sm text-[9px] sm:text-[10px] font-bold leading-tight truncate w-full text-center">${item.label}</span>
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">${escapeHtml(item.icon)}</span>
+                    <span class="text-xs font-medium leading-tight truncate w-full text-center">${escapeHtml(item.label)}</span>
                 `;
+                setTileState(btn, item.icon === selectedCatIcon);
                 btn.addEventListener('click', () => {
                     selectedCatIcon = item.icon;
                     if (labelSelected) labelSelected.textContent = item.label;
 
-                    // Smart Auto-fill: If name is empty or matches one of the preset labels, fill with clicked icon name
+                    // Smart auto-fill: if the name is empty or still a preset label, use this icon's label
                     if (inputNewCatName) {
                         const currentVal = inputNewCatName.value.trim().toLowerCase();
                         const isBlank = currentVal === '';
                         const isMatchingPreset = CATEGORY_ICON_SET.some(c => c.label.toLowerCase() === currentVal);
                         if (isBlank || isMatchingPreset) {
                             inputNewCatName.value = item.label;
+                            clearFieldError('new-cat-name-error', inputNewCatName);
                         }
                     }
 
-                    document.querySelectorAll('#new-cat-icon-picker .icon-picker-btn').forEach(b => {
-                        b.className = 'icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/50 hover:bg-surface-container-low hover:text-deep-forest transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px]';
-                    });
-                    btn.className = 'icon-picker-btn flex flex-col items-center justify-center gap-0.5 p-1 sm:p-1.5 rounded-lg sm:rounded-xl border-2 border-primary bg-primary-pale text-positive-deep shadow-xs ring-1 ring-primary/20 scale-[1.02] transition-all cursor-pointer active:scale-95 text-center min-h-[44px] sm:min-h-[48px]';
+                    picker.querySelectorAll('.icon-picker-btn').forEach(b => setTileState(b, b === btn));
                 });
                 picker.appendChild(btn);
             });
@@ -637,483 +725,413 @@
             if (labelSelected && current) labelSelected.textContent = current.label;
         }
 
-        // Tab Switching Engine
+        // View switching inside the categories dialog
         function switchCategoryModalTab(targetTab) {
-            if (targetTab === 'add') {
-                if (tabBtnAddCat) {
-                    tabBtnAddCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs';
-                }
-                if (tabBtnListCat) {
-                    tabBtnListCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest';
-                }
-                if (paneAddCat) { paneAddCat.classList.remove('hidden'); paneAddCat.classList.add('flex'); }
-                if (paneListCat) { paneListCat.classList.add('hidden'); paneListCat.classList.remove('flex'); }
+            const isAdd = targetTab === 'add';
+            setSegmentState(tabBtnAddCat, isAdd);
+            setSegmentState(tabBtnListCat, !isAdd);
+            setShown(paneAddCat, isAdd, 'flex');
+            setShown(paneListCat, !isAdd, 'flex');
+            if (isAdd) {
                 if (inputNewCatName) setTimeout(() => inputNewCatName.focus(), 50);
             } else {
-                if (tabBtnListCat) {
-                    tabBtnListCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-surface-container-lowest text-deep-forest shadow-xs';
-                }
-                if (tabBtnAddCat) {
-                    tabBtnAddCat.className = 'flex-1 py-2 px-3 rounded-xl font-label-md text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-on-surface-variant hover:text-deep-forest';
-                }
-                if (paneListCat) { paneListCat.classList.remove('hidden'); paneListCat.classList.add('flex'); }
-                if (paneAddCat) { paneAddCat.classList.add('hidden'); paneAddCat.classList.remove('flex'); }
-                renderCategoriesModalList(userCategoriesCache);
                 if (searchModalCatInput) {
                     searchModalCatInput.value = '';
                     if (clearModalCatSearchBtn) clearModalCatSearchBtn.classList.add('hidden');
                 }
+                renderCategoriesModalList(userCategoriesCache);
             }
         }
 
         if (tabBtnAddCat) tabBtnAddCat.addEventListener('click', () => switchCategoryModalTab('add'));
         if (tabBtnListCat) tabBtnListCat.addEventListener('click', () => switchCategoryModalTab('list'));
 
-        // Search Filter for Categories List
+        // Search filter for the categories list
         if (searchModalCatInput) {
             searchModalCatInput.addEventListener('input', (e) => {
                 const query = (e.target.value || '').toLowerCase().trim();
-                if (clearModalCatSearchBtn) {
-                    clearModalCatSearchBtn.classList.toggle('hidden', !query);
-                }
-                const filtered = userCategoriesCache.filter(c => c.name.toLowerCase().includes(query));
-                renderCategoriesModalList(filtered);
+                if (clearModalCatSearchBtn) clearModalCatSearchBtn.classList.toggle('hidden', !query);
+                const filtered = userCategoriesCache.filter(c => (c.name || '').toLowerCase().includes(query));
+                renderCategoriesModalList(filtered, query);
             });
         }
 
         if (clearModalCatSearchBtn) {
             clearModalCatSearchBtn.addEventListener('click', () => {
-                if (searchModalCatInput) {
-                    searchModalCatInput.value = '';
-                    clearModalCatSearchBtn.classList.add('hidden');
-                    renderCategoriesModalList(userCategoriesCache);
-                    searchModalCatInput.focus();
-                }
+                if (!searchModalCatInput) return;
+                searchModalCatInput.value = '';
+                clearModalCatSearchBtn.classList.add('hidden');
+                renderCategoriesModalList(userCategoriesCache);
+                searchModalCatInput.focus();
             });
         }
 
-        // Budget strategy switcher in Modal
-        if (btnStrategyNoBudget && btnStrategyBudget) {
-            btnStrategyNoBudget.addEventListener('click', () => {
-                newCatHasBudget = false;
-                btnStrategyNoBudget.className = 'strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
-                btnStrategyBudget.className = 'strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
-                if (groupNewCatLimit) groupNewCatLimit.classList.add('hidden');
-            });
-
-            btnStrategyBudget.addEventListener('click', () => {
-                newCatHasBudget = true;
-                btnStrategyBudget.className = 'strategy-pill active p-2.5 rounded-xl border border-deep-forest bg-primary-pale text-deep-forest flex flex-col items-start text-left cursor-pointer transition-all';
-                btnStrategyNoBudget.className = 'strategy-pill p-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant flex flex-col items-start text-left cursor-pointer transition-all';
-                if (groupNewCatLimit) {
-                    groupNewCatLimit.classList.remove('hidden');
-                    if (inputNewCatLimit) inputNewCatLimit.focus();
-                }
-            });
+        // Budget strategy switcher
+        function setBudgetStrategy(hasBudget) {
+            newCatHasBudget = hasBudget;
+            setTileState(btnStrategyNoBudget, !hasBudget);
+            setTileState(btnStrategyBudget, hasBudget);
+            setShown(groupNewCatLimit, hasBudget, 'flex');
+            if (!hasBudget) clearFieldError('new-cat-limit-error', inputNewCatLimit);
+            else if (inputNewCatLimit) inputNewCatLimit.focus();
         }
-
+        if (btnStrategyNoBudget) btnStrategyNoBudget.addEventListener('click', () => setBudgetStrategy(false));
+        if (btnStrategyBudget) btnStrategyBudget.addEventListener('click', () => setBudgetStrategy(true));
+        if (inputNewCatName) inputNewCatName.addEventListener('input', () => clearFieldError('new-cat-name-error', inputNewCatName));
+        if (inputNewCatLimit) inputNewCatLimit.addEventListener('input', () => clearFieldError('new-cat-limit-error', inputNewCatLimit));
 
         function openManageCategoriesModal(initialTab = 'add') {
-            if (!manageCatModal) return;
             renderCategoryIconPicker();
             switchCategoryModalTab(initialTab);
-            document.body.style.overflow = 'hidden';
-            manageCatModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                manageCatModal.classList.remove('opacity-0');
-                manageCatModal.classList.add('opacity-100');
-                if (manageCatContent) {
-                    manageCatContent.classList.remove('scale-95');
-                    manageCatContent.classList.add('scale-100');
-                }
-            });
+            categoriesDialog.open(initialTab === 'add' ? '#input-new-cat-name' : '#input-search-modal-categories');
             fetchAndRenderCategories();
         }
-
-        function closeManageCategoriesModal() {
-            if (!manageCatModal) return;
-            manageCatModal.classList.remove('opacity-100');
-            manageCatModal.classList.add('opacity-0');
-            if (manageCatContent) {
-                manageCatContent.classList.remove('scale-100');
-                manageCatContent.classList.add('scale-95');
-            }
-            setTimeout(() => {
-                manageCatModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200);
-        }
+        function closeManageCategoriesModal() { categoriesDialog.close(); }
 
         if (openManageCatBtn) openManageCatBtn.addEventListener('click', () => openManageCategoriesModal('list'));
         if (closeManageCatBtn) closeManageCatBtn.addEventListener('click', closeManageCategoriesModal);
         if (doneManageCatBtn) doneManageCatBtn.addEventListener('click', closeManageCategoriesModal);
 
-        // Bind initial server-rendered category buttons and '+ Add' button immediately
-        const initialGridAddCatBtn = document.getElementById('btn-grid-add-cat');
-        if (initialGridAddCatBtn) {
-            initialGridAddCatBtn.addEventListener('click', () => openManageCategoriesModal('add'));
+        // Category grid tiles
+        const CAT_ICON_BASE = 'cat-icon w-9 h-9 rounded-xl flex items-center justify-center transition-colors';
+        function setCategoryBtnState(btn, selected) {
+            setTileState(btn, selected);
+            const iconBox = btn.querySelector('.cat-icon');
+            if (iconBox) iconBox.className = `${CAT_ICON_BASE} ${selected ? 'bg-deep-forest text-white' : 'bg-canvas-soft text-body'}`;
         }
-        const initialEmptyAddCatBtn = document.getElementById('btn-empty-add-cat');
-        if (initialEmptyAddCatBtn) {
-            initialEmptyAddCatBtn.addEventListener('click', () => openManageCategoriesModal('add'));
+        function getSelectedCategoryBtn() {
+            return document.querySelector('.category-btn[aria-pressed="true"]');
         }
+        function selectCategoryBtn(btn, options = {}) {
+            document.querySelectorAll('.category-btn').forEach(b => setCategoryBtnState(b, b === btn));
+            clearFieldError('category-error');
+            if (!options.silent) markDirty();
+        }
+        function findCategoryBtn({ id, name }) {
+            const btns = Array.from(document.querySelectorAll('.category-btn'));
+            if (id) {
+                const byId = btns.find(b => b.dataset.id === String(id));
+                if (byId) return byId;
+            }
+            if (name) {
+                const lower = String(name).toLowerCase();
+                return btns.find(b => (b.dataset.category || '').toLowerCase() === lower) || null;
+            }
+            return null;
+        }
+
+        // Bind server-rendered tiles immediately
         document.querySelectorAll('.category-btn').forEach(btn => {
             btn.addEventListener('click', () => selectCategoryBtn(btn));
         });
+        const initialGridAddCatBtn = document.getElementById('btn-grid-add-cat');
+        if (initialGridAddCatBtn) initialGridAddCatBtn.addEventListener('click', () => openManageCategoriesModal('add'));
 
         async function fetchAndRenderCategories() {
-            if (!catListContainer) return;
             try {
-                const res = await fetch(getApiUrl('/api/categories/'));
-                const data = await res.json();
-                if (data.categories) {
+                const res = await fetch('/api/categories/');
+                const data = await readJson(res);
+                if (res.ok && data.categories) {
                     userCategoriesCache = data.categories;
                     if (modalCatCount) modalCatCount.textContent = userCategoriesCache.length;
-                    renderCategoriesModalList(userCategoriesCache);
+                    const query = searchModalCatInput ? searchModalCatInput.value.toLowerCase().trim() : '';
+                    renderCategoriesModalList(query ? userCategoriesCache.filter(c => (c.name || '').toLowerCase().includes(query)) : userCategoriesCache, query);
                     renderCategoryGrid(userCategoriesCache);
                 }
             } catch (err) {
-                console.error("Failed to load categories:", err);
+                console.error('Failed to load categories:', err);
             }
         }
 
-        // Fetch categories cache immediately on initial page load
+        // Refresh the categories cache on page load
         fetchAndRenderCategories();
 
-        function renderCategoryGrid(categories) {
-            if (!categoryGrid) return;
-            const currentSelected = document.querySelector('.category-btn.active')?.dataset?.category;
-            categoryGrid.innerHTML = '';
-
-            if (!categories || categories.length === 0) {
-                categoryGrid.innerHTML = `
-                    <button type="button" id="btn-empty-add-cat" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]" title="Add Category">
-                        <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                            <span class="material-symbols-outlined text-[20px]">add</span>
-                        </div>
-                    </button>
-                `;
-                document.getElementById('btn-empty-add-cat')?.addEventListener('click', () => openManageCategoriesModal('add'));
-                return;
-            }
-
-            categories.forEach((cat, idx) => {
-                const isFirstOrSelected = (currentSelected ? cat.name === currentSelected : idx === 0);
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `category-btn ${isFirstOrSelected ? 'active border-deep-forest bg-primary-pale text-deep-forest' : 'border-surface-variant/60 bg-surface-container-low/40 text-on-surface-variant'} flex flex-col items-center gap-1.5 p-2.5 rounded-xl border shadow-xs transition-all text-center group cursor-pointer`;
-                btn.dataset.category = cat.name;
-                btn.dataset.type = cat.category_type || 'EXPENSE';
-                btn.setAttribute('aria-pressed', isFirstOrSelected ? 'true' : 'false');
-                btn.innerHTML = `
-                    <div class="w-9 h-9 rounded-xl ${isFirstOrSelected ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant group-hover:bg-surface-container-high'} flex items-center justify-center transition-colors shadow-xs">
-                        <span class="material-symbols-outlined text-[20px]">${cat.icon_name || 'category'}</span>
-                    </div>
-                    <span class="font-label-sm text-[11px] font-bold leading-tight truncate w-full">${escapeHtml(cat.name)}</span>
-                `;
-                btn.addEventListener('click', () => {
-                    selectCategoryBtn(btn);
-                });
-                categoryGrid.appendChild(btn);
-            });
-
-            // Add persistent Add tile at end of grid
+        function buildAddCategoryTile() {
             const addTile = document.createElement('button');
             addTile.type = 'button';
             addTile.id = 'btn-grid-add-cat';
-            addTile.className = 'flex flex-col items-center justify-center p-2.5 rounded-xl border border-dashed border-outline-variant/80 bg-surface-container-low/20 text-on-surface-variant hover:text-deep-forest hover:border-primary hover:bg-primary-pale transition-all text-center group cursor-pointer min-h-[64px]';
-            addTile.title = 'Add Category';
+            addTile.setAttribute('aria-label', 'Add category');
+            addTile.className = 'flex flex-col items-center justify-center gap-1.5 p-2 min-h-[72px] rounded-xl border border-dashed border-outline-variant text-body hover:text-deep-forest hover:border-deep-forest transition-colors text-center cursor-pointer';
             addTile.innerHTML = `
-                <div class="w-9 h-9 rounded-xl bg-surface-container text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors shadow-xs">
-                    <span class="material-symbols-outlined text-[20px]">add</span>
-                </div>
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+                <span class="text-xs font-medium">Add</span>
             `;
             addTile.addEventListener('click', () => openManageCategoriesModal('add'));
-            categoryGrid.appendChild(addTile);
+            return addTile;
         }
 
-        function selectCategoryBtn(btn) {
-            document.querySelectorAll('.category-btn').forEach(b => {
-                b.classList.remove('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-                b.classList.add('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-                b.setAttribute('aria-pressed', 'false');
-                const iconBox = b.querySelector('div');
-                if (iconBox) {
-                    iconBox.classList.remove('bg-primary', 'text-on-primary');
-                    iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
-                }
+        function renderCategoryGrid(categories) {
+            if (!categoryGrid) return;
+            const current = getSelectedCategoryBtn();
+            const currentId = current ? current.dataset.id : null;
+            const currentName = current ? current.dataset.category : null;
+            categoryGrid.innerHTML = '';
+            setShown(document.getElementById('category-empty'), !(categories && categories.length));
+
+            (categories || []).forEach(cat => {
+                const selected = currentId ? String(cat.id) === currentId : (currentName ? cat.name === currentName : false);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'category-btn flex flex-col items-center gap-1.5 p-2 min-h-[72px] rounded-xl border transition-colors text-center cursor-pointer';
+                btn.dataset.id = cat.id;
+                btn.dataset.category = cat.name;
+                btn.dataset.type = cat.category_type || 'EXPENSE';
+                btn.innerHTML = `
+                    <span class="${CAT_ICON_BASE}">
+                        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">${escapeHtml(cat.icon_name || 'category')}</span>
+                    </span>
+                    <span class="text-xs font-medium leading-tight truncate w-full">${escapeHtml(cat.name)}</span>
+                `;
+                setCategoryBtnState(btn, selected);
+                btn.addEventListener('click', () => selectCategoryBtn(btn));
+                categoryGrid.appendChild(btn);
             });
-            btn.classList.add('active', 'border-deep-forest', 'bg-primary-pale', 'text-deep-forest');
-            btn.classList.remove('border-surface-variant/60', 'bg-surface-container-low/40', 'text-on-surface-variant');
-            btn.setAttribute('aria-pressed', 'true');
-            const activeIconBox = btn.querySelector('div');
-            if (activeIconBox) {
-                activeIconBox.classList.add('bg-primary', 'text-on-primary');
-                activeIconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
-            }
-            markDirty();
+
+            categoryGrid.appendChild(buildAddCategoryTile());
         }
 
-        function renderCategoriesModalList(categories) {
+        // Generic row mode switch for manager lists: display | edit | confirm
+        function setRowMode(row, prefix, mode) {
+            ['display', 'edit', 'confirm'].forEach(m => {
+                const el = row.querySelector(`.${prefix}-${m}`);
+                if (el) setShown(el, m === mode, 'flex');
+            });
+        }
+        function setRowError(row, selector, input, message) {
+            const errEl = row.querySelector(selector);
+            if (errEl) {
+                errEl.textContent = message || '';
+                errEl.classList.toggle('hidden', !message);
+            }
+            if (input) {
+                if (message) input.setAttribute('aria-invalid', 'true');
+                else input.removeAttribute('aria-invalid');
+            }
+        }
+
+        function renderCategoriesModalList(categories, query = '') {
             if (!catListContainer) return;
             catListContainer.innerHTML = '';
             if (!categories || categories.length === 0) {
+                const message = query ? 'No categories match your search.' : 'No categories yet.';
                 catListContainer.innerHTML = `
-                    <div class="text-center py-6 px-4 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-2xl border border-outline-variant/40 flex flex-col items-center gap-1.5">
-                        <span class="material-symbols-outlined text-[24px] text-on-surface-variant/60">category</span>
-                        <p class="font-bold">No matching categories found.</p>
-                        <button type="button" class="text-[11px] font-bold text-positive-deep hover:underline mt-1 cursor-pointer" onclick="switchCategoryModalTab('add')">+ Create a new category</button>
+                    <div class="text-center py-6 px-4 flex flex-col items-center gap-3">
+                        <p class="text-sm text-body">${message}</p>
+                        <button type="button" class="btn-empty-create-cat min-h-[44px] px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors cursor-pointer">Create a category</button>
                     </div>
                 `;
+                const createBtn = catListContainer.querySelector('.btn-empty-create-cat');
+                if (createBtn) createBtn.addEventListener('click', () => switchCategoryModalTab('add'));
                 return;
             }
 
             categories.forEach(cat => {
+                const safeId = escapeHtml(cat.id);
+                const safeName = escapeHtml(cat.name);
                 const row = document.createElement('div');
-                row.className = "flex items-center justify-between p-3 rounded-2xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant hover:bg-surface-container-low transition-all gap-2";
+                row.className = 'py-2.5 border-b border-outline-variant last:border-b-0';
                 row.id = `cat-row-${cat.id}`;
 
                 const badgeHtml = cat.has_budget
-                    ? `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-pale text-positive-deep border border-positive/30">Limit: ${cat.limit_formatted}</span>`
-                    : `<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40">Track Only</span>`;
+                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-pale text-positive-deep tabular-nums">Limit: ${escapeHtml(cat.limit_formatted)}</span>`
+                    : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-canvas-soft text-body">Track only</span>`;
 
                 row.innerHTML = `
-                    <!-- Display Mode -->
                     <div class="cat-display flex items-center justify-between w-full gap-2">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
-                                <span class="material-symbols-outlined text-[19px] text-positive-deep">${cat.icon_name || 'category'}</span>
-                            </div>
+                            <span class="w-9 h-9 rounded-xl bg-canvas-soft flex items-center justify-center text-deep-forest shrink-0" aria-hidden="true">
+                                <span class="material-symbols-outlined text-[20px]">${escapeHtml(cat.icon_name || 'category')}</span>
+                            </span>
                             <div class="flex flex-col min-w-0">
-                                <span class="font-label-md text-xs sm:text-sm font-bold text-deep-forest truncate">${escapeHtml(cat.name)}</span>
+                                <span class="text-sm font-semibold text-ink truncate">${safeName}</span>
                                 <div class="mt-0.5">${badgeHtml}</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" class="btn-edit-cat w-8 h-8 rounded-xl text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Rename">
-                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                            <button type="button" class="btn-edit-cat tap w-9 h-9 rounded-xl text-body hover:text-ink hover:bg-surface-container-low flex items-center justify-center transition-colors cursor-pointer" aria-label="Rename ${safeName}">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
                             </button>
-                            <button type="button" class="btn-delete-cat w-8 h-8 rounded-xl text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer" data-id="${cat.id}" title="Delete">
-                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            <button type="button" class="btn-delete-cat tap w-9 h-9 rounded-xl text-body hover:text-negative-deep hover:bg-negative/10 flex items-center justify-center transition-colors cursor-pointer" aria-label="Delete ${safeName}">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Inline Edit Mode -->
-                    <div class="cat-edit hidden items-center gap-2 w-full">
-                        <input type="text" class="input-edit-cat-name flex-1 px-3 py-1.5 rounded-xl border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary/20" value="${escapeHtml(cat.name)}" placeholder="Category name" />
-                        <button type="button" class="btn-save-cat-edit px-2.5 py-1.5 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer text-xs font-bold gap-1" data-id="${cat.id}" title="Save">
-                            <span class="material-symbols-outlined text-[15px]">check</span>
-                            <span>Save</span>
-                        </button>
-                        <button type="button" class="btn-cancel-cat-edit w-8 h-8 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${cat.id}" title="Cancel">
-                            <span class="material-symbols-outlined text-[16px]">close</span>
-                        </button>
+                    <div class="cat-edit hidden flex-col gap-1 w-full">
+                        <div class="flex items-center gap-2">
+                            <input type="text" class="input-edit-cat-name flex-1 min-w-0 px-3 py-2 rounded-xl border border-outline-variant text-base text-ink bg-canvas outline-none focus:border-deep-forest" value="${safeName}" aria-label="New name for ${safeName}" aria-describedby="cat-edit-error-${safeId}" autocomplete="off" />
+                            <button type="button" class="btn-save-cat-edit min-h-[44px] px-3 rounded-xl bg-primary text-on-primary text-sm font-semibold flex items-center justify-center gap-1 cursor-pointer disabled:opacity-70 disabled:cursor-wait">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">check</span>
+                                <span>Save</span>
+                            </button>
+                            <button type="button" class="btn-cancel-cat-edit tap w-9 h-9 rounded-xl bg-canvas-soft text-body hover:text-ink flex items-center justify-center cursor-pointer" aria-label="Cancel rename">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
+                            </button>
+                        </div>
+                        <p id="cat-edit-error-${safeId}" class="cat-edit-error hidden text-sm font-medium text-negative-deep" role="alert"></p>
                     </div>
                 `;
                 catListContainer.appendChild(row);
-            });
-
-            attachCategoryRowListeners();
-        }
-
-        function attachCategoryRowListeners() {
-            // Edit trigger
-            document.querySelectorAll('.btn-edit-cat').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const row = document.getElementById(`cat-row-${btn.dataset.id}`);
-                    if (!row) return;
-                    row.querySelector('.cat-display').classList.add('hidden');
-                    const editMode = row.querySelector('.cat-edit');
-                    editMode.classList.remove('hidden');
-                    editMode.classList.add('flex');
-                    const input = editMode.querySelector('.input-edit-cat-name');
-                    if (input) { 
-                        input.focus(); 
-                        input.select(); 
-                        input.onkeydown = (e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                row.querySelector('.btn-save-cat-edit')?.click();
-                            } else if (e.key === 'Escape') {
-                                row.querySelector('.btn-cancel-cat-edit')?.click();
-                            }
-                        };
-                    }
-                });
-            });
-
-            // Cancel Edit
-            document.querySelectorAll('.btn-cancel-cat-edit').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const row = document.getElementById(`cat-row-${btn.dataset.id}`);
-                    if (!row) return;
-                    row.querySelector('.cat-display').classList.remove('hidden');
-                    const editMode = row.querySelector('.cat-edit');
-                    editMode.classList.add('hidden');
-                    editMode.classList.remove('flex');
-                });
-            });
-
-            // Save Edit (Rename)
-            document.querySelectorAll('.btn-save-cat-edit').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const catId = btn.dataset.id;
-                    const row = document.getElementById(`cat-row-${catId}`);
-                    if (!row) return;
-
-                    const nameInput = row.querySelector('.input-edit-cat-name');
-                    const newName = nameInput ? nameInput.value.trim() : '';
-
-                    if (!newName) {
-                        alert("Category name is required.");
-                        return;
-                    }
-
-                    try {
-                        btn.disabled = true;
-                        const res = await fetch(getApiUrl(`/api/categories/${catId}/update/`), {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: newName })
-                        });
-                        const data = await res.json();
-                        if (data.success) {
-                            await fetchAndRenderCategories();
-                        } else {
-                            alert(data.error || 'Failed to update category.');
-                        }
-                    } catch (e) {
-                        console.error(e);
-                    }
-                });
-            });
-
-            // Delete Category
-            document.querySelectorAll('.btn-delete-cat').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const catId = btn.dataset.id;
-                    const cat = userCategoriesCache.find(c => String(c.id) === String(catId));
-                    const catName = cat ? cat.name : 'this category';
-                    openDeleteCategoryConfirmModal(catId, catName);
-                });
+                attachCategoryRowListeners(row, cat);
             });
         }
 
-        // Delete Confirmation Modal Engine
+        function attachCategoryRowListeners(row, cat) {
+            const editBtn = row.querySelector('.btn-edit-cat');
+            const deleteBtn = row.querySelector('.btn-delete-cat');
+            const cancelBtn = row.querySelector('.btn-cancel-cat-edit');
+            const saveBtn = row.querySelector('.btn-save-cat-edit');
+            const input = row.querySelector('.input-edit-cat-name');
+
+            function exitEdit() {
+                setRowError(row, '.cat-edit-error', input, '');
+                if (input) input.value = cat.name;
+                setRowMode(row, 'cat', 'display');
+                if (editBtn) editBtn.focus();
+            }
+
+            if (editBtn) editBtn.addEventListener('click', () => {
+                setRowMode(row, 'cat', 'edit');
+                if (input) { input.focus(); input.select(); }
+            });
+            if (cancelBtn) cancelBtn.addEventListener('click', exitEdit);
+            if (input) input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); if (saveBtn) saveBtn.click(); }
+            });
+            row.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && e.target.closest('.cat-edit')) { e.preventDefault(); exitEdit(); }
+            });
+
+            if (saveBtn) saveBtn.addEventListener('click', async () => {
+                const newName = input ? input.value.trim() : '';
+                if (!newName) {
+                    setRowError(row, '.cat-edit-error', input, 'Enter a category name.');
+                    if (input) input.focus();
+                    return;
+                }
+                setRowError(row, '.cat-edit-error', input, '');
+                saveBtn.disabled = true;
+                try {
+                    const res = await fetch(`/api/categories/${encodeURIComponent(cat.id)}/update/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newName })
+                    });
+                    const data = await readJson(res);
+                    if (res.ok && data.success) {
+                        await fetchAndRenderCategories();
+                        toastSuccess(`Renamed to “${newName}”`);
+                    } else {
+                        setRowError(row, '.cat-edit-error', input, data.error || "Couldn't rename this category. Try again.");
+                        if (input) input.focus();
+                    }
+                } catch (e) {
+                    console.error(e);
+                    toastError("Couldn't rename the category. Check your connection and try again.");
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            });
+
+            if (deleteBtn) deleteBtn.addEventListener('click', () => openDeleteCategoryConfirmModal(cat.id, cat.name));
+        }
+
+        // Delete-category confirmation dialog
         let pendingCatDeleteId = null;
-        const modalDeleteCatConfirm = document.getElementById('modal-delete-category-confirm');
-        const modalDeleteCatContent = document.getElementById('modal-delete-category-content');
+        const deleteCatDialog = makeDialog('modal-delete-category-confirm', 'modal-delete-category-content');
         const labelDeleteCatConfirmName = document.getElementById('delete-cat-confirm-name');
         const btnCancelDeleteCat = document.getElementById('btn-cancel-delete-cat');
         const btnConfirmDeleteCat = document.getElementById('btn-confirm-delete-cat');
         const btnConfirmDeleteCatText = document.getElementById('btn-confirm-delete-cat-text');
+        const btnConfirmDeleteCatIcon = document.getElementById('btn-confirm-delete-cat-icon');
+
+        function resetDeleteCatButton() {
+            if (btnConfirmDeleteCat) btnConfirmDeleteCat.disabled = false;
+            if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = false;
+            if (btnConfirmDeleteCatIcon) {
+                btnConfirmDeleteCatIcon.textContent = 'delete';
+                btnConfirmDeleteCatIcon.classList.remove('animate-spin');
+            }
+            if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
+        }
 
         function openDeleteCategoryConfirmModal(catId, catName) {
             pendingCatDeleteId = catId;
-            if (labelDeleteCatConfirmName) labelDeleteCatConfirmName.textContent = `"${catName}"`;
-            const icon = document.getElementById('btn-confirm-delete-cat-icon');
-            if (icon) {
-                icon.textContent = 'delete';
-                icon.classList.remove('animate-spin');
-            }
-            if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
-            if (btnConfirmDeleteCat) btnConfirmDeleteCat.disabled = false;
-            if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = false;
-
-            if (modalDeleteCatConfirm) {
-                modalDeleteCatConfirm.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    modalDeleteCatConfirm.classList.remove('opacity-0');
-                    modalDeleteCatConfirm.classList.add('opacity-100');
-                    if (modalDeleteCatContent) {
-                        modalDeleteCatContent.classList.remove('scale-95');
-                        modalDeleteCatContent.classList.add('scale-100');
-                    }
-                });
-            }
+            if (labelDeleteCatConfirmName) labelDeleteCatConfirmName.textContent = `“${catName || 'this category'}”`;
+            resetDeleteCatButton();
+            deleteCatDialog.open('#btn-cancel-delete-cat');
         }
-
         function closeDeleteCategoryConfirmModal() {
-            if (modalDeleteCatConfirm) {
-                modalDeleteCatConfirm.classList.remove('opacity-100');
-                modalDeleteCatConfirm.classList.add('opacity-0');
-                if (modalDeleteCatContent) {
-                    modalDeleteCatContent.classList.remove('scale-100');
-                    modalDeleteCatContent.classList.add('scale-95');
-                }
-                setTimeout(() => {
-                    modalDeleteCatConfirm.classList.add('hidden');
-                    pendingCatDeleteId = null;
-                }, 200);
-            }
+            deleteCatDialog.close();
+            pendingCatDeleteId = null;
         }
 
         if (btnCancelDeleteCat) btnCancelDeleteCat.addEventListener('click', closeDeleteCategoryConfirmModal);
-        if (modalDeleteCatConfirm) {
-            modalDeleteCatConfirm.addEventListener('click', (e) => {
-                if (e.target === modalDeleteCatConfirm) closeDeleteCategoryConfirmModal();
-            });
-        }
 
         if (btnConfirmDeleteCat) {
             btnConfirmDeleteCat.addEventListener('click', async () => {
                 if (!pendingCatDeleteId) return;
-                const icon = document.getElementById('btn-confirm-delete-cat-icon');
+                const deletedId = pendingCatDeleteId;
+                const deletedName = (labelDeleteCatConfirmName && labelDeleteCatConfirmName.textContent) || 'Category';
+                btnConfirmDeleteCat.disabled = true;
+                if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = true;
+                if (btnConfirmDeleteCatIcon) {
+                    btnConfirmDeleteCatIcon.textContent = 'progress_activity';
+                    btnConfirmDeleteCatIcon.classList.add('animate-spin');
+                }
+                if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Deleting…';
                 try {
-                    btnConfirmDeleteCat.disabled = true;
-                    if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = true;
-                    if (icon) {
-                        icon.textContent = 'progress_activity';
-                        icon.classList.add('animate-spin');
-                    }
-                    if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Deleting...';
-                    const res = await fetch(getApiUrl(`/api/categories/${pendingCatDeleteId}/delete/`), {
+                    const res = await fetch(`/api/categories/${encodeURIComponent(deletedId)}/delete/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     });
-                    const data = await res.json();
-                    if (data.success) {
-                        closeDeleteCategoryConfirmModal();
+                    const data = await readJson(res);
+                    if (res.ok && data.success) {
                         await fetchAndRenderCategories();
+                        closeDeleteCategoryConfirmModal();
+                        toastSuccess(`Deleted ${deletedName}`);
+                        if (!document.activeElement || document.activeElement === document.body) {
+                            if (searchModalCatInput) searchModalCatInput.focus();
+                        }
                     } else {
-                        alert(data.error || 'Failed to delete category.');
+                        closeDeleteCategoryConfirmModal();
+                        toastError(data.error || "Couldn't delete this category. Try again.");
                     }
                 } catch (e) {
                     console.error(e);
                     closeDeleteCategoryConfirmModal();
+                    toastError("Couldn't delete the category. Check your connection and try again.");
                 } finally {
-                    btnConfirmDeleteCat.disabled = false;
-                    if (btnCancelDeleteCat) btnCancelDeleteCat.disabled = false;
-                    if (icon) {
-                        icon.textContent = 'delete';
-                        icon.classList.remove('animate-spin');
-                    }
-                    if (btnConfirmDeleteCatText) btnConfirmDeleteCatText.textContent = 'Delete';
+                    resetDeleteCatButton();
                 }
             });
         }
 
-        // Add Category Submit
+        // Create category
+        const ADD_CAT_BTN_HTML = '<span class="material-symbols-outlined text-[20px]" aria-hidden="true">add_circle</span><span>Create category</span>';
         if (btnAddCatSubmit) {
             btnAddCatSubmit.addEventListener('click', async () => {
                 const name = inputNewCatName ? inputNewCatName.value.trim() : '';
                 if (!name) {
-                    if (inputNewCatName) {
-                        inputNewCatName.focus();
-                        inputNewCatName.classList.add('border-expense', 'ring-2', 'ring-expense/20');
-                        setTimeout(() => inputNewCatName.classList.remove('border-expense', 'ring-2', 'ring-expense/20'), 2000);
-                    }
+                    showFieldError('new-cat-name-error', 'Enter a category name.', inputNewCatName);
+                    if (inputNewCatName) inputNewCatName.focus();
                     return;
                 }
 
-                const limitVal = newCatHasBudget && inputNewCatLimit ? parseFloat(inputNewCatLimit.value) : null;
+                let limitVal = null;
+                if (newCatHasBudget) {
+                    limitVal = inputNewCatLimit ? parseFloat(inputNewCatLimit.value) : NaN;
+                    if (isNaN(limitVal) || limitVal <= 0) {
+                        showFieldError('new-cat-limit-error', 'Enter a monthly limit above ₱0.', inputNewCatLimit);
+                        if (inputNewCatLimit) inputNewCatLimit.focus();
+                        return;
+                    }
+                }
 
+                btnAddCatSubmit.disabled = true;
+                btnAddCatSubmit.innerHTML = '<span class="material-symbols-outlined animate-spin motion-reduce:animate-none text-[20px]" aria-hidden="true">progress_activity</span><span>Creating…</span>';
                 try {
-                    btnAddCatSubmit.disabled = true;
-                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span><span>Creating...</span>`;
-                    
-                    const res = await fetch(getApiUrl('/api/categories/create/'), {
+                    const res = await fetch('/api/categories/create/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1123,27 +1141,28 @@
                             amount_limit: limitVal
                         })
                     });
-                    const data = await res.json();
-                    btnAddCatSubmit.disabled = false;
-                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_circle</span><span>Create Category</span>`;
-                    
-                    if (data.success) {
+                    const data = await readJson(res);
+
+                    if (res.ok && data.success) {
                         if (inputNewCatName) inputNewCatName.value = '';
                         if (inputNewCatLimit) inputNewCatLimit.value = '';
                         await fetchAndRenderCategories();
-                        // Select newly created category on form
                         if (data.category) {
-                            const newBtn = document.querySelector(`.category-btn[data-category="${data.category.name}"]`);
+                            const newBtn = findCategoryBtn({ id: data.category.id, name: data.category.name });
                             if (newBtn) selectCategoryBtn(newBtn);
                         }
                         closeManageCategoriesModal();
+                        toastSuccess(`Added “${name}”`);
                     } else {
-                        alert(data.error || 'Failed to create category.');
+                        showFieldError('new-cat-name-error', data.error || "Couldn't create the category. Try again.", inputNewCatName);
+                        if (inputNewCatName) inputNewCatName.focus();
                     }
                 } catch (e) {
-                    btnAddCatSubmit.disabled = false;
-                    btnAddCatSubmit.innerHTML = `<span class="material-symbols-outlined text-[18px]">add_circle</span><span>Create Category</span>`;
                     console.error(e);
+                    toastError("Couldn't create the category. Check your connection and try again.");
+                } finally {
+                    btnAddCatSubmit.disabled = false;
+                    btnAddCatSubmit.innerHTML = ADD_CAT_BTN_HTML;
                 }
             });
         }
@@ -1152,8 +1171,7 @@
         // PAYMENT METHOD / ACCOUNT MANAGEMENT ENGINE
         // ═══════════════════════════════════════════════════════════
 
-        const manageAccountsModal = document.getElementById('modal-manage-accounts');
-        const manageAccountsContent = document.getElementById('modal-manage-accounts-content');
+        const accountsDialog = makeDialog('modal-manage-accounts', 'modal-manage-accounts-content');
         const openManageAccountsBtn = document.getElementById('btn-open-manage-accounts');
         const closeManageAccountsBtn = document.getElementById('btn-close-manage-accounts');
         const doneManageAccountsBtn = document.getElementById('btn-done-manage-accounts');
@@ -1163,98 +1181,97 @@
         const btnAddAccSubmit = document.getElementById('btn-add-acc-submit');
         const presetAccButtons = document.querySelectorAll('.acc-preset-chip');
 
-        function openManageAccountsModal() {
-            if (!manageAccountsModal) return;
-            document.body.style.overflow = 'hidden';
-            manageAccountsModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                manageAccountsModal.classList.remove('opacity-0');
-                manageAccountsModal.classList.add('opacity-100');
-                if (manageAccountsContent) {
-                    manageAccountsContent.classList.remove('scale-95');
-                    manageAccountsContent.classList.add('scale-100');
-                }
-            });
+        function openManageAccountsModal(initialFocus) {
+            accountsDialog.open(initialFocus || '#btn-close-manage-accounts');
             fetchAndRenderAccounts();
         }
+        function closeManageAccountsModal() { accountsDialog.close(); }
 
-        function closeManageAccountsModal() {
-            if (!manageAccountsModal) return;
-            manageAccountsModal.classList.remove('opacity-100');
-            manageAccountsModal.classList.add('opacity-0');
-            if (manageAccountsContent) {
-                manageAccountsContent.classList.remove('scale-100');
-                manageAccountsContent.classList.add('scale-95');
-            }
-            setTimeout(() => {
-                manageAccountsModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200);
-        }
-
-        if (openManageAccountsBtn) openManageAccountsBtn.addEventListener('click', openManageAccountsModal);
+        if (openManageAccountsBtn) openManageAccountsBtn.addEventListener('click', () => openManageAccountsModal());
         if (closeManageAccountsBtn) closeManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
         if (doneManageAccountsBtn) doneManageAccountsBtn.addEventListener('click', closeManageAccountsModal);
+        document.querySelectorAll('.btn-empty-add-account').forEach(btn => {
+            btn.addEventListener('click', () => openManageAccountsModal('#input-new-acc-name'));
+        });
 
         presetAccButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (inputNewAccName) inputNewAccName.value = btn.dataset.name || '';
                 if (selectNewAccType) selectNewAccType.value = btn.dataset.type || 'E_WALLET';
+                clearFieldError('new-acc-name-error', inputNewAccName);
             });
         });
+        if (inputNewAccName) {
+            inputNewAccName.addEventListener('input', () => clearFieldError('new-acc-name-error', inputNewAccName));
+            inputNewAccName.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); if (btnAddAccSubmit) btnAddAccSubmit.click(); }
+            });
+        }
 
         async function fetchAndRenderAccounts() {
-            if (!accountsListContainer) return;
             try {
-                const res = await fetch(getApiUrl('/api/accounts/'));
-                const data = await res.json();
-                if (data.accounts) {
+                const res = await fetch('/api/accounts/');
+                const data = await readJson(res);
+                if (res.ok && data.accounts) {
                     userAccountsCache = data.accounts;
                     renderAccountsList(userAccountsCache);
-                    updateSelectAccountDropdown(userAccountsCache);
+                    updateAccountSelects(userAccountsCache);
                 }
             } catch (err) {
-                console.error("Failed to load accounts:", err);
+                console.error('Failed to load accounts:', err);
             }
         }
 
-        function updateSelectAccountDropdown(accounts) {
-            if (!selectAccount) return;
-            const currentSelectedVal = selectAccount.value;
-            selectAccount.innerHTML = '';
-            
+        function fillAccountSelect(sel, accounts) {
+            if (!sel) return;
+            const prev = sel.value;
+            sel.innerHTML = '';
             accounts.forEach(acc => {
                 const opt = document.createElement('option');
                 opt.value = acc.name;
                 opt.dataset.id = acc.id;
                 opt.textContent = acc.name;
-                selectAccount.appendChild(opt);
+                sel.appendChild(opt);
             });
+            if (prev && Array.from(sel.options).some(o => o.value === prev)) sel.value = prev;
+        }
 
-            if (currentSelectedVal) {
-                for (let opt of selectAccount.options) {
-                    if (opt.value === currentSelectedVal) {
-                        selectAccount.value = currentSelectedVal;
-                        break;
-                    }
-                }
-            }
+        function syncAccountEmptyState() {
+            const hasAccounts = !!(selectAccount && selectAccount.options.length);
+            setShown(document.getElementById('account-select-wrap'), hasAccounts);
+            setShown(document.getElementById('account-empty'), !hasAccounts, 'flex');
+            setShown(document.getElementById('dest-select-wrap'), hasAccounts);
+            setShown(document.getElementById('dest-empty'), !hasAccounts, 'flex');
+        }
+
+        function updateAccountSelects(accounts) {
+            fillAccountSelect(selectAccount, accounts);
+            fillAccountSelect(selectDestinationAccount, accounts);
+            syncAccountEmptyState();
+        }
+
+        // For transfers, default "To" to an account different from "From".
+        function ensureDistinctDestination() {
+            if (!selectAccount || !selectDestinationAccount) return;
+            if (selectDestinationAccount.value !== selectAccount.value) return;
+            const other = Array.from(selectDestinationAccount.options).find(o => o.value !== selectAccount.value);
+            if (other) selectDestinationAccount.value = other.value;
         }
 
         function renderAccountsList(accounts) {
+            if (!accountsListContainer) return;
             accountsListContainer.innerHTML = '';
-            if (accounts.length === 0) {
-                accountsListContainer.innerHTML = `
-                    <div class="text-center py-3 text-xs text-on-surface-variant bg-surface-container-low/40 rounded-xl">
-                        No payment methods found. Add one below.
-                    </div>
-                `;
+            if (!accounts.length) {
+                accountsListContainer.innerHTML = '<p class="py-3 text-sm text-body">No payment methods yet. Add one below.</p>';
                 return;
             }
 
+            const canDelete = accounts.length > 1;
             accounts.forEach(acc => {
+                const safeId = escapeHtml(acc.id);
+                const safeName = escapeHtml(acc.name);
                 const row = document.createElement('div');
-                row.className = "flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low/40 border border-outline-variant/40 hover:border-outline-variant transition-all gap-2";
+                row.className = 'py-2.5 border-b border-outline-variant last:border-b-0';
                 row.id = `account-row-${acc.id}`;
 
                 let iconName = 'payments';
@@ -1263,123 +1280,151 @@
                 else if (acc.account_type === 'CREDIT_CARD') iconName = 'credit_card';
 
                 row.innerHTML = `
-                    <!-- Display Mode -->
                     <div class="acc-display flex items-center justify-between w-full gap-2">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-surface-container-lowest border border-outline-variant/60 flex items-center justify-center text-deep-forest shrink-0 shadow-2xs">
-                                <span class="material-symbols-outlined text-[17px] text-positive-deep">${iconName}</span>
-                            </div>
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="w-9 h-9 rounded-xl bg-canvas-soft flex items-center justify-center text-deep-forest shrink-0" aria-hidden="true">
+                                <span class="material-symbols-outlined text-[20px]">${iconName}</span>
+                            </span>
                             <div class="flex flex-col min-w-0">
-                                <span class="font-label-md text-xs font-bold text-deep-forest truncate">${escapeHtml(acc.name)}</span>
-                                <span class="text-[10px] text-on-surface-variant font-medium">${escapeHtml(acc.account_type_display || 'Payment Method')}</span>
+                                <span class="text-sm font-semibold text-ink truncate">${safeName}</span>
+                                <span class="text-xs text-body">${escapeHtml(acc.account_type_display || 'Payment method')}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" class="btn-edit-account w-7 h-7 rounded-lg text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-lowest flex items-center justify-center transition-colors cursor-pointer" data-id="${acc.id}" title="Rename">
-                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                            <button type="button" class="btn-edit-account tap w-9 h-9 rounded-xl text-body hover:text-ink hover:bg-surface-container-low flex items-center justify-center transition-colors cursor-pointer" aria-label="Rename ${safeName}">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
                             </button>
-                            <button type="button" class="btn-delete-account w-7 h-7 rounded-lg text-on-surface-variant/70 hover:text-expense hover:bg-expense/10 flex items-center justify-center transition-colors cursor-pointer ${accounts.length <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" data-id="${acc.id}" ${accounts.length <= 1 ? 'disabled' : ''} title="Delete">
-                                <span class="material-symbols-outlined text-[15px]">delete</span>
+                            <button type="button" class="btn-delete-account tap w-9 h-9 rounded-xl text-body hover:text-negative-deep hover:bg-negative/10 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" ${canDelete ? '' : 'disabled title="Keep at least one payment method"'} aria-label="Delete ${safeName}">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Inline Edit Mode -->
-                    <div class="acc-edit hidden items-center gap-1.5 w-full">
-                        <input type="text" class="input-edit-acc-name flex-1 px-2.5 py-1.5 rounded-lg border border-primary text-xs font-bold text-deep-forest bg-surface-container-lowest outline-none" value="${escapeHtml(acc.name)}" placeholder="Payment method name" />
-                        <button type="button" class="btn-save-acc-edit w-7 h-7 rounded-lg bg-primary text-on-primary flex items-center justify-center shadow-xs cursor-pointer" data-id="${acc.id}" title="Save">
-                            <span class="material-symbols-outlined text-[14px]">check</span>
-                        </button>
-                        <button type="button" class="btn-cancel-acc-edit w-7 h-7 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-deep-forest flex items-center justify-center cursor-pointer" data-id="${acc.id}" title="Cancel">
-                            <span class="material-symbols-outlined text-[14px]">close</span>
-                        </button>
+                    <div class="acc-edit hidden flex-col gap-1 w-full">
+                        <div class="flex items-center gap-2">
+                            <input type="text" class="input-edit-acc-name flex-1 min-w-0 px-3 py-2 rounded-xl border border-outline-variant text-base text-ink bg-canvas outline-none focus:border-deep-forest" value="${safeName}" aria-label="New name for ${safeName}" aria-describedby="acc-edit-error-${safeId}" autocomplete="off" />
+                            <button type="button" class="btn-save-acc-edit min-h-[44px] px-3 rounded-xl bg-primary text-on-primary text-sm font-semibold flex items-center justify-center gap-1 cursor-pointer disabled:opacity-70 disabled:cursor-wait">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">check</span>
+                                <span>Save</span>
+                            </button>
+                            <button type="button" class="btn-cancel-acc-edit tap w-9 h-9 rounded-xl bg-canvas-soft text-body hover:text-ink flex items-center justify-center cursor-pointer" aria-label="Cancel rename">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
+                            </button>
+                        </div>
+                        <p id="acc-edit-error-${safeId}" class="acc-edit-error hidden text-sm font-medium text-negative-deep" role="alert"></p>
+                    </div>
+
+                    <div class="acc-confirm hidden items-center justify-between gap-2 w-full">
+                        <span class="text-sm font-medium text-ink min-w-0 truncate">Delete “${safeName}”?</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" class="btn-cancel-acc-delete min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink text-sm font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">Cancel</button>
+                            <button type="button" class="btn-confirm-acc-delete min-h-[44px] px-3 rounded-xl bg-negative text-on-error text-sm font-semibold hover:bg-negative-deep transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-wait">Delete</button>
+                        </div>
                     </div>
                 `;
                 accountsListContainer.appendChild(row);
+                attachAccountRowListeners(row, acc);
             });
-
-            attachAccountRowListeners();
         }
 
-        function attachAccountRowListeners() {
-            document.querySelectorAll('.btn-edit-account').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const row = document.getElementById(`account-row-${btn.dataset.id}`);
-                    if (!row) return;
-                    row.querySelector('.acc-display').classList.add('hidden');
-                    const editMode = row.querySelector('.acc-edit');
-                    editMode.classList.remove('hidden');
-                    editMode.classList.add('flex');
-                    const input = editMode.querySelector('.input-edit-acc-name');
-                    if (input) { input.focus(); input.select(); }
-                });
+        function attachAccountRowListeners(row, acc) {
+            const editBtn = row.querySelector('.btn-edit-account');
+            const deleteBtn = row.querySelector('.btn-delete-account');
+            const cancelEditBtn = row.querySelector('.btn-cancel-acc-edit');
+            const saveBtn = row.querySelector('.btn-save-acc-edit');
+            const input = row.querySelector('.input-edit-acc-name');
+            const cancelDeleteBtn = row.querySelector('.btn-cancel-acc-delete');
+            const confirmDeleteBtn = row.querySelector('.btn-confirm-acc-delete');
+
+            function exitEdit() {
+                setRowError(row, '.acc-edit-error', input, '');
+                if (input) input.value = acc.name;
+                setRowMode(row, 'acc', 'display');
+                if (editBtn) editBtn.focus();
+            }
+            function exitConfirm() {
+                setRowMode(row, 'acc', 'display');
+                if (deleteBtn) deleteBtn.focus();
+            }
+
+            if (editBtn) editBtn.addEventListener('click', () => {
+                setRowMode(row, 'acc', 'edit');
+                if (input) { input.focus(); input.select(); }
+            });
+            if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEdit);
+            if (input) input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); if (saveBtn) saveBtn.click(); }
             });
 
-            document.querySelectorAll('.btn-cancel-acc-edit').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const row = document.getElementById(`account-row-${btn.dataset.id}`);
-                    if (!row) return;
-                    row.querySelector('.acc-display').classList.remove('hidden');
-                    const editMode = row.querySelector('.acc-edit');
-                    editMode.classList.add('hidden');
-                    editMode.classList.remove('flex');
-                });
+            if (saveBtn) saveBtn.addEventListener('click', async () => {
+                const newName = input ? input.value.trim() : '';
+                if (!newName) {
+                    setRowError(row, '.acc-edit-error', input, 'Enter a payment method name.');
+                    if (input) input.focus();
+                    return;
+                }
+                setRowError(row, '.acc-edit-error', input, '');
+                saveBtn.disabled = true;
+                try {
+                    const res = await fetch(`/api/accounts/${encodeURIComponent(acc.id)}/update/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newName })
+                    });
+                    const data = await readJson(res);
+                    if (res.ok && data.success) {
+                        await fetchAndRenderAccounts();
+                        toastSuccess(`Renamed to “${newName}”`);
+                    } else {
+                        setRowError(row, '.acc-edit-error', input, data.error || "Couldn't rename this payment method. Try again.");
+                        if (input) input.focus();
+                    }
+                } catch (e) {
+                    console.error(e);
+                    toastError("Couldn't rename the payment method. Check your connection and try again.");
+                } finally {
+                    saveBtn.disabled = false;
+                }
             });
 
-            document.querySelectorAll('.btn-save-acc-edit').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const accId = btn.dataset.id;
-                    const row = document.getElementById(`account-row-${accId}`);
-                    if (!row) return;
-
-                    const nameInput = row.querySelector('.input-edit-acc-name');
-                    const newName = nameInput ? nameInput.value.trim() : '';
-
-                    if (!newName) {
-                        alert("Payment method name is required.");
-                        return;
-                    }
-
-                    try {
-                        btn.disabled = true;
-                        const res = await fetch(getApiUrl(`/api/accounts/${accId}/update/`), {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: newName })
-                        });
-                        const data = await res.json();
-                        if (data.success) {
-                            await fetchAndRenderAccounts();
-                        } else {
-                            alert(data.error || 'Failed to update payment method.');
-                        }
-                    } catch (e) {
-                        console.error(e);
-                    }
-                });
+            // Inline delete confirm: the row turns into "Delete “GCash”? [Cancel] [Delete]"
+            if (deleteBtn) deleteBtn.addEventListener('click', () => {
+                setRowMode(row, 'acc', 'confirm');
+                if (cancelDeleteBtn) cancelDeleteBtn.focus();
+            });
+            if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', exitConfirm);
+            row.addEventListener('keydown', (e) => {
+                if (e.key !== 'Escape') return;
+                if (e.target.closest('.acc-confirm')) { e.preventDefault(); exitConfirm(); }
+                else if (e.target.closest('.acc-edit')) { e.preventDefault(); exitEdit(); }
             });
 
-            document.querySelectorAll('.btn-delete-account').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const accId = btn.dataset.id;
-                    if (!confirm("Are you sure you want to delete this payment method?")) return;
-
-                    try {
-                        btn.disabled = true;
-                        const res = await fetch(getApiUrl(`/api/accounts/${accId}/delete/`), {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        const data = await res.json();
-                        if (data.success) {
-                            await fetchAndRenderAccounts();
-                        } else {
-                            alert(data.error || 'Failed to delete payment method.');
-                        }
-                    } catch (e) {
-                        console.error(e);
+            if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', async () => {
+                confirmDeleteBtn.disabled = true;
+                if (cancelDeleteBtn) cancelDeleteBtn.disabled = true;
+                try {
+                    const res = await fetch(`/api/accounts/${encodeURIComponent(acc.id)}/delete/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await readJson(res);
+                    if (res.ok && data.success) {
+                        await fetchAndRenderAccounts();
+                        toastSuccess(`Deleted “${acc.name}”`);
+                        const nextFocus = accountsListContainer.querySelector('.btn-edit-account') || closeManageAccountsBtn;
+                        if (nextFocus) nextFocus.focus();
+                    } else {
+                        exitConfirm();
+                        toastError(data.error || "Couldn't delete this payment method. Try again.");
                     }
-                });
+                } catch (e) {
+                    console.error(e);
+                    exitConfirm();
+                    toastError("Couldn't delete the payment method. Check your connection and try again.");
+                } finally {
+                    confirmDeleteBtn.disabled = false;
+                    if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
+                }
             });
         }
 
@@ -1389,6 +1434,7 @@
                 const type = selectNewAccType ? selectNewAccType.value : 'E_WALLET';
 
                 if (!name) {
+                    showFieldError('new-acc-name-error', 'Enter a payment method name.', inputNewAccName);
                     if (inputNewAccName) inputNewAccName.focus();
                     return;
                 }
@@ -1398,170 +1444,158 @@
                 else if (type === 'BANK_ACCOUNT') icon = 'account_balance';
                 else if (type === 'CREDIT_CARD') icon = 'credit_card';
 
+                btnAddAccSubmit.disabled = true;
                 try {
-                    btnAddAccSubmit.disabled = true;
-                    const res = await fetch(getApiUrl('/api/accounts/create/'), {
+                    const res = await fetch('/api/accounts/create/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, account_type: type, icon })
                     });
-                    const data = await res.json();
-                    btnAddAccSubmit.disabled = false;
-                    if (data.success) {
+                    const data = await readJson(res);
+                    if (res.ok && data.success) {
                         if (inputNewAccName) inputNewAccName.value = '';
                         await fetchAndRenderAccounts();
                         if (selectAccount && data.account) {
-                            selectAccount.value = data.account.name;
+                            const opt = Array.from(selectAccount.options).find(o => o.dataset.id === String(data.account.id) || o.value === data.account.name);
+                            if (opt) selectAccount.value = opt.value;
                         }
+                        clearFieldError('dest-error', selectDestinationAccount);
+                        toastSuccess(`Added “${name}”`);
                     } else {
-                        alert(data.error || 'Failed to create payment method.');
+                        showFieldError('new-acc-name-error', data.error || "Couldn't add the payment method. Try again.", inputNewAccName);
+                        if (inputNewAccName) inputNewAccName.focus();
                     }
                 } catch (e) {
-                    btnAddAccSubmit.disabled = false;
                     console.error(e);
+                    toastError("Couldn't add the payment method. Check your connection and try again.");
+                } finally {
+                    btnAddAccSubmit.disabled = false;
                 }
             });
         }
 
-        // ─── Type Tabs (Expense, Income, Transfer) ───
+        // ─── Type Segments (Expense, Income, Transfer) ───
         const typeTabs = document.querySelectorAll('.type-tab');
         const containerCategorySection = document.getElementById('container-category-section');
         const containerDestinationAccount = document.getElementById('container-destination-account');
         const labelInputTitle = document.getElementById('label-input-title');
         const labelSelectAccount = document.getElementById('label-select-account');
-        const selectDestinationAccount = document.getElementById('select-destination-account');
+
+        function getActiveType() {
+            const t = document.querySelector('.type-tab[aria-pressed="true"]');
+            return t ? t.dataset.type : 'expense';
+        }
 
         function updateFormForType(type) {
             if (type === 'expense') {
-                if (labelInputTitle) labelInputTitle.textContent = 'Title / Merchant';
-                if (inputTitle) inputTitle.placeholder = 'e.g. Jollibee Lunch, Grab Fare, SM Groceries';
-                if (labelSelectAccount) labelSelectAccount.textContent = 'Payment Method / Wallet';
-                if (containerCategorySection) containerCategorySection.classList.remove('hidden');
-                if (containerDestinationAccount) {
-                    containerDestinationAccount.classList.add('hidden');
-                    containerDestinationAccount.classList.remove('flex');
-                }
+                if (labelInputTitle) labelInputTitle.textContent = 'Title (optional)';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Jollibee lunch, Grab fare';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'Payment method';
             } else if (type === 'income') {
-                if (labelInputTitle) labelInputTitle.textContent = 'Income Source / Payer';
-                if (inputTitle) inputTitle.placeholder = 'e.g. Monthly Salary, Client Payment, Freelance Project';
-                if (labelSelectAccount) labelSelectAccount.textContent = 'Deposit To (Wallet / Bank)';
-                if (containerCategorySection) containerCategorySection.classList.remove('hidden');
-                if (containerDestinationAccount) {
-                    containerDestinationAccount.classList.add('hidden');
-                    containerDestinationAccount.classList.remove('flex');
-                }
+                if (labelInputTitle) labelInputTitle.textContent = 'Source (optional)';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Salary, client payment';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'Deposit to';
             } else if (type === 'transfer') {
-                if (labelInputTitle) labelInputTitle.textContent = 'Transfer Description';
-                if (inputTitle) inputTitle.placeholder = 'e.g. Fund Transfer to BPI, Cash-in from GCash';
-                if (labelSelectAccount) labelSelectAccount.textContent = 'From (Source Account)';
-                if (containerCategorySection) containerCategorySection.classList.add('hidden');
-                if (containerDestinationAccount) {
-                    containerDestinationAccount.classList.remove('hidden');
-                    containerDestinationAccount.classList.add('flex');
-                }
+                if (labelInputTitle) labelInputTitle.textContent = 'Description (optional)';
+                if (inputTitle) inputTitle.placeholder = 'e.g. Cash-in from GCash';
+                if (labelSelectAccount) labelSelectAccount.textContent = 'From account';
+                ensureDistinctDestination();
             }
+            setShown(containerCategorySection, type !== 'transfer');
+            setShown(containerDestinationAccount, type === 'transfer', 'flex');
+            if (type !== 'expense') clearFieldError('category-error');
+            if (type !== 'transfer') clearFieldError('dest-error', selectDestinationAccount);
+        }
+
+        function setActiveType(type, options = {}) {
+            typeTabs.forEach(t => setSegmentState(t, t.dataset.type === type));
+            updateFormForType(type);
+            if (!options.silent) markDirty();
         }
 
         typeTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                typeTabs.forEach(t => {
-                    t.classList.remove('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs',
-                                       'bg-positive/15', 'text-positive-deep', 'border-positive/30',
-                                       'bg-amber-800/15', 'border-amber-800/30', 'text-amber-800');
-                    t.classList.add('text-body');
-                    t.setAttribute('aria-pressed', 'false');
-                });
-
-                const type = tab.dataset.type;
-                tab.classList.remove('text-body');
-                tab.setAttribute('aria-pressed', 'true');
-
-                if (type === 'expense') {
-                    tab.classList.add('bg-expense/15', 'text-expense', 'border', 'border-expense/30', 'shadow-xs');
-                } else if (type === 'income') {
-                    tab.classList.add('bg-positive/15', 'text-positive-deep', 'border', 'border-positive/30', 'shadow-xs');
-                } else if (type === 'transfer') {
-                    tab.classList.add('bg-amber-800/15', 'text-amber-800', 'border', 'border-amber-800/30', 'shadow-xs');
-                }
-                updateFormForType(type);
-                markDirty();
-            });
+            tab.addEventListener('click', () => setActiveType(tab.dataset.type));
         });
 
         // ─── Input Dirty Tracking ───
         if (inputAmount) inputAmount.addEventListener('input', markDirty);
         if (inputTitle) inputTitle.addEventListener('input', markDirty);
         if (inputDate) inputDate.addEventListener('change', markDirty);
-        if (selectAccount) selectAccount.addEventListener('change', markDirty);
+        if (selectAccount) selectAccount.addEventListener('change', () => { markDirty(); clearFieldError('dest-error', selectDestinationAccount); });
+        if (selectDestinationAccount) selectDestinationAccount.addEventListener('change', () => { markDirty(); clearFieldError('dest-error', selectDestinationAccount); });
         if (inputNotes) inputNotes.addEventListener('input', markDirty);
 
-        // ─── Confirm Discard Modal ───
-        const confirmModal = document.getElementById('modal-confirm-discard');
-        const confirmContent = document.getElementById('modal-confirm-content');
+        // ─── Log Again Chips ───
+        let recentEntries = [];
+        try {
+            const recentEl = document.getElementById('recent-entries-data');
+            recentEntries = recentEl ? JSON.parse(recentEl.textContent) : [];
+        } catch (e) {
+            recentEntries = [];
+        }
+        const logAgainStatus = document.getElementById('log-again-status');
+
+        document.querySelectorAll('.log-again-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const entry = recentEntries[Number(chip.dataset.index)];
+                if (!entry) return;
+
+                // Recent entries are expenses.
+                if (getActiveType() !== 'expense') setActiveType('expense');
+
+                const amountNum = parseFloat(entry.amount);
+                if (inputAmount) {
+                    inputAmount.value = isNaN(amountNum) ? '' : formatNumberWithCommas(amountNum.toFixed(2));
+                    clearFieldError('amount-error', inputAmount);
+                }
+                if (inputTitle) inputTitle.value = entry.title || '';
+
+                if (entry.category_id) {
+                    const catBtn = findCategoryBtn({ id: entry.category_id });
+                    if (catBtn) selectCategoryBtn(catBtn);
+                }
+                if (entry.account_id && selectAccount) {
+                    const opt = Array.from(selectAccount.options).find(o => o.dataset.id === String(entry.account_id));
+                    if (opt) selectAccount.value = opt.value;
+                }
+                markDirty();
+
+                if (logAgainStatus) {
+                    const amountText = isNaN(amountNum) ? '' : `, ₱${amountNum.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    logAgainStatus.textContent = `Filled in ${entry.title || 'entry'}${amountText}. Check the date, then save.`;
+                }
+            });
+        });
+
+        // ─── Confirm Discard Dialog ───
+        const discardDialog = makeDialog('modal-confirm-discard', 'modal-confirm-content');
         const btnKeepEditing = document.getElementById('btn-keep-editing');
         const btnConfirmDiscard = document.getElementById('btn-confirm-discard');
 
         function openConfirmModal(targetUrl) {
             pendingTargetUrl = targetUrl;
-            if (!confirmModal) return;
-            document.body.style.overflow = 'hidden';
-            confirmModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                confirmModal.classList.remove('opacity-0');
-                confirmModal.classList.add('opacity-100');
-                if (confirmContent) {
-                    confirmContent.classList.remove('scale-95');
-                    confirmContent.classList.add('scale-100');
-                }
-            });
+            discardDialog.open('#btn-keep-editing');
         }
-
-        function closeConfirmModal() {
-            if (!confirmModal) return;
-            confirmModal.classList.remove('opacity-100');
-            confirmModal.classList.add('opacity-0');
-            if (confirmContent) {
-                confirmContent.classList.remove('scale-100');
-                confirmContent.classList.add('scale-95');
-            }
-            setTimeout(() => {
-                confirmModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200);
-        }
+        function closeConfirmModal() { discardDialog.close(); }
 
         if (btnKeepEditing) btnKeepEditing.addEventListener('click', closeConfirmModal);
         if (btnConfirmDiscard) {
             btnConfirmDiscard.addEventListener('click', () => {
                 isFormDirty = false;
-                window.location.href = pendingTargetUrl || "{% url 'transactions' %}";
+                window.location.href = pendingTargetUrl || HISTORY_URL;
             });
         }
 
+        function leaveForm() {
+            if (isFormDirty) openConfirmModal(HISTORY_URL);
+            else window.location.href = HISTORY_URL;
+        }
         const backBtn = document.getElementById('btn-back');
-        if (backBtn) {
-            backBtn.addEventListener('click', (e) => {
-                if (isFormDirty) {
-                    e.preventDefault();
-                    openConfirmModal("{% url 'transactions' %}");
-                } else {
-                    window.location.href = "{% url 'transactions' %}";
-                }
-            });
-        }
-
+        if (backBtn) backBtn.addEventListener('click', leaveForm);
         const discardBtn = document.getElementById('btn-discard');
-        if (discardBtn) {
-            discardBtn.addEventListener('click', () => {
-                if (isFormDirty) {
-                    openConfirmModal("{% url 'transactions' %}");
-                } else {
-                    window.location.href = "{% url 'transactions' %}";
-                }
-            });
-        }
+        if (discardBtn) discardBtn.addEventListener('click', leaveForm);
 
-        // ─── Scanned Receipt Pre-Fill & AI Category Suggestion Engine ───
+        // ─── Scanned Receipt Pre-Fill & AI Category Suggestion ───
         let pendingAiSuggestedCategory = null;
         const aiCatSuggestionBanner = document.getElementById('ai-category-suggestion-banner');
         const aiCatSuggestedName = document.getElementById('ai-suggested-category-name');
@@ -1569,10 +1603,7 @@
         const btnDismissSuggestedCat = document.getElementById('btn-dismiss-suggested-category');
 
         function dismissAiCategorySuggestion() {
-            if (aiCatSuggestionBanner) {
-                aiCatSuggestionBanner.classList.add('hidden');
-                aiCatSuggestionBanner.classList.remove('flex');
-            }
+            setShown(aiCatSuggestionBanner, false, 'flex');
             pendingAiSuggestedCategory = null;
         }
 
@@ -1583,11 +1614,7 @@
         if (btnCreateSuggestedCat) {
             btnCreateSuggestedCat.addEventListener('click', () => {
                 if (!pendingAiSuggestedCategory) return;
-                openManageCategoriesModal('add');
-                if (inputNewCatName) {
-                    inputNewCatName.value = pendingAiSuggestedCategory;
-                }
-                // Match best icon for this category keyword
+                // Match the best icon for this category keyword
                 const lowerCat = pendingAiSuggestedCategory.toLowerCase();
                 let matchedIcon = 'category';
                 if (lowerCat.includes('pet') || lowerCat.includes('vet') || lowerCat.includes('dog') || lowerCat.includes('cat')) matchedIcon = 'pets';
@@ -1614,84 +1641,77 @@
                 }
 
                 selectedCatIcon = matchedIcon;
-                renderCategoryIconPicker();
+                openManageCategoriesModal('add');
+                if (inputNewCatName) inputNewCatName.value = pendingAiSuggestedCategory;
             });
         }
 
         (function checkScannedReceiptPreFill() {
             const rawData = sessionStorage.getItem('scanned_receipt_data');
-            if (rawData) {
-                try {
-                    const scanned = JSON.parse(rawData);
-                    if (scanned.total && inputAmount) inputAmount.value = formatNumberWithCommas(parseFloat(scanned.total).toFixed(2));
-                    if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
-                    if (scanned.date && inputDate) inputDate.value = scanned.date;
-                    if (scanned.payment_method && selectAccount) {
-                        const pm = scanned.payment_method.toLowerCase();
-                        let matched = false;
+            if (!rawData) return;
+            try {
+                const scanned = JSON.parse(rawData);
+                if (scanned.total && inputAmount) inputAmount.value = formatNumberWithCommas(parseFloat(scanned.total).toFixed(2));
+                if (scanned.merchant && inputTitle) inputTitle.value = scanned.merchant;
+                if (scanned.date && inputDate) inputDate.value = scanned.date;
+                if (scanned.payment_method && selectAccount) {
+                    const pm = scanned.payment_method.toLowerCase();
+                    let matched = false;
+                    for (let opt of selectAccount.options) {
+                        const optVal = opt.value.toLowerCase();
+                        if (optVal === pm || optVal.includes(pm) || pm.includes(optVal)) {
+                            selectAccount.value = opt.value;
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (!matched && (pm.includes('card') || pm.includes('visa') || pm.includes('master') || pm.includes('bancnet'))) {
                         for (let opt of selectAccount.options) {
                             const optVal = opt.value.toLowerCase();
-                            if (optVal === pm || optVal.includes(pm) || pm.includes(optVal)) {
+                            if (optVal.includes('card') || optVal.includes('credit') || optVal.includes('debit')) {
                                 selectAccount.value = opt.value;
                                 matched = true;
                                 break;
                             }
                         }
-                        if (!matched && (pm.includes('card') || pm.includes('visa') || pm.includes('master') || pm.includes('bancnet'))) {
-                            for (let opt of selectAccount.options) {
-                                const optVal = opt.value.toLowerCase();
-                                if (optVal.includes('card') || optVal.includes('credit') || optVal.includes('debit')) {
-                                    selectAccount.value = opt.value;
-                                    matched = true;
-                                    break;
-                                }
-                            }
-                        }
                     }
-                    if (scanned.items && scanned.items.length > 0 && inputNotes) {
-                        const itemSummary = scanned.items.map(i => `${i.description} (x${i.quantity || 1})`).join(', ');
-                        inputNotes.value = itemSummary;
-                    }
-
-                    // Handle Category matching or Option A Suggestion Banner
-                    if (scanned.category) {
-                        const targetCat = scanned.category.trim();
-                        // Find matching category button
-                        const existingButtons = Array.from(document.querySelectorAll('.category-btn'));
-                        const exactMatch = existingButtons.find(b => b.dataset.category?.toLowerCase() === targetCat.toLowerCase());
-                        const partialMatch = !exactMatch ? existingButtons.find(b => b.dataset.category && (b.dataset.category.toLowerCase().includes(targetCat.toLowerCase()) || targetCat.toLowerCase().includes(b.dataset.category.toLowerCase()))) : null;
-
-                        const matchedBtn = exactMatch || partialMatch;
-                        if (matchedBtn) {
-                            selectCategoryBtn(matchedBtn);
-                            dismissAiCategorySuggestion();
-                        } else {
-                            // No matching category found -> show AI Suggestion Chip!
-                            pendingAiSuggestedCategory = targetCat;
-                            if (aiCatSuggestedName) aiCatSuggestedName.textContent = targetCat;
-                            if (aiCatSuggestionBanner) {
-                                aiCatSuggestionBanner.classList.remove('hidden');
-                                aiCatSuggestionBanner.classList.add('flex');
-                            }
-                        }
-                    }
-
-                    sessionStorage.removeItem('scanned_receipt_data');
-                    markDirty();
-                } catch (e) {
-                    console.error("Error reading scanned receipt data:", e);
                 }
+                if (scanned.items && scanned.items.length > 0 && inputNotes) {
+                    const itemSummary = scanned.items.map(i => `${i.description} (x${i.quantity || 1})`).join(', ');
+                    inputNotes.value = itemSummary;
+                }
+
+                // Category matching, or the suggestion banner when the category is new
+                if (scanned.category) {
+                    const targetCat = scanned.category.trim();
+                    const lowerTarget = targetCat.toLowerCase();
+                    const existingButtons = Array.from(document.querySelectorAll('.category-btn'));
+                    const exactMatch = existingButtons.find(b => (b.dataset.category || '').toLowerCase() === lowerTarget);
+                    const partialMatch = !exactMatch ? existingButtons.find(b => b.dataset.category && (b.dataset.category.toLowerCase().includes(lowerTarget) || lowerTarget.includes(b.dataset.category.toLowerCase()))) : null;
+
+                    const matchedBtn = exactMatch || partialMatch;
+                    if (matchedBtn) {
+                        selectCategoryBtn(matchedBtn);
+                        dismissAiCategorySuggestion();
+                    } else {
+                        pendingAiSuggestedCategory = targetCat;
+                        if (aiCatSuggestedName) aiCatSuggestedName.textContent = targetCat;
+                        setShown(aiCatSuggestionBanner, true, 'flex');
+                    }
+                }
+
+                sessionStorage.removeItem('scanned_receipt_data');
+                markDirty();
+            } catch (e) {
+                console.error('Error reading scanned receipt data:', e);
             }
         })();
 
         // ─── Initial URL Query Params Handling (e.g. ?type=income) ───
         (function checkTypeUrlParams() {
             const params = new URLSearchParams(window.location.search);
-            const type = params.get('type');
-            if (type) {
-                const tab = document.getElementById(`tab-type-${type.toLowerCase()}`);
-                if (tab) tab.click();
-            }
+            const type = (params.get('type') || '').toLowerCase();
+            if (['expense', 'income', 'transfer'].includes(type)) setActiveType(type, { silent: true });
         })();
 
         // ─── Edit Transaction Pre-Fill ───
@@ -1703,7 +1723,7 @@
             isEditMode = true;
             const heading = document.getElementById('page-heading');
             const subheading = document.getElementById('page-subheading');
-            if (heading) heading.textContent = "Edit Transaction";
+            if (heading) heading.textContent = 'Edit Transaction';
             if (subheading) subheading.textContent = "Update this transaction's details";
 
             const amount = params.get('amount');
@@ -1718,101 +1738,142 @@
             const account = params.get('account');
             if (account && selectAccount) selectAccount.value = account;
 
-            const type = params.get('type');
-            if (type) {
-                const tab = document.getElementById(`tab-type-${type}`);
-                if (tab) tab.click();
-            }
+            const type = (params.get('type') || '').toLowerCase();
+            if (['expense', 'income', 'transfer'].includes(type)) setActiveType(type, { silent: true });
 
             const category = params.get('category');
             if (category) {
-                const catBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
-                if (catBtn) catBtn.click();
+                const catBtn = findCategoryBtn({ name: category });
+                if (catBtn) selectCategoryBtn(catBtn, { silent: true });
             }
 
             isFormDirty = false;
         })();
 
-        // ─── Save Transaction Submit ───
+        // ─── Save Transaction ───
         const saveBtn = document.getElementById('btn-save-transaction');
-        if (saveBtn) {
-            saveBtn.addEventListener('click', async () => {
-                const rawAmountStr = (inputAmount ? inputAmount.value : '').toString().replace(/,/g, '');
-                const amount = parseFloat(rawAmountStr);
-                if (isNaN(amount) || amount <= 0) {
-                    inputAmount.focus();
+        const saveBtnLabel = saveBtn ? saveBtn.querySelector('[data-submit-label]') : null;
+        const SAVE_LABEL = saveBtnLabel ? saveBtnLabel.textContent : 'Save transaction';
+
+        function setSaving(saving) {
+            isSaving = saving;
+            if (!saveBtn) return;
+            saveBtn.disabled = saving;
+            saveBtn.setAttribute('aria-busy', saving ? 'true' : 'false');
+            if (saveBtnLabel) saveBtnLabel.textContent = saving ? 'Saving…' : SAVE_LABEL;
+        }
+
+        async function saveTransaction() {
+            if (isSaving) return;
+            const txType = getActiveType();
+            let firstInvalid = null;
+
+            // Amount
+            const rawAmountStr = (inputAmount ? inputAmount.value : '').toString().replace(/,/g, '');
+            const amount = parseFloat(rawAmountStr);
+            if (isNaN(amount) || amount <= 0) {
+                showFieldError('amount-error', 'Enter an amount above ₱0.', inputAmount);
+                firstInvalid = firstInvalid || inputAmount;
+            } else {
+                clearFieldError('amount-error', inputAmount);
+            }
+
+            // Category: an explicit choice is required for expenses (when any category exists)
+            const activeCatBtn = getSelectedCategoryBtn();
+            const hasCategories = document.querySelectorAll('.category-btn').length > 0;
+            if (txType === 'expense' && hasCategories && !activeCatBtn) {
+                showFieldError('category-error', 'Pick a category');
+                firstInvalid = firstInvalid || document.querySelector('.category-btn');
+            }
+
+            // Accounts
+            const account = selectAccount && selectAccount.options.length ? selectAccount.value : '';
+            let destinationAccount = '';
+            if (txType === 'transfer') {
+                destinationAccount = selectDestinationAccount && selectDestinationAccount.options.length ? selectDestinationAccount.value : '';
+                const destOptionCount = selectDestinationAccount ? selectDestinationAccount.options.length : 0;
+                if (!account || !destinationAccount || destOptionCount < 2) {
+                    showFieldError('dest-error', 'Add at least two payment methods to record a transfer.', selectDestinationAccount);
+                    const destEmptyBtn = document.querySelector('#dest-empty .btn-empty-add-account');
+                    firstInvalid = firstInvalid || (destOptionCount ? openManageAccountsBtn : destEmptyBtn);
+                } else if (account === destinationAccount) {
+                    showFieldError('dest-error', 'Pick a different account to transfer to.', selectDestinationAccount);
+                    firstInvalid = firstInvalid || selectDestinationAccount;
+                } else {
+                    clearFieldError('dest-error', selectDestinationAccount);
+                }
+            }
+
+            if (firstInvalid) {
+                firstInvalid.focus();
+                return;
+            }
+
+            // Title is optional: default to the category name (or the transfer route)
+            const categoryName = activeCatBtn && txType !== 'transfer' ? activeCatBtn.dataset.category : '';
+            const title = inputTitle.value.trim()
+                || categoryName
+                || (txType === 'transfer' && destinationAccount ? `Transfer to ${destinationAccount}` : '');
+            const dateVal = inputDate && inputDate.value ? inputDate.value : new Date().toISOString().split('T')[0];
+            const notes = inputNotes ? inputNotes.value.trim() : '';
+
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('edit');
+            const endpoint = isEditMode && editId
+                ? `/api/transactions/${encodeURIComponent(editId)}/update/`
+                : '{% url "api_create_transaction" %}';
+
+            setSaving(true);
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({
+                        amount,
+                        title,
+                        type: txType,
+                        category: txType === 'transfer' ? '' : categoryName,
+                        account,
+                        destination_account: destinationAccount,
+                        date: dateVal,
+                        notes,
+                    }),
+                });
+                const result = await readJson(response);
+
+                if (response.ok && result.success !== false) {
+                    isFormDirty = false;
+                    if (typeof window.antToastAfterRedirect === 'function') {
+                        window.antToastAfterRedirect('Transaction saved', { type: 'success' });
+                    }
+                    window.location.href = HISTORY_URL;
                     return;
                 }
 
-                const title = inputTitle.value.trim() || 'Untitled Transaction';
-                const activeTypeTab = document.querySelector('.type-tab[aria-pressed="true"]');
-                const txType = activeTypeTab ? activeTypeTab.dataset.type : 'expense';
-                const activeCatBtn = document.querySelector('.category-btn[aria-pressed="true"]');
-                const category = activeCatBtn ? activeCatBtn.dataset.category : '';
-                const account = selectAccount ? selectAccount.value : 'Cash';
-                const destinationAccount = (txType === 'transfer' && selectDestinationAccount) ? selectDestinationAccount.value : '';
-                const dateVal = inputDate && inputDate.value ? inputDate.value : new Date().toISOString().split('T')[0];
-                const notes = inputNotes ? inputNotes.value.trim() : '';
-
-                try {
-                    saveBtn.disabled = true;
-                    saveBtn.classList.add('opacity-70', 'cursor-wait');
-
-                    const params = new URLSearchParams(window.location.search);
-                    const editId = params.get('edit');
-                    const endpoint = isEditMode && editId ? `/api/transactions/${editId}/update/` : '{% url "api_create_transaction" %}';
-
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({
-                            amount,
-                            title,
-                            type: txType,
-                            category: txType === 'transfer' ? '' : category,
-                            account,
-                            destination_account: destinationAccount,
-                            date: dateVal,
-                            notes,
-                        }),
-                    });
-
-                    const result = await response.json();
-                    if (result.success || response.ok) {
-                        isFormDirty = false;
-                        window.location.href = "{% url 'transactions' %}";
-                    } else {
-                        alert(result.error || 'Failed to save transaction.');
-                        saveBtn.disabled = false;
-                        saveBtn.classList.remove('opacity-70', 'cursor-wait');
-                    }
-                } catch (err) {
-                    console.error('Save transaction error:', err);
-                    isFormDirty = false;
-                    window.location.href = "{% url 'transactions' %}";
-                }
-            });
+                console.error('Save transaction failed:', result.error);
+                toastError(response.status === 401
+                    ? 'Your session has ended. Sign in again, then save.'
+                    : "Couldn't save the transaction. Check the amount and date, then try again.");
+            } catch (err) {
+                console.error('Save transaction error:', err);
+                toastError("Couldn't save. Check your connection and try again.");
+            }
+            // Failure: keep everything the user typed.
+            setSaving(false);
         }
 
-        // Keyboard Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (manageCatModal && !manageCatModal.classList.contains('hidden')) {
-                    closeManageCategoriesModal();
-                } else if (manageAccountsModal && !manageAccountsModal.classList.contains('hidden')) {
-                    closeManageAccountsModal();
-                } else if (confirmModal && !confirmModal.classList.contains('hidden')) {
-                    closeConfirmModal();
-                }
-            }
-        });
+        if (formTransaction) {
+            formTransaction.addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveTransaction();
+            });
+        }
     });
 
-    function escapeHtml(str) {
-        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
+    // Called only after DOMContentLoaded, when the deferred ui.js has run.
+    function escapeHtml(str) { return window.antEscape(str); }
 </script>
 {% endblock %}

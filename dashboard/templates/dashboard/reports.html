@@ -1,20 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %}Reports | AntTipid{% endblock %}
-{% block meta_description %}Detailed financial reports, analytics, category breakdowns, and monthly spending trends.{% endblock %}
+{% block meta_description %}Reports on your spending, income, category breakdowns, and spending trends by week, month, and year.{% endblock %}
 
 {% block extra_head %}<style>
-/* Sparkline SVG styling */
-.sparkline-path {
-    stroke: #5C8F3A;
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-.sparkline-path.up-error {
-    stroke: #D96B4A;
-}
 .chart-bar-grow {
     transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -41,19 +30,35 @@
         <!-- TOP CONTROLS & ACTIONS                  -->
         <!-- ═══════════════════════════════════════ -->
         <div class="flex items-center justify-between gap-3">
-            <!-- Time Period Selector Pill Group -->
-            <div class="inline-flex bg-canvas rounded-full p-1 border border-outline-variant/60 shadow-2xs" id="period-selector-group">
-                <button data-period="week" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold">Week</button>
-                <button data-period="month" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-primary text-on-primary shadow-2xs font-sans text-xs font-bold transition-all cursor-pointer">Month</button>
-                <button data-period="year" class="btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold">Year</button>
+            <!-- Time Period Selector (segmented buttons) -->
+            <div class="inline-flex bg-canvas rounded-full p-1" id="period-selector-group" role="group" aria-label="Report period">
+                <button type="button" data-period="week" aria-pressed="false" class="btn-period min-h-[44px] px-4 rounded-full text-sm font-semibold text-body hover:text-ink transition-colors cursor-pointer">Week</button>
+                <button type="button" data-period="month" aria-pressed="true" class="btn-period min-h-[44px] px-4 rounded-full text-sm font-semibold bg-deep-forest text-white transition-colors cursor-pointer">Month</button>
+                <button type="button" data-period="year" aria-pressed="false" class="btn-period min-h-[44px] px-4 rounded-full text-sm font-semibold text-body hover:text-ink transition-colors cursor-pointer">Year</button>
             </div>
 
-            <!-- Export Report Button -->
-            <button id="btn-export-report" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 h-8 rounded-full border border-outline-variant/60 bg-canvas text-ink font-sans text-xs font-bold hover:bg-canvas-soft transition-all shadow-2xs active:scale-[0.98] cursor-pointer">
-                <span class="material-symbols-outlined text-[16px]">download</span>
-                <span>Export</span>
-            </button>
+            <!-- Export CSV for the selected period -->
+            <a id="export-csv-link" href="{% url 'export_transactions_csv' %}?period=month" download class="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-canvas text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">download</span>
+                <span>Export CSV</span>
+            </a>
         </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- EMPTY STATE (no transactions in period) -->
+        <!-- ═══════════════════════════════════════ -->
+        <section id="reports-empty" class="hidden bg-canvas rounded-2xl p-6 sm:p-10 flex-col items-center text-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-canvas-soft text-deep-forest flex items-center justify-center">
+                <span class="material-symbols-outlined text-[24px]" aria-hidden="true">bar_chart</span>
+            </div>
+            <p class="text-base text-ink font-medium max-w-sm">Nothing recorded <span id="reports-empty-period">this month</span> yet. Add income or spending to see your reports here.</p>
+            <a href="{% url 'add_transaction' %}" class="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-active transition-colors">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+                Add a transaction
+            </a>
+        </section>
+
+        <div id="reports-content" class="flex flex-col gap-4 sm:gap-6" aria-busy="true">
 
         <!-- ═══════════════════════════════════════ -->
         <!-- TOP ROW KPI CARDS (Bento Row 1)         -->
@@ -61,51 +66,48 @@
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
 
             <!-- Total Spending Card -->
-            <a href="{% url 'transactions' %}" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
+            <a href="{% url 'transactions' %}" class="bg-canvas rounded-2xl p-4 sm:p-5 hover:bg-surface-container-low transition-colors flex flex-col justify-between gap-3 sm:gap-4 group">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-expense uppercase tracking-wider font-bold">Total Spending</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_outward</span>
+                    <span class="text-sm text-body font-medium">Total spending</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-negative/10 text-negative flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[16px] sm:text-[18px]" aria-hidden="true">arrow_outward</span>
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-total-spending" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight tabular-nums">₱0.00</div>
-                    <p id="kpi-total-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 flex items-center gap-1">
-                        0% vs previous period
-                    </p>
+                    <div id="kpi-total-spending" class="text-xl sm:text-2xl md:text-3xl font-black text-ink tracking-tight tabular-nums">—</div>
+                    <p id="kpi-total-subtext" class="text-xs text-body mt-1 tabular-nums">&nbsp;</p>
                 </div>
             </a>
 
             <!-- Highest Category Card -->
-            <a href="{% url 'budget' %}" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 group">
+            <a href="{% url 'budget' %}" class="bg-canvas rounded-2xl p-4 sm:p-5 hover:bg-surface-container-low transition-colors flex flex-col justify-between gap-3 sm:gap-4 group">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] text-amber-700 uppercase tracking-wider font-bold">Highest Category</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warning/15 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <span id="kpi-highest-icon" class="material-symbols-outlined text-[16px] sm:text-[18px]">category</span>
+                    <span class="text-sm text-body font-medium">Highest category</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-canvas-soft text-deep-forest flex items-center justify-center shrink-0">
+                        <span id="kpi-highest-icon" class="material-symbols-outlined text-[16px] sm:text-[18px]" aria-hidden="true">category</span>
                     </div>
                 </div>
                 <div>
-                    <div id="kpi-highest-cat" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight truncate">—</div>
-                    <p id="kpi-highest-subtext" class="font-body-sm text-xs text-on-surface-variant mt-1 font-medium tabular-nums">₱0.00 (0% of total)</p>
+                    <div id="kpi-highest-cat" class="text-xl sm:text-2xl md:text-3xl font-bold text-ink tracking-tight truncate">—</div>
+                    <p id="kpi-highest-subtext" class="text-xs text-body mt-1 font-medium tabular-nums">&nbsp;</p>
                 </div>
             </a>
 
-            <!-- Savings Rate Hero Card -->
-            <a href="{% url 'budget' %}" class="sm:col-span-2 lg:col-span-1 bg-deep-forest text-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-soft hover:-translate-y-0.5 transition-all flex flex-col justify-between gap-3 sm:gap-4 relative overflow-hidden group">
-                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
-                <div class="flex justify-between items-start relative z-10">
-                    <span class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider text-white/80 font-bold">Savings Rate</span>
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-                        <span class="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_upward</span>
+            <!-- Savings Rate Card -->
+            <a href="{% url 'budget' %}" class="sm:col-span-2 lg:col-span-1 bg-canvas rounded-2xl p-4 sm:p-5 hover:bg-surface-container-low transition-colors flex flex-col justify-between gap-3 sm:gap-4 group">
+                <div class="flex justify-between items-start">
+                    <span class="text-sm text-body font-medium">Savings rate</span>
+                    <div id="kpi-savings-icon-wrap" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-positive/10 text-positive-deep flex items-center justify-center shrink-0">
+                        <span id="kpi-savings-icon" class="material-symbols-outlined text-[16px] sm:text-[18px]" aria-hidden="true">arrow_upward</span>
                     </div>
                 </div>
-                <div class="relative z-10">
-                    <div id="kpi-savings-rate" class="font-headline-lg text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight tabular-nums text-white">0.0%</div>
-                    <p class="font-body-sm text-xs text-white/80 mt-0.5 font-medium">Income saved after expenses</p>
+                <div>
+                    <div id="kpi-savings-rate" class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight tabular-nums text-ink">—</div>
+                    <p id="kpi-savings-subtext" class="text-xs text-body mt-0.5 font-medium">Income saved after expenses</p>
                 </div>
-                <!-- Mini Progress Bar in Ant Green -->
-                <div class="w-full bg-white/20 h-2 rounded-full relative z-10 overflow-hidden p-0.5">
-                    <div id="kpi-savings-bar" class="bg-primary h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 0%"></div>
+                <!-- Savings bar (width clamped 0-100; label keeps its sign) -->
+                <div class="w-full bg-canvas-soft h-2 rounded-full overflow-hidden" aria-hidden="true">
+                    <div id="kpi-savings-bar" class="bg-positive h-full rounded-full transition-all duration-500 progress-bar-fill" style="width: 0%"></div>
                 </div>
             </a>
 
@@ -117,20 +119,20 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6">
 
             <!-- Income vs Expenses Bar Chart (Left 7 Cols) -->
-            <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col min-h-[340px] sm:min-h-[380px]">
-                <div class="flex justify-between items-center mb-3 sm:mb-4 border-b border-surface-variant/40 pb-3">
+            <div class="lg:col-span-7 bg-canvas rounded-2xl p-4 sm:p-6 flex flex-col min-h-[340px] sm:min-h-[380px]">
+                <div class="flex justify-between items-center mb-3 sm:mb-4 border-b border-outline-variant/60 pb-3">
                     <div>
-                        <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Income vs Expenses</h2>
-                        <p id="chart-subtext" class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Breakdown for selected period</p>
+                        <h2 class="text-base md:text-lg font-semibold text-deep-forest">Income vs Expenses</h2>
+                        <p id="chart-subtext" class="text-xs text-body mt-0.5">Breakdown for selected period</p>
                     </div>
                 </div>
 
                 <!-- Visual Bar Chart Area -->
                 <div id="bar-chart-container" class="flex-1 flex flex-col justify-between pt-2 pb-2 min-h-[240px] sm:min-h-[260px] lg:min-h-[290px]">
                     <div class="flex-1 flex gap-2 sm:gap-4 relative min-h-[180px] sm:min-h-[200px] lg:min-h-[230px]">
-                        
+
                         <!-- Y-Axis Labels Column -->
-                        <div class="flex flex-col justify-between py-0 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums whitespace-nowrap">
+                        <div class="flex flex-col justify-between py-0 text-right shrink-0 w-12 sm:w-16 pointer-events-none text-xs font-medium text-body tabular-nums whitespace-nowrap" aria-hidden="true">
                             <span id="y-tick-4">₱0</span>
                             <span id="y-tick-3">₱0</span>
                             <span id="y-tick-2">₱0</span>
@@ -138,13 +140,13 @@
                         </div>
 
                         <!-- Chart Grid Canvas -->
-                        <div class="flex-1 relative border-b border-surface-variant/50 flex items-end px-2 sm:px-4">
-                            
+                        <div class="flex-1 relative border-b border-outline-variant flex items-end px-2 sm:px-4">
+
                             <!-- Horizontal Dashed Grid Lines -->
-                            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
-                                <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
-                                <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
-                                <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
+                            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0" aria-hidden="true">
+                                <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
+                                <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
+                                <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
                                 <div class="w-full h-0"></div>
                             </div>
 
@@ -154,55 +156,55 @@
                     </div>
 
                     <!-- X-Axis Column Labels Row -->
-                    <div class="flex gap-2 sm:gap-4 pt-3">
+                    <div class="flex gap-2 sm:gap-4 pt-3" aria-hidden="true">
                         <div class="w-12 sm:w-16 shrink-0 pointer-events-none"></div>
-                        <div id="income-expense-labels-container" class="flex-1 grid px-2 sm:px-4 font-label-sm text-[10px] sm:text-xs lg:text-sm text-deep-forest font-semibold"></div>
+                        <div id="income-expense-labels-container" class="flex-1 grid px-2 sm:px-4 text-xs lg:text-sm text-deep-forest font-semibold"></div>
                     </div>
                 </div>
 
-                <!-- Legend -->
+                <!-- Legend (matches bar order: expenses left, income right) -->
                 <div class="flex justify-center gap-6 lg:gap-8 mt-4 lg:mt-5">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-primary"></div>
-                        <span class="font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">Income</span>
+                        <div class="w-3 h-3 rounded-full bg-negative" aria-hidden="true"></div>
+                        <span class="text-xs lg:text-sm text-ink font-medium">Expenses</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-expense"></div>
-                        <span class="font-label-sm text-xs lg:text-sm text-deep-forest font-semibold">Expenses</span>
+                        <div class="w-3 h-3 rounded-full bg-positive" aria-hidden="true"></div>
+                        <span class="text-xs lg:text-sm text-ink font-medium">Income</span>
                     </div>
                 </div>
             </div>
 
             <!-- Spending by Category Donut Chart (Right 5 Cols) -->
-            <div id="category-donut-card" class="lg:col-span-5 bg-canvas border border-outline-variant/60 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between gap-3.5 sm:gap-4">
-                <div class="flex justify-between items-center border-b border-outline-variant/30 pb-3">
-                    <h2 class="font-sans text-xs sm:text-sm font-bold text-ink">Category Breakdown</h2>
-                    <span id="donut-period-label" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 rounded-full border border-positive/30">This Period</span>
+            <div id="category-donut-card" class="lg:col-span-5 bg-canvas rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3.5 sm:gap-4">
+                <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+                    <h2 class="text-base md:text-lg font-semibold text-deep-forest">Category Breakdown</h2>
+                    <span id="donut-period-label" class="text-xs text-body font-medium bg-canvas-soft px-2.5 py-0.5 rounded-full">This Period</span>
                 </div>
 
                 <!-- Donut SVG Interactive Area -->
                 <div class="flex-1 flex flex-col justify-center items-center py-2 relative">
                     <div class="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
-                        <svg class="w-full h-full transform -rotate-90 select-none" viewBox="0 0 100 100" id="category-donut-svg">
+                        <svg class="w-full h-full transform -rotate-90 select-none" viewBox="0 0 100 100" id="category-donut-svg" aria-hidden="true" focusable="false">
                             <!-- Background Track -->
                             <circle class="text-canvas-soft stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="16"></circle>
-                            
+
                             <!-- Dynamic Segments Container -->
                             <g id="donut-segments-group"></g>
                         </svg>
 
                         <!-- Center Info Display -->
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4 transition-all duration-200">
-                            <span id="donut-center-label" class="font-sans text-[9px] sm:text-[10px] text-mute uppercase tracking-wider font-bold truncate max-w-[100px]">Total</span>
-                            <span id="donut-center-value" class="font-sans text-sm sm:text-base md:text-lg font-bold text-ink tabular-nums truncate">₱0.00</span>
-                            <span id="donut-center-pct" class="font-sans text-[10px] font-bold text-positive-deep hidden">0%</span>
+                            <span id="donut-center-label" class="text-xs text-body font-medium truncate max-w-[100px]">Total</span>
+                            <span id="donut-center-value" class="text-sm sm:text-base md:text-lg font-bold text-ink tabular-nums truncate">—</span>
+                            <span id="donut-center-pct" class="text-xs font-medium text-body tabular-nums hidden"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Donut Legend Grid -->
-                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/40" id="donut-legend-grid">
-                    <div class="col-span-2 text-center py-2 text-xs text-on-surface-variant font-medium">No category spending recorded yet.</div>
+                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-outline-variant/60" id="donut-legend-grid">
+                    <div class="col-span-2 text-center py-2 text-xs text-body font-medium">No category spending recorded yet.</div>
                 </div>
             </div>
 
@@ -211,29 +213,27 @@
         <!-- ═══════════════════════════════════════ -->
         <!-- BOTTOM ROW: COMBINED CATEGORY TRENDS    -->
         <!-- ═══════════════════════════════════════ -->
-        <section class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 sm:gap-6">
+        <section class="bg-canvas rounded-2xl p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
             <!-- Header with Title & Interactive Category Filter Pills -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/40 pb-3 sm:pb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/60 pb-3 sm:pb-4">
                 <div>
                     <div class="flex items-center gap-2">
-                        <h2 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest">Category Trends</h2>
-                        <span id="trends-period-badge" class="font-sans text-[10px] sm:text-[11px] text-positive-deep font-bold bg-primary-pale px-2 sm:px-2.5 py-0.5 rounded-full border border-positive/30">This Period</span>
+                        <h2 class="text-base md:text-lg font-semibold text-deep-forest">Category Trends</h2>
+                        <span id="trends-period-badge" class="text-xs text-body font-medium bg-canvas-soft px-2 sm:px-2.5 py-0.5 rounded-full">This Period</span>
                     </div>
-                    <p id="trends-subtext" class="font-body-sm text-[10px] sm:text-xs text-on-surface-variant mt-0.5">Multi-category spending trajectory</p>
+                    <p id="trends-subtext" class="text-xs text-body mt-0.5">Spending over time for your top categories</p>
                 </div>
 
                 <!-- Interactive Category Filter Chips -->
-                <div class="flex items-center flex-wrap gap-1 sm:gap-2" id="category-filter-group" role="tablist" aria-label="Filter categories">
-                    <button id="cat-filter-all" data-cat="all" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all bg-deep-forest text-white shadow-2xs cursor-pointer active:scale-95 shrink-0"><span class="sm:hidden">All</span><span class="hidden sm:inline">All Categories</span></button>
-                </div>
+                <div class="flex items-center flex-wrap gap-2" id="category-filter-group" role="group" aria-label="Filter categories"></div>
             </div>
 
             <!-- Main Chart Area -->
             <div class="relative w-full">
                 <div class="flex gap-2 sm:gap-4 relative min-h-[220px] sm:min-h-[260px]">
                     <!-- Y-Axis Labels -->
-                    <div class="flex flex-col justify-between py-1 text-right shrink-0 w-12 sm:w-16 pointer-events-none font-label-sm text-[9px] sm:text-xs font-semibold text-on-surface-variant/75 tabular-nums select-none whitespace-nowrap" id="trends-y-axis">
-                        <span class="text-[9px] font-bold text-on-surface-variant/60 tracking-wider">₱ PHP</span>
+                    <div class="flex flex-col justify-between py-1 text-right shrink-0 w-12 sm:w-16 pointer-events-none text-xs font-medium text-body tabular-nums select-none whitespace-nowrap" id="trends-y-axis" aria-hidden="true">
+                        <span class="text-xs font-medium text-body">₱ PHP</span>
                         <span id="trends-y-3">₱0</span>
                         <span id="trends-y-2">₱0</span>
                         <span id="trends-y-1">₱0</span>
@@ -243,85 +243,104 @@
                     <!-- Plot Area -->
                     <div class="flex-1 relative flex flex-col justify-between" id="trends-chart-wrapper">
                         <!-- Horizontal Grid Lines -->
-                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-7 pt-4">
-                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
-                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
-                            <div class="border-b border-surface-variant/40 border-dashed w-full h-0"></div>
-                            <div class="border-b border-surface-variant/60 w-full h-0"></div>
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-7 pt-4" aria-hidden="true">
+                            <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
+                            <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
+                            <div class="border-b border-outline-variant/60 border-dashed w-full h-0"></div>
+                            <div class="border-b border-outline-variant w-full h-0"></div>
                         </div>
 
                         <!-- SVG Multi-Line Chart Canvas -->
                         <div class="relative flex-1 w-full h-[180px] sm:h-[220px] z-10">
-                            <svg id="trends-svg" class="w-full h-full overflow-visible select-none" viewBox="0 0 700 200" preserveAspectRatio="none">
-                                <defs id="trends-defs">
-                                    <linearGradient id="grad-trend-0" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#163300" stop-opacity="0.25"></stop>
-                                        <stop offset="100%" stop-color="#163300" stop-opacity="0.0"></stop>
-                                    </linearGradient>
-                                    <linearGradient id="grad-trend-1" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#5C8F3A" stop-opacity="0.25"></stop>
-                                        <stop offset="100%" stop-color="#5C8F3A" stop-opacity="0.0"></stop>
-                                    </linearGradient>
-                                    <linearGradient id="grad-trend-2" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#D97706" stop-opacity="0.25"></stop>
-                                        <stop offset="100%" stop-color="#D97706" stop-opacity="0.0"></stop>
-                                    </linearGradient>
-                                    <linearGradient id="grad-trend-3" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#D03238" stop-opacity="0.25"></stop>
-                                        <stop offset="100%" stop-color="#D03238" stop-opacity="0.0"></stop>
-                                    </linearGradient>
-                                </defs>
-
-                                <!-- Column Highlight Band -->
+                            <svg id="trends-svg" class="w-full h-full overflow-visible select-none" viewBox="0 0 700 200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                                <!-- Column Highlight Band (deep-forest) -->
                                 <rect id="trend-column-highlight" x="0" y="5" width="80" height="170" rx="8" fill="#163300" opacity="0" class="transition-all duration-150 pointer-events-none"></rect>
 
                                 <!-- Dynamic SVG lines & areas container -->
                                 <g id="trend-lines-group"></g>
 
-                                <!-- Interactive Vertical Crosshair -->
+                                <!-- Interactive Vertical Crosshair (mute) -->
                                 <line id="trend-crosshair" x1="0" y1="10" x2="0" y2="190" stroke="#868685" stroke-width="1.5" stroke-dasharray="3,3" opacity="0" class="transition-all duration-150 pointer-events-none"></line>
 
                                 <!-- Data Point Circles -->
                                 <g id="trend-points-group" class="pointer-events-none"></g>
                             </svg>
 
-                            <!-- Hover Overlay Zones -->
+                            <!-- Hover / Focus Zones (one button per column) -->
                             <div id="trend-hover-zones" class="absolute inset-0 z-20"></div>
 
                             <!-- Interactive Floating Tooltip -->
-                            <div id="trend-floating-tooltip" class="absolute hidden z-30 pointer-events-none bg-deep-forest text-white rounded-xl p-3 shadow-elevated border border-white/15 text-xs font-sans transition-all duration-150 min-w-[175px] sm:min-w-[205px] max-w-[250px]">
-                                <div id="tooltip-period-title" class="font-bold text-white/90 pb-1.5 mb-1.5 border-b border-white/15 text-[11px] sm:text-xs">Period Breakdown</div>
+                            <div id="trend-floating-tooltip" class="absolute hidden z-30 pointer-events-none bg-deep-forest text-white rounded-xl p-3 shadow-elevated text-xs transition-all duration-150 min-w-[175px] sm:min-w-[205px] max-w-[250px]" aria-hidden="true">
+                                <div id="tooltip-period-title" class="font-semibold text-white pb-1.5 mb-1.5 border-b border-white/15 text-xs">Period Breakdown</div>
                                 <div id="tooltip-items-list" class="flex flex-col gap-1.5"></div>
-                                <div id="tooltip-total-row" class="pt-1.5 mt-1.5 border-t border-white/15 flex justify-between font-bold text-[11px] sm:text-xs text-primary-active">
-                                    <span>Total Spent</span>
+                                <div id="tooltip-total-row" class="pt-1.5 mt-1.5 border-t border-white/15 flex justify-between font-semibold text-xs text-primary-active">
+                                    <span>Total spent</span>
                                     <span id="tooltip-total-val" class="tabular-nums">₱0.00</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- X-Axis Labels Row -->
-                        <div class="relative w-full h-6 pt-2 font-label-sm text-[10px] sm:text-xs text-deep-forest font-semibold select-none" id="trends-x-axis"></div>
+                        <div class="relative w-full h-6 pt-2 text-xs text-deep-forest font-semibold select-none" id="trends-x-axis" aria-hidden="true"></div>
                     </div>
                 </div>
             </div>
         </section>
+
+        </div>
 
     </div>
 
     <!-- Mobile bottom spacer to prevent clipping by fixed bottom nav -->
     <div class="h-20 md:hidden" aria-hidden="true"></div>
 </div>
+{{ period_data_json|json_script:"reports-period-data" }}
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    // Runs synchronously at the end of <body> so the first paint already has real numbers.
+    (() => {
         const C = 2 * Math.PI * 40; // ~251.3274
+        const EXPORT_BASE_URL = "{% url 'export_transactions_csv' %}";
 
-        const backendPeriodData = {{ period_data_json|safe|default:"{}" }};
-        const periodData = backendPeriodData;
+        // period_data_json is a JSON string; json_script escapes < > & so user text cannot close the script tag.
+        let periodData = {};
+        try {
+            const dataEl = document.getElementById('reports-period-data');
+            const raw = dataEl ? JSON.parse(dataEl.textContent) : '{}';
+            periodData = (typeof raw === 'string' ? JSON.parse(raw) : raw) || {};
+        } catch (err) {
+            periodData = {};
+        }
+
+        // ui.js is deferred and may not have run yet; fall back to a local escaper.
+        const esc = (value) => {
+            if (typeof window.antEscape === 'function') return window.antEscape(value);
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+        // Category colours come from the server palette; only accept plain hex values.
+        const FALLBACK_COLOR = '#163300';
+        const safeColor = (c) => (typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c)) ? c : FALLBACK_COLOR;
+        const safePct = (n) => { const v = Number(n); return Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : 0; };
+        const peso = (v) => '₱' + Number(v || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const PERIOD_WORDS = { week: 'this week', month: 'this month', year: 'this year' };
 
         const periodButtons = document.querySelectorAll('#period-selector-group .btn-period');
+        const PERIOD_BTN_BASE = 'btn-period min-h-[44px] px-4 rounded-full text-sm font-semibold transition-colors cursor-pointer';
+        const PERIOD_BTN_ON = 'bg-deep-forest text-white';
+        const PERIOD_BTN_OFF = 'text-body hover:text-ink';
+
+        const CHIP_BASE = 'cat-filter-pill tap min-h-[32px] px-3 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer active:scale-95 shrink-0 border';
+        const CHIP_ON = 'bg-deep-forest text-white border-deep-forest';
+        const CHIP_OFF = 'bg-surface-container-low text-body hover:text-ink border-outline-variant/60';
+
         let currentPeriod = 'month';
         let lockedCategoryIndex = null;
         let activeTrendCategory = 'all';
@@ -330,9 +349,14 @@
         const centerValue = document.getElementById('donut-center-value');
         const centerPct = document.getElementById('donut-center-pct');
 
-        function getDynamicColor(index) {
-            const hue = (index * 137.508) % 360;
-            return `hsl(${hue.toFixed(1)}, 68%, 42%)`;
+        function periodHasData(data) {
+            if (!data) return false;
+            const any = (arr) => Array.isArray(arr) && arr.some((h) => Number(h) > 0);
+            return (Array.isArray(data.categories) && data.categories.length > 0) || any(data.expHeights) || any(data.incHeights);
+        }
+
+        function periodHasIncome(data) {
+            return !!data && Array.isArray(data.incHeights) && data.incHeights.some((h) => Number(h) > 0);
         }
 
         function renderDonut(categories, defaultTotalText) {
@@ -344,26 +368,26 @@
             legendGrid.innerHTML = '';
 
             if (!categories || categories.length === 0) {
-                legendGrid.innerHTML = '<div class="col-span-2 text-center py-2 text-xs text-on-surface-variant font-medium">No category spending recorded yet.</div>';
+                legendGrid.innerHTML = '<div class="col-span-2 text-center py-2 text-xs text-body font-medium">No category spending recorded yet.</div>';
                 if (centerLabel) centerLabel.textContent = 'Total';
                 if (centerValue) centerValue.textContent = defaultTotalText || '₱0.00';
                 if (centerPct) centerPct.classList.add('hidden');
                 return;
             }
 
-            const totalVal = categories.reduce((sum, cat) => sum + (cat.value !== undefined ? cat.value : (cat.pct || 0)), 0);
+            const totalVal = categories.reduce((sum, cat) => sum + (cat.value !== undefined ? Number(cat.value) || 0 : (Number(cat.pct) || 0)), 0);
             let runningOffset = 0;
 
             categories.forEach((cat, index) => {
-                const itemVal = cat.value !== undefined ? cat.value : (cat.pct || 0);
+                const itemVal = cat.value !== undefined ? Number(cat.value) || 0 : (Number(cat.pct) || 0);
                 const ratio = totalVal > 0 ? (itemVal / totalVal) : 0;
                 const segLength = ratio * C;
                 const displayPct = cat.pct !== undefined ? cat.pct : (ratio * 100).toFixed(1);
-                const catColor = cat.color || getDynamicColor(index);
+                const catColor = safeColor(cat.color);
 
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('id', `donut-seg-${index + 1}`);
-                circle.setAttribute('class', 'donut-segment stroke-current transition-all duration-300 cursor-pointer focus:outline-none');
+                circle.setAttribute('class', 'donut-segment stroke-current transition-all duration-300 cursor-pointer');
                 circle.setAttribute('cx', '50');
                 circle.setAttribute('cy', '50');
                 circle.setAttribute('fill', 'transparent');
@@ -371,25 +395,25 @@
                 circle.setAttribute('stroke-width', '16');
                 circle.setAttribute('stroke-dasharray', `${segLength.toFixed(2)} ${C.toFixed(2)}`);
                 circle.setAttribute('stroke-dashoffset', `${(-runningOffset).toFixed(2)}`);
-                circle.setAttribute('aria-label', `${cat.name}: ${displayPct}% (${cat.amount})`);
                 circle.style.color = catColor;
                 segmentsGroup.appendChild(circle);
                 runningOffset += segLength;
 
-                // Legend Card
-                const legCard = document.createElement('div');
-                legCard.setAttribute('id', `legend-item-${index + 1}`);
-                legCard.className = 'legend-card flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant/60 hover:bg-canvas-soft transition-all cursor-pointer select-none';
-                legCard.innerHTML = `
-                    <div class="flex items-center gap-2 min-w-0">
-                        <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${catColor}"></div>
-                        <span class="font-sans text-xs text-ink font-bold truncate">${cat.name}</span>
-                    </div>
-                    <span id="legend-val-${index + 1}" class="font-sans text-xs text-ink font-bold tabular-nums ml-1 shrink-0">${displayPct}%</span>
+                // Legend button (keyboard equivalent of the donut segment)
+                const legBtn = document.createElement('button');
+                legBtn.type = 'button';
+                legBtn.id = `legend-item-${index + 1}`;
+                legBtn.setAttribute('aria-pressed', 'false');
+                legBtn.className = 'legend-card w-full min-h-[44px] flex items-center justify-between p-2 rounded-xl border border-transparent hover:border-outline-variant hover:bg-canvas-soft transition-all cursor-pointer select-none text-left';
+                legBtn.innerHTML = `
+                    <span class="flex items-center gap-2 min-w-0">
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${esc(catColor)}" aria-hidden="true"></span>
+                        <span class="text-xs text-ink font-semibold truncate">${esc(cat.name)}</span>
+                    </span>
+                    <span id="legend-val-${index + 1}" class="text-xs text-ink font-semibold tabular-nums ml-1 shrink-0">${esc(displayPct)}%<span class="sr-only">, ${esc(cat.amount)}</span></span>
                 `;
-                legendGrid.appendChild(legCard);
+                legendGrid.appendChild(legBtn);
 
-                // Attach hover/click events
                 const onEnter = () => { if (lockedCategoryIndex === null) highlightCategory(index); };
                 const onLeave = () => { if (lockedCategoryIndex === null) resetDonutSelection(defaultTotalText); };
                 const onClick = (e) => { e.stopPropagation(); toggleCategoryLock(index); };
@@ -398,12 +422,20 @@
                 circle.addEventListener('mouseleave', onLeave);
                 circle.addEventListener('click', onClick);
 
-                legCard.addEventListener('mouseenter', onEnter);
-                legCard.addEventListener('mouseleave', onLeave);
-                legCard.addEventListener('click', onClick);
+                legBtn.addEventListener('mouseenter', onEnter);
+                legBtn.addEventListener('mouseleave', onLeave);
+                legBtn.addEventListener('focus', onEnter);
+                legBtn.addEventListener('blur', onLeave);
+                legBtn.addEventListener('click', onClick);
             });
 
             resetDonutSelection(defaultTotalText);
+        }
+
+        function syncLegendPressed() {
+            document.querySelectorAll('#donut-legend-grid .legend-card').forEach((btn, i) => {
+                btn.setAttribute('aria-pressed', lockedCategoryIndex === i ? 'true' : 'false');
+            });
         }
 
         function highlightCategory(index) {
@@ -423,8 +455,8 @@
                         seg.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))';
                     }
                     if (leg) {
-                        leg.classList.add('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs');
-                        leg.classList.remove('opacity-40');
+                        leg.classList.add('bg-canvas-soft', 'border-outline-variant');
+                        leg.classList.remove('opacity-50');
                     }
                 } else {
                     if (seg) {
@@ -433,8 +465,8 @@
                         seg.style.filter = 'none';
                     }
                     if (leg) {
-                        leg.classList.remove('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs');
-                        leg.classList.add('opacity-40');
+                        leg.classList.remove('bg-canvas-soft', 'border-outline-variant');
+                        leg.classList.add('opacity-50');
                     }
                 }
             });
@@ -466,7 +498,7 @@
                     seg.style.filter = 'none';
                 }
                 if (leg) {
-                    leg.classList.remove('bg-canvas-soft', 'border-outline-variant', 'shadow-2xs', 'opacity-40');
+                    leg.classList.remove('bg-canvas-soft', 'border-outline-variant', 'opacity-50');
                 }
             });
 
@@ -483,6 +515,7 @@
                 lockedCategoryIndex = index;
                 highlightCategory(index);
             }
+            syncLegendPressed();
         }
 
         document.addEventListener('click', (e) => {
@@ -491,6 +524,7 @@
                 if (lockedCategoryIndex !== null) {
                     lockedCategoryIndex = null;
                     resetDonutSelection();
+                    syncLegendPressed();
                 }
             }
         });
@@ -536,6 +570,37 @@
             return `${curve} L ${last.x.toFixed(1)} ${bottomY.toFixed(1)} L ${first.x.toFixed(1)} ${bottomY.toFixed(1)} Z`;
         }
 
+        function renderFilterChips(data, filterSelection) {
+            const filterGroup = document.getElementById('category-filter-group');
+            if (!filterGroup) return;
+            filterGroup.innerHTML = '';
+
+            const makeChip = (catKey, label, shortLabel) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.cat = catKey;
+                const isActive = String(filterSelection) === String(catKey);
+                btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                btn.className = `${CHIP_BASE} ${isActive ? CHIP_ON : CHIP_OFF}`;
+                if (shortLabel) {
+                    btn.setAttribute('aria-label', label);
+                    const s = document.createElement('span');
+                    s.className = 'sm:hidden';
+                    s.textContent = shortLabel;
+                    const l = document.createElement('span');
+                    l.className = 'hidden sm:inline';
+                    l.textContent = label;
+                    btn.append(s, l);
+                } else {
+                    btn.textContent = label;
+                }
+                filterGroup.appendChild(btn);
+            };
+
+            makeChip('all', 'All categories', 'All');
+            (data.trendCategories || []).forEach((cat, idx) => makeChip(String(idx), cat.name, null));
+        }
+
         function renderCombinedTrendsChart(periodKey, filterSelection) {
             const data = periodData[periodKey];
             if (!data) return;
@@ -543,29 +608,10 @@
             const badge = document.getElementById('trends-period-badge');
             const subtext = document.getElementById('trends-subtext');
 
-            if (badge) badge.textContent = data.trendPeriod;
-            if (subtext) subtext.textContent = data.trendSubtext;
+            if (badge) badge.textContent = data.trendPeriod || '';
+            if (subtext) subtext.textContent = data.trendSubtext || '';
 
-            // Dynamically populate Category Filter Chips
-            const filterGroup = document.getElementById('category-filter-group');
-            if (filterGroup) {
-                filterGroup.innerHTML = `
-                    <button data-cat="all" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold transition-all ${filterSelection === 'all' ? 'bg-deep-forest text-white shadow-2xs' : 'bg-surface-container-low text-body hover:text-ink border border-outline-variant/60'} cursor-pointer active:scale-95 shrink-0">
-                        <span class="sm:hidden">All</span><span class="hidden sm:inline">All Categories</span>
-                    </button>
-                `;
-
-                if (data.trendCategories && data.trendCategories.length > 0) {
-                    data.trendCategories.forEach((cat, idx) => {
-                        const isActive = String(filterSelection) === String(idx);
-                        filterGroup.innerHTML += `
-                            <button data-cat="${idx}" class="cat-filter-pill px-2.5 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold transition-all ${isActive ? 'bg-deep-forest text-white shadow-2xs' : 'bg-surface-container-low text-body hover:text-ink border border-outline-variant/60'} cursor-pointer active:scale-95 shrink-0">
-                                ${cat.name}
-                            </button>
-                        `;
-                    });
-                }
-            }
+            renderFilterChips(data, filterSelection);
 
             // Populate Y-Axis Labels
             if (data.trendYTicks && data.trendYTicks.length === 4) {
@@ -580,94 +626,95 @@
             const leftMargin = 35;
             const rightMargin = 35;
             const usableWidth = svgWidth - leftMargin - rightMargin;
-            const numCols = data.cols ? data.cols.length : 4;
+            const cols = Array.isArray(data.cols) ? data.cols : [];
+            const numCols = cols.length || 4;
             const xPos = (idx) => leftMargin + (idx / Math.max(1, numCols - 1)) * usableWidth;
 
             // X-Axis labels
             const trendsXAxis = document.getElementById('trends-x-axis');
-            if (trendsXAxis && data.cols) {
-                trendsXAxis.innerHTML = data.cols.map((colName, idx) => {
-                    const leftPct = (xPos(idx) / svgWidth) * 100;
-                    return `<span class="absolute top-2 -translate-x-1/2 text-center truncate text-[10px] sm:text-xs text-deep-forest font-semibold pointer-events-none" style="left: ${leftPct.toFixed(2)}%;">${colName}</span>`;
-                }).join('');
+            if (trendsXAxis) {
+                trendsXAxis.innerHTML = '';
+                cols.forEach((colName, idx) => {
+                    const span = document.createElement('span');
+                    span.className = 'absolute top-2 -translate-x-1/2 text-center truncate text-xs text-deep-forest font-semibold pointer-events-none';
+                    span.style.left = `${((xPos(idx) / svgWidth) * 100).toFixed(2)}%`;
+                    span.textContent = colName;
+                    trendsXAxis.appendChild(span);
+                });
             }
 
             const topMargin = 16;
             const bottomMargin = 25;
             const bottomY = 200 - bottomMargin; // 175
             const usableHeight = bottomY - topMargin;
-            const effectiveMaxY = data.trendMaxY || 1000;
+            const effectiveMaxY = Number(data.trendMaxY) || 1000;
             const yPos = (val) => {
-                const normalized = clampVal(val, 0, effectiveMaxY);
+                const normalized = clampVal(Number(val) || 0, 0, effectiveMaxY);
                 return bottomY - (normalized / effectiveMaxY) * usableHeight;
             };
 
+            const trendCategories = Array.isArray(data.trendCategories) ? data.trendCategories : [];
             const linesGroup = document.getElementById('trend-lines-group');
             const pointsGroup = document.getElementById('trend-points-group');
             if (linesGroup) linesGroup.innerHTML = '';
             if (pointsGroup) pointsGroup.innerHTML = '';
 
-            if (data.trendCategories && data.trendCategories.length > 0) {
-                data.trendCategories.forEach((cat, catIdx) => {
-                    const pts = cat.values.map((v, colIdx) => ({
-                        x: xPos(colIdx),
-                        y: yPos(v),
-                        val: v,
-                        formatted: cat.formattedValues[colIdx]
-                    }));
+            trendCategories.forEach((cat, catIdx) => {
+                const color = safeColor(cat.color);
+                const pts = (cat.values || []).map((v, colIdx) => ({
+                    x: xPos(colIdx),
+                    y: yPos(v),
+                }));
 
-                    const linePathD = getCurvePath(pts, topMargin, bottomY);
-                    const areaPathD = getAreaPath(pts, bottomY, topMargin);
+                const linePathD = getCurvePath(pts, topMargin, bottomY);
+                const areaPathD = getAreaPath(pts, bottomY, topMargin);
 
-                    const isTarget = (filterSelection === 'all' || filterSelection === catIdx || filterSelection === String(catIdx));
-                    const isSingleSelected = (filterSelection !== 'all' && isTarget);
+                const isTarget = (filterSelection === 'all' || String(filterSelection) === String(catIdx));
+                const isSingleSelected = (filterSelection !== 'all' && isTarget);
 
-                    if (linesGroup) {
-                        // Area
-                        const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        areaPath.setAttribute('class', 'trend-area');
-                        areaPath.setAttribute('fill', cat.color || '#163300');
-                        areaPath.setAttribute('d', areaPathD);
-                        areaPath.style.opacity = isTarget ? (filterSelection === 'all' ? '0.08' : '0.25') : '0';
-                        linesGroup.appendChild(areaPath);
+                if (linesGroup) {
+                    const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    areaPath.setAttribute('class', 'trend-area');
+                    areaPath.setAttribute('fill', color);
+                    areaPath.setAttribute('d', areaPathD);
+                    areaPath.style.opacity = isTarget ? (filterSelection === 'all' ? '0.08' : '0.25') : '0';
+                    linesGroup.appendChild(areaPath);
 
-                        // Line
-                        const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        linePath.setAttribute('class', 'trend-line');
-                        linePath.setAttribute('stroke', cat.color || '#163300');
-                        linePath.setAttribute('stroke-width', isTarget ? (filterSelection === 'all' ? '2.5' : '3.5') : '1.5');
-                        linePath.setAttribute('fill', 'none');
-                        linePath.setAttribute('stroke-linecap', 'round');
-                        linePath.setAttribute('stroke-linejoin', 'round');
-                        linePath.setAttribute('d', linePathD);
-                        linePath.style.opacity = isTarget ? '1' : '0.15';
-                        linesGroup.appendChild(linePath);
-                    }
+                    const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    linePath.setAttribute('class', 'trend-line');
+                    linePath.setAttribute('stroke', color);
+                    linePath.setAttribute('stroke-width', isTarget ? (filterSelection === 'all' ? '2.5' : '3.5') : '1.5');
+                    linePath.setAttribute('fill', 'none');
+                    linePath.setAttribute('stroke-linecap', 'round');
+                    linePath.setAttribute('stroke-linejoin', 'round');
+                    linePath.setAttribute('d', linePathD);
+                    linePath.style.opacity = isTarget ? '1' : '0.15';
+                    linesGroup.appendChild(linePath);
+                }
 
-                    const isMobile = window.innerWidth < 640;
-                    const baseDotRadius = isMobile ? (isSingleSelected ? '6.5' : '5') : (isSingleSelected ? '5' : '3.5');
-                    const dotStrokeWidth = isMobile ? '2.5' : '2';
+                const isMobile = window.innerWidth < 640;
+                const baseDotRadius = isMobile ? (isSingleSelected ? '6.5' : '5') : (isSingleSelected ? '5' : '3.5');
+                const dotStrokeWidth = isMobile ? '2.5' : '2';
 
-                    if (pointsGroup) {
-                        pts.forEach((pt, colIdx) => {
-                            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                            circle.setAttribute('class', 'trend-point');
-                            circle.setAttribute('cx', pt.x.toFixed(1));
-                            circle.setAttribute('cy', pt.y.toFixed(1));
-                            circle.setAttribute('r', baseDotRadius);
-                            circle.setAttribute('fill', cat.color || '#163300');
-                            circle.setAttribute('stroke', '#FFFFFF');
-                            circle.setAttribute('stroke-width', dotStrokeWidth);
-                            circle.setAttribute('data-cat', catIdx);
-                            circle.setAttribute('data-col', colIdx);
-                            circle.style.opacity = isTarget ? '1' : '0.15';
-                            pointsGroup.appendChild(circle);
-                        });
-                    }
-                });
-            }
+                if (pointsGroup) {
+                    pts.forEach((pt, colIdx) => {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('class', 'trend-point');
+                        circle.setAttribute('cx', pt.x.toFixed(1));
+                        circle.setAttribute('cy', pt.y.toFixed(1));
+                        circle.setAttribute('r', baseDotRadius);
+                        circle.setAttribute('fill', color);
+                        circle.setAttribute('stroke', '#FFFFFF');
+                        circle.setAttribute('stroke-width', dotStrokeWidth);
+                        circle.setAttribute('data-cat', catIdx);
+                        circle.setAttribute('data-col', colIdx);
+                        circle.style.opacity = isTarget ? '1' : '0.15';
+                        pointsGroup.appendChild(circle);
+                    });
+                }
+            });
 
-            // Interactive Hover Columns and Tooltip
+            // Interactive hover/focus columns and tooltip
             const hoverZonesContainer = document.getElementById('trend-hover-zones');
             const crosshair = document.getElementById('trend-crosshair');
             const colHighlight = document.getElementById('trend-column-highlight');
@@ -676,161 +723,242 @@
             const tooltipList = document.getElementById('tooltip-items-list');
             const tooltipTotal = document.getElementById('tooltip-total-val');
 
-            if (hoverZonesContainer && data.cols) {
-                hoverZonesContainer.innerHTML = '';
-                for (let c = 0; c < numCols; c++) {
-                    const zone = document.createElement('div');
-                    zone.className = 'absolute top-0 bottom-0 cursor-pointer';
-                    zone.setAttribute('data-col-index', c);
+            if (!hoverZonesContainer) return;
+            hoverZonesContainer.innerHTML = '';
+            if (!cols.length || !trendCategories.length) return;
 
-                    let startX, endX;
-                    if (c === 0) {
-                        startX = 0;
-                        endX = (xPos(0) + (xPos(1) || xPos(0))) / 2;
-                    } else if (c === numCols - 1) {
-                        startX = (xPos(c - 1) + xPos(c)) / 2;
-                        endX = svgWidth;
-                    } else {
-                        startX = (xPos(c - 1) + xPos(c)) / 2;
-                        endX = (xPos(c) + xPos(c + 1)) / 2;
+            for (let c = 0; c < numCols; c++) {
+                let colTotal = 0;
+                trendCategories.forEach((cat) => { colTotal += Number((cat.values || [])[c]) || 0; });
+
+                const zone = document.createElement('button');
+                zone.type = 'button';
+                zone.className = 'absolute top-0 bottom-0 bg-transparent rounded-lg cursor-pointer';
+                zone.setAttribute('data-col-index', c);
+                const parts = trendCategories.map((cat) => `${cat.name} ${peso((cat.values || [])[c])}`);
+                zone.setAttribute('aria-label', `${cols[c]}: ${parts.join(', ')}. Total spent ${peso(colTotal)}`);
+
+                let startX, endX;
+                if (c === 0) {
+                    startX = 0;
+                    endX = numCols > 1 ? (xPos(0) + xPos(1)) / 2 : svgWidth;
+                } else if (c === numCols - 1) {
+                    startX = (xPos(c - 1) + xPos(c)) / 2;
+                    endX = svgWidth;
+                } else {
+                    startX = (xPos(c - 1) + xPos(c)) / 2;
+                    endX = (xPos(c) + xPos(c + 1)) / 2;
+                }
+
+                zone.style.left = `${((startX / svgWidth) * 100).toFixed(2)}%`;
+                zone.style.width = `${(((endX - startX) / svgWidth) * 100).toFixed(2)}%`;
+
+                const onEnterCol = () => {
+                    const targetX = xPos(c);
+                    const colWidth = usableWidth / numCols;
+                    const isMob = window.innerWidth < 640;
+
+                    if (colHighlight) {
+                        colHighlight.setAttribute('x', (targetX - colWidth / 2).toFixed(1));
+                        colHighlight.setAttribute('width', colWidth.toFixed(1));
+                        colHighlight.style.opacity = '0.06';
                     }
 
-                    const leftPct = (startX / svgWidth) * 100;
-                    const widthPct = ((endX - startX) / svgWidth) * 100;
-                    zone.style.left = `${leftPct.toFixed(2)}%`;
-                    zone.style.width = `${widthPct.toFixed(2)}%`;
+                    if (crosshair) {
+                        crosshair.setAttribute('x1', targetX.toFixed(1));
+                        crosshair.setAttribute('x2', targetX.toFixed(1));
+                        crosshair.style.opacity = '0.7';
+                    }
 
-                    const onEnterCol = () => {
-                        if (!data.trendCategories || data.trendCategories.length === 0) return;
-                        const targetX = xPos(c);
-                        const colWidth = usableWidth / numCols;
-                        const isMob = window.innerWidth < 640;
-
-                        if (colHighlight) {
-                            colHighlight.setAttribute('x', (targetX - colWidth / 2).toFixed(1));
-                            colHighlight.setAttribute('width', colWidth.toFixed(1));
-                            colHighlight.style.opacity = '0.06';
-                        }
-
-                        if (crosshair) {
-                            crosshair.setAttribute('x1', targetX.toFixed(1));
-                            crosshair.setAttribute('x2', targetX.toFixed(1));
-                            crosshair.style.opacity = '0.7';
-                        }
-
-                        const circles = document.querySelectorAll('#trend-points-group circle');
-                        circles.forEach(cir => {
-                            if (parseInt(cir.getAttribute('data-col'), 10) === c) {
-                                cir.setAttribute('r', isMob ? '8' : '6.5');
-                                cir.setAttribute('stroke-width', isMob ? '3' : '2.5');
-                            } else {
-                                const isSingular = filterSelection !== 'all';
-                                cir.setAttribute('r', isMob ? (isSingular ? '6.5' : '5') : (isSingular ? '5' : '3.5'));
-                                cir.setAttribute('stroke-width', isMob ? '2.5' : '2');
-                            }
-                        });
-
-                        let colTotal = 0;
-                        data.trendCategories.forEach(cat => {
-                            colTotal += (cat.values[c] || 0);
-                        });
-
-                        if (tooltip && tooltipTitle && tooltipList && tooltipTotal) {
-                            tooltipTitle.textContent = `${data.cols[c]} Breakdown`;
-                            let listHtml = '';
-
-                            data.trendCategories.forEach((cat, idx) => {
-                                const val = cat.values[c] || 0;
-                                const sharePct = colTotal > 0 ? Math.round((val / colTotal) * 100) : 0;
-                                const isDimmed = (filterSelection !== 'all' && filterSelection !== idx && filterSelection !== String(idx));
-                                
-                                listHtml += `
-                                    <div class="flex items-center justify-between gap-3 text-[11px] ${isDimmed ? 'opacity-35' : 'opacity-100'}">
-                                        <div class="flex items-center gap-1.5 min-w-0">
-                                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${cat.color || '#163300'}"></span>
-                                            <span class="text-white/90 truncate">${cat.name}</span>
-                                            <span class="text-white/50 text-[10px]">(${sharePct}%)</span>
-                                        </div>
-                                        <span class="font-bold tabular-nums text-white shrink-0">${cat.formattedValues[c] || '₱0'}</span>
-                                    </div>
-                                `;
-                            });
-
-                            tooltipList.innerHTML = listHtml;
-                            tooltipTotal.textContent = `₱${colTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-                            const rect = hoverZonesContainer.getBoundingClientRect();
-                            const xRatio = targetX / svgWidth;
-                            const isFarRight = xRatio > 0.65;
-
-                            tooltip.style.top = '10px';
-                            if (isFarRight) {
-                                tooltip.style.left = 'auto';
-                                tooltip.style.right = `${((1 - xRatio) * 100) + 4}%`;
-                            } else {
-                                tooltip.style.right = 'auto';
-                                tooltip.style.left = `${(xRatio * 100) + 4}%`;
-                            }
-                            tooltip.classList.remove('hidden');
-                        }
-                    };
-
-                    const onLeaveCol = () => {
-                        const isMob = window.innerWidth < 640;
-                        const isSingular = filterSelection !== 'all';
-                        if (colHighlight) colHighlight.style.opacity = '0';
-                        if (crosshair) crosshair.style.opacity = '0';
-                        if (tooltip) tooltip.classList.add('hidden');
-                        const circles = document.querySelectorAll('#trend-points-group circle');
-                        circles.forEach(cir => {
+                    document.querySelectorAll('#trend-points-group circle').forEach((cir) => {
+                        if (parseInt(cir.getAttribute('data-col'), 10) === c) {
+                            cir.setAttribute('r', isMob ? '8' : '6.5');
+                            cir.setAttribute('stroke-width', isMob ? '3' : '2.5');
+                        } else {
+                            const isSingular = filterSelection !== 'all';
                             cir.setAttribute('r', isMob ? (isSingular ? '6.5' : '5') : (isSingular ? '5' : '3.5'));
                             cir.setAttribute('stroke-width', isMob ? '2.5' : '2');
-                        });
-                    };
+                        }
+                    });
 
-                    zone.addEventListener('mouseenter', onEnterCol);
-                    zone.addEventListener('mouseleave', onLeaveCol);
-                    zone.addEventListener('click', onEnterCol);
-                    hoverZonesContainer.appendChild(zone);
-                }
+                    if (tooltip && tooltipTitle && tooltipList && tooltipTotal) {
+                        tooltipTitle.textContent = `${cols[c]} breakdown`;
+                        let listHtml = '';
+
+                        trendCategories.forEach((cat, idx) => {
+                            const val = Number((cat.values || [])[c]) || 0;
+                            const sharePct = colTotal > 0 ? Math.round((val / colTotal) * 100) : 0;
+                            const isDimmed = (filterSelection !== 'all' && String(filterSelection) !== String(idx));
+
+                            listHtml += `
+                                <div class="flex items-center justify-between gap-3 text-xs ${isDimmed ? 'opacity-50' : 'opacity-100'}">
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${esc(safeColor(cat.color))}"></span>
+                                        <span class="text-white truncate">${esc(cat.name)}</span>
+                                        <span class="text-white/70 text-xs tabular-nums">(${sharePct}%)</span>
+                                    </div>
+                                    <span class="font-semibold tabular-nums text-white shrink-0">${esc(peso(val))}</span>
+                                </div>
+                            `;
+                        });
+
+                        tooltipList.innerHTML = listHtml;
+                        tooltipTotal.textContent = peso(colTotal);
+
+                        const xRatio = targetX / svgWidth;
+                        const isFarRight = xRatio > 0.65;
+
+                        tooltip.style.top = '10px';
+                        if (isFarRight) {
+                            tooltip.style.left = 'auto';
+                            tooltip.style.right = `${((1 - xRatio) * 100) + 4}%`;
+                        } else {
+                            tooltip.style.right = 'auto';
+                            tooltip.style.left = `${(xRatio * 100) + 4}%`;
+                        }
+                        tooltip.classList.remove('hidden');
+                    }
+                };
+
+                const onLeaveCol = () => {
+                    const isMob = window.innerWidth < 640;
+                    const isSingular = filterSelection !== 'all';
+                    if (colHighlight) colHighlight.style.opacity = '0';
+                    if (crosshair) crosshair.style.opacity = '0';
+                    if (tooltip) tooltip.classList.add('hidden');
+                    document.querySelectorAll('#trend-points-group circle').forEach((cir) => {
+                        cir.setAttribute('r', isMob ? (isSingular ? '6.5' : '5') : (isSingular ? '5' : '3.5'));
+                        cir.setAttribute('stroke-width', isMob ? '2.5' : '2');
+                    });
+                };
+
+                zone.addEventListener('mouseenter', onEnterCol);
+                zone.addEventListener('mouseleave', onLeaveCol);
+                zone.addEventListener('focus', onEnterCol);
+                zone.addEventListener('blur', onLeaveCol);
+                zone.addEventListener('click', onEnterCol);
+                hoverZonesContainer.appendChild(zone);
             }
         }
 
-        // Attach category filter button listeners
+        // Category filter chips (event delegation; chips are re-rendered on change)
         const categoryFilterGroup = document.getElementById('category-filter-group');
         if (categoryFilterGroup) {
             categoryFilterGroup.addEventListener('click', (e) => {
                 const btn = e.target.closest('.cat-filter-pill');
                 if (!btn) return;
                 const cat = btn.dataset.cat;
-                if (activeTrendCategory === cat && cat !== 'all') {
-                    activeTrendCategory = 'all';
-                } else {
-                    activeTrendCategory = cat;
-                }
+                const hadFocus = categoryFilterGroup.contains(document.activeElement);
+                activeTrendCategory = (activeTrendCategory === cat && cat !== 'all') ? 'all' : cat;
                 renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+                if (hadFocus) {
+                    const again = categoryFilterGroup.querySelector(`.cat-filter-pill[data-cat="${cat}"]`);
+                    if (again) again.focus();
+                }
             });
         }
 
-        function updatePeriod(periodKey) {
-            currentPeriod = periodKey;
-            lockedCategoryIndex = null;
-            const data = periodData[periodKey];
-            if (!data) return;
+        function renderBars(data) {
+            const barsContainer = document.getElementById('income-expense-bars-container');
+            const labelsContainer = document.getElementById('income-expense-labels-container');
+            if (!barsContainer || !labelsContainer || !Array.isArray(data.cols)) return;
 
-            // Update KPI cards
+            const cols = data.cols;
+            const numCols = cols.length;
+            barsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+            labelsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+
+            const barWidthClass = numCols > 4 ? 'w-2.5 sm:w-3.5 lg:w-4' : 'w-3.5 sm:w-5 lg:w-6 xl:w-7';
+
+            barsContainer.innerHTML = cols.map((col, idx) => {
+                const expVal = (data.expVals && data.expVals[idx]) || '₱0';
+                const incVal = (data.incVals && data.incVals[idx]) || '₱0';
+                const expH = safePct(data.expHeights && data.expHeights[idx]);
+                const incH = safePct(data.incHeights && data.incHeights[idx]);
+                const tipBottom = Math.max(expH, incH);
+                const label = `${col}: spent ${expVal}, income ${incVal}`;
+                return `
+                    <div tabindex="0" role="img" aria-label="${esc(label)}" class="group/col relative flex flex-col items-center justify-end h-full w-full rounded-lg">
+                        <div class="flex items-end gap-1 sm:gap-1.5 lg:gap-2 justify-center h-full w-full" aria-hidden="true">
+                            <div class="chart-bar-grow ${barWidthClass} bg-negative rounded-t-md sm:rounded-t-lg" style="height: ${expH}%;"></div>
+                            <div class="chart-bar-grow ${barWidthClass} bg-positive rounded-t-md sm:rounded-t-lg" style="height: ${incH}%;"></div>
+                        </div>
+                        <div class="hidden group-hover/col:block group-focus/col:block absolute left-1/2 -translate-x-1/2 mb-2 bg-deep-forest text-white text-xs font-medium py-1.5 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-elevated pointer-events-none tabular-nums" style="bottom: ${tipBottom}%;" aria-hidden="true">
+                            <div>Spent ${esc(expVal)}</div>
+                            <div>Income ${esc(incVal)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            labelsContainer.innerHTML = cols.map((col) => `
+                <div class="flex items-center justify-center text-center w-full">
+                    <span class="truncate">${esc(col)}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderKpis(data) {
             document.getElementById('kpi-total-spending').textContent = data.total || '₱0.00';
             document.getElementById('kpi-total-subtext').textContent = data.totalSub || '0% vs previous period';
             document.getElementById('kpi-highest-cat').textContent = data.highest || '—';
             document.getElementById('kpi-highest-icon').textContent = data.highestIcon || 'category';
             document.getElementById('kpi-highest-subtext').textContent = data.highestSub || '₱0.00 (0% of total)';
-            document.getElementById('kpi-savings-rate').textContent = data.savings || '0.0%';
-            document.getElementById('kpi-savings-bar').style.width = data.savingsBar || '0%';
 
-            // Update chart text
+            const savingsEl = document.getElementById('kpi-savings-rate');
+            const savingsSub = document.getElementById('kpi-savings-subtext');
+            const savingsIcon = document.getElementById('kpi-savings-icon');
+            const savingsIconWrap = document.getElementById('kpi-savings-icon-wrap');
+            const savingsText = String(data.savings || '0.0%').trim();
+            const isNegative = savingsText.startsWith('-');
+            const hasIncome = periodHasIncome(data);
+
+            savingsEl.textContent = savingsText;
+            savingsEl.classList.toggle('text-negative', isNegative);
+            savingsEl.classList.toggle('text-ink', !isNegative);
+            savingsSub.textContent = !hasIncome ? 'No income recorded yet' : (isNegative ? 'Spent more than earned' : 'Income saved after expenses');
+            savingsSub.classList.toggle('text-negative', isNegative);
+            savingsSub.classList.toggle('text-body', !isNegative);
+            savingsIcon.textContent = isNegative ? 'arrow_downward' : 'arrow_upward';
+            savingsIconWrap.classList.toggle('bg-negative/10', isNegative);
+            savingsIconWrap.classList.toggle('text-negative', isNegative);
+            savingsIconWrap.classList.toggle('bg-positive/10', !isNegative);
+            savingsIconWrap.classList.toggle('text-positive-deep', !isNegative);
+            document.getElementById('kpi-savings-bar').style.width = `${safePct(parseFloat(data.savingsBar))}%`;
+        }
+
+        function updatePeriod(periodKey) {
+            currentPeriod = periodKey;
+            lockedCategoryIndex = null;
+
+            // Export link follows the selected period
+            const exportLink = document.getElementById('export-csv-link');
+            if (exportLink) exportLink.href = `${EXPORT_BASE_URL}?period=${encodeURIComponent(periodKey)}`;
+
+            const data = periodData[periodKey];
+            const content = document.getElementById('reports-content');
+            const empty = document.getElementById('reports-empty');
+            const hasData = periodHasData(data);
+
+            const emptyPeriod = document.getElementById('reports-empty-period');
+            if (emptyPeriod) emptyPeriod.textContent = PERIOD_WORDS[periodKey] || 'this period';
+            if (empty) {
+                empty.classList.toggle('hidden', hasData);
+                empty.classList.toggle('flex', !hasData);
+            }
+            if (content) {
+                content.classList.toggle('hidden', !hasData);
+                content.classList.toggle('flex', hasData);
+            }
+            if (!data) {
+                if (content) content.setAttribute('aria-busy', 'false');
+                return;
+            }
+
+            renderKpis(data);
+
             document.getElementById('chart-subtext').textContent = data.chartSubtext || 'Breakdown for selected period';
 
-            // Update Y-Axis Ticks for Income vs Expenses Bar Chart
             if (data.yTicks && data.yTicks.length === 4) {
                 document.getElementById('y-tick-4').textContent = data.yTicks[0];
                 document.getElementById('y-tick-3').textContent = data.yTicks[1];
@@ -838,56 +966,33 @@
                 document.getElementById('y-tick-1').textContent = data.yTicks[3];
             }
 
-            // Update bar heights and labels
-            const barsContainer = document.getElementById('income-expense-bars-container');
-            const labelsContainer = document.getElementById('income-expense-labels-container');
+            renderBars(data);
 
-            if (barsContainer && labelsContainer && data.cols) {
-                const numCols = data.cols.length;
-                barsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
-                labelsContainer.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
-
-                const barWidthClass = numCols > 4 ? 'w-2.5 sm:w-3.5 lg:w-4' : 'w-3.5 sm:w-5 lg:w-6 xl:w-7';
-
-                barsContainer.innerHTML = data.cols.map((col, idx) => `
-                    <div class="flex flex-col items-center justify-end h-full w-full">
-                        <div class="flex items-end gap-1 sm:gap-1.5 lg:gap-2 justify-center h-full w-full">
-                            <div tabindex="0" aria-label="Expenses: ${data.expVals ? data.expVals[idx] : '₱0'}" class="chart-bar-grow ${barWidthClass} bg-expense/80 hover:bg-expense rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.expHeights ? data.expHeights[idx] : 0}%;">
-                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.expVals ? data.expVals[idx] : '₱0'}</div>
-                            </div>
-                            <div tabindex="0" aria-label="Income: ${data.incVals ? data.incVals[idx] : '₱0'}" class="chart-bar-grow ${barWidthClass} bg-primary hover:bg-primary/90 rounded-t-md sm:rounded-t-lg transition-all cursor-pointer group relative flex justify-center focus:outline-none" style="height: ${data.incHeights ? data.incHeights[idx] : 0}%;">
-                                <div class="hidden group-hover:block group-focus:block absolute -top-9 lg:-top-10 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs font-semibold py-1 px-2.5 rounded-lg whitespace-nowrap z-30 shadow-md pointer-events-none transition-all">${data.incVals ? data.incVals[idx] : '₱0'}</div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                labelsContainer.innerHTML = data.cols.map((col) => `
-                    <div class="flex items-center justify-center text-center w-full">
-                        <span class="truncate">${col}</span>
-                    </div>
-                `).join('');
-            }
-
-            // Update Donut
             document.getElementById('donut-period-label').textContent = data.donutPeriod || 'This Period';
             renderDonut(data.categories || [], data.donutTotal);
 
-            // Render Combined Category Trends Chart
             renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
+
+            if (content) content.setAttribute('aria-busy', 'false');
         }
 
-        periodButtons.forEach(btn => {
+        function setActivePeriodButton(activeBtn) {
+            periodButtons.forEach((b) => {
+                const on = b === activeBtn;
+                b.className = `${PERIOD_BTN_BASE} ${on ? PERIOD_BTN_ON : PERIOD_BTN_OFF}`;
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+        }
+
+        periodButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
-                periodButtons.forEach(b => {
-                    b.className = 'btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full font-sans text-xs text-body hover:text-ink transition-all cursor-pointer font-bold';
-                });
-                btn.className = 'btn-period px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-primary text-on-primary shadow-2xs font-sans text-xs font-bold transition-all cursor-pointer';
+                setActivePeriodButton(btn);
+                activeTrendCategory = 'all';
                 updatePeriod(btn.dataset.period);
             });
         });
 
-        // Initialize Default Period (Month)
+        // Initialize default period (Month) synchronously: no placeholder flash.
         updatePeriod('month');
 
         // Window resize handler
@@ -898,11 +1003,6 @@
                 renderCombinedTrendsChart(currentPeriod, activeTrendCategory);
             }, 100);
         });
-
-        // Export Report action
-        document.getElementById('btn-export-report')?.addEventListener('click', () => {
-            window.print();
-        });
-    });
+    })();
 </script>
 {% endblock %}

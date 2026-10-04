@@ -1,28 +1,25 @@
 import uuid
-import colorsys
 from decimal import Decimal
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.db.models import Sum, Q
 from django.conf import settings
-from .models import (
-    UserProfile,
-    Account,
-    Category,
-    Transaction,
-    Receipt,
-    ReceiptItem,
-    Budget,
-    RecurringRule,
-)
+from .models import UserProfile, Account, Category, Transaction, Receipt, Budget
 
 
-def generate_dynamic_color(index):
-    """Dynamically generate distinct, visually appealing hex colors using golden-ratio HSL distribution."""
-    golden_ratio_conjugate = 0.618033988749895
-    hue = (index * golden_ratio_conjugate) % 1.0
-    r, g, b = colorsys.hls_to_rgb(hue, 0.45, 0.68)
-    return f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+# Categorical chart palette. Deliberately avoids alert red and success green so a
+# category's colour never reads as "bad" or "good" spending.
+CATEGORY_PALETTE = [
+    '#163300',  # deep forest
+    '#0A7EA8',  # deep cyan
+    '#B86700',  # amber
+    '#6B4FA0',  # violet
+    '#A14A76',  # plum
+    '#2F6F6A',  # teal
+    '#8A6D1F',  # ochre
+    '#44546A',  # slate
+]
+
 
 
 def get_current_user_profile(request):
@@ -43,7 +40,6 @@ def get_current_user_profile(request):
             'first_name': 'Dev' if clerk_id == 'user_dev_preview_default' else '',
             'last_name': 'User' if clerk_id == 'user_dev_preview_default' else '',
             'email': 'preview@anttipid.ph' if clerk_id == 'user_dev_preview_default' else '',
-            'monthly_income_target': Decimal('0.00'),
         }
     )
 
@@ -112,9 +108,10 @@ def get_dashboard_data(profile):
     net_cash_flow = total_income - total_expenses
 
     # Saved percentage of income
+    # Signed: negative means the month spent more than it earned.
     saved_percent = 0
     if total_income > 0:
-        saved_percent = max(0, int(((total_income - total_expenses) / total_income) * 100))
+        saved_percent = int(((total_income - total_expenses) / total_income) * 100)
 
     # 2. Monthly Budget stats
     overall_budget = Budget.objects.filter(user=profile, category=None, is_active=True).first()
@@ -126,11 +123,18 @@ def get_dashboard_data(profile):
         cat_sum = Budget.objects.filter(user=profile, is_active=True).exclude(category=None).aggregate(sum=Sum('amount_limit'))['sum'] or Decimal('0.00')
         budget_limit = cat_sum
 
+    # budget_percent is capped for progress-bar widths only; show budget_percent_actual as text.
     budget_percent = 0
+    budget_percent_actual = 0
     if budget_limit > 0:
-        budget_percent = min(100, int((total_expenses / budget_limit) * 100))
+        budget_percent_actual = int((total_expenses / budget_limit) * 100)
+        budget_percent = min(100, budget_percent_actual)
     budget_left = max(Decimal('0.00'), budget_limit - total_expenses)
-    budget_on_track = (total_expenses <= budget_limit) if budget_limit > 0 else True
+    budget_over = max(Decimal('0.00'), total_expenses - budget_limit) if budget_limit > 0 else Decimal('0.00')
+
+    # Days left in the month, for the "safe to spend per day" figure.
+    days_left = (end_of_month - today).days + 1
+    daily_allowance = (budget_left / days_left) if (budget_limit > 0 and days_left > 0) else Decimal('0.00')
 
     # 3. Category Spending Breakdown for Month (Single DB GROUP BY Query)
     category_breakdown = []
@@ -154,8 +158,7 @@ def get_dashboard_data(profile):
                 'id': str(item['category_id']),
                 'name': item['category__name'],
                 'icon': item['category__icon_name'] or 'category',
-                'color': item['category__color_hex'] or '#5C8F3A',
-                'spent': cat_spent,
+                    'spent': cat_spent,
                 'percentage': pct,
             })
 
@@ -190,20 +193,26 @@ def get_dashboard_data(profile):
 
     return {
         'net_cash_flow': net_cash_flow,
+        'net_cash_flow_abs': abs(net_cash_flow),
         'total_income': total_income,
         'total_expenses': total_expenses,
         'saved_percent': saved_percent,
+        'saved_percent_abs': abs(saved_percent),
         'budget_limit': budget_limit,
-        'budget_spent': total_expenses,
         'budget_left': budget_left,
+        'budget_over': budget_over,
         'budget_percent': budget_percent,
-        'budget_on_track': budget_on_track,
-        'has_custom_overall': has_custom_overall,
+        'budget_percent_actual': budget_percent_actual,
+        'days_left': days_left,
+        'daily_allowance': daily_allowance,
         'category_breakdown': category_breakdown[:5],
         'weekly_spending': weekly_spending,
         'recent_transactions': recent_transactions,
         'current_month_name': today.strftime('%b %Y'),
     }
+
+
+TRANSACTIONS_PER_PAGE = 50
 
 
 def get_transactions_data(profile, filters=None):
@@ -239,9 +248,18 @@ def get_transactions_data(profile, filters=None):
     if source in ('MANUAL', 'OCR_SCAN', 'RECURRING'):
         qs = qs.filter(source=source)
 
-    # Fetch list once into memory
-    transactions_list = list(qs)
-    total_count = len(transactions_list)
+    # Fetch list once into memory, then paginate
+    all_transactions = list(qs)
+    total_count = len(all_transactions)
+
+    try:
+        page = max(1, int(filters.get('page', 1)))
+    except (TypeError, ValueError):
+        page = 1
+    num_pages = max(1, -(-total_count // TRANSACTIONS_PER_PAGE))
+    page = min(page, num_pages)
+    page_start = (page - 1) * TRANSACTIONS_PER_PAGE
+    transactions_list = all_transactions[page_start:page_start + TRANSACTIONS_PER_PAGE]
 
     # Group transactions by date for mobile view
     today = date.today()
@@ -272,6 +290,14 @@ def get_transactions_data(profile, filters=None):
         'categories': user_categories,
         'accounts': user_accounts,
         'total_count': total_count,
+        'page': page,
+        'num_pages': num_pages,
+        'has_prev_page': page > 1,
+        'has_next_page': page < num_pages,
+        'prev_page': page - 1,
+        'next_page': page + 1,
+        'page_first_index': page_start + 1 if total_count else 0,
+        'page_last_index': page_start + len(transactions_list),
     }
 
 
@@ -296,7 +322,6 @@ def get_budget_data(profile, selected_month=None):
     else:
         end_of_month = target_date.replace(month=target_date.month + 1, day=1) - timedelta(days=1)
 
-    is_current_month = (start_of_month >= today_start_of_month)
     next_month_date = (start_of_month + timedelta(days=32)).replace(day=1)
     prev_month_date = (start_of_month - timedelta(days=1)).replace(day=1)
 
@@ -346,33 +371,28 @@ def get_budget_data(profile, selected_month=None):
         overall_pct = 0
 
     overall_left = max(Decimal('0.00'), overall_limit - total_spent)
+    overall_over = max(Decimal('0.00'), total_spent - overall_limit) if overall_limit > 0 else Decimal('0.00')
+    overall_pct_actual = int(actual_pct_val)
     is_over_limit = (total_spent > overall_limit) if overall_limit > 0 else False
     is_warning_limit = (actual_pct_val >= 80) and not is_over_limit and (overall_limit > 0)
 
+    # Colours come from the DESIGN.md semantic palette (tailwind.app.config.js).
     if overall_limit == 0:
         overall_status_label = 'No Limit Set'
-        overall_status_color = 'neutral'
-        overall_stroke_color = '#94A3B8'
-        overall_badge_bg = 'bg-slate-100 text-slate-700 border-slate-300'
-        overall_badge_text = 'text-slate-700'
+        overall_stroke_color = '#868685'
+        overall_badge_bg = 'bg-surface-container text-body'
     elif is_over_limit:
         overall_status_label = 'Over Budget'
-        overall_status_color = 'expense'
-        overall_stroke_color = '#EF4444'
-        overall_badge_bg = 'bg-expense/15 text-expense border-expense/30'
-        overall_badge_text = 'text-expense'
+        overall_stroke_color = '#D03238'
+        overall_badge_bg = 'bg-negative/10 text-negative-darkest'
     elif is_warning_limit:
         overall_status_label = 'Nearing Limit'
-        overall_status_color = 'warning'
-        overall_stroke_color = '#F59E0B'
-        overall_badge_bg = 'bg-warning/20 text-warning-deep border-warning/40'
-        overall_badge_text = 'text-warning-deep'
+        overall_stroke_color = '#B86700'
+        overall_badge_bg = 'bg-warning/25 text-warning-content'
     else:
         overall_status_label = 'On Track'
-        overall_status_color = 'positive'
-        overall_stroke_color = '#10B981'
-        overall_badge_bg = 'bg-primary-pale text-positive-deep border-positive/30'
-        overall_badge_text = 'text-positive-deep'
+        overall_stroke_color = '#2EAD4B'
+        overall_badge_bg = 'bg-primary-pale text-positive-deep'
 
     capped_pct = min(100.0, actual_pct_val)
     overall_dashoffset = max(0.0, 238.76 - (238.76 * capped_pct / 100.0))
@@ -380,39 +400,34 @@ def get_budget_data(profile, selected_month=None):
     budget_cards = []
     for b in category_budgets:
         cat_spent = cat_spent_map.get(b.category_id, Decimal('0.00'))
-        pct = min(100, int((cat_spent / b.amount_limit) * 100)) if b.amount_limit > 0 else 0
+        pct_actual = int((cat_spent / b.amount_limit) * 100) if b.amount_limit > 0 else 0
+        pct = min(100, pct_actual)
         left = b.amount_limit - cat_spent
         is_over = cat_spent > b.amount_limit
         is_warning = pct >= b.warning_threshold_pct and not is_over
 
         if is_over:
             status_label = 'Over Budget'
-            status_color = 'negative'
         elif is_warning:
             status_label = 'Nearing Limit'
-            status_color = 'warning'
         else:
             status_label = 'On Track'
-            status_color = 'positive'
 
         budget_cards.append({
             'id': str(b.id),
             'name': b.category.name if b.category else b.name,
-            'category_name': b.category.name if b.category else 'General',
             'category_id': str(b.category.id) if b.category else '',
-            'icon_name': b.category.icon_name if b.category else 'category',
             'icon': b.category.icon_name if b.category else 'category',
-            'color': b.category.color_hex if b.category else '#5C8F3A',
             'limit': b.amount_limit,
             'spent': cat_spent,
             'left': abs(left),
+            'over_amount': max(Decimal('0.00'), -left),
             'percentage': pct,
-            'is_over': is_over,
+            'percentage_actual': pct_actual,
             'is_exceeded': is_over,
             'is_warning': is_warning,
             'is_unbudgeted': False,
             'status_label': status_label,
-            'status_color': status_color,
         })
 
     budgeted_cat_ids = set(b.category_id for b in category_budgets if b.category_id)
@@ -423,21 +438,19 @@ def get_budget_data(profile, selected_month=None):
         budget_cards.append({
             'id': f"unbudgeted-{cat.id}",
             'name': cat.name,
-            'category_name': cat.name,
             'category_id': str(cat.id),
-            'icon_name': cat.icon_name or 'category',
             'icon': cat.icon_name or 'category',
-            'color': cat.color_hex or '#5C8F3A',
+            'color': cat.color_hex or '#163300',
             'limit': None,
             'spent': cat_spent,
             'left': Decimal('0.00'),
+            'over_amount': Decimal('0.00'),
             'percentage': 0,
-            'is_over': False,
+            'percentage_actual': 0,
             'is_exceeded': False,
             'is_warning': False,
             'is_unbudgeted': True,
             'status_label': 'Tracking Only (No Limit)',
-            'status_color': 'neutral',
         })
 
     exceeded_count = sum(1 for c in budget_cards if c['is_exceeded'])
@@ -449,16 +462,14 @@ def get_budget_data(profile, selected_month=None):
         'overall_limit': overall_limit,
         'total_limit': overall_limit,
         'overall_spent': total_spent,
-        'total_spent': total_spent,
-        'overall_left': overall_left,
         'overall_remaining': overall_left,
+        'overall_over': overall_over,
         'overall_pct': overall_pct,
-        'overall_percentage': overall_pct,
+        'overall_pct_actual': overall_pct_actual,
         'overall_dashoffset': f"{overall_dashoffset:.1f}",
         'overall_stroke_color': overall_stroke_color,
         'overall_status_label': overall_status_label,
         'overall_badge_bg': overall_badge_bg,
-        'overall_badge_text': overall_badge_text,
         'has_custom_overall': has_custom_overall,
         'is_over_limit': is_over_limit,
         'is_warning_limit': is_warning_limit,
@@ -468,7 +479,6 @@ def get_budget_data(profile, selected_month=None):
         'categories': categories,
         'current_month_label': target_date.strftime('%B %Y'),
         'current_month_str': target_date.strftime('%Y-%m'),
-        'is_current_month': is_current_month,
         'has_next_month': has_next_month,
         'has_prev_month': has_prev_month,
         'next_month_str': next_month_str,
@@ -516,9 +526,10 @@ def get_reports_data(profile):
 
         # Savings Rate
         if total_inc > 0:
-            raw_savings = max(0.0, ((total_inc - total_exp) / total_inc) * 100)
+            # Keep the sign in the label; only the bar width is clamped.
+            raw_savings = ((total_inc - total_exp) / total_inc) * 100
             savings_str = f"{raw_savings:.1f}%"
-            savings_bar = f"{min(100, int(raw_savings))}%"
+            savings_bar = f"{max(0, min(100, int(raw_savings)))}%"
         else:
             savings_str = "0.0%"
             savings_bar = "0%"
@@ -602,7 +613,7 @@ def get_reports_data(profile):
             else:
                 c = d.get('color')
                 if not c or c in used_colors or (c in ('#163300', '#5C8F3A') and len(donut) > 1):
-                    c = generate_dynamic_color(idx)
+                    c = CATEGORY_PALETTE[idx % len(CATEGORY_PALETTE)]
                 d['color'] = c
                 used_colors.add(c)
 
@@ -640,15 +651,10 @@ def get_reports_data(profile):
             cat_color = cat_item['color']
             trend_categories.append({
                 'name': cat_name,
-                'icon': cat_item.get('icon', 'category'),
                 'color': cat_color,
-                'gradId': f"grad-trend-{idx}",
                 'values': cat_vals,
-                'formattedValues': [f"₱{v:,.0f}" for v in cat_vals],
                 'total': f"₱{c_tot:,.2f}",
-                'percentage': int((c_tot / total_exp * 100)) if total_exp > 0 else 0,
-                'isExpenseUp': True,
-                'iconBg': f"bg-surface-container text-deep-forest"
+                'percentage': int((c_tot / total_exp * 100)) if total_exp > 0 else 0
             })
 
         # Trend Max Y and Y-Ticks
@@ -666,22 +672,9 @@ def get_reports_data(profile):
                 "₱0"
             ]
 
-        # Dynamic Insights
-        insights = {
-            'all': f"Total spending for {period_label} is ₱{total_exp:,.2f} with ₱{total_inc:,.2f} income recorded." if total_exp > 0 or total_inc > 0 else f"No spending recorded for {period_label} yet."
-        }
-        for idx, tc in enumerate(trend_categories):
-            insights[idx] = f"{tc['name']} total spend is {tc['total']} ({tc['percentage']}% of {period_label})."
-
         return {
-            'spending': f"₱{total_exp:,.2f}",
             'total': f"₱{total_exp:,.2f}",
-            'spendingChange': spending_change,
             'totalSub': spending_change,
-            'topCatName': top_cat_name,
-            'topCatIcon': top_cat_icon,
-            'topCatAmount': top_cat_amount,
-            'topCatPercent': top_cat_percent,
             'highest': top_cat_name,
             'highestIcon': top_cat_icon,
             'highestSub': f"{top_cat_amount} ({top_cat_percent})",
@@ -696,14 +689,12 @@ def get_reports_data(profile):
             'incVals': [f"₱{v:,.0f}" for v in inc_vals],
             'donutTotal': f"₱{total_exp:,.2f}",
             'donutPeriod': period_label,
-            'donut': donut,
             'categories': [{'name': d['name'], 'pct': d['percentage'], 'amount': d['amount'], 'color': d['color'], 'value': d['value']} for d in donut],
             'trendPeriod': period_label,
             'trendSubtext': f"Spending trajectory for {period_label}",
             'trendYTicks': trend_y_ticks,
             'trendMaxY': max_trend_y,
             'trendCategories': trend_categories,
-            'insights': insights,
         }
 
     # 1. Week (Sun to Sat)

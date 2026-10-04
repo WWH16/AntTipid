@@ -10,148 +10,157 @@
     <div class="flex flex-col gap-4 sm:gap-6">
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- DASHBOARD HEADER & CONTEXT ROW          -->
+        <!-- GREETING & CONTEXT ROW                  -->
         <!-- ═══════════════════════════════════════ -->
         <div class="flex justify-between items-center gap-3">
-            <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <h2 id="dashboard-user-greeting" class="font-headline-lg text-lg sm:text-2xl md:text-3xl font-extrabold text-deep-forest tracking-tight leading-tight truncate" title="Dashboard Greeting">
-                        {% if profile and profile.first_name %}Good day, {{ profile.first_name }}! 👋{% else %}Good day! 👋{% endif %}
-                    </h2>
-                    <script>
-                        (function() {
-                            const el = document.getElementById('dashboard-user-greeting');
-                            if (el) {
-                                const hour = new Date().getHours();
-                                const serverName = "{{ profile.first_name|escapejs }}";
-                                const displayName = serverName ? `, ${serverName}` : '';
-                                if (hour >= 5 && hour < 12) el.innerText = `Good morning${displayName}! ☕`;
-                                else if (hour >= 12 && hour < 18) el.innerText = `Good afternoon${displayName}! ☀️`;
-                                else el.innerText = `Good evening${displayName}! 🌙`;
-                            }
-                        })();
-                    </script>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-low border border-outline-variant/60 text-[10px] sm:text-[11px] font-bold text-body shrink-0">
-                        {{ current_month_name|default:"This Month" }}
-                    </span>
-                </div>
+            <div class="min-w-0 flex-1 flex items-center gap-2 flex-wrap">
+                <p id="dashboard-user-greeting" class="text-lg sm:text-2xl font-bold text-deep-forest tracking-tight leading-tight truncate">
+                    {% if profile and profile.first_name %}Good day, {{ profile.first_name }}{% else %}Good day{% endif %}
+                </p>
+                <script>
+                    (function() {
+                        const el = document.getElementById('dashboard-user-greeting');
+                        if (el) {
+                            const hour = new Date().getHours();
+                            const serverName = "{{ profile.first_name|escapejs }}";
+                            const displayName = serverName ? `, ${serverName}` : '';
+                            if (hour >= 5 && hour < 12) el.innerText = `Good morning${displayName}`;
+                            else if (hour >= 12 && hour < 18) el.innerText = `Good afternoon${displayName}`;
+                            else el.innerText = `Good evening${displayName}`;
+                        }
+                    })();
+                </script>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-canvas text-sm font-medium text-body shrink-0">
+                    {{ current_month_name|default:"This month" }}
+                </span>
             </div>
 
-            <!-- Desktop Quick Actions -->
-            <div class="hidden sm:flex items-center gap-2.5 shrink-0">
-                <a href="{% url 'add_transaction' %}" id="btn-header-add" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-on-primary font-label-md text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer">
-                    <span class="material-symbols-outlined text-[18px]">add</span>
-                    <span>Add Entry</span>
-                </a>
-            </div>
+            <!-- Opens the same Add chooser as the sidebar / bottom nav (JS); plain link without JS -->
+            <a href="{% url 'add_transaction' %}" id="btn-header-add" aria-haspopup="dialog" class="hidden sm:inline-flex items-center justify-center gap-1.5 min-h-[48px] px-5 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-sm font-semibold active:scale-95 transition-all shrink-0">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">add</span>
+                <span>Add transaction</span>
+            </a>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
-        <!-- 3-HERO SUMMARY SECTION                  -->
+        <!-- HERO: LEFT TO SPEND THIS MONTH          -->
         <!-- ═══════════════════════════════════════ -->
-        <section aria-label="Financial Summary Overview" class="flex flex-col gap-2">
-            
-            <!-- Sliding Track on Mobile / 3-Column Grid on sm+ -->
-            <div class="relative w-full" id="summary-carousel-viewport" aria-roledescription="carousel" aria-label="Financial Summary Cards" role="region">
-                <div id="summary-carousel-track" class="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x select-none gap-4 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:snap-none" tabindex="0" aria-label="Swipeable Financial Summary Cards">
-                    
-                    <!-- Card 1: Net Cash Flow (Primary Anchor) -->
-                    <div id="card-income" role="group" aria-roledescription="slide" aria-label="1 of 3: Net Cash Flow" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-primary-pale/80 p-4 sm:p-5 rounded-2xl border border-positive/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.09] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.14]" loading="lazy" decoding="async" aria-hidden="true" />
-
-                        <!-- Attached Right Border Badge -->
-                        <div class="absolute top-3.5 sm:top-4 right-0 z-20">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-positive-deep font-bold bg-white/95 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-positive/30 shadow-xs whitespace-nowrap inline-flex items-center">+{{ saved_percent }}% saved</span>
-                        </div>
-
-                        <!-- Card Header / Title -->
-                        <div class="flex items-center gap-2.5 relative z-10 pr-20 sm:pr-24">
-                            <div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
-                                <span class="material-symbols-outlined text-[18px]">trending_up</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.05em] font-extrabold truncate">Net Cash Flow</span>
-                        </div>
-                        <div class="flex items-end justify-between gap-2 relative z-10">
-                            <div>
-                                <a href="{% url 'reports' %}" class="block group/link focus:outline-none" aria-label="View Net Cash Flow reports">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">
-                                        {% if net_cash_flow >= 0 %}+₱{{ net_cash_flow|floatformat:2|intcomma }}{% else %}-₱{{ net_cash_flow|floatformat:2|intcomma }}{% endif %}
-                                    </p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">₱{{ total_income|floatformat:0|intcomma }} in · ₱{{ total_expenses|floatformat:0|intcomma }} out</span>
-                                </a>
-                            </div>
-                            <a href="{% url 'add_transaction' %}?type=income" id="btn-card-add-income" aria-label="Add new income transaction" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-2.5 pr-3 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="Add Income Transaction">
-                                <span class="material-symbols-outlined text-[15px] text-primary font-bold group-hover/btn:rotate-90 transition-transform">add</span>
-                                <span>Add</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: Total Income -->
-                    <div id="card-total-income" role="group" aria-roledescription="slide" aria-label="2 of 3: Total Income" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline-variant/60 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-primary/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.12]" loading="lazy" decoding="async" aria-hidden="true" />
-
-                        <div class="flex items-center gap-2.5 relative z-10 pr-28 sm:pr-32">
-                            <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">payments</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] text-deep-forest uppercase tracking-[0.05em] font-bold truncate">Total Income</span>
-                        </div>
-                        <div class="flex items-end justify-between gap-2 relative z-10">
-                            <div>
-                                <a href="{% url 'transactions' %}?type=income" class="block group/link focus:outline-none" aria-label="View Income history">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-positive-deep transition-colors">₱{{ total_income|floatformat:2|intcomma }}</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Recorded this month</span>
-                                </a>
-                            </div>
-                            <a href="{% url 'transactions' %}?type=income" aria-label="View income transaction history" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Income History">
-                                <span>History</span>
-                                <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Card 3: Total Expenses -->
-                    <div id="card-expenses" role="group" aria-roledescription="slide" aria-label="3 of 3: Total Expenses" class="summary-card-slide w-full shrink-0 snap-start snap-always sm:w-auto sm:max-w-none sm:shrink sm:snap-none bg-expense/10 p-4 sm:p-5 rounded-2xl border border-expense/30 shadow-xs flex flex-col justify-between gap-3 min-h-[135px] transition-all duration-200 hover:shadow-soft group focus-within:ring-2 focus-within:ring-expense/40 relative overflow-hidden">
-                        <img src="{% static 'images/AntTipidLogo.png' %}" alt="" class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-[0.07] pointer-events-none select-none mix-blend-multiply transition-opacity duration-300 group-hover:opacity-[0.12]" loading="lazy" decoding="async" aria-hidden="true" />
-
-                        <div class="absolute top-3.5 sm:top-4 right-0 z-20">
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-expense font-bold bg-expense/20 pl-2.5 pr-2 py-0.5 rounded-l-full border-y border-l border-expense/30 shadow-xs whitespace-nowrap inline-flex items-center">{{ budget_percent }}% of budget</span>
-                        </div>
-
-                        <div class="flex items-center gap-2.5 relative z-10 pr-24 sm:pr-28">
-                            <div class="w-8 h-8 rounded-xl bg-expense/20 text-expense flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
-                            </div>
-                            <span class="font-label-sm text-[11px] text-expense uppercase tracking-[0.05em] font-bold truncate">Total Expenses</span>
-                        </div>
-                        <div class="flex items-end justify-between gap-2 relative z-10">
-                            <div>
-                                <a href="{% url 'transactions' %}?type=expense" class="block group/link focus:outline-none" aria-label="View expense breakdown">
-                                    <p class="font-headline-md text-xl sm:text-2xl font-extrabold text-deep-forest tabular-nums tracking-tight group-hover/link:text-expense transition-colors">₱{{ total_expenses|floatformat:2|intcomma }}</p>
-                                    <span class="font-label-sm text-[11px] text-body font-medium mt-0.5 block">Across active categories</span>
-                                </a>
-                            </div>
-                            <a href="{% url 'transactions' %}?type=expense" aria-label="View all expense transactions" class="inline-flex items-center gap-1.5 bg-expense hover:bg-expense-dark text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn" title="View Expense Breakdown">
-                                <span>View</span>
-                                <span class="material-symbols-outlined text-[14px] text-white font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
-                            </a>
-                        </div>
+        <section id="card-budget" aria-labelledby="heading-hero" class="bg-surface-container-lowest rounded-2xl p-5 sm:p-6 flex flex-col gap-5">
+            {% if budget_limit and budget_limit > 0 %}
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        {% if budget_over > 0 %}
+                            <h2 id="heading-hero" class="text-sm sm:text-base font-semibold text-body">Over your monthly budget</h2>
+                            <p class="mt-2 font-black text-[40px] leading-[1] sm:text-5xl tracking-tight tabular-nums text-negative-darkest break-words">
+                                ₱{{ budget_over|floatformat:2|intcomma }} <span class="text-lg sm:text-xl font-bold tracking-normal">over budget</span>
+                            </p>
+                            <p class="mt-2 text-sm text-body font-medium">{{ days_left }} day{{ days_left|pluralize }} left in the month</p>
+                        {% else %}
+                            <h2 id="heading-hero" class="text-sm sm:text-base font-semibold text-body">Left to spend this month</h2>
+                            <p class="mt-2 font-black text-[40px] leading-[1] sm:text-5xl tracking-tight tabular-nums text-ink break-words">₱{{ budget_left|floatformat:2|intcomma }}</p>
+                            <p class="mt-2 text-sm text-body font-medium tabular-nums">≈ ₱{{ daily_allowance|floatformat:2|intcomma }}/day for {{ days_left }} day{{ days_left|pluralize }}</p>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <!-- Mobile Carousel Indicators -->
-            <div class="flex sm:hidden items-center justify-center gap-2 py-1" id="summary-carousel-indicators" role="tablist" aria-label="Summary card selector">
-                <button type="button" role="tab" aria-selected="true" tabindex="0" aria-label="Slide 1: Net Cash Flow" data-slide-index="0" class="carousel-dot p-1 flex items-center justify-center focus:outline-none cursor-pointer">
-                    <span class="dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300"></span>
-                </button>
-                <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Slide 2: Total Income" data-slide-index="1" class="carousel-dot p-1 flex items-center justify-center focus:outline-none cursor-pointer">
-                    <span class="dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300"></span>
-                </button>
-                <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Slide 3: Total Expenses" data-slide-index="2" class="carousel-dot p-1 flex items-center justify-center focus:outline-none cursor-pointer">
-                    <span class="dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300"></span>
-                </button>
+                <div class="flex flex-col gap-2">
+                    <div class="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 text-sm">
+                        <span class="font-semibold text-ink tabular-nums">₱{{ budget_spent|floatformat:2|intcomma }} spent <span class="font-normal text-body">of ₱{{ budget_limit|floatformat:2|intcomma }}</span></span>
+                        {% if budget_over > 0 %}
+                            <span class="inline-flex items-center gap-1.5 font-semibold text-negative-darkest tabular-nums">
+                                <span class="w-2 h-2 rounded-full bg-negative" aria-hidden="true"></span>
+                                Over budget · {{ budget_percent_actual }}% used
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1.5 font-semibold text-positive-deep tabular-nums">
+                                <span class="w-2 h-2 rounded-full bg-positive" aria-hidden="true"></span>
+                                On track · {{ budget_percent_actual }}% used
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden" role="progressbar" aria-label="Monthly budget used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ budget_percent }}" aria-valuetext="{{ budget_percent_actual }}% of budget used">
+                        <div class="{% if budget_over > 0 %}bg-negative{% else %}bg-positive{% endif %} h-full rounded-full transition-all duration-500" style="width: {{ budget_percent }}%"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" id="btn-dash-edit-budget-modal" aria-haspopup="dialog" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-canvas-soft hover:bg-surface-container-high text-ink text-sm font-semibold transition-colors">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
+                        <span>Edit budget</span>
+                    </button>
+                    <a href="{% url 'budget' %}" class="inline-flex items-center justify-center gap-1 min-h-[44px] px-3 rounded-xl text-deep-forest hover:bg-surface-container-low text-sm font-semibold transition-colors">
+                        <span>Go to Budgets</span>
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+                    </a>
+                </div>
+            {% else %}
+                <div class="min-w-0">
+                    <h2 id="heading-hero" class="text-sm sm:text-base font-semibold text-body">Income minus spending this month</h2>
+                    <p class="mt-2 font-black text-[40px] leading-[1] sm:text-5xl tracking-tight tabular-nums break-words {% if net_cash_flow < 0 %}text-negative-darkest{% else %}text-ink{% endif %}">
+                        {% if net_cash_flow < 0 %}-₱{{ net_cash_flow_abs|floatformat:2|intcomma }}{% else %}₱{{ net_cash_flow|floatformat:2|intcomma }}{% endif %}
+                    </p>
+                    <p class="mt-2 text-sm text-body font-medium">Set a monthly budget to see how much you can spend each day.</p>
+                </div>
+                <div>
+                    <button type="button" id="btn-dash-open-budget-modal" aria-haspopup="dialog" class="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-base font-semibold active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">tune</span>
+                        <span>Set a monthly budget</span>
+                    </button>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- THIS MONTH: INCOME / SPENDING / NET      -->
+        <!-- ═══════════════════════════════════════ -->
+        <section id="card-summary" aria-labelledby="heading-summary" class="bg-surface-container-lowest rounded-2xl p-2 sm:p-3">
+            <h2 id="heading-summary" class="px-3 pt-2 pb-1 text-base font-semibold text-deep-forest">This month</h2>
+            <div class="flex flex-col divide-y divide-outline-variant/60 sm:grid sm:grid-cols-3 sm:divide-y-0 sm:gap-2">
+
+                <!-- Income -->
+                <a id="card-total-income" href="{% url 'transactions' %}?type=income" class="flex items-center justify-between gap-3 min-h-[56px] px-3 py-3 sm:rounded-xl hover:bg-surface-container-low transition-colors sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                    <span class="flex items-center gap-2 text-sm font-medium text-body">
+                        <span class="material-symbols-outlined text-[18px] text-positive-deep" aria-hidden="true">south_west</span>
+                        Income
+                    </span>
+                    <span class="flex flex-col items-end sm:items-start">
+                        <span class="text-lg sm:text-2xl font-bold tabular-nums text-positive-deep">₱{{ total_income|floatformat:2|intcomma }}</span>
+                    </span>
+                </a>
+
+                <!-- Spending -->
+                <a id="card-expenses" href="{% url 'transactions' %}?type=expense" class="flex items-center justify-between gap-3 min-h-[56px] px-3 py-3 sm:rounded-xl hover:bg-surface-container-low transition-colors sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                    <span class="flex items-center gap-2 text-sm font-medium text-body">
+                        <span class="material-symbols-outlined text-[18px] text-ink" aria-hidden="true">north_east</span>
+                        Spending
+                    </span>
+                    <span class="flex flex-col items-end gap-1 sm:items-start">
+                        <span class="text-lg sm:text-2xl font-bold tabular-nums text-ink">₱{{ total_expenses|floatformat:2|intcomma }}</span>
+                        {% if budget_limit and budget_limit > 0 %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums {% if budget_over > 0 %}bg-negative/10 text-negative-darkest{% else %}bg-surface-container-low text-body{% endif %}">{{ budget_percent_actual }}% of budget</span>
+                        {% endif %}
+                    </span>
+                </a>
+
+                <!-- Income minus spending -->
+                <a id="card-income" href="{% url 'reports' %}" class="flex items-center justify-between gap-3 min-h-[56px] px-3 py-3 sm:rounded-xl hover:bg-surface-container-low transition-colors sm:flex-col sm:items-start sm:justify-start sm:gap-1">
+                    <span class="flex items-center gap-2 text-sm font-medium text-body">
+                        <span class="material-symbols-outlined text-[18px] text-deep-forest" aria-hidden="true">account_balance_wallet</span>
+                        Income minus spending
+                    </span>
+                    <span class="flex flex-col items-end gap-1 sm:items-start">
+                        <span class="text-lg sm:text-2xl font-bold tabular-nums {% if net_cash_flow < 0 %}text-negative-darkest{% elif net_cash_flow > 0 %}text-positive-deep{% else %}text-ink{% endif %}">
+                            {% if net_cash_flow < 0 %}-₱{{ net_cash_flow_abs|floatformat:2|intcomma }}{% elif net_cash_flow > 0 %}+₱{{ net_cash_flow|floatformat:2|intcomma }}{% else %}₱0.00{% endif %}
+                        </span>
+                        {% if total_income > 0 %}
+                            {% if saved_percent < 0 %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-negative/10 text-negative-darkest text-xs font-semibold tabular-nums">Spent {{ saved_percent_abs }}% more than earned</span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-xs font-semibold tabular-nums">{{ saved_percent }}% of income saved</span>
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </a>
             </div>
         </section>
 
@@ -160,155 +169,118 @@
         <!-- ═══════════════════════════════════════ -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
-            <!-- ─── Left Column (Primary Insights & Budget: 8 cols) ─── -->
+            <!-- ─── Left Column: Spending by category ─── -->
             <div class="lg:col-span-8 flex flex-col gap-4 sm:gap-6">
+                <section id="card-categories" aria-labelledby="heading-categories" class="bg-surface-container-lowest rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+                    <div class="flex justify-between items-baseline gap-3">
+                        <h2 id="heading-categories" class="text-base sm:text-lg font-semibold text-deep-forest tracking-tight">Spending by category</h2>
+                        {% if category_breakdown %}
+                            <span class="text-sm text-body font-medium tabular-nums">₱{{ total_expenses|floatformat:2|intcomma }} total</span>
+                        {% endif %}
+                    </div>
 
-                <!-- Monthly Budget & Category Allocation Card -->
-                <section id="card-budget" aria-labelledby="heading-monthly-budget" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-6 shadow-xs flex flex-col gap-4 sm:gap-5 transition-all hover:shadow-soft">
+                    {% if category_breakdown %}
+                        <ul class="flex flex-col gap-3.5">
+                            {% for cat in category_breakdown %}
+                            <li class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0" style="color: {{ cat.color }};">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">{{ cat.icon }}</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between gap-2 text-sm mb-1.5">
+                                        <span class="text-ink font-medium truncate">{{ cat.name }}</span>
+                                        <span class="text-ink font-semibold tabular-nums whitespace-nowrap">₱{{ cat.spent|floatformat:2|intcomma }} <span class="text-body font-normal text-xs">({{ cat.percentage }}%)</span></span>
+                                    </div>
+                                    <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden" aria-hidden="true">
+                                        <div class="h-full rounded-full transition-all duration-500" style="width: {{ cat.percentage }}%; background-color: {{ cat.color }};"></div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="flex flex-col items-start gap-3 py-1">
+                            <p class="text-sm text-body">Your spending by category shows up here once you record an expense this month.</p>
+                            <a href="{% url 'add_transaction' %}?type=expense" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-canvas-soft hover:bg-surface-container-high text-ink text-sm font-semibold transition-colors">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                                <span>Add an expense</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
 
-                    {% if budget_limit and budget_limit > 0 %}
-                        <div class="flex justify-between items-center gap-3">
-                            <div>
-                                <h3 id="heading-monthly-budget" class="font-headline-md text-base sm:text-lg text-deep-forest font-bold tracking-tight">Monthly Budget</h3>
-                                <p class="font-label-sm text-xs text-body font-medium mt-0.5">₱{{ budget_left|floatformat:2|intcomma }} left of ₱{{ budget_limit|floatformat:2|intcomma }}</p>
+            <!-- ─── Right Column: Weekly spending & Recent activity ─── -->
+            <div class="lg:col-span-4 flex flex-col gap-4 sm:gap-6">
+
+                <!-- Weekly Spending Chart -->
+                <section id="card-chart" aria-labelledby="heading-weekly-spending" class="bg-surface-container-lowest rounded-2xl p-5 flex flex-col gap-4">
+                    <div>
+                        <h2 id="heading-weekly-spending" class="text-base font-semibold text-deep-forest tracking-tight">Weekly spending</h2>
+                        <p class="text-sm text-body">By week of the month</p>
+                    </div>
+
+                    {% if total_expenses > 0 %}
+                        <div class="flex items-end justify-between gap-3 h-32" role="img" aria-label="Weekly spending this month: {% for w in weekly_spending %}week {{ forloop.counter }} ₱{{ w.amount|floatformat:2|intcomma }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                            {% for w in weekly_spending %}
+                            <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end" aria-hidden="true">
+                                <span class="text-xs text-body font-medium tabular-nums whitespace-nowrap">{{ w.amount_k }}</span>
+                                <div class="w-full bg-deep-forest rounded-t-lg transition-all" style="height: {{ w.height_pct }}%;"></div>
+                                <span class="text-xs text-ink font-medium">{{ w.week_label }}</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" id="btn-dash-edit-budget-modal" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-primary-pale hover:text-positive-deep text-on-surface-variant font-label-sm text-xs font-bold transition-all shrink-0 cursor-pointer shadow-2xs">
-                                    <span class="material-symbols-outlined text-[13px]">edit</span>
-                                    <span>Edit</span>
-                                </button>
-                                <a href="{% url 'budget' %}" aria-label="Manage budget" class="inline-flex items-center gap-1.5 bg-deep-forest hover:bg-deep-forest/90 text-white pl-3 pr-2.5 py-1 min-h-[30px] rounded-full text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all shrink-0 cursor-pointer group/btn">
-                                    <span>Manage</span>
-                                    <span class="material-symbols-outlined text-[14px] text-primary font-bold group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
+                            {% endfor %}
+                        </div>
+                        <p class="text-sm text-body pt-3 border-t border-outline-variant/60">Total <strong class="text-ink font-semibold tabular-nums">₱{{ total_expenses|floatformat:2|intcomma }}</strong></p>
+                    {% else %}
+                        <p class="text-sm text-body">No spending this month yet. Your weekly totals will appear here.</p>
+                    {% endif %}
+                </section>
+
+                <!-- Recent Activity -->
+                <section id="card-transactions" aria-labelledby="heading-recent-transactions" class="bg-surface-container-lowest rounded-2xl flex flex-col overflow-hidden">
+                    <div class="px-5 pt-4 pb-2 flex justify-between items-center gap-3">
+                        <h2 id="heading-recent-transactions" class="text-base font-semibold text-deep-forest tracking-tight">Recent activity</h2>
+                        <a id="link-view-all" href="{% url 'transactions' %}" aria-label="See all transactions in History" class="inline-flex items-center gap-0.5 min-h-[44px] px-2 -mr-2 rounded-xl text-deep-forest hover:bg-surface-container-low text-sm font-semibold transition-colors">
+                            <span>See all</span>
+                            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+                        </a>
+                    </div>
+                    {% if recent_transactions %}
+                        <ul class="flex flex-col divide-y divide-outline-variant/60 pb-2">
+                            {% for tx in recent_transactions %}
+                            <li>
+                                <a href="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" class="flex items-center justify-between gap-3 px-5 py-3 min-h-[56px] hover:bg-surface-container-low transition-colors">
+                                    <span class="flex items-center gap-3 min-w-0">
+                                        <span class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep{% else %}bg-surface-container-low text-ink{% endif %} flex items-center justify-center shrink-0" aria-hidden="true">
+                                            <span class="material-symbols-outlined text-[18px]">{% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'shopping_bag' }}{% endif %}</span>
+                                        </span>
+                                        <span class="min-w-0 flex flex-col">
+                                            <span class="text-sm text-ink font-semibold truncate">{{ tx.title }}</span>
+                                            <span class="text-xs text-body truncate">{{ tx.category.name|default:tx.get_transaction_type_display }} · {{ tx.transaction_date|date:"M j" }}</span>
+                                        </span>
+                                    </span>
+                                    <span class="text-sm font-semibold whitespace-nowrap tabular-nums {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% else %}text-ink{% endif %}">
+                                        {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="px-5 pb-5 pt-1 flex flex-col items-start gap-3">
+                            <p class="text-sm text-body">Your latest income and spending will show up here.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{% url 'add_transaction' %}" class="inline-flex items-center justify-center gap-1.5 min-h-[48px] px-5 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-sm font-semibold transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                                    <span>Add your first transaction</span>
+                                </a>
+                                <a href="{% url 'scan_receipt' %}" class="inline-flex items-center justify-center gap-1.5 min-h-[48px] px-4 rounded-xl bg-canvas-soft hover:bg-surface-container-high text-ink text-sm font-semibold transition-colors">
+                                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">document_scanner</span>
+                                    <span>Scan a receipt</span>
                                 </a>
                             </div>
                         </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-deep-forest">₱{{ budget_spent|floatformat:2|intcomma }} spent <span class="font-normal text-body">({{ budget_percent }}%)</span></span>
-                                <span class="font-bold {% if budget_on_track %}text-positive-deep{% else %}text-expense{% endif %} flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full {% if budget_on_track %}bg-positive{% else %}bg-expense{% endif %} animate-pulse"></span>
-                                    {% if budget_on_track %}On Track{% else %}Over Limit{% endif %}
-                                </span>
-                            </div>
-                            <div class="w-full bg-surface-container-low h-2.5 rounded-full overflow-hidden border border-outline-variant/40">
-                                <div class="{% if budget_on_track %}bg-emerald-500{% else %}bg-expense{% endif %} h-full rounded-full transition-all duration-500" style="width: {{ budget_percent }}%"></div>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-1">
-                            <div>
-                                <h3 id="heading-monthly-budget" class="font-headline-md text-base text-deep-forest font-bold">Monthly Budget</h3>
-                                <p class="text-xs text-body font-medium mt-0.5">No limit set.</p>
-                            </div>
-                            <button type="button" id="btn-dash-open-budget-modal" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
-                                <span class="material-symbols-outlined text-[16px]">tune</span>
-                                <span>Set Limit</span>
-                            </button>
-                        </div>
                     {% endif %}
-                    <!-- Category Allocation Breakdown -->
-                    <div class="space-y-2.5 sm:space-y-3.5 border-t border-outline-variant/40 pt-3.5 sm:pt-4">
-                        <div class="flex justify-between items-center">
-                            <h4 class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-deep-forest font-bold">Category Spending Breakdown</h4>
-                            <span class="font-label-sm text-[11px] text-body font-bold tabular-nums">₱{{ total_expenses|floatformat:2|intcomma }} Total</span>
-                        </div>
-                        
-                        {% for cat in category_breakdown %}
-                        <div class="flex items-center gap-3 group p-2 -mx-2 rounded-xl hover:bg-surface-container-low/50 active:bg-surface-container-low transition-colors">
-                            <div class="w-9 h-9 rounded-xl bg-surface-container text-deep-forest border border-outline-variant/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform" style="color: {{ cat.color }};">
-                                <span class="material-symbols-outlined text-[18px]">{{ cat.icon }}</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between font-label-sm text-xs mb-1.5">
-                                    <span class="text-deep-forest font-bold">{{ cat.name }}</span>
-                                    <span class="text-deep-forest font-extrabold tabular-nums">₱{{ cat.spent|floatformat:2|intcomma }} <span class="text-body font-medium text-[11px]">({{ cat.percentage }}%)</span></span>
-                                </div>
-                                <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-                                    <div class="h-full rounded-full transition-all duration-500" style="width: {{ cat.percentage }}%; background-color: {{ cat.color }};"></div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <p class="text-xs text-body font-medium py-3 text-center">No category spending recorded this month yet.</p>
-                        {% endfor %}
-                    </div>
-                </section>
-            </div>
-
-            <!-- ─── Right Column (Trends & Recent Activity: 4 cols) ─── -->
-            <div class="lg:col-span-4 flex flex-col gap-4 sm:gap-6">
-
-                <!-- Weekly Cash Flow Chart -->
-                <section id="card-chart" aria-labelledby="heading-weekly-spending" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col gap-3.5 sm:gap-4 transition-all hover:shadow-soft">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 id="heading-weekly-spending" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Weekly Spending</h3>
-                            <p class="font-body-sm text-[11px] text-body">Spending by calendar week</p>
-                        </div>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-surface-container-low font-label-sm text-[11px] text-deep-forest font-bold">This Month</span>
-                    </div>
-
-                    <!-- Bar Chart Visualizer -->
-                    <div class="flex items-end justify-between gap-3 pt-3 border-t border-outline-variant/40 h-28 sm:h-32" role="img" aria-label="Bar chart showing weekly spending for the month">
-                        {% if weekly_spending %}
-    {% for w in weekly_spending %}
-        <div class="flex flex-col items-center gap-1.5 w-full h-full justify-end">
-            <span class="text-[10px] text-body font-medium md:hidden tabular-nums">{{ w.amount_k }}</span>
-            <div class="w-full bg-primary/40 hover:bg-primary/80 rounded-t-lg transition-all cursor-pointer relative group" style="height: {{ w.height_pct }}%;" tabindex="0" aria-label="{{ w.week_label }} spending: ₱{{ w.amount|floatformat:2|intcomma }}">
-                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-deep-forest text-white font-label-sm text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden md:block z-20 shadow-md tabular-nums font-bold">{{ w.week_label }}: ₱{{ w.amount|floatformat:2|intcomma }}</div>
-            </div>
-            <span class="font-label-sm text-xs text-deep-forest font-bold">{{ w.week_label }}</span>
-        </div>
-    {% endfor %}
-{% else %}
-    <p class="text-xs text-body font-medium py-3 text-center">No spending data for this month yet.</p>
-{% endif %}
-                    </div>
-
-                    <div class="flex justify-between items-center text-[11px] text-body pt-2 border-t border-outline-variant/30 font-medium">
-                        <span>Total: <strong class="text-deep-forest font-bold">₱{{ total_expenses|floatformat:2|intcomma }}</strong></span>
-                        <span class="text-positive-deep font-bold">Active Month</span>
-                    </div>
-                </section>
-
-                <!-- Recent Activity Section -->
-                <section id="card-transactions" aria-labelledby="heading-recent-transactions" class="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl shadow-xs flex flex-col overflow-hidden transition-all hover:shadow-soft">
-                    <div class="p-3.5 sm:p-4 border-b border-outline-variant/40 flex justify-between items-center bg-surface-container-low/30">
-                        <div>
-                            <h3 id="heading-recent-transactions" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Recent Activity</h3>
-                            <p class="font-body-sm text-[11px] text-body">Latest recorded transactions</p>
-                        </div>
-                        <a id="link-view-all" aria-label="View all transactions history" class="text-deep-forest hover:text-positive-deep font-label-sm text-xs hover:underline font-bold flex items-center gap-0.5 py-1 px-1.5 rounded-lg active:bg-surface-container-low" href="{% url 'transactions' %}">
-                            See all →
-                        </a>
-                    </div>
-                    <div class="flex flex-col divide-y divide-outline-variant/30">
-                        {% for tx in recent_transactions %}
-                        <a href="{% if tx.receipt %}{% url 'receipt_detail_pk' tx.receipt.id %}{% else %}{% url 'transaction_detail_pk' tx.id %}{% endif %}" aria-label="Transaction details for {{ tx.title }}" class="flex items-center justify-between p-3.5 hover:bg-surface-container-low/60 active:bg-surface-container-low transition-colors cursor-pointer group min-h-[52px]">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-xl {% if tx.transaction_type == 'INCOME' %}bg-primary-pale text-positive-deep border border-positive/30{% elif tx.transaction_type == 'TRANSFER' %}bg-amber-500/15 text-amber-800 border border-amber-500/30{% else %}bg-expense/15 text-expense border border-expense/30{% endif %} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">
-                                        {% if tx.transaction_type == 'INCOME' %}payments{% elif tx.transaction_type == 'TRANSFER' %}swap_horiz{% else %}{{ tx.category.icon_name|default:'shopping_bag' }}{% endif %}
-                                    </span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-label-md text-xs sm:text-sm text-deep-forest font-bold truncate group-hover:text-positive-deep transition-colors">{{ tx.title }}</p>
-                                    <p class="font-body-sm text-[11px] text-body truncate font-medium">
-                                        {{ tx.category.name|default:tx.get_transaction_type_display }} · {{ tx.transaction_date|date:"M d" }}
-                                    </p>
-                                </div>
-                            </div>
-                            <span class="font-label-md text-xs sm:text-sm {% if tx.transaction_type == 'INCOME' %}text-positive-deep{% elif tx.transaction_type == 'TRANSFER' %}text-amber-800{% else %}text-expense{% endif %} font-extrabold whitespace-nowrap ml-2 tabular-nums">
-                                {% if tx.transaction_type == 'INCOME' %}+₱{{ tx.amount|floatformat:2|intcomma }}{% elif tx.transaction_type == 'TRANSFER' %}₱{{ tx.amount|floatformat:2|intcomma }}{% else %}-₱{{ tx.amount|floatformat:2|intcomma }}{% endif %}
-                            </span>
-                        </a>
-                        {% empty %}
-                        <div class="p-6 text-center text-xs text-body font-medium">
-                            No transactions recorded yet. <a href="{% url 'add_transaction' %}" class="text-positive-deep font-bold underline">Add your first transaction</a>!
-                        </div>
-                        {% endfor %}
-                    </div>
                 </section>
             </div>
         </div>
@@ -320,43 +292,40 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- DASHBOARD SET/EDIT MONTHLY BUDGET MODAL                     -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div id="dashboard-budget-modal-wrapper" aria-labelledby="modal-dash-budget-title" aria-modal="true" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 hidden opacity-0 pointer-events-auto" role="dialog">
-    <div id="dashboard-budget-modal-backdrop" class="fixed inset-0 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 opacity-0"></div>
+<div id="dashboard-budget-modal-wrapper" role="dialog" aria-modal="true" aria-labelledby="modal-dash-budget-title" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 hidden opacity-0 pointer-events-auto">
+    <div id="dashboard-budget-modal-backdrop" class="fixed inset-0 bg-deep-forest/40 backdrop-blur-xs transition-opacity duration-200 opacity-0" aria-hidden="true"></div>
 
-    <div id="dashboard-budget-modal-content" class="relative z-[105] w-full max-w-md bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl shadow-2xl border border-outline-variant/60 overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 max-h-[85vh] flex flex-col">
-        <div id="dashboard-budget-modal-handle" class="w-full flex justify-center pt-2.5 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none select-none">
-            <div class="w-10 h-1 bg-outline-variant/80 rounded-full"></div>
+    <div id="dashboard-budget-modal-content" class="relative z-[105] w-full max-w-md bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl shadow-elevated border border-outline-variant/60 overflow-hidden transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-200 max-h-[85vh] flex flex-col pb-safe sm:pb-0">
+        <div class="w-full flex justify-center pt-2.5 pb-1 sm:hidden" aria-hidden="true">
+            <div class="w-10 h-1 bg-outline-variant rounded-full"></div>
         </div>
 
-        <div class="p-4 sm:p-6 flex flex-col gap-4">
-            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0 shadow-2xs">
-                        <span class="material-symbols-outlined text-[18px]">tune</span>
-                    </div>
-                    <div>
-                        <h3 class="font-headline-md text-sm sm:text-base font-bold text-deep-forest" id="modal-dash-budget-title">Set Monthly Budget Limit</h3>
-                        <p class="font-body-sm text-[11px] text-on-surface-variant">Set your total spending target for this month</p>
-                    </div>
+        <div class="p-5 sm:p-6 flex flex-col gap-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-semibold text-deep-forest" id="modal-dash-budget-title">Monthly budget</h2>
+                    <p class="text-sm text-body">Your total spending limit for this month.</p>
                 </div>
-                <button type="button" id="btn-close-dash-budget-modal" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:text-deep-forest hover:bg-surface-container-low transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">close</span>
+                <button type="button" id="btn-close-dash-budget-modal" aria-label="Close" class="w-9 h-9 rounded-full flex items-center justify-center text-body hover:text-ink hover:bg-surface-container-low transition-colors shrink-0 tap">
+                    <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
                 </button>
             </div>
 
-            <form id="form-dash-budget" class="flex flex-col gap-4" onsubmit="return false;">
+            <form id="form-dash-budget" class="flex flex-col gap-4" novalidate onsubmit="return false;">
                 <div>
-                    <label for="input-dash-budget-target" class="font-label-sm text-[11px] text-deep-forest block mb-1 font-bold">Monthly Limit (₱)</label>
+                    <label for="input-dash-budget-target" class="text-sm text-ink block mb-1.5 font-semibold">Monthly limit</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-xs text-deep-forest">₱</span>
-                        <input id="input-dash-budget-target" class="w-full pl-7 pr-3 py-2 bg-surface-container-low/50 border border-outline-variant/80 rounded-xl font-label-md text-xs sm:text-sm font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all tabular-nums" placeholder="e.g. 5,000" type="text" inputmode="decimal" value="{% if budget_limit %}{{ budget_limit|floatformat:2|intcomma }}{% endif %}">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-semibold text-base text-ink" aria-hidden="true">₱</span>
+                        <input id="input-dash-budget-target" aria-describedby="dash-budget-hint dash-budget-error" class="w-full min-h-[48px] pl-8 pr-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-base font-semibold text-ink outline-none focus:border-deep-forest transition-colors tabular-nums" placeholder="e.g. 5,000" type="text" inputmode="decimal" autocomplete="off" value="{% if budget_limit %}{{ budget_limit|floatformat:2|intcomma }}{% endif %}">
                     </div>
+                    <p id="dash-budget-hint" class="mt-1.5 text-xs text-body">{% if budget_limit and budget_limit > 0 %}Leave empty and save to remove the budget.{% else %}You can change this any time.{% endif %}</p>
+                    <p id="dash-budget-error" class="mt-1.5 text-sm font-medium text-negative-darkest hidden"></p>
                 </div>
 
-                <div class="flex items-center gap-2 pt-2 border-t border-outline-variant/40">
-                    <button type="button" id="btn-cancel-dash-budget" class="flex-1 px-3 py-2 sm:py-2.5 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-submit-dash-budget" class="flex-1 px-3 py-2 sm:py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-xs active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                        <span id="btn-submit-dash-budget-label">Save Monthly Limit</span>
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button" id="btn-cancel-dash-budget" class="flex-1 min-h-[48px] px-4 rounded-xl bg-canvas-soft hover:bg-surface-container-high text-ink text-base font-semibold transition-colors">Cancel</button>
+                    <button type="submit" id="btn-submit-dash-budget" class="flex-1 min-h-[48px] px-4 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-base font-semibold active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 disabled:opacity-60">
+                        <span id="btn-submit-dash-budget-label">Save budget</span>
                     </button>
                 </div>
             </form>
@@ -368,60 +337,18 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const track = document.getElementById('summary-carousel-track');
-        const dots = document.querySelectorAll('#summary-carousel-indicators .carousel-dot');
-        const slides = track ? track.querySelectorAll('.summary-card-slide') : [];
-        if (track && dots.length && slides.length) {
-            let currentIndex = 0;
-
-            function updateActiveDot(index) {
-                if (currentIndex === index) return;
-                currentIndex = index;
-                dots.forEach((dot, idx) => {
-                    const isActive = idx === currentIndex;
-                    dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                    dot.setAttribute('tabindex', isActive ? '0' : '-1');
-                    const span = dot.querySelector('.dot-indicator');
-                    if (span) {
-                        span.className = isActive
-                            ? 'dot-indicator h-1.5 w-6 bg-primary rounded-full transition-all duration-300'
-                            : 'dot-indicator h-1.5 w-1.5 bg-outline/50 hover:bg-outline rounded-full transition-all duration-300';
-                    }
-                });
-            }
-
-            function scrollToSlide(index) {
-                if (window.innerWidth >= 640 || !slides[index]) return;
-                slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-                updateActiveDot(index);
-            }
-
-            dots.forEach((dot) => {
-                dot.addEventListener('click', () => {
-                    const index = parseInt(dot.getAttribute('data-slide-index'), 10);
-                    scrollToSlide(index);
-                });
-            });
-
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    if (window.innerWidth >= 640) return;
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-                            const slideIndex = Array.prototype.indexOf.call(slides, entry.target);
-                            if (slideIndex !== -1) {
-                                updateActiveDot(slideIndex);
-                            }
-                        }
-                    });
-                }, {
-                    root: track,
-                    threshold: 0.5
-                });
-
-                slides.forEach((slide) => observer.observe(slide));
-            }
-        }
+        // ═══════════════════════════════════════
+        // HEADER "ADD TRANSACTION" → SAME CHOOSER AS SIDEBAR / BOTTOM NAV
+        // ═══════════════════════════════════════
+        document.getElementById('btn-header-add')?.addEventListener('click', (e) => {
+            const desktopBtn = document.getElementById('btn-add-transaction-desktop');
+            const mobileBtn = document.getElementById('bnav-add');
+            const target = (desktopBtn && desktopBtn.offsetParent) ? desktopBtn
+                : (mobileBtn && mobileBtn.offsetParent) ? mobileBtn : null;
+            if (!target) return; // fall back to the link's href
+            e.preventDefault();
+            target.click();
+        });
 
         // ═══════════════════════════════════════
         // DASHBOARD BUDGET MODAL CONTROLLER
@@ -435,6 +362,11 @@
         const formDashBudget = document.getElementById('form-dash-budget');
         const btnSubmitDashBudget = document.getElementById('btn-submit-dash-budget');
         const btnSubmitDashBudgetLabel = document.getElementById('btn-submit-dash-budget-label');
+        const dashBudgetError = document.getElementById('dash-budget-error');
+        const SAVE_LABEL = 'Save budget';
+
+        let dashBudgetOpen = false;
+        let releaseDashBudgetFocus = null;
 
         function formatNumberWithCommas(val) {
             if (val === null || val === undefined || val === '') return '';
@@ -449,6 +381,7 @@
         function setupAutoCommaInput(inputEl) {
             if (!inputEl) return;
             inputEl.addEventListener('input', () => {
+                setDashBudgetError('');
                 const startPos = inputEl.selectionStart;
                 const oldVal = inputEl.value;
                 const digitsBefore = oldVal.slice(0, startPos).replace(/[^0-9.]/g, '').length;
@@ -466,16 +399,48 @@
             });
         }
 
+        function setDashBudgetError(message) {
+            if (!dashBudgetError) return;
+            if (message) {
+                dashBudgetError.textContent = message;
+                dashBudgetError.classList.remove('hidden');
+                inputDashBudgetTarget?.setAttribute('aria-invalid', 'true');
+                inputDashBudgetTarget?.classList.add('border-negative');
+            } else {
+                dashBudgetError.textContent = '';
+                dashBudgetError.classList.add('hidden');
+                inputDashBudgetTarget?.removeAttribute('aria-invalid');
+                inputDashBudgetTarget?.classList.remove('border-negative');
+            }
+        }
+
+        function setDashBudgetSaving(isSaving) {
+            if (!btnSubmitDashBudget) return;
+            btnSubmitDashBudget.disabled = isSaving;
+            btnSubmitDashBudget.setAttribute('aria-busy', isSaving ? 'true' : 'false');
+            if (btnSubmitDashBudgetLabel) btnSubmitDashBudgetLabel.textContent = isSaving ? 'Saving…' : SAVE_LABEL;
+        }
+
+        function showDashBudgetFailure(message) {
+            setDashBudgetError(message);
+            if (window.antToast) window.antToast(message, { type: 'error' });
+            inputDashBudgetTarget?.focus();
+        }
+
         if (inputDashBudgetTarget) setupAutoCommaInput(inputDashBudgetTarget);
 
         function openDashBudgetModal() {
-            if (!dashBudgetModalWrapper) return;
+            if (!dashBudgetModalWrapper || dashBudgetOpen) return;
+            dashBudgetOpen = true;
             const currentLimit = "{% if budget_limit and budget_limit > 0 %}{{ budget_limit|floatformat:2 }}{% endif %}";
             if (inputDashBudgetTarget) {
                 inputDashBudgetTarget.value = currentLimit ? formatNumberWithCommas(currentLimit) : '';
             }
+            setDashBudgetError('');
+            setDashBudgetSaving(false);
             document.body.style.overflow = 'hidden';
             dashBudgetModalWrapper.classList.remove('hidden');
+            releaseDashBudgetFocus = window.antFocusTrap ? window.antFocusTrap(dashBudgetModalContent, '#input-dash-budget-target') : null;
             requestAnimationFrame(() => {
                 dashBudgetModalBackdrop?.classList.remove('opacity-0');
                 dashBudgetModalBackdrop?.classList.add('opacity-100');
@@ -491,14 +456,20 @@
         }
 
         function closeDashBudgetModal() {
-            if (!dashBudgetModalWrapper) return;
+            if (!dashBudgetModalWrapper || !dashBudgetOpen) return;
+            dashBudgetOpen = false;
             dashBudgetModalBackdrop?.classList.remove('opacity-100');
             dashBudgetModalBackdrop?.classList.add('opacity-0');
             dashBudgetModalWrapper.classList.remove('opacity-100');
             dashBudgetModalWrapper.classList.add('opacity-0');
             dashBudgetModalContent?.classList.remove('translate-y-0', 'sm:scale-100', 'opacity-100');
             dashBudgetModalContent?.classList.add('translate-y-full', 'sm:scale-95', 'opacity-0');
+            if (releaseDashBudgetFocus) {
+                releaseDashBudgetFocus();
+                releaseDashBudgetFocus = null;
+            }
             setTimeout(() => {
+                if (dashBudgetOpen) return;
                 dashBudgetModalWrapper.classList.add('hidden');
                 document.body.style.overflow = '';
             }, 200);
@@ -517,17 +488,32 @@
             });
         }
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dashBudgetOpen) {
+                e.preventDefault();
+                closeDashBudgetModal();
+            }
+        });
+
         formDashBudget?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const rawVal = (inputDashBudgetTarget ? inputDashBudgetTarget.value : '').toString().replace(/,/g, '');
-            const amount = parseFloat(rawVal) || 0;
+            if (btnSubmitDashBudget?.disabled) return;
+
+            const rawVal = (inputDashBudgetTarget ? inputDashBudgetTarget.value : '').toString().replace(/,/g, '').trim();
+            let amount = 0;
+            if (rawVal !== '') {
+                amount = Number(rawVal);
+                if (!Number.isFinite(amount) || amount < 0) {
+                    setDashBudgetError('Enter an amount like 5,000.');
+                    inputDashBudgetTarget?.focus();
+                    return;
+                }
+            }
             const hasBudget = amount > 0;
 
+            setDashBudgetError('');
+            setDashBudgetSaving(true);
             try {
-                if (btnSubmitDashBudget) {
-                    btnSubmitDashBudget.disabled = true;
-                    if (btnSubmitDashBudgetLabel) btnSubmitDashBudgetLabel.textContent = 'Saving...';
-                }
                 const response = await fetch('{% url "api_save_budget" %}', {
                     method: 'POST',
                     headers: {
@@ -541,19 +527,22 @@
                         has_budget: hasBudget,
                     })
                 });
-                const res = await response.json();
-                if (res.success) {
-                    window.location.reload();
-                } else {
-                    alert(res.error || 'Failed to save monthly limit.');
-                    if (btnSubmitDashBudget) {
-                        btnSubmitDashBudget.disabled = false;
-                        if (btnSubmitDashBudgetLabel) btnSubmitDashBudgetLabel.textContent = 'Save Monthly Limit';
+                let res = null;
+                try { res = await response.json(); } catch (_) { res = null; }
+
+                if (response.ok && res && res.success) {
+                    if (window.antToastAfterRedirect) {
+                        window.antToastAfterRedirect(hasBudget ? 'Monthly budget saved' : 'Monthly budget removed', { type: 'success' });
                     }
+                    window.location.reload();
+                    return;
                 }
+                setDashBudgetSaving(false);
+                showDashBudgetFailure((res && res.error) ? res.error : "Couldn't save your budget. Try again.");
             } catch (err) {
                 console.error('Save dashboard budget error:', err);
-                window.location.reload();
+                setDashBudgetSaving(false);
+                showDashBudgetFailure("Couldn't save your budget. Check your connection and try again.");
             }
         });
     });

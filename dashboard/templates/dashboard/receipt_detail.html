@@ -1,580 +1,642 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 
-{% block title %}Receipt Details | AntTipid{% endblock %}
-{% block header_title %}Receipt Details{% endblock %}
-{% block meta_description %}View itemized scanned details, receipt image, subtotal, tax, and merchant metadata.{% endblock %}
+{% block title %}{{ receipt.merchant_name|default:'Receipt' }} | AntTipid{% endblock %}
+{% block header_title %}Receipt{% endblock %}
+{% block mobile_header_title %}Receipt{% endblock %}
+{% block meta_description %}View a scanned receipt: photo, line items, VAT, and total.{% endblock %}
 
 {% block content %}
+{% if receipt %}
+{% with tx=receipt.linked_transaction %}
 <div class="px-margin-mobile md:px-lg py-md md:py-lg pb-32 md:pb-lg">
     <div class="max-w-6xl mx-auto flex flex-col gap-4">
 
-        <!-- ═══════════════════════════════════════ -->
-        <!-- TOP COMPACT NAVIGATION & ACTIONS BAR    -->
-        <!-- ═══════════════════════════════════════ -->
-        <div class="flex items-center justify-between gap-2 pt-1 pb-1">
-            <a href="{% url 'transactions' %}?mode=receipts" id="btn-back-receipt" class="inline-flex items-center gap-1.5 text-body hover:text-positive-deep transition-colors font-label-md text-xs font-bold py-1 shrink-0 cursor-pointer">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                <span class="hidden sm:inline">Back to History &amp; Receipts</span>
-                <span class="sm:hidden">Back</span>
+        <!-- Top bar: back link + desktop actions -->
+        <div class="flex items-center justify-between gap-2">
+            <a href="{% url 'transactions' %}" id="btn-back-receipt" class="inline-flex items-center gap-1.5 min-h-[44px] text-sm font-semibold text-body hover:text-ink transition-colors shrink-0">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_back</span>
+                Back to History
             </a>
 
-            <!-- Action Buttons -->
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button type="button" id="btn-edit-receipt" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 h-9 sm:h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-primary-pale hover:text-positive-deep transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">edit</span>
-                    <span class="hidden sm:inline">Edit Items</span>
-                </button>
-                <button type="button" id="btn-delete-receipt" class="inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 h-9 sm:h-8 rounded-xl bg-expense/15 border border-expense/30 text-expense font-label-md text-xs font-bold hover:bg-expense/20 transition-all active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[17px] sm:text-[15px]">delete</span>
-                    <span class="hidden sm:inline">Delete</span>
-                </button>
-                <button type="button" id="btn-cancel-edit-items" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 h-8 rounded-xl border border-outline-variant/60 bg-surface-container-lowest text-deep-forest font-label-md text-xs font-bold hover:bg-surface-container-low transition-all active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[15px]">close</span>
-                    <span class="hidden sm:inline">Cancel</span>
-                </button>
-                <button type="button" id="btn-save-edit-items" class="hidden inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 h-8 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                    <span class="material-symbols-outlined text-[15px]">check</span>
-                    <span class="hidden sm:inline">Save Items</span>
-                </button>
+            <div class="hidden md:flex items-center gap-2 shrink-0">
+                <div data-view-actions class="flex items-center gap-2">
+                    <button type="button" id="btn-edit-receipt" aria-label="Edit receipt items" class="js-edit-items inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl bg-surface-container-lowest text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors active:scale-[0.98] cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
+                        Edit items
+                    </button>
+                    <button type="button" id="btn-delete-receipt" aria-label="Delete receipt" class="js-delete-receipt inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-xl border border-negative bg-surface-container-lowest text-negative-deep text-sm font-semibold hover:bg-negative/10 transition-colors active:scale-[0.98] cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
+                        Delete
+                    </button>
+                </div>
+                <div data-edit-actions class="hidden items-center gap-2">
+                    <button type="button" id="btn-cancel-edit-items" class="js-cancel-items inline-flex items-center justify-center min-h-[44px] px-4 rounded-xl bg-surface-container-lowest text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60">
+                        Cancel
+                    </button>
+                    <button type="button" id="btn-save-edit-items" class="js-save-items inline-flex items-center justify-center gap-1.5 min-h-[44px] px-5 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">check</span>
+                        <span class="js-save-label">Save items</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════ -->
-        <!-- COMPACT 2-COLUMN RECEIPT DETAIL LAYOUT  -->
-        <!-- ═══════════════════════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
-            
-            <!-- RIGHT COLUMN: EXTRACTED ITEMIZED DATA (Appears first on mobile for immediate reading) -->
-            <div class="lg:col-span-7 flex flex-col gap-4 order-1 lg:order-2">
-                
-                <!-- Main Itemized Card with Integrated Receipt Info Header -->
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 sm:p-5 shadow-xs flex flex-col">
-                    
-                    <!-- Integrated Receipt Header On The List -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 sm:pb-3.5 sm:mb-3.5 border-b border-outline-variant/40">
-                        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                            <!-- Category Icon Avatar -->
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px] sm:text-[20px]">{{ receipt.category.icon_name|default:'shopping_cart' }}</span>
-                            </div>
-                            <div class="min-w-0">
-                                <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                    <h1 class="font-headline-md text-sm sm:text-base md:text-lg font-bold text-deep-forest tracking-tight truncate">{{ receipt.merchant_name }}</h1>
-                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-label-sm text-[10px] sm:text-[11px] font-bold border border-emerald-500/20">{{ receipt.category.name|default:'Groceries' }}</span>
-                                </div>
-                                <p class="font-body-sm text-[11px] sm:text-xs text-body flex items-center gap-1.5 mt-0.5 font-medium flex-wrap">
-                                    <span class="material-symbols-outlined text-[13px] sm:text-[14px]">event</span>
-                                    <span>{{ receipt.receipt_date|date:"M d, Y" }}</span>
-                                    {% if receipt.tax_number %}
-                                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                                    <span class="text-body/80 text-[10px] sm:text-[11px]">TIN: {{ receipt.tax_number }}</span>
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-start">
 
-                        <!-- Detected Items Badge -->
-                        <span id="items-count-badge" class="self-start sm:self-center font-label-sm text-[11px] sm:text-xs text-positive-deep font-bold bg-primary-pale px-2.5 py-0.5 sm:py-1 rounded-full border border-positive/30 shrink-0">{{ items|length }} Items Detected</span>
+            <!-- Items + totals (first on mobile) -->
+            <section class="lg:col-span-7 order-1 lg:order-2 bg-surface-container-lowest rounded-2xl p-5 sm:p-6 flex flex-col" aria-labelledby="receipt-merchant-title">
+
+                <!-- Header -->
+                <div class="flex items-start gap-3 pb-4 border-b border-outline-variant">
+                    <div class="w-11 h-11 rounded-xl bg-surface-container-low text-deep-forest flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">{{ tx.category.icon_name|default:'receipt_long' }}</span>
                     </div>
-
-                    <!-- Items Table -->
-                    <div class="overflow-x-auto -mx-1 sm:mx-0">
-                        <table class="w-full text-left border-collapse min-w-full">
-                            <thead>
-                                <tr class="border-b border-outline-variant/40 text-deep-forest uppercase tracking-[0.06em] text-[10px] sm:text-[11px] bg-surface-container-low/60">
-                                    <th class="py-2 px-2 sm:px-2.5 font-label-md font-bold w-3/5">Item Description</th>
-                                    <th class="py-2 px-1.5 sm:px-2.5 font-label-md font-bold w-1/5 text-right">Qty</th>
-                                    <th class="py-2 px-2 sm:px-2.5 font-label-md font-bold w-1/5 text-right">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody id="receipt-items-tbody" class="font-body-md text-xs sm:text-sm text-deep-forest divide-y divide-outline-variant/30"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- Add Item (shown only while editing) -->
-                    <button type="button" id="btn-add-item" class="hidden mt-3 self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-positive/40 text-positive-deep font-label-md text-xs font-bold hover:bg-primary-pale/40 transition-all active:scale-[0.98] cursor-pointer">
-                        <span class="material-symbols-outlined text-[16px]">add</span>
-                        Add Item
-                    </button>
-
-                    <!-- Financial Summary Breakdown -->
-                    <div class="mt-3.5 pt-3.5 border-t border-outline-variant/40 flex flex-col gap-1.5">
-                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
-                            <span>Subtotal (VAT Exclusive)</span>
-                            <span id="receipt-subtotal" class="font-bold text-deep-forest tabular-nums">₱{{ receipt.subtotal_amount|default:receipt.total_amount|floatformat:2 }}</span>
-                        </div>
-                        <div class="flex justify-between items-center font-body-sm text-xs text-body font-medium">
-                            <span>VAT (12%)</span>
-                            <span id="receipt-tax" class="font-bold text-deep-forest tabular-nums">₱{{ receipt.tax_amount|default:"0.00"|floatformat:2 }}</span>
-                        </div>
-                        <div class="border-t border-outline-variant/40 pt-2.5 mt-1 flex justify-between items-end">
-                            <div>
-                                <span class="font-headline-md text-xs sm:text-base font-bold text-deep-forest block">Total Amount</span>
-                                <span class="font-label-sm text-[10px] text-body font-medium">Philippine Peso (PHP)</span>
-                            </div>
-                            <span id="receipt-total" class="font-headline-lg text-lg sm:text-2xl text-expense font-extrabold tracking-tight tabular-nums">-₱{{ receipt.total_amount|floatformat:2 }}</span>
-                        </div>
+                    <div class="min-w-0 flex-1">
+                        <h2 id="receipt-merchant-title" class="text-lg sm:text-xl font-bold text-ink tracking-tight break-words">{{ receipt.merchant_name|default:'Receipt' }}</h2>
+                        <p class="mt-1 text-sm text-body flex flex-wrap items-center gap-x-2 gap-y-1">
+                            {% if receipt.receipt_date %}
+                            <time datetime="{{ receipt.receipt_date|date:'Y-m-d' }}" class="tabular-nums">{{ receipt.receipt_date|date:"M d, Y" }}</time>
+                            {% else %}
+                            <span>No date</span>
+                            {% endif %}
+                            {% if receipt.invoice_number %}
+                            <span aria-hidden="true">·</span>
+                            <span>Invoice {{ receipt.invoice_number }}</span>
+                            {% endif %}
+                            <span aria-hidden="true">·</span>
+                            <span id="items-count-badge">{{ items|length }} item{{ items|length|pluralize }}</span>
+                        </p>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- LEFT COLUMN: VISUAL SCANNED RECEIPT IMAGE & METADATA -->
-            <div class="lg:col-span-5 flex flex-col gap-3 order-2 lg:order-1">
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3 shadow-xs flex flex-col relative group overflow-hidden">
-                    <!-- Receipt Image Header Label -->
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-outline-variant/30 text-xs">
-                        <span class="font-label-sm text-[11px] font-bold text-deep-forest flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px] text-positive-deep">receipt</span>
-                            Original Receipt Scan
-                        </span>
-                        <button id="btn-view-original" class="bg-surface-container-low/80 border border-outline-variant/50 text-deep-forest px-2 py-0.5 rounded-lg hover:bg-primary-pale hover:text-positive-deep transition-all font-label-sm text-[10px] font-bold flex items-center justify-center gap-1 active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[13px] text-positive-deep">zoom_in</span>
-                            Full Scan
-                        </button>
-                    </div>
-
-                    <!-- Receipt Image Container -->
-                    <div class="rounded-xl overflow-hidden relative bg-surface-container-low flex items-center justify-center min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] cursor-pointer" id="receipt-preview-container" title="Tap to enlarge receipt">
-                        {% if receipt.image or receipt.image_url %}
-                        <img id="receipt-preview-img" alt="Scanned Receipt Image" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px] opacity-95 group-hover:opacity-100 transition-opacity" src="{% if receipt.image %}{{ receipt.image.url }}{% else %}{{ receipt.image_url }}{% endif %}"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
-                        {% else %}
-                        <div class="flex flex-col items-center justify-center p-6 text-center text-on-surface-variant gap-2">
-                            <span class="material-symbols-outlined text-[36px] text-on-surface-variant/50">receipt_long</span>
-                            <span class="font-label-sm text-xs font-bold text-deep-forest">Itemized Receipt</span>
-                            <span class="font-body-sm text-[11px] text-body">No photo scan attached</span>
-                        </div>
-                        {% endif %}
-                    </div>
+                <!-- Items table -->
+                <div class="overflow-x-auto -mx-1 sm:mx-0">
+                    <table class="w-full text-left border-collapse">
+                        <caption class="sr-only">Items on this receipt</caption>
+                        <thead>
+                            <tr class="border-b border-outline-variant text-sm text-body">
+                                <th scope="col" class="py-2.5 px-2 font-medium">Item</th>
+                                <th scope="col" class="py-2.5 px-2 font-medium text-right w-16">Qty</th>
+                                <th scope="col" class="py-2.5 px-2 font-medium text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receipt-items-tbody" class="text-sm text-ink divide-y divide-outline-variant"></tbody>
+                    </table>
                 </div>
 
-                <!-- Compact Payment & Notes Strip -->
-                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-3.5 shadow-xs flex flex-col gap-2">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold">Payment</span>
-                        <span class="font-bold text-deep-forest text-xs">{{ receipt.payment_method|default:'Cash Wallet' }}</span>
-                    </div>
-                    {% if receipt.note %}
-                    <div class="flex items-start justify-between text-xs border-t border-outline-variant/30 pt-2">
-                        <span class="font-label-sm text-[11px] uppercase tracking-[0.06em] text-on-surface-variant font-bold shrink-0 mr-2">Note</span>
-                        <span class="font-body-sm text-[11px] text-on-surface-variant italic text-right font-medium">"{{ receipt.note }}"</span>
+                <!-- Add item (edit mode only) -->
+                <button type="button" id="btn-add-item" class="hidden mt-3 self-start inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-xl border border-dashed border-outline text-ink text-sm font-semibold hover:bg-surface-container-low transition-colors active:scale-[0.98] cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
+                    Add item
+                </button>
+
+                <!-- Totals -->
+                <dl class="mt-4 pt-4 border-t border-outline-variant flex flex-col gap-2">
+                    {% if receipt.tax_amount and receipt.subtotal_amount and receipt.ocr_status != 'EDITED' %}
+                    <div id="receipt-subtotal-row" class="flex justify-between items-center text-sm">
+                        <dt class="text-body">Subtotal</dt>
+                        <dd id="receipt-subtotal" class="font-semibold text-ink tabular-nums">₱{{ receipt.subtotal_amount|floatformat:2|intcomma }}</dd>
                     </div>
                     {% endif %}
-                </div>
+                    {% if receipt.tax_amount %}
+                    <div class="flex justify-between items-center text-sm">
+                        <dt class="text-body">VAT</dt>
+                        <dd id="receipt-tax" class="font-semibold text-ink tabular-nums">₱{{ receipt.tax_amount|floatformat:2|intcomma }}</dd>
+                    </div>
+                    {% endif %}
+                    <div class="flex justify-between items-end gap-4 pt-2">
+                        <dt class="text-base font-semibold text-ink pb-1">Total</dt>
+                        <dd id="receipt-total" class="text-3xl sm:text-4xl font-black text-negative tracking-tight tabular-nums text-right break-all">-₱{{ receipt.total_amount|floatformat:2|intcomma }}</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <!-- Photo + details -->
+            <div class="lg:col-span-5 order-2 lg:order-1 flex flex-col gap-4">
+                <section class="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col gap-3" aria-labelledby="receipt-photo-title">
+                    <h2 id="receipt-photo-title" class="text-base font-semibold text-ink">Receipt photo</h2>
+                    {% if receipt.image or receipt.image_url %}
+                    <button type="button" id="receipt-preview-container" aria-label="View full size receipt photo" aria-haspopup="dialog" class="group relative rounded-xl overflow-hidden bg-surface-container-low flex items-center justify-center min-h-[200px] sm:min-h-[300px] max-h-[360px] lg:max-h-[440px] w-full cursor-zoom-in">
+                        <img id="receipt-preview-img" alt="" class="w-full h-full object-contain max-h-[340px] lg:max-h-[420px]" src="{% if receipt.image %}{{ receipt.image.url }}{% else %}{{ receipt.image_url }}{% endif %}"/>
+                        <span class="absolute bottom-3 right-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-lowest text-ink text-sm font-semibold shadow-2xs" aria-hidden="true">
+                            <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                            View full size
+                        </span>
+                    </button>
+                    {% else %}
+                    <div class="rounded-xl bg-surface-container-low flex flex-col items-center justify-center p-6 min-h-[160px] text-center gap-2">
+                        <span class="material-symbols-outlined text-[32px] text-mute" aria-hidden="true">receipt_long</span>
+                        <p class="text-sm text-body">No photo was attached to this receipt.</p>
+                    </div>
+                    {% endif %}
+                </section>
+
+                <section class="bg-surface-container-lowest rounded-2xl p-4 sm:p-5" aria-labelledby="receipt-details-title">
+                    <h2 id="receipt-details-title" class="text-base font-semibold text-ink">Details</h2>
+                    <dl class="mt-2 divide-y divide-outline-variant">
+                        <div class="py-3 flex items-start justify-between gap-4">
+                            <dt class="text-sm text-body shrink-0">Category</dt>
+                            <dd class="text-sm font-semibold {% if tx.category %}text-ink{% else %}text-mute{% endif %} text-right break-words min-w-0">{{ tx.category.name|default:'Uncategorized' }}</dd>
+                        </div>
+                        <div class="py-3 flex items-start justify-between gap-4">
+                            <dt class="text-sm text-body shrink-0">Payment method</dt>
+                            <dd class="text-sm font-semibold {% if tx.account %}text-ink{% else %}text-mute{% endif %} text-right break-words min-w-0">{{ tx.account.name|default:'Not set' }}</dd>
+                        </div>
+                        {% if receipt.merchant_address %}
+                        <div class="py-3 flex flex-col gap-1">
+                            <dt class="text-sm text-body">Address</dt>
+                            <dd class="text-sm text-ink break-words">{{ receipt.merchant_address }}</dd>
+                        </div>
+                        {% endif %}
+                        {% if tx.notes %}
+                        <div class="py-3 flex flex-col gap-1">
+                            <dt class="text-sm text-body">Notes</dt>
+                            <dd class="text-sm text-ink whitespace-pre-line break-words">{{ tx.notes }}</dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                    {% if tx %}
+                    <a href="{% url 'transaction_detail_pk' tx.id %}" class="mt-2 inline-flex items-center gap-1 min-h-[44px] text-sm font-semibold text-deep-forest underline underline-offset-2 hover:text-ink">
+                        Open transaction to change category, payment method, or notes
+                    </a>
+                    {% endif %}
+                </section>
             </div>
 
         </div>
-
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- DELETE RECEIPT CONFIRMATION MODAL       -->
-<!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-receipt" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-receipt-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[125]">
-        <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[22px]">delete</span>
-            </div>
-            <div class="flex flex-col gap-1">
-                <h3 id="modal-delete-receipt-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Delete this receipt?</h3>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">This can't be undone. The scanned receipt and its transaction will be permanently removed.</p>
-            </div>
+<!-- Mobile sticky action bar (bottom nav is hidden on this page) -->
+<div id="receipt-mobile-actions" class="md:hidden fixed inset-x-0 bottom-0 z-40 bg-surface-container-lowest border-t border-outline-variant px-4 pt-3 pb-safe">
+    <div data-view-actions class="flex items-center gap-3 pb-1">
+        <button type="button" aria-label="Edit receipt items" class="js-edit-items flex-1 inline-flex items-center justify-center gap-2 min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors active:scale-[0.98] cursor-pointer">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">edit</span>
+            Edit items
+        </button>
+        <button type="button" aria-label="Delete receipt" class="js-delete-receipt flex-1 inline-flex items-center justify-center gap-2 min-h-[48px] rounded-xl border border-negative bg-surface-container-lowest text-negative-deep text-base font-semibold hover:bg-negative/10 transition-colors active:scale-[0.98] cursor-pointer">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">delete</span>
+            Delete
+        </button>
+    </div>
+    <div data-edit-actions class="hidden items-center gap-3 pb-1">
+        <button type="button" class="js-cancel-items flex-1 inline-flex items-center justify-center min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60">
+            Cancel
+        </button>
+        <button type="button" class="js-save-items flex-[2] inline-flex items-center justify-center gap-2 min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">check</span>
+            <span class="js-save-label">Save items</span>
+        </button>
+    </div>
+</div>
+
+<!-- Delete receipt confirmation dialog -->
+<div id="modal-confirm-delete-receipt" class="fixed inset-0 z-[120] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <div id="modal-confirm-delete-receipt-content" role="dialog" aria-modal="true" aria-labelledby="modal-delete-receipt-title" aria-describedby="modal-delete-receipt-desc" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant p-6 shadow-elevated transform scale-95 transition-transform duration-200 flex flex-col gap-5">
+        <div class="flex flex-col gap-1.5">
+            <h2 id="modal-delete-receipt-title" class="text-lg font-bold text-ink break-words">Delete “{{ receipt.merchant_name|default:'Receipt' }}” · ₱{{ receipt.total_amount|floatformat:2|intcomma }}?</h2>
+            <p id="modal-delete-receipt-desc" class="text-sm text-body">This can't be undone.{% if tx %} The receipt's transaction stays in History.{% endif %}</p>
         </div>
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-receipt" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-receipt" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[18px]" id="btn-confirm-delete-receipt-icon">delete</span>
-                <span id="btn-confirm-delete-receipt-text">Delete Receipt</span>
+        <div class="flex items-center justify-end gap-2">
+            <button type="button" id="btn-cancel-delete-receipt" class="min-h-[44px] px-4 rounded-xl bg-canvas-soft text-ink text-sm font-semibold hover:bg-surface-container-high transition-colors active:scale-[0.98] cursor-pointer disabled:opacity-60">Cancel</button>
+            <button type="button" id="btn-confirm-delete-receipt" class="min-h-[44px] px-4 rounded-xl bg-negative text-on-error hover:bg-negative-deep text-sm font-semibold transition-colors active:scale-[0.98] cursor-pointer inline-flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-[18px]" id="btn-confirm-delete-receipt-icon" aria-hidden="true">delete</span>
+                <span id="btn-confirm-delete-receipt-text">Delete receipt</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- REMOVE ITEM CONFIRMATION MODAL          -->
-<!-- ═══════════════════════════════════════ -->
-<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[130] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-delete-item-content" class="w-full max-w-[400px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-5 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-4 relative z-[135]">
-        <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[22px]">delete</span>
-            </div>
-            <div class="flex flex-col gap-1">
-                <h3 id="modal-delete-item-title" class="font-headline-md text-base font-bold text-deep-forest tracking-tight">Remove this item?</h3>
-                <p class="font-body-sm text-xs sm:text-sm text-on-surface-variant leading-normal">Remove <span id="delete-item-name" class="font-bold text-deep-forest">this item</span> from the receipt? Totals will be recalculated when you save.</p>
-            </div>
-        </div>
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-item" class="px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-label-md text-sm font-bold transition-all active:scale-[0.98] cursor-pointer">Cancel</button>
-            <button type="button" id="btn-confirm-delete-item" class="px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-sm font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[18px]" id="btn-confirm-delete-item-icon">delete</span>
-                <span id="btn-confirm-delete-item-text">Remove Item</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- FULL-SCREEN IMAGE MODAL VIEWER          -->
-<!-- ═══════════════════════════════════════ -->
-<div id="image-modal-wrapper" role="dialog" aria-modal="true" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <button id="btn-close-image-modal" aria-label="Close image modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-expense/20 hover:text-expense transition-all z-10 shadow-md active:scale-95 cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+{% if receipt.image or receipt.image_url %}
+<!-- Full-size photo dialog -->
+<div id="image-modal-wrapper" role="dialog" aria-modal="true" aria-label="Receipt photo" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+    <button type="button" id="btn-close-image-modal" aria-label="Close photo" class="absolute top-4 right-4 w-11 h-11 rounded-xl bg-surface-container-lowest text-ink flex items-center justify-center hover:bg-surface-container-low transition-colors z-10 active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">close</span>
     </button>
-    <img id="modal-full-img" alt="Full Receipt Scan" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="{% if receipt.image %}{{ receipt.image.url }}{% elif receipt.image_url %}{{ receipt.image_url }}{% endif %}"/>
+    <img id="modal-full-img" alt="Full size photo of the receipt from {{ receipt.merchant_name|default:'this store' }}" class="max-w-full max-h-[90vh] object-contain rounded-2xl scale-95 transition-transform duration-200" src="{% if receipt.image %}{{ receipt.image.url }}{% else %}{{ receipt.image_url }}{% endif %}"/>
 </div>
+{% endif %}
+{% endwith %}
+{% else %}
+<div class="px-margin-mobile md:px-lg py-md md:py-lg">
+    <div class="max-w-xl mx-auto flex flex-col gap-4">
+        <a href="{% url 'transactions' %}" class="inline-flex items-center gap-1.5 min-h-[44px] text-sm font-semibold text-body hover:text-ink transition-colors self-start">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_back</span>
+            Back to History
+        </a>
+        <section class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col items-start gap-3">
+            <h2 class="text-lg font-bold text-ink">No receipts yet</h2>
+            <p class="text-sm text-body">Scan a receipt and its items, VAT, and total show up here.</p>
+            <a href="{% url 'scan_receipt' %}" class="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-colors">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">photo_camera</span>
+                Scan a receipt
+            </a>
+        </section>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
-<!-- ═══════════════════════════════════════ -->
-<!-- REMOVE MOBILE BOTTOM NAV ON THIS VIEW   -->
-<!-- ═══════════════════════════════════════ -->
 {% block mobile_nav %}{% endblock %}
 
 {% block extra_scripts %}
+{% if receipt %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // ─── Initial Data & Variables ───
-        const TAX_RATE = 0.12; // 12% VAT
-        let receiptItems = {{ items_json|safe|default:"[]" }};
-        if (!receiptItems || receiptItems.length === 0) {
-            receiptItems = [
-                { description: '{{ receipt.merchant_name|default:"General Item" }}', qty: 1, unitPrice: {{ receipt.total_amount|default:"0.00" }} }
-            ];
+        const esc = window.antEscape;
+        const toast = (msg, opts) => { if (window.antToast) window.antToast(msg, opts); };
+
+        const MERCHANT = '{{ receipt.merchant_name|default:"Receipt"|escapejs }}';
+        const ORIGINAL_TOTAL = parseFloat('{{ receipt.total_amount|stringformat:".2f" }}') || 0;
+        const UPDATE_URL = '{% url "api_update_receipt_items" receipt.id %}';
+        const DELETE_URL = '{% url "api_delete_receipt" receipt.id %}';
+        const HISTORY_URL = "{% url 'transactions' %}";
+
+        let receiptItems = [];
+        try {
+            receiptItems = JSON.parse('{{ items_json|default:"[]"|escapejs }}') || [];
+        } catch (e) {
+            receiptItems = [];
         }
+        let savedTotal = ORIGINAL_TOTAL;
         let isEditingItems = false;
+        let isSaving = false;
 
-        // Action Buttons
-        const editBtn = document.getElementById('btn-edit-receipt');
-        const deleteBtn = document.getElementById('btn-delete-receipt');
-        const cancelEditBtn = document.getElementById('btn-cancel-edit-items');
-        const saveEditBtn = document.getElementById('btn-save-edit-items');
-        const addItemBtn = document.getElementById('btn-add-item');
+        const $ = (id) => document.getElementById(id);
+        const all = (sel) => Array.from(document.querySelectorAll(sel));
 
-        // Table & Totals Elements
-        const itemsTbody = document.getElementById('receipt-items-tbody');
-        const itemsCountBadge = document.getElementById('items-count-badge');
-        const subtotalEl = document.getElementById('receipt-subtotal');
-        const taxEl = document.getElementById('receipt-tax');
-        const totalEl = document.getElementById('receipt-total');
+        const itemsTbody = $('receipt-items-tbody');
+        const itemsCount = $('items-count-badge');
+        const subtotalRow = $('receipt-subtotal-row');
+        const totalEl = $('receipt-total');
+        const addItemBtn = $('btn-add-item');
 
-        // Image Modal Elements
-        const imageModal = document.getElementById('image-modal-wrapper');
-        const modalImg = document.getElementById('modal-full-img');
-        const viewOriginalBtn = document.getElementById('btn-view-original');
-        const previewContainer = document.getElementById('receipt-preview-container');
-        const closeImageModalBtn = document.getElementById('btn-close-image-modal');
-
-        // Delete Receipt Modal Elements
-        const deleteModal = document.getElementById('modal-confirm-delete-receipt');
-        const deleteModalContent = document.getElementById('modal-confirm-delete-receipt-content');
-        const cancelDeleteBtn = document.getElementById('btn-cancel-delete-receipt');
-        const confirmDeleteBtn = document.getElementById('btn-confirm-delete-receipt');
-
-        // Remove Item Modal Elements
-        const deleteItemModal = document.getElementById('modal-confirm-delete-item');
-        const deleteItemModalContent = document.getElementById('modal-confirm-delete-item-content');
-        const deleteItemNameEl = document.getElementById('delete-item-name');
-        const cancelDeleteItemBtn = document.getElementById('btn-cancel-delete-item');
-        const confirmDeleteItemBtn = document.getElementById('btn-confirm-delete-item');
-        let itemRowPendingDelete = null;
-
-        function money(n) {
-            return `₱${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        function peso(n) {
+            const num = Math.abs(parseFloat(n) || 0);
+            return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // ─── Image Lightbox Logic ───
-        function openImageModal() {
-            if (!imageModal) return;
-            const previewImg = document.getElementById('receipt-preview-img');
-            if (previewImg && previewImg.src && modalImg) {
-                modalImg.src = previewImg.src;
-            }
-            if (!modalImg || !modalImg.src || modalImg.src.endsWith('#') || modalImg.src === window.location.href) {
-                return;
-            }
-            document.body.style.overflow = 'hidden';
-            imageModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                imageModal.classList.remove('opacity-0');
-                imageModal.classList.add('opacity-100');
-                if (modalImg) {
-                    modalImg.classList.remove('scale-95');
-                    modalImg.classList.add('scale-100');
-                }
-            });
+        function firstVisible(selector) {
+            return all(selector).find(el => el.offsetParent !== null) || null;
         }
 
-        function closeImageModal() {
-            if (!imageModal) return;
-            imageModal.classList.remove('opacity-100');
-            imageModal.classList.add('opacity-0');
-            if (modalImg) {
-                modalImg.classList.remove('scale-100');
-                modalImg.classList.add('scale-95');
-            }
-            setTimeout(() => {
-                imageModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200);
+        // ─── Totals ───
+        function renderTotals(total, count) {
+            if (totalEl) totalEl.textContent = '-' + peso(total);
+            // The stored subtotal only matches the original items; hide it once the total changes.
+            if (subtotalRow) subtotalRow.classList.toggle('hidden', Math.abs(total - ORIGINAL_TOTAL) > 0.005);
+            if (itemsCount) itemsCount.textContent = `${count} item${count === 1 ? '' : 's'}`;
         }
 
-        if (viewOriginalBtn) viewOriginalBtn.addEventListener('click', openImageModal);
-        if (previewContainer) previewContainer.addEventListener('click', openImageModal);
-        if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeImageModal);
-        if (imageModal) {
-            imageModal.addEventListener('click', (e) => {
-                if (e.target === imageModal) closeImageModal();
-            });
-        }
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && imageModal && !imageModal.classList.contains('hidden')) {
-                closeImageModal();
-            }
-        });
-
-        // ─── Render Functions ───
+        // ─── Rows ───
         function renderReadOnlyRows() {
             if (!itemsTbody) return;
+            if (!receiptItems.length) {
+                itemsTbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="py-6 px-2 text-sm text-body">No items were read from this receipt. Use Edit items to add them.</td>
+                    </tr>`;
+                return;
+            }
             itemsTbody.innerHTML = receiptItems.map(item => {
-                const lineTotal = item.qty * item.unitPrice;
-                const subLabel = item.qty > 1 ? `${item.qty} × ${money(item.unitPrice)}` : '1 pc';
+                const qty = parseFloat(item.qty) || 0;
+                const unit = parseFloat(item.unitPrice) || 0;
+                const sub = qty !== 1 ? `<span class="block text-xs text-body tabular-nums">${esc(qty)} × ${peso(unit)}</span>` : '';
                 return `
-                    <tr class="hover:bg-soft-green/30 transition-colors">
-                        <td class="py-2.5 sm:py-3 px-2 sm:px-3">
-                            <div class="font-bold text-deep-forest text-xs sm:text-sm tracking-tight">${item.description}</div>
-                            <span class="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant font-medium">${subLabel}</span>
+                    <tr>
+                        <td class="py-3 px-2">
+                            <span class="block font-medium text-ink break-words">${esc(item.description)}</span>
+                            ${sub}
                         </td>
-                        <td class="py-2.5 sm:py-3 px-1.5 sm:px-3 text-right text-on-surface-variant font-semibold tabular-nums text-xs sm:text-sm">${item.qty}</td>
-                        <td class="py-2.5 sm:py-3 px-2 sm:px-3 text-right font-bold text-deep-forest tabular-nums text-xs sm:text-sm">${money(lineTotal)}</td>
+                        <td class="py-3 px-2 text-right text-body tabular-nums align-top">${esc(qty)}</td>
+                        <td class="py-3 px-2 text-right font-semibold text-ink tabular-nums align-top whitespace-nowrap">${peso(qty * unit)}</td>
                     </tr>`;
             }).join('');
         }
 
+        const INPUT_CLASS = 'min-h-[44px] px-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-base text-ink focus:border-deep-forest';
+
+        function editableRowHTML(item) {
+            const desc = item ? item.description : '';
+            const qty = item ? item.qty : 1;
+            const unit = item ? item.unitPrice : '';
+            return `
+                <td class="py-2 px-1 sm:px-2">
+                    <input type="text" value="${esc(desc)}" placeholder="Item name" aria-label="Item name" maxlength="255" autocomplete="off" class="item-desc-input w-full ${INPUT_CLASS}" />
+                </td>
+                <td class="py-2 px-1 sm:px-2 text-right">
+                    <input type="number" min="1" step="1" inputmode="numeric" value="${esc(qty)}" aria-label="Quantity" class="item-qty-input w-14 text-right tabular-nums ${INPUT_CLASS}" />
+                </td>
+                <td class="py-2 px-1 sm:px-2">
+                    <div class="flex items-center justify-end gap-1">
+                        <input type="number" min="0" step="0.01" inputmode="decimal" value="${esc(unit)}" placeholder="0.00" aria-label="Unit price in pesos" class="item-price-input w-20 sm:w-24 text-right tabular-nums ${INPUT_CLASS}" />
+                        <button type="button" class="btn-remove-item tap w-10 h-10 shrink-0 flex items-center justify-center rounded-lg text-negative-deep hover:bg-negative/10 active:scale-95 transition-colors cursor-pointer" aria-label="Remove item">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">delete</span>
+                        </button>
+                    </div>
+                </td>`;
+        }
+
+        function createEditableRow(item) {
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-editable-row', '');
+            tr.innerHTML = editableRowHTML(item);
+            return tr;
+        }
+
         function renderEditableRows() {
             if (!itemsTbody) return;
-            itemsTbody.innerHTML = receiptItems.map((item, i) => `
-                <tr data-editable-row data-index="${i}">
-                    <td class="py-2 px-1.5 sm:px-3">
-                        <input type="text" value="${item.description.replace(/"/g, '&quot;')}" placeholder="Item name" class="item-desc-input w-full px-2 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                    </td>
-                    <td class="py-2 px-1 sm:px-3 text-right">
-                        <input type="number" min="1" step="1" inputmode="numeric" value="${item.qty}" class="item-qty-input w-12 sm:w-14 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                    </td>
-                    <td class="py-2 px-1 sm:px-3">
-                        <div class="flex items-center justify-end gap-1">
-                            <input type="number" min="0" step="0.01" inputmode="decimal" value="${item.unitPrice}" class="item-price-input w-16 sm:w-20 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                            <button type="button" class="btn-remove-item w-7 h-7 sm:w-8 sm:h-8 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 active:scale-95 transition-colors cursor-pointer" aria-label="Remove item">
-                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`).join('');
+            itemsTbody.innerHTML = '';
+            const source = receiptItems.length ? receiptItems : [null];
+            source.forEach(item => itemsTbody.appendChild(createEditableRow(item)));
         }
 
-        function recalcAndRenderTotals() {
-            const total = receiptItems.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
-            const subtotal = total / (1 + TAX_RATE);
-            const tax = total - subtotal;
-            if (subtotalEl) subtotalEl.textContent = money(subtotal);
-            if (taxEl) taxEl.textContent = money(tax);
-            if (totalEl) totalEl.textContent = `-${money(total)}`;
-            if (itemsCountBadge) itemsCountBadge.textContent = `${receiptItems.length} Item${receiptItems.length !== 1 ? 's' : ''} Detected`;
+        function editableRows() {
+            return itemsTbody ? Array.from(itemsTbody.querySelectorAll('tr[data-editable-row]')) : [];
         }
 
-        function commitEditsFromDOM() {
-            if (!itemsTbody) return;
-            const rows = itemsTbody.querySelectorAll('tr[data-editable-row]');
-            const newItems = [];
-            rows.forEach(row => {
+        function markInvalid(input, invalid) {
+            if (!input) return;
+            if (invalid) {
+                input.setAttribute('aria-invalid', 'true');
+                input.classList.add('border-negative');
+            } else {
+                input.removeAttribute('aria-invalid');
+                input.classList.remove('border-negative');
+            }
+        }
+
+        // Reads the edit rows. Blank new rows are skipped; half-filled rows are flagged.
+        function readDraft() {
+            const items = [];
+            let firstInvalid = null;
+            editableRows().forEach(row => {
                 const descInput = row.querySelector('.item-desc-input');
                 const qtyInput = row.querySelector('.item-qty-input');
                 const priceInput = row.querySelector('.item-price-input');
                 const description = descInput ? descInput.value.trim() : '';
-                const qty = qtyInput ? (parseFloat(qtyInput.value) || 0) : 0;
+                const qty = qtyInput ? parseFloat(qtyInput.value) : 0;
                 const unitPrice = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
-                if (description && qty > 0) {
-                    newItems.push({ description, qty, unitPrice });
+                [descInput, qtyInput, priceInput].forEach(el => markInvalid(el, false));
+
+                if (!description && unitPrice === 0) return; // untouched blank row
+                if (!description) {
+                    markInvalid(descInput, true);
+                    firstInvalid = firstInvalid || descInput;
+                    return;
                 }
+                if (!(qty > 0)) {
+                    markInvalid(qtyInput, true);
+                    firstInvalid = firstInvalid || qtyInput;
+                    return;
+                }
+                if (unitPrice < 0) {
+                    markInvalid(priceInput, true);
+                    firstInvalid = firstInvalid || priceInput;
+                    return;
+                }
+                items.push({ description, qty, unitPrice });
             });
-            receiptItems = newItems;
+            return { items, firstInvalid };
+        }
+
+        function liveTotals() {
+            let total = 0;
+            let count = 0;
+            editableRows().forEach(row => {
+                const description = (row.querySelector('.item-desc-input')?.value || '').trim();
+                const qty = parseFloat(row.querySelector('.item-qty-input')?.value) || 0;
+                const unit = parseFloat(row.querySelector('.item-price-input')?.value) || 0;
+                total += qty * unit;
+                if (description || unit) count += 1;
+            });
+            renderTotals(total, count);
+        }
+
+        // ─── Edit mode ───
+        function setActionGroups(editing) {
+            all('[data-view-actions]').forEach(el => {
+                el.classList.toggle('hidden', editing);
+                el.classList.toggle('flex', !editing);
+            });
+            all('[data-edit-actions]').forEach(el => {
+                el.classList.toggle('hidden', !editing);
+                el.classList.toggle('flex', editing);
+            });
         }
 
         function enterEditMode() {
+            if (isEditingItems) return;
             isEditingItems = true;
             renderEditableRows();
-            if (editBtn) editBtn.classList.add('hidden');
-            if (deleteBtn) deleteBtn.classList.add('hidden');
-            if (cancelEditBtn) cancelEditBtn.classList.remove('hidden');
-            if (saveEditBtn) saveEditBtn.classList.remove('hidden');
             if (addItemBtn) addItemBtn.classList.remove('hidden');
+            setActionGroups(true);
+            const firstInput = itemsTbody && itemsTbody.querySelector('.item-desc-input');
+            if (firstInput) firstInput.focus();
         }
 
         function exitEditMode() {
             isEditingItems = false;
             renderReadOnlyRows();
-            if (editBtn) editBtn.classList.remove('hidden');
-            if (deleteBtn) deleteBtn.classList.remove('hidden');
-            if (cancelEditBtn) cancelEditBtn.classList.add('hidden');
-            if (saveEditBtn) saveEditBtn.classList.add('hidden');
+            renderTotals(savedTotal, receiptItems.length);
             if (addItemBtn) addItemBtn.classList.add('hidden');
+            setActionGroups(false);
+            const editBtn = firstVisible('.js-edit-items');
+            if (editBtn) editBtn.focus();
         }
 
-        // ─── Wire Action Buttons ───
-        if (editBtn) editBtn.addEventListener('click', enterEditMode);
-        if (cancelEditBtn) cancelEditBtn.addEventListener('click', exitEditMode);
-        if (saveEditBtn) {
-            saveEditBtn.addEventListener('click', async () => {
-                commitEditsFromDOM();
-                recalcAndRenderTotals();
-                exitEditMode();
-
-                try {
-                    await fetch('{% url "api_update_receipt_items" receipt.id %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({ items: receiptItems })
-                    });
-                } catch (err) {
-                    console.error('Update receipt items error:', err);
-                }
-            });
+        function cancelEdit() {
+            if (isSaving) return;
+            exitEditMode();
         }
+
+        function setSaving(busy) {
+            isSaving = busy;
+            all('.js-save-items').forEach(btn => { btn.disabled = busy; });
+            all('.js-cancel-items').forEach(btn => { btn.disabled = busy; });
+            all('.js-save-label').forEach(el => { el.textContent = busy ? 'Saving…' : 'Save items'; });
+        }
+
+        async function saveItems() {
+            if (isSaving) return;
+            const draft = readDraft();
+            if (draft.firstInvalid) {
+                draft.firstInvalid.focus();
+                toast('Give each item a name and a quantity of at least 1.', { type: 'error' });
+                return;
+            }
+            if (!draft.items.length) {
+                const firstInput = itemsTbody && itemsTbody.querySelector('.item-desc-input');
+                if (firstInput) firstInput.focus();
+                toast('Add at least one item before saving.', { type: 'error' });
+                return;
+            }
+
+            setSaving(true);
+            let serverTotal = null;
+            try {
+                const res = await fetch(UPDATE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ items: draft.items })
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json().catch(() => ({}));
+                if (data && data.error) throw new Error(data.error);
+                if (data && typeof data.total === 'number') serverTotal = data.total;
+            } catch (err) {
+                console.error('Update receipt items error:', err);
+                setSaving(false);
+                // Rows stay in edit mode so nothing typed is lost.
+                toast("Couldn't save your items. Check your connection and try again.", { type: 'error' });
+                return;
+            }
+
+            setSaving(false);
+            receiptItems = draft.items;
+            savedTotal = serverTotal != null ? serverTotal : draft.items.reduce((s, it) => s + it.qty * it.unitPrice, 0);
+            exitEditMode();
+            toast('Receipt saved', { type: 'success' });
+        }
+
+        all('.js-edit-items').forEach(btn => btn.addEventListener('click', enterEditMode));
+        all('.js-cancel-items').forEach(btn => btn.addEventListener('click', cancelEdit));
+        all('.js-save-items').forEach(btn => btn.addEventListener('click', saveItems));
+
         if (addItemBtn) {
             addItemBtn.addEventListener('click', () => {
                 if (!itemsTbody) return;
-                const tr = document.createElement('tr');
-                tr.setAttribute('data-editable-row', '');
-                tr.setAttribute('data-index', itemsTbody.children.length);
-                tr.innerHTML = `
-                    <td class="py-2 px-1.5 sm:px-3">
-                        <input type="text" value="" placeholder="New item" class="item-desc-input w-full px-2 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                    </td>
-                    <td class="py-2 px-1 sm:px-3 text-right">
-                        <input type="number" min="1" step="1" inputmode="numeric" value="1" class="item-qty-input w-12 sm:w-14 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-semibold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                    </td>
-                    <td class="py-2 px-1 sm:px-3">
-                        <div class="flex items-center justify-end gap-1">
-                            <input type="number" min="0" step="0.01" inputmode="decimal" value="0.00" class="item-price-input w-16 sm:w-20 px-1.5 py-1.5 sm:py-2 bg-surface-container-low/50 border border-outline-variant/60 rounded-lg text-xs font-bold text-right text-deep-forest outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                            <button type="button" class="btn-remove-item w-7 h-7 sm:w-8 sm:h-8 shrink-0 flex items-center justify-center rounded-lg text-expense hover:bg-expense/15 active:scale-95 transition-colors cursor-pointer" aria-label="Remove item">
-                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">delete</span>
-                            </button>
-                        </div>
-                    </td>`;
+                const tr = createEditableRow(null);
                 itemsTbody.appendChild(tr);
                 const firstInput = tr.querySelector('.item-desc-input');
                 if (firstInput) firstInput.focus();
             });
         }
 
-        // ─── Delete Item Confirmation ───
-        function openDeleteItemModal(row) {
-            if (!deleteItemModal) return;
-            itemRowPendingDelete = row;
-            const desc = row.querySelector('.item-desc-input')?.value.trim();
-            if (deleteItemNameEl) deleteItemNameEl.textContent = desc || 'this item';
-            if (confirmDeleteItemBtn) {
-                confirmDeleteItemBtn.disabled = false;
-                const icon = document.getElementById('btn-confirm-delete-item-icon');
-                const text = document.getElementById('btn-confirm-delete-item-text');
-                if (icon) {
-                    icon.textContent = 'delete';
-                    icon.classList.remove('animate-spin');
-                }
-                if (text) text.textContent = 'Remove Item';
-            }
-            if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = false;
+        if (itemsTbody) {
+            itemsTbody.addEventListener('input', () => {
+                if (isEditingItems) liveTotals();
+            });
 
-            deleteItemModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                deleteItemModal.classList.remove('opacity-0');
-                deleteItemModal.classList.add('opacity-100');
-                if (deleteItemModalContent) {
-                    deleteItemModalContent.classList.remove('scale-95');
-                    deleteItemModalContent.classList.add('scale-100');
-                }
-                if (cancelDeleteItemBtn) cancelDeleteItemBtn.focus();
+            // Remove a row right away; Undo puts it back (nothing is saved until Save items).
+            itemsTbody.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.btn-remove-item');
+                if (!removeBtn) return;
+                const row = removeBtn.closest('tr[data-editable-row]');
+                if (!row) return;
+
+                const desc = (row.querySelector('.item-desc-input')?.value || '').trim();
+                const nextRow = row.nextElementSibling;
+                const prevRow = row.previousElementSibling;
+                row.remove();
+                liveTotals();
+
+                const focusTarget = (nextRow && nextRow.querySelector('.btn-remove-item'))
+                    || (prevRow && prevRow.querySelector('.btn-remove-item'))
+                    || addItemBtn;
+                if (focusTarget) focusTarget.focus();
+
+                toast(desc ? `Removed “${desc}”` : 'Removed item', {
+                    type: 'info',
+                    action: {
+                        label: 'Undo',
+                        onClick: () => {
+                            if (!isEditingItems || !itemsTbody) return;
+                            if (nextRow && nextRow.parentNode === itemsTbody) {
+                                itemsTbody.insertBefore(row, nextRow);
+                            } else {
+                                itemsTbody.appendChild(row);
+                            }
+                            liveTotals();
+                            const input = row.querySelector('.item-desc-input');
+                            if (input) input.focus();
+                        }
+                    }
+                });
             });
         }
 
-        function closeDeleteItemModal() {
-            if (!deleteItemModal) return;
-            deleteItemModal.classList.remove('opacity-100');
-            deleteItemModal.classList.add('opacity-0');
-            if (deleteItemModalContent) {
-                deleteItemModalContent.classList.remove('scale-100');
-                deleteItemModalContent.classList.add('scale-95');
+        // ─── Photo dialog ───
+        const imageModal = $('image-modal-wrapper');
+        const modalImg = $('modal-full-img');
+        const previewBtn = $('receipt-preview-container');
+        const closeImageModalBtn = $('btn-close-image-modal');
+        let releaseImageTrap = null;
+
+        function isImageOpen() {
+            return imageModal && !imageModal.classList.contains('hidden');
+        }
+
+        function openImageModal() {
+            if (!imageModal || !modalImg || !modalImg.getAttribute('src')) return;
+            document.body.style.overflow = 'hidden';
+            imageModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                imageModal.classList.remove('opacity-0');
+                imageModal.classList.add('opacity-100');
+                modalImg.classList.remove('scale-95');
+                modalImg.classList.add('scale-100');
+            });
+            releaseImageTrap = window.antFocusTrap ? window.antFocusTrap(imageModal, '#btn-close-image-modal') : null;
+        }
+
+        function closeImageModal() {
+            if (!isImageOpen()) return;
+            imageModal.classList.remove('opacity-100');
+            imageModal.classList.add('opacity-0');
+            if (modalImg) {
+                modalImg.classList.remove('scale-100');
+                modalImg.classList.add('scale-95');
             }
+            if (releaseImageTrap) { releaseImageTrap(); releaseImageTrap = null; }
             setTimeout(() => {
-                deleteItemModal.classList.add('hidden');
-                itemRowPendingDelete = null;
+                imageModal.classList.add('hidden');
+                document.body.style.overflow = '';
             }, 200);
         }
 
-        if (itemsTbody) {
-            itemsTbody.addEventListener('click', (e) => {
-                const removeBtn = e.target.closest('.btn-remove-item');
-                if (removeBtn) {
-                    const row = removeBtn.closest('tr[data-editable-row]');
-                    if (row) openDeleteItemModal(row);
-                }
+        if (previewBtn) previewBtn.addEventListener('click', openImageModal);
+        if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeImageModal);
+        if (imageModal) {
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) closeImageModal();
             });
         }
-        if (cancelDeleteItemBtn) cancelDeleteItemBtn.addEventListener('click', closeDeleteItemModal);
-        if (deleteItemModal) {
-            deleteItemModal.addEventListener('click', (e) => {
-                if (e.target === deleteItemModal) closeDeleteItemModal();
-            });
-        }
-        if (confirmDeleteItemBtn) {
-            confirmDeleteItemBtn.addEventListener('click', () => {
-                const icon = document.getElementById('btn-confirm-delete-item-icon');
-                const text = document.getElementById('btn-confirm-delete-item-text');
-                confirmDeleteItemBtn.disabled = true;
-                if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = true;
-                if (icon) {
-                    icon.textContent = 'progress_activity';
-                    icon.classList.add('animate-spin');
-                }
-                if (text) text.textContent = 'Removing...';
 
-                setTimeout(() => {
-                    if (itemRowPendingDelete) {
-                        itemRowPendingDelete.remove();
-                        commitEditsFromDOM();
-                        recalcAndRenderTotals();
-                    }
-                    closeDeleteItemModal();
-                }, 150);
-            });
-        }
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && deleteItemModal && !deleteItemModal.classList.contains('hidden')) {
-                closeDeleteItemModal();
+        // ─── Delete receipt dialog ───
+        const deleteModal = $('modal-confirm-delete-receipt');
+        const deleteModalContent = $('modal-confirm-delete-receipt-content');
+        const deleteModalTitle = $('modal-delete-receipt-title');
+        const cancelDeleteBtn = $('btn-cancel-delete-receipt');
+        const confirmDeleteBtn = $('btn-confirm-delete-receipt');
+        const confirmDeleteIcon = $('btn-confirm-delete-receipt-icon');
+        const confirmDeleteText = $('btn-confirm-delete-receipt-text');
+        let releaseDeleteTrap = null;
+        let isDeleting = false;
+
+        function resetDeleteButtons() {
+            isDeleting = false;
+            if (confirmDeleteBtn) confirmDeleteBtn.disabled = false;
+            if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
+            if (confirmDeleteIcon) {
+                confirmDeleteIcon.textContent = 'delete';
+                confirmDeleteIcon.classList.remove('animate-spin');
             }
-        });
+            if (confirmDeleteText) confirmDeleteText.textContent = 'Delete receipt';
+        }
 
-        // ─── Delete Receipt Confirmation ───
+        function isDeleteOpen() {
+            return deleteModal && !deleteModal.classList.contains('hidden');
+        }
+
         function openDeleteModal() {
             if (!deleteModal) return;
-            if (confirmDeleteBtn) {
-                confirmDeleteBtn.disabled = false;
-                const icon = document.getElementById('btn-confirm-delete-receipt-icon');
-                const text = document.getElementById('btn-confirm-delete-receipt-text');
-                if (icon) {
-                    icon.textContent = 'delete';
-                    icon.classList.remove('animate-spin');
-                }
-                if (text) text.textContent = 'Delete Receipt';
-            }
-            if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
-
+            resetDeleteButtons();
+            if (deleteModalTitle) deleteModalTitle.textContent = `Delete “${MERCHANT}” · ${peso(savedTotal)}?`;
             deleteModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 deleteModal.classList.remove('opacity-0');
@@ -583,69 +645,73 @@
                     deleteModalContent.classList.remove('scale-95');
                     deleteModalContent.classList.add('scale-100');
                 }
-                if (cancelDeleteBtn) cancelDeleteBtn.focus();
             });
+            releaseDeleteTrap = window.antFocusTrap ? window.antFocusTrap(deleteModalContent, '#btn-cancel-delete-receipt') : null;
         }
 
         function closeDeleteModal() {
-            if (!deleteModal) return;
+            if (!isDeleteOpen() || isDeleting) return;
             deleteModal.classList.remove('opacity-100');
             deleteModal.classList.add('opacity-0');
             if (deleteModalContent) {
                 deleteModalContent.classList.remove('scale-100');
                 deleteModalContent.classList.add('scale-95');
             }
+            if (releaseDeleteTrap) { releaseDeleteTrap(); releaseDeleteTrap = null; }
             setTimeout(() => deleteModal.classList.add('hidden'), 200);
         }
 
-        if (deleteBtn) deleteBtn.addEventListener('click', openDeleteModal);
+        all('.js-delete-receipt').forEach(btn => btn.addEventListener('click', openDeleteModal));
         if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
         if (deleteModal) {
             deleteModal.addEventListener('click', (e) => {
                 if (e.target === deleteModal) closeDeleteModal();
             });
         }
+
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', async () => {
-                const icon = document.getElementById('btn-confirm-delete-receipt-icon');
-                const text = document.getElementById('btn-confirm-delete-receipt-text');
-                try {
-                    confirmDeleteBtn.disabled = true;
-                    if (cancelDeleteBtn) cancelDeleteBtn.disabled = true;
-                    if (icon) {
-                        icon.textContent = 'progress_activity';
-                        icon.classList.add('animate-spin');
-                    }
-                    if (text) text.textContent = 'Deleting...';
+                isDeleting = true;
+                confirmDeleteBtn.disabled = true;
+                if (cancelDeleteBtn) cancelDeleteBtn.disabled = true;
+                if (confirmDeleteIcon) {
+                    confirmDeleteIcon.textContent = 'progress_activity';
+                    confirmDeleteIcon.classList.add('animate-spin');
+                }
+                if (confirmDeleteText) confirmDeleteText.textContent = 'Deleting…';
 
-                    await fetch('{% url "api_delete_receipt" receipt.id %}', {
+                try {
+                    const res = await fetch(DELETE_URL, {
                         method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                        }
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 } catch (err) {
                     console.error('Delete receipt error:', err);
-                    confirmDeleteBtn.disabled = false;
-                    if (cancelDeleteBtn) cancelDeleteBtn.disabled = false;
-                    if (icon) {
-                        icon.textContent = 'delete';
-                        icon.classList.remove('animate-spin');
-                    }
-                    if (text) text.textContent = 'Delete Receipt';
+                    resetDeleteButtons();
+                    toast("Couldn't delete this receipt. Check your connection and try again.", { type: 'error' });
                     return;
                 }
-                window.location.href = "{% url 'transactions' %}";
+                if (window.antToastAfterRedirect) window.antToastAfterRedirect('Receipt deleted', { type: 'success' });
+                window.location.href = HISTORY_URL;
             });
         }
+
+        // ─── Keyboard: Escape closes the top dialog, otherwise cancels edit mode ───
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && deleteModal && !deleteModal.classList.contains('hidden')) {
+            if (e.key !== 'Escape') return;
+            if (isImageOpen()) {
+                closeImageModal();
+            } else if (isDeleteOpen()) {
                 closeDeleteModal();
+            } else if (isEditingItems) {
+                e.preventDefault();
+                cancelEdit();
             }
         });
 
-        // ─── Smart Back Navigation ───
-        const backReceiptBtn = document.getElementById('btn-back-receipt');
+        // ─── Smart back navigation ───
+        const backReceiptBtn = $('btn-back-receipt');
         if (backReceiptBtn) {
             backReceiptBtn.addEventListener('click', (e) => {
                 if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
@@ -655,8 +721,8 @@
             });
         }
 
-        // Initial render
         renderReadOnlyRows();
     });
 </script>
+{% endif %}
 {% endblock %}

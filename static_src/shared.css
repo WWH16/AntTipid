@@ -1,0 +1,68 @@
+/* Shared by app.css and landing.css: browser surfaces, focus ring, icon box, .tap. */
+@layer base {
+  /* Browser surfaces carry the palette too. */
+  ::selection {
+    background-color: theme('colors.primary');
+    color: theme('colors.ink');
+  }
+  html {
+    caret-color: theme('colors.deep-forest');
+    accent-color: theme('colors.deep-forest');
+    scrollbar-color: theme('colors.surface-container-highest') transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* One visible keyboard focus ring everywhere, even where outline-none is set. */
+  :focus-visible {
+    outline: 2px solid theme('colors.deep-forest') !important;
+    outline-offset: 2px;
+  }
+  .bg-deep-forest :focus-visible,
+  .bg-ink :focus-visible {
+    outline-color: theme('colors.primary') !important;
+  }
+  /* Form fields already change border colour on focus; a soft halo reads better than a hard box. */
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(22, 51, 0, 0.16);
+  }
+  /* Underline-style fields (the big amount input) show focus through the underline alone. */
+  [data-focus="underline"]:focus-visible {
+    box-shadow: none;
+  }
+  /* Visually hidden native inputs (radio chips, month picker) still need a visible ring on their wrapper. */
+  input[type="radio"]:focus-visible,
+  input[type="checkbox"]:focus-visible {
+    outline: 2px solid theme('colors.deep-forest') !important;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  /* Icon font: fixed box so late-loading glyphs never reflow the layout. */
+  .material-symbols-outlined {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+}
+
+@layer components {
+  /* Extends the hit area of a visually small control to 44x44 without changing its look. */
+  .tap {
+    position: relative;
+  }
+  .tap::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AntTipid | Personal Expense & Budget Tracker</title>
     <meta name="description" content="AntTipid | Intelligent personal expense & budget tracker with AI receipt OCR, monthly spending targets, and financial insights.">
-    <meta name="theme-color" content="#5C8F3A">
+    <meta name="theme-color" content="#163300">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -26,10 +26,10 @@
     <link rel="apple-touch-icon" href="{% static 'images/AntTipidFavicon.png' %}?v=4">
     <link rel="manifest" href="{% static 'manifest.json' %}">
 
-    <!-- Google Fonts & Icons (Optimized Axis Subsets & Combined HTTP Request) -->
+    <!-- Google Fonts: Inter (body + display, per DESIGN.md) & Material Symbols, one request -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400..700,0..1,0&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400..700,0..1,0&display=swap" />
 
     <!-- Tailwind CSS (pre-built, not the CDN JIT compiler) -->
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
@@ -58,18 +58,12 @@
                 scroll-behavior: auto !important;
             }
         }
-
-        /* Focus Ring Style for Keyboard Navigation */
-        a:focus-visible, button:focus-visible {
-            outline: 2px solid #5C8F3A;
-            outline-offset: 2px;
-        }
     </style>
 
     <!-- Clerk Authentication JS SDK (Failsafe ESM Loader) -->
     <script>
       window.clerkAppearance = {
-        variables: { colorPrimary: "#5C8F3A" }
+        variables: { colorPrimary: "#163300" }
       };
 
       window.openClerkSignIn = function() {
@@ -123,6 +117,18 @@
         await clerk.load({ appearance: window.clerkAppearance });
         window.Clerk = clerk;
 
+        const dashboardUrl = "{% url 'dashboard' %}";
+
+        // Hero CTA is a <button>: swap its icon + label via textContent (no HTML injection)
+        // and point its click at either the dashboard or the sign-up modal.
+        function setHeroCta(btn, icon, label, handler) {
+          const iconEl = btn.querySelector('[data-cta-icon]');
+          const labelEl = btn.querySelector('[data-cta-label]');
+          if (iconEl) iconEl.textContent = icon;
+          if (labelEl) labelEl.textContent = label;
+          btn.onclick = handler;
+        }
+
         function updateUIForAuthState(user) {
           const userButtonDiv = document.getElementById('clerk-user-button');
           const authButtonsDiv = document.getElementById('clerk-auth-buttons');
@@ -131,22 +137,22 @@
           const drawerAuthButtons = document.getElementById('drawer-auth-buttons');
 
           if (user) {
-            if (userButtonDiv) clerk.mountUserButton(userButtonDiv);
+            if (userButtonDiv) {
+              userButtonDiv.classList.remove('hidden');
+              clerk.mountUserButton(userButtonDiv);
+            }
             if (authButtonsDiv) authButtonsDiv.classList.add('hidden');
             if (drawerAuthButtons) drawerAuthButtons.classList.add('hidden');
 
             if (heroCtaBtn) {
-              heroCtaBtn.innerHTML = `
-                <span class="material-symbols-outlined text-[20px]">space_dashboard</span>
-                <span>Go to Dashboard</span>
-              `;
-              heroCtaBtn.onclick = null;
-              heroCtaBtn.href = "{% url 'dashboard' %}";
+              setHeroCta(heroCtaBtn, 'space_dashboard', 'Go to Dashboard', () => {
+                window.location.href = dashboardUrl;
+              });
             }
             if (drawerCtaBtn) {
               drawerCtaBtn.classList.remove('hidden');
               drawerCtaBtn.classList.add('flex');
-              drawerCtaBtn.href = "{% url 'dashboard' %}";
+              drawerCtaBtn.href = dashboardUrl;
             }
           } else {
             if (userButtonDiv) userButtonDiv.classList.add('hidden');
@@ -154,12 +160,7 @@
             if (drawerAuthButtons) drawerAuthButtons.classList.remove('hidden');
 
             if (heroCtaBtn) {
-              heroCtaBtn.innerHTML = `
-                <span class="material-symbols-outlined text-[20px]">north_east</span>
-                <span>Start Tracking Free</span>
-              `;
-              heroCtaBtn.removeAttribute('href');
-              heroCtaBtn.onclick = window.openClerkSignUp;
+              setHeroCta(heroCtaBtn, 'north_east', 'Start tracking free', () => window.openClerkSignUp());
             }
             if (drawerCtaBtn) {
               drawerCtaBtn.classList.add('hidden');
@@ -180,7 +181,7 @@
         clerk.addListener(({ user }) => {
           updateUIForAuthState(user);
           if (user && window.location.pathname === '/') {
-            window.location.href = "{% url 'dashboard' %}";
+            window.location.href = dashboardUrl;
           }
         });
 
@@ -200,38 +201,38 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
             
             <!-- Brand Logo -->
-            <a href="{% url 'landing' %}" class="flex items-center gap-2.5 sm:gap-3 group outline-none focus:outline-none focus:ring-0 py-2 min-h-[44px]">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-soft-green text-primary border border-primary/30 flex items-center justify-center p-1 overflow-hidden shrink-0 shadow-xs">
-                    <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" class="w-full h-full object-cover rounded-full" />
+            <a href="{% url 'landing' %}" class="flex items-center gap-2.5 sm:gap-3 py-2 min-h-[44px] rounded-xl">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-soft-green flex items-center justify-center p-1 overflow-hidden shrink-0">
+                    <img src="{% static 'images/AntTipidLogo-128.png' %}" alt="" width="40" height="40" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div class="flex flex-col">
                     <span class="font-bold text-base sm:text-xl tracking-tight leading-none">
-                        <span class="text-deep-forest">Ant</span><span class="text-primary">Tipid</span>
+                        <span class="text-ink">Ant</span><span class="text-deep-forest">Tipid</span>
                     </span>
-                    <span class="text-[10px] sm:text-xs text-on-surface-variant font-medium tracking-tight mt-0.5 hidden xs:inline">Personal Expense & Budget Tracker</span>
+                    <span class="text-xs text-body font-medium mt-0.5 hidden xs:inline">Personal Expense & Budget Tracker</span>
                 </div>
             </a>
 
             <!-- Center Nav Links (Desktop) -->
-            <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-xs sm:text-sm font-bold text-deep-forest" aria-label="Main Navigation">
-                <a href="#features" class="hover:text-primary transition-colors py-2">Features</a>
-                <a href="#how-it-works" class="hover:text-primary transition-colors py-2">How It Works</a>
-                <a href="#ocr-scanner" class="hover:text-primary transition-colors py-2">Receipt Scanner</a>
-                <a href="#screens" class="hover:text-primary transition-colors py-2">App Screens</a>
-                <a href="#about" class="hover:text-primary transition-colors py-2">About</a>
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-semibold text-ink" aria-label="Main Navigation">
+                <a href="#features" class="inline-flex items-center min-h-[44px] hover:text-deep-forest hover:underline underline-offset-4">Features</a>
+                <a href="#how-it-works" class="inline-flex items-center min-h-[44px] hover:text-deep-forest hover:underline underline-offset-4">How It Works</a>
+                <a href="#ocr-scanner" class="inline-flex items-center min-h-[44px] hover:text-deep-forest hover:underline underline-offset-4">Receipt Scanner</a>
+                <a href="#screens" class="inline-flex items-center min-h-[44px] hover:text-deep-forest hover:underline underline-offset-4">App Screens</a>
+                <a href="#about" class="inline-flex items-center min-h-[44px] hover:text-deep-forest hover:underline underline-offset-4">About</a>
             </nav>
 
             <!-- Right CTA & Mobile Menu Toggle -->
             <div class="flex items-center gap-2 sm:gap-3">
-                
+
                 <!-- Clerk Auth Controls (Logged Out State) -->
                 <div id="clerk-auth-buttons" class="flex items-center gap-1.5 sm:gap-2">
-                    <button type="button" onclick="openClerkSignIn()" class="hidden sm:inline-block px-3 py-2 text-xs sm:text-sm font-bold text-deep-forest hover:text-primary transition-colors cursor-pointer">
+                    <button type="button" onclick="openClerkSignIn()" class="hidden sm:inline-flex items-center min-h-[44px] px-3 text-sm font-semibold text-ink hover:text-deep-forest hover:underline underline-offset-4 cursor-pointer">
                         Sign In
                     </button>
-                    <button type="button" onclick="openClerkSignUp()" class="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[38px] sm:min-h-[44px] rounded-xl bg-primary text-on-primary text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all shadow-xs active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
+                    <button type="button" onclick="openClerkSignUp()" class="px-4 sm:px-5 min-h-[44px] rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover transition-all active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer">
                         <span>Get Started</span>
-                        <span class="material-symbols-outlined text-[15px] sm:text-[18px]">north_east</span>
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">north_east</span>
                     </button>
                 </div>
 
@@ -239,33 +240,33 @@
                 <div id="clerk-user-button" class="flex items-center justify-center min-w-[32px] min-h-[32px]"></div>
 
                 <!-- Mobile Menu Button -->
-                <button type="button" id="btn-mobile-menu" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Toggle Navigation Menu" class="md:hidden w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-outline-variant/80 bg-surface-lowest flex items-center justify-center text-deep-forest hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer">
-                    <span id="menu-icon" class="material-symbols-outlined text-[22px] sm:text-[24px]">menu</span>
+                <button type="button" id="btn-mobile-menu" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Open menu" class="md:hidden w-11 h-11 rounded-xl border border-outline-variant bg-canvas flex items-center justify-center text-ink hover:bg-soft-green/30 active:scale-95 transition-all cursor-pointer tap">
+                    <span id="menu-icon" class="material-symbols-outlined text-[24px]" aria-hidden="true">menu</span>
                 </button>
             </div>
 
         </div>
 
         <!-- Mobile Slide-Down Nav Drawer -->
-        <div id="mobile-menu-drawer" class="hidden md:hidden border-b border-outline-variant/70 bg-surface-lowest px-4 py-4 space-y-1.5 shadow-lg">
-            <a href="#features" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">Features</a>
-            <a href="#how-it-works" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">How It Works</a>
-            <a href="#ocr-scanner" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">Receipt Scanner</a>
-            <a href="#screens" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">App Screens</a>
-            <a href="#about" class="mobile-nav-link block text-sm font-bold text-deep-forest hover:text-primary py-2.5 px-3 rounded-xl hover:bg-soft-green/30 transition-colors">About</a>
+        <div id="mobile-menu-drawer" class="hidden md:hidden border-b border-outline-variant/70 bg-canvas px-4 py-4 space-y-1 shadow-lg">
+            <a href="#features" class="mobile-nav-link flex items-center min-h-[44px] text-sm font-semibold text-ink px-3 rounded-xl hover:bg-soft-green/40 transition-colors">Features</a>
+            <a href="#how-it-works" class="mobile-nav-link flex items-center min-h-[44px] text-sm font-semibold text-ink px-3 rounded-xl hover:bg-soft-green/40 transition-colors">How It Works</a>
+            <a href="#ocr-scanner" class="mobile-nav-link flex items-center min-h-[44px] text-sm font-semibold text-ink px-3 rounded-xl hover:bg-soft-green/40 transition-colors">Receipt Scanner</a>
+            <a href="#screens" class="mobile-nav-link flex items-center min-h-[44px] text-sm font-semibold text-ink px-3 rounded-xl hover:bg-soft-green/40 transition-colors">App Screens</a>
+            <a href="#about" class="mobile-nav-link flex items-center min-h-[44px] text-sm font-semibold text-ink px-3 rounded-xl hover:bg-soft-green/40 transition-colors">About</a>
             <div class="pt-3 border-t border-outline-variant/60 flex flex-col gap-2">
                 <div id="drawer-auth-buttons" class="flex flex-col gap-2">
-                    <button type="button" onclick="openClerkSignIn()" class="w-full py-2.5 rounded-xl border border-outline-variant text-deep-forest text-sm font-bold text-center">
+                    <button type="button" onclick="openClerkSignIn()" class="w-full min-h-[48px] rounded-xl bg-canvas-soft text-ink text-base font-semibold text-center">
                         Sign In
                     </button>
-                    <button type="button" onclick="openClerkSignUp()" class="w-full py-3 rounded-xl bg-primary text-on-primary text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-primary-hover transition-all">
+                    <button type="button" onclick="openClerkSignUp()" class="w-full min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold flex items-center justify-center gap-1.5 hover:bg-primary-hover transition-all">
                         <span>Get Started Free</span>
-                        <span class="material-symbols-outlined text-[18px]">north_east</span>
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">north_east</span>
                     </button>
                 </div>
-                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full py-3 rounded-xl bg-primary text-on-primary text-sm font-bold hidden items-center justify-center gap-2 hover:bg-primary-hover transition-all">
+                <a id="drawer-cta-btn" href="{% url 'dashboard' %}" class="w-full min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hidden items-center justify-center gap-2 hover:bg-primary-hover transition-all">
                     <span>Open Dashboard</span>
-                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
                 </a>
             </div>
         </div>
@@ -278,7 +279,7 @@
         <!-- ═══════════════════════════════════════════ -->
         <section class="relative pt-6 pb-12 sm:pt-10 sm:pb-20 lg:pt-14 lg:pb-24 xl:pt-20 xl:pb-28 overflow-hidden">
             <!-- Background Soft Ambient Glow -->
-            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[500px] lg:w-[650px] h-[320px] sm:h-[500px] lg:h-[650px] bg-soft-green/50 rounded-full blur-3xl pointer-events-none -z-10"></div>
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[500px] lg:w-[650px] h-[320px] sm:h-[500px] lg:h-[650px] bg-soft-green/50 rounded-full blur-3xl pointer-events-none -z-10" aria-hidden="true"></div>
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-16 items-center">
@@ -289,40 +290,40 @@
                         <!-- Text Group -->
                         <div class="flex flex-col gap-4 sm:gap-5 mb-8 sm:mb-10 lg:mb-12">
                             <!-- Hero Headline -->
-                            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-deep-forest tracking-tight leading-[1.15]" style="text-wrap: balance;">
-                                A Personal Expense <br class="hidden sm:inline" /><span class="text-positive-deep">and Budget Tracker</span>
+                            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-ink tracking-[-0.04em] leading-[1.05]" style="text-wrap: balance;">
+                                Know what's left to spend, down to the last peso.
                             </h1>
 
-                            <!-- Supporting Subtitle -->
-                            <p class="text-sm sm:text-base lg:text-lg text-body max-w-xl font-medium leading-relaxed" style="text-wrap: pretty;">
-                                Track daily spending, set category limits, and scan paper receipts into organized transactions with AI OCR — optimized for mobile & desktop.
+                            <!-- Supporting Subtitle (category description) -->
+                            <p class="text-base lg:text-lg text-body max-w-xl leading-relaxed" style="text-wrap: pretty;">
+                                AntTipid is a personal expense and budget tracker. Log daily spending, set monthly limits for each category, and scan paper receipts into transactions, on your phone or desktop.
                             </p>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-6 lg:mb-8">
-                            <a id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl bg-primary text-on-primary text-sm font-bold hover:bg-primary-hover transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                <span class="material-symbols-outlined text-[20px]">north_east</span>
-                                <span>Start Tracking Free</span>
-                            </a>
-                            
-                            <a href="#how-it-works" class="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-xl border border-outline-variant/80 bg-surface-lowest text-deep-forest hover:bg-primary-pale text-sm font-bold transition-all shadow-xs active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                <span class="material-symbols-outlined text-[20px] text-positive-deep">arrow_downward</span>
+                            <button type="button" id="hero-cta-btn" onclick="openClerkSignUp()" class="w-full sm:w-auto px-6 min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]" aria-hidden="true" data-cta-icon>north_east</span>
+                                <span data-cta-label>Start tracking free</span>
+                            </button>
+
+                            <a href="#how-it-works" class="w-full sm:w-auto px-6 min-h-[48px] rounded-xl border border-ink bg-canvas text-ink hover:bg-primary-pale text-base font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_downward</span>
                                 <span>How It Works</span>
                             </a>
                         </div>
 
                         <!-- Micro Trust Badges -->
-                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-body font-semibold">
-                            <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[18px] text-positive-deep">check_circle</span>
-                                <span>100% Free • Zero Ads</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[18px] text-positive-deep">check_circle</span>
-                                <span>PWA & Offline Enabled</span>
-                            </div>
-                        </div>
+                        <ul class="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-body font-medium">
+                            <li class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px] text-deep-forest" aria-hidden="true">check_circle</span>
+                                <span>Free, no ads</span>
+                            </li>
+                            <li class="flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px] text-deep-forest" aria-hidden="true">check_circle</span>
+                                <span>Installable on your phone</span>
+                            </li>
+                        </ul>
 
                     </div>
 
@@ -330,39 +331,39 @@
                     <div class="lg:col-span-6 relative flex flex-col items-center justify-center pt-2 lg:pt-0">
                         <div class="relative w-full max-w-[280px] xs:max-w-[300px] sm:max-w-[340px] lg:max-w-[260px] xl:max-w-[300px] flex items-center justify-center">
                             
-                            <!-- Floating Savings Badge -->
-                            <div class="hidden md:flex absolute -top-3 -left-3 lg:-top-4 lg:-left-4 z-30 bg-surface-lowest border border-outline-variant/80 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
-                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center font-bold text-base lg:text-lg shrink-0">
-                                    <span class="material-symbols-outlined text-[18px] lg:text-[20px]">trending_up</span>
+                            <!-- Floating Budget Badge (no invented figures) -->
+                            <div class="hidden md:flex absolute -top-3 -left-3 lg:-top-4 lg:-left-4 z-30 bg-canvas rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3" aria-hidden="true">
+                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px] lg:text-[20px]">account_balance_wallet</span>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] lg:text-[10px] text-body font-semibold uppercase tracking-wider">Monthly Tipid</p>
-                                    <p class="text-xs font-extrabold text-deep-forest flex items-center gap-1">
-                                        <span class="text-positive-deep font-extrabold">+₱4,250</span> Saved
-                                    </p>
+                                    <p class="text-xs text-body">Left to spend</p>
+                                    <p class="text-xs font-semibold text-ink">Updated with every entry</p>
                                 </div>
                             </div>
 
                             <!-- Floating OCR Receipt Badge -->
-                            <div class="hidden md:flex absolute -bottom-3 -right-3 lg:-bottom-4 lg:-right-4 z-30 bg-surface-lowest border border-positive/30 rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3">
-                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                            <div class="hidden md:flex absolute -bottom-3 -right-3 lg:-bottom-4 lg:-right-4 z-30 bg-canvas rounded-2xl p-2.5 lg:p-3 shadow-elevated items-center gap-2.5 lg:gap-3" aria-hidden="true">
+                                <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px] lg:text-[20px]">document_scanner</span>
                                 </div>
                                 <div>
-                                    <p class="text-[9px] lg:text-[10px] text-positive-deep font-bold uppercase tracking-wider">OCR Receipt</p>
-                                    <p class="text-xs font-extrabold text-deep-forest">Auto Merchant & Total</p>
+                                    <p class="text-xs text-body">Receipt scan</p>
+                                    <p class="text-xs font-semibold text-ink">Reads merchant and total</p>
                                 </div>
                             </div>
 
-                            <!-- iPhone Placeholder Frame with Thin Edges & Dynamic Island -->
-                            <div class="w-[260px] xs:w-[280px] sm:w-[310px] lg:w-[250px] xl:w-[280px] bg-neutral-900 rounded-[38px] lg:rounded-[44px] p-1.5 sm:p-2 shadow-2xl border border-white/20 relative z-20 overflow-hidden select-none">
-                                <!-- iPhone Dynamic Island Notch -->
-                                <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-4 sm:h-4.5 bg-black rounded-full z-30 flex items-center justify-end px-2 shadow-xs">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
+                            <!-- Phone Frame with Dynamic Island -->
+                            <div class="w-[260px] xs:w-[280px] sm:w-[310px] lg:w-[250px] xl:w-[280px] bg-ink rounded-[38px] lg:rounded-[44px] p-1.5 sm:p-2 shadow-2xl border border-white/20 relative z-20 overflow-hidden select-none">
+                                <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-4 sm:h-[18px] bg-ink rounded-full z-30 flex items-center justify-end px-2" aria-hidden="true">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-body border border-white/10"></div>
                                 </div>
-                                
-                                <div class="rounded-[30px] lg:rounded-[36px] overflow-hidden bg-black aspect-auto relative border border-white/10 shadow-inner">
-                                    <img src="{% static 'images/home_dashboard.jpg' %}" alt="AntTipid Dashboard Phone Screen" class="w-full h-auto object-contain object-top block" />
+
+                                <div class="rounded-[30px] lg:rounded-[36px] overflow-hidden bg-ink relative border border-white/10">
+                                    <picture>
+                                        <source srcset="{% static 'images/home_dashboard.webp' %}" type="image/webp">
+                                        <img src="{% static 'images/home_dashboard.jpg' %}" alt="AntTipid dashboard on a phone, showing this month's balance and spending" width="922" height="1814" fetchpriority="high" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                    </picture>
                                 </div>
                             </div>
 
@@ -376,47 +377,47 @@
         <!-- ═══════════════════════════════════════════ -->
         <!-- 3. TRUST & VALUE STRIP                      -->
         <!-- ═══════════════════════════════════════════ -->
-        <section class="border-y border-outline-variant/70 bg-surface-lowest/70 py-6">
+        <section class="border-y border-outline-variant/70 bg-surface-container-lowest/70 py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
                     
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                             <span class="material-symbols-outlined text-[20px]">edit_note</span>
                         </div>
                         <div class="text-center sm:text-left">
-                            <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Track Expenses</h4>
-                            <p class="text-[11px] text-body font-medium">Income & spend logging</p>
+                            <p class="text-sm font-semibold text-ink">Track Expenses</p>
+                            <p class="text-xs text-body">Income and spending</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                             <span class="material-symbols-outlined text-[20px]">document_scanner</span>
                         </div>
                         <div class="text-center sm:text-left">
-                            <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Scan Receipts</h4>
-                            <p class="text-[11px] text-body font-medium">AI OCR extraction</p>
+                            <p class="text-sm font-semibold text-ink">Scan Receipts</p>
+                            <p class="text-xs text-body">AI reads the total</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                             <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
                         </div>
                         <div class="text-center sm:text-left">
-                            <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Manage Budgets</h4>
-                            <p class="text-[11px] text-body font-medium">Monthly category limits</p>
+                            <p class="text-sm font-semibold text-ink">Manage Budgets</p>
+                            <p class="text-xs text-body">Monthly category limits</p>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 p-2">
-                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                             <span class="material-symbols-outlined text-[20px]">analytics</span>
                         </div>
                         <div class="text-center sm:text-left">
-                            <h4 class="text-xs sm:text-sm font-bold text-deep-forest">Spending Trends</h4>
-                            <p class="text-[11px] text-body font-medium">Visual charts & insights</p>
+                            <p class="text-sm font-semibold text-ink">Spending Trends</p>
+                            <p class="text-xs text-body">Charts by category</p>
                         </div>
                     </div>
 
@@ -431,42 +432,44 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                 
                 <div class="lg:col-span-6 space-y-4 text-center lg:text-left">
-                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">Your finances, in one clear workspace.</h2>
-                    <p class="text-sm sm:text-base text-on-surface-variant font-medium leading-relaxed">
-                        AntTipid brings income, daily spending, paper receipts, and category budgets together in one unified dashboard so you can spend with total confidence.
+                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">Your finances, in one clear workspace.</h2>
+                    <p class="text-base text-body leading-relaxed">
+                        AntTipid puts income, daily spending, paper receipts, and category budgets on one dashboard, so you know what you can still spend before you spend it.
                     </p>
 
-                    <div class="space-y-3 pt-2">
-                        <div class="flex items-center gap-3 text-left">
-                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                    <ul class="space-y-3 pt-2">
+                        <li class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                                 <span class="material-symbols-outlined text-[16px]">check</span>
                             </div>
-                            <span class="text-xs sm:text-sm font-bold text-deep-forest">Real-time spending breakdowns across custom categories</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-left">
-                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <span class="text-sm font-medium text-ink">Spending broken down by your own categories, updated as you log</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                                 <span class="material-symbols-outlined text-[16px]">check</span>
                             </div>
-                            <span class="text-xs sm:text-sm font-bold text-deep-forest">AI OCR receipt scanner that extracts merchant and total PHP amount</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-left">
-                            <div class="w-6 h-6 rounded-full bg-soft-green text-primary flex items-center justify-center shrink-0">
+                            <span class="text-sm font-medium text-ink">AI receipt scanner that reads the merchant and the peso total</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-left">
+                            <div class="w-6 h-6 rounded-full bg-soft-green text-deep-forest flex items-center justify-center shrink-0" aria-hidden="true">
                                 <span class="material-symbols-outlined text-[16px]">check</span>
                             </div>
-                            <span class="text-xs sm:text-sm font-bold text-deep-forest">Fully responsive & PWA enabled — fast on mobile & desktop</span>
-                        </div>
-                    </div>
+                            <span class="text-sm font-medium text-ink">Works on phone and desktop, and installs on your home screen</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- Right Phone Showcase: User's Transactions Screenshot -->
+                <!-- Right Phone Showcase: History Screenshot -->
                 <div class="lg:col-span-6 flex justify-center">
-                    <div class="w-[260px] sm:w-[290px] bg-neutral-900 rounded-[36px] sm:rounded-[40px] p-1.5 shadow-xl border border-white/20 relative overflow-hidden select-none">
-                        <!-- iPhone Dynamic Island Notch -->
-                        <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
+                    <div class="w-[260px] sm:w-[290px] bg-ink rounded-[36px] sm:rounded-[40px] p-1.5 shadow-xl border border-white/20 relative overflow-hidden select-none">
+                        <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-ink rounded-full z-30 flex items-center justify-end px-1.5" aria-hidden="true">
+                            <div class="w-1.5 h-1.5 rounded-full bg-body border border-white/10"></div>
                         </div>
-                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
-                            <img src="{% static 'images/transactions_screen.jpg' %}" alt="AntTipid Transactions Phone Screen" class="w-full h-auto object-contain object-top block" />
+                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-ink border border-white/10">
+                            <picture>
+                                <source srcset="{% static 'images/transactions_screen.webp' %}" type="image/webp">
+                                <img src="{% static 'images/transactions_screen.jpg' %}" alt="AntTipid History screen on a phone, listing recent transactions" width="922" height="1804" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                            </picture>
                         </div>
                     </div>
                 </div>
@@ -477,59 +480,59 @@
         <!-- ═══════════════════════════════════════════ -->
         <!-- 5. WORKFLOW OVERVIEW                        -->
         <!-- ═══════════════════════════════════════════ -->
-        <section id="how-it-works" class="py-14 sm:py-24 bg-surface-low/50 border-y border-outline-variant/70">
+        <section id="how-it-works" class="py-14 sm:py-24 bg-surface-container-low/50 border-y border-outline-variant/70">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <div class="text-center max-w-2xl mx-auto space-y-2 mb-10 sm:mb-12">
-                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">Simple money management workflow.</h2>
-                    <p class="text-sm sm:text-base text-body font-medium">Keep your budget on target without complicated financial spreadsheets.</p>
+                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">Three steps, no spreadsheets.</h2>
+                    <p class="text-base text-body">Keep your budget on target without building a spreadsheet.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
+                <ol class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
                     <!-- Step 1 -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
+                    <li class="bg-canvas rounded-2xl p-6 flex flex-col gap-4 text-center items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                             <span class="material-symbols-outlined text-[28px]">add_a_photo</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 1</span>
-                            <h3 class="font-display text-lg font-bold text-deep-forest">Record & Scan</h3>
+                            <p class="text-sm text-body">Step 1</p>
+                            <h3 class="font-display text-lg font-bold text-ink">Record & Scan</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
-                            Log expenses manually in seconds or snap paper receipts to extract transaction details automatically.
+                        <p class="text-sm text-body leading-relaxed">
+                            Log an expense in a few taps, or snap a paper receipt and let AntTipid fill in the details.
                         </p>
-                    </div>
+                    </li>
 
                     <!-- Step 2 -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
+                    <li class="bg-canvas rounded-2xl p-6 flex flex-col gap-4 text-center items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                             <span class="material-symbols-outlined text-[28px]">category</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 2</span>
-                            <h3 class="font-display text-lg font-bold text-deep-forest">Organize & Budget</h3>
+                            <p class="text-sm text-body">Step 2</p>
+                            <h3 class="font-display text-lg font-bold text-ink">Organize & Budget</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
-                            Categorize transactions, tag payment accounts (GCash, Maya, BPI, Cash), and monitor monthly limits.
+                        <p class="text-sm text-body leading-relaxed">
+                            Sort transactions into categories, tag the account you paid with (GCash, Maya, BPI, Cash), and set monthly limits.
                         </p>
-                    </div>
+                    </li>
 
                     <!-- Step 3 -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-4 text-center items-center">
-                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center shadow-xs">
+                    <li class="bg-canvas rounded-2xl p-6 flex flex-col gap-4 text-center items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                             <span class="material-symbols-outlined text-[28px]">insights</span>
                         </div>
                         <div class="space-y-1">
-                            <span class="text-[11px] font-bold text-positive-deep uppercase tracking-wider">Step 3</span>
-                            <h3 class="font-display text-lg font-bold text-deep-forest">Understand Trends</h3>
+                            <p class="text-sm text-body">Step 3</p>
+                            <h3 class="font-display text-lg font-bold text-ink">Understand Trends</h3>
                         </div>
-                        <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
-                            Review clear spending charts, track category progress bars, and see where your money goes.
+                        <p class="text-sm text-body leading-relaxed">
+                            See where your money goes with spending charts and a progress bar for every category.
                         </p>
-                    </div>
+                    </li>
 
-                </div>
+                </ol>
 
             </div>
         </section>
@@ -539,73 +542,73 @@
         <!-- ═══════════════════════════════════════════ -->
         <section id="features" class="py-14 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto space-y-2 mb-10 sm:mb-12">
-                <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">Built for personal finance clarity.</h2>
+                <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">Everything you need to stay on budget.</h2>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 <!-- Feature 1 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">receipt_long</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">Expense Tracking</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
+                    <h3 class="text-base font-bold text-ink">Expense Tracking</h3>
+                    <p class="text-sm text-body leading-relaxed">
                         Log income & daily spends with custom payment tags (GCash, Maya, BPI, Cash).
                     </p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">photo_camera</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">OCR Receipt Scanner</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
+                    <h3 class="text-base font-bold text-ink">OCR Receipt Scanner</h3>
+                    <p class="text-sm text-body leading-relaxed">
                         Capture paper receipts and auto-extract merchant names, date, and total PHP amounts with Gemini AI.
                     </p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">Budget Management</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
-                        Set monthly category limits and monitor progress with real-time warning indicators.
+                    <h3 class="text-base font-bold text-ink">Budget Management</h3>
+                    <p class="text-sm text-body leading-relaxed">
+                        Set monthly category limits and see a warning before you go over.
                     </p>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">payments</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">Income & Savings</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
-                        Keep income streams alongside expenses to track net monthly savings growth accurately.
+                    <h3 class="text-base font-bold text-ink">Income & Savings</h3>
+                    <p class="text-sm text-body leading-relaxed">
+                        Log income next to expenses to see how much you kept each month.
                     </p>
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">folder_zip</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">Receipt Vault</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
+                    <h3 class="text-base font-bold text-ink">Receipt Vault</h3>
+                    <p class="text-sm text-body leading-relaxed">
                         Store and search original scanned receipt images anytime for tax or reimbursement reference.
                     </p>
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="bg-surface-lowest border border-outline-variant/70 rounded-2xl p-6 shadow-xs hover:shadow-soft transition-all flex flex-col gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-positive-deep border border-positive/30 flex items-center justify-center">
+                <div class="bg-canvas rounded-2xl p-6 flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-pale text-deep-forest flex items-center justify-center" aria-hidden="true">
                         <span class="material-symbols-outlined text-[22px]">bar_chart</span>
                     </div>
-                    <h3 class="text-base font-bold text-deep-forest">Financial Reports</h3>
-                    <p class="text-xs sm:text-sm text-body font-medium leading-relaxed">
+                    <h3 class="text-base font-bold text-ink">Financial Reports</h3>
+                    <p class="text-sm text-body leading-relaxed">
                         Gain insights through category breakdown charts, weekly summaries, and spending trends.
                     </p>
                 </div>
@@ -621,45 +624,47 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                     
                     <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
-                        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Turn paper receipts into organized expenses.</h2>
-                        <p class="text-sm sm:text-base text-white/80 font-medium leading-relaxed">
-                            Skip manual typing. Snap a receipt photo and let AntTipid's OCR scan merchant names, dates, and total amounts automatically. Review the data and save it directly to your transaction log.
+                        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Turn paper receipts into organized expenses.</h2>
+                        <p class="text-base text-white/80 leading-relaxed">
+                            Skip the typing. Snap a photo of a receipt and AntTipid reads the merchant, date, and peso total for you. Check the details, then save it to your History.
                         </p>
 
                         <!-- Workflow Pipeline Steps -->
-                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs font-bold text-white/90">
-                            <div class="flex items-center gap-1.5">
-                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Snap Receipt</span>
-                                <span class="text-white/40">→</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Laser Scan</span>
-                                <span class="text-white/40">→</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="px-2.5 py-1 rounded-lg bg-primary text-on-primary font-bold">Extract Data</span>
-                                <span class="text-white/40">→</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Save Expense</span>
-                            </div>
-                        </div>
+                        <ol class="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-sm font-semibold text-white/90">
+                            <li class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Snap receipt</span>
+                                <span class="material-symbols-outlined text-[16px] text-white/60" aria-hidden="true">arrow_forward</span>
+                            </li>
+                            <li class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Scan</span>
+                                <span class="material-symbols-outlined text-[16px] text-white/60" aria-hidden="true">arrow_forward</span>
+                            </li>
+                            <li class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg bg-primary text-on-primary">Read details</span>
+                                <span class="material-symbols-outlined text-[16px] text-white/60" aria-hidden="true">arrow_forward</span>
+                            </li>
+                            <li class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20">Save expense</span>
+                            </li>
+                        </ol>
 
-                        <div class="inline-flex items-center gap-2 bg-soft-green/20 text-soft-green border border-soft-green/30 px-3.5 py-2 rounded-xl text-xs font-bold">
-                            <span class="material-symbols-outlined text-[18px]">verified</span>
-                            <span>Review before saving: You maintain 100% control.</span>
+                        <div class="inline-flex items-center gap-2 bg-soft-green/20 text-soft-green border border-soft-green/30 px-3.5 py-2 rounded-xl text-sm font-semibold">
+                            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">verified</span>
+                            <span>You review every scan before it's saved.</span>
                         </div>
                     </div>
 
-                    <!-- Right Phone Showcase: User's Receipt Scanning Screenshot -->
+                    <!-- Right Phone Showcase: Receipt Scanning Screenshot -->
                     <div class="lg:col-span-6 flex justify-center">
-                        <div class="w-[260px] sm:w-[290px] bg-neutral-900 rounded-[36px] sm:rounded-[40px] p-1.5 shadow-2xl border border-white/30 relative overflow-hidden select-none">
-                            <!-- iPhone Dynamic Island Notch -->
-                            <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
-                                <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
+                        <div class="w-[260px] sm:w-[290px] bg-ink rounded-[36px] sm:rounded-[40px] p-1.5 shadow-2xl border border-white/30 relative overflow-hidden select-none">
+                            <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-ink rounded-full z-30 flex items-center justify-end px-1.5" aria-hidden="true">
+                                <div class="w-1.5 h-1.5 rounded-full bg-body border border-white/10"></div>
                             </div>
-                            <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
-                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="AntTipid OCR Scanning Phone Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-ink border border-white/10">
+                                <picture>
+                                    <source srcset="{% static 'images/scanning_receipt.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/scanning_receipt.jpg' %}" alt="AntTipid receipt scanner on a phone, reading a paper receipt" width="922" height="1808" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
                     </div>
@@ -674,28 +679,30 @@
         <section class="py-14 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
                 
-                <!-- Left Phone Showcase: User's Monthly Budget Screenshot -->
+                <!-- Left Phone Showcase: Budgets Screenshot -->
                 <div class="lg:col-span-6 flex justify-center order-2 lg:order-1">
-                    <div class="w-[260px] sm:w-[290px] bg-neutral-900 rounded-[36px] sm:rounded-[40px] p-1.5 shadow-xl border border-white/20 relative overflow-hidden select-none">
-                        <!-- iPhone Dynamic Island Notch -->
-                        <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-black rounded-full z-30 flex items-center justify-end px-1.5 shadow-xs">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-800 border border-white/10"></div>
+                    <div class="w-[260px] sm:w-[290px] bg-ink rounded-[36px] sm:rounded-[40px] p-1.5 shadow-xl border border-white/20 relative overflow-hidden select-none">
+                        <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-ink rounded-full z-30 flex items-center justify-end px-1.5" aria-hidden="true">
+                            <div class="w-1.5 h-1.5 rounded-full bg-body border border-white/10"></div>
                         </div>
-                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-black aspect-auto border border-white/10">
-                            <img src="{% static 'images/montly_budget.jpg' %}" alt="AntTipid Budget Planner Phone Screen" class="w-full h-auto object-contain object-top block" />
+                        <div class="rounded-[28px] sm:rounded-[32px] overflow-hidden bg-ink border border-white/10">
+                            <picture>
+                                <source srcset="{% static 'images/montly_budget.webp' %}" type="image/webp">
+                                <img src="{% static 'images/montly_budget.jpg' %}" alt="AntTipid Budgets screen on a phone, with a progress bar per category" width="922" height="1808" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                            </picture>
                         </div>
                     </div>
                 </div>
 
                 <!-- Right Copy -->
                 <div class="lg:col-span-6 space-y-4 text-center lg:text-left order-1 lg:order-2">
-                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">Know exactly how much you have left.</h2>
-                    <p class="text-sm sm:text-base text-on-surface-variant font-medium leading-relaxed">
-                        Never guess your remaining allowance. Set category limits, track spending progress in real time, and receive clear warnings when nearing monthly targets.
+                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">A limit for every category.</h2>
+                    <p class="text-base text-body leading-relaxed">
+                        Stop guessing what's left of your allowance. Set a monthly limit for food, transport, or anything else, watch each one fill as you spend, and see a clear warning before you go over.
                     </p>
-                    <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 text-primary text-sm font-bold hover:underline pt-1">
-                        <span>Configure Your Budget Planner</span>
-                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <a href="{% url 'budget' %}" class="inline-flex items-center gap-2 min-h-[44px] text-deep-forest text-base font-semibold underline underline-offset-4 hover:text-ink">
+                        <span>Set your monthly budgets</span>
+                        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
                     </a>
                 </div>
 
@@ -705,85 +712,100 @@
         <!-- ═══════════════════════════════════════════ -->
         <!-- 9. ADAPTIVE APP SCREENS SHOWCASE            -->
         <!-- ═══════════════════════════════════════════ -->
-        <section id="screens" class="py-14 sm:py-24 bg-surface-low/50 border-y border-outline-variant/70">
+        <section id="screens" class="py-14 sm:py-24 bg-surface-container-low/50 border-y border-outline-variant/70">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <div class="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-12">
-                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deep-forest tracking-tight">See AntTipid in action.</h2>
-                    <p class="text-sm sm:text-base text-on-surface-variant font-medium">Real screenshots from the AntTipid personal expense and budget tracker app.</p>
+                    <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-ink tracking-tight">A look inside AntTipid.</h2>
+                    <p class="text-base text-body">The five screens you'll use most, shown on a phone.</p>
                 </div>
 
-                <!-- 5 Phone Screenshots Showcase Grid -->
+                <!-- 5 Phone Screenshots: phone frame > screen, caption below (no outer card) -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
                     
                     <!-- Screen 1: Dashboard -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group transition-all">
-                        <div class="w-full bg-neutral-900 rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
-                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
-                                <div class="w-1 h-1 rounded-full bg-slate-800"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-full bg-ink rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
+                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-ink rounded-full z-30 flex items-center justify-end px-1" aria-hidden="true">
+                                <div class="w-1 h-1 rounded-full bg-body"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
-                                <img src="{% static 'images/home_dashboard.jpg' %}" alt="Dashboard Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-ink border border-white/10 relative">
+                                <picture>
+                                    <source srcset="{% static 'images/home_dashboard.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/home_dashboard.jpg' %}" alt="Dashboard: balance, budget left, and recent spending" width="922" height="1814" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
-                        <h4 class="text-xs font-bold text-deep-forest text-center">Dashboard</h4>
-                        <p class="text-[10px] text-on-surface-variant">Overview & Spends</p>
+                        <h3 class="text-sm font-semibold text-ink text-center">Dashboard</h3>
+                        <p class="text-xs text-body text-center">What's left this month</p>
                     </div>
-
-                    <!-- Screen 2: OCR Scanner -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group transition-all">
-                        <div class="w-full bg-neutral-900 rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
-                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
-                                <div class="w-1 h-1 rounded-full bg-slate-800"></div>
+                    
+                    <!-- Screen 2: Receipt Scanner -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-full bg-ink rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
+                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-ink rounded-full z-30 flex items-center justify-end px-1" aria-hidden="true">
+                                <div class="w-1 h-1 rounded-full bg-body"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
-                                <img src="{% static 'images/scanning_receipt.jpg' %}" alt="OCR Scanner Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-ink border border-white/10 relative">
+                                <picture>
+                                    <source srcset="{% static 'images/scanning_receipt.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/scanning_receipt.jpg' %}" alt="Receipt scanner reading a paper receipt" width="922" height="1808" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
-                        <h4 class="text-xs font-bold text-deep-forest text-center">Receipt Scanner</h4>
-                        <p class="text-[10px] text-on-surface-variant">AI Laser OCR</p>
+                        <h3 class="text-sm font-semibold text-ink text-center">Receipt Scanner</h3>
+                        <p class="text-xs text-body text-center">Reads receipts with AI</p>
                     </div>
-
-                    <!-- Screen 3: Monthly Budget -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group transition-all">
-                        <div class="w-full bg-neutral-900 rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
-                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
-                                <div class="w-1 h-1 rounded-full bg-slate-800"></div>
+                    
+                    <!-- Screen 3: Budgets -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-full bg-ink rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
+                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-ink rounded-full z-30 flex items-center justify-end px-1" aria-hidden="true">
+                                <div class="w-1 h-1 rounded-full bg-body"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
-                                <img src="{% static 'images/montly_budget.jpg' %}" alt="Monthly Budget Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-ink border border-white/10 relative">
+                                <picture>
+                                    <source srcset="{% static 'images/montly_budget.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/montly_budget.jpg' %}" alt="Budgets: monthly limits and progress by category" width="922" height="1808" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
-                        <h4 class="text-xs font-bold text-deep-forest text-center">Monthly Budget</h4>
-                        <p class="text-[10px] text-on-surface-variant">Progress & Categories</p>
+                        <h3 class="text-sm font-semibold text-ink text-center">Budgets</h3>
+                        <p class="text-xs text-body text-center">A limit per category</p>
                     </div>
-
-                    <!-- Screen 4: Financial Insights -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group transition-all">
-                        <div class="w-full bg-neutral-900 rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
-                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
-                                <div class="w-1 h-1 rounded-full bg-slate-800"></div>
+                    
+                    <!-- Screen 4: Reports -->
+                    <div class="flex flex-col items-center">
+                        <div class="w-full bg-ink rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
+                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-ink rounded-full z-30 flex items-center justify-end px-1" aria-hidden="true">
+                                <div class="w-1 h-1 rounded-full bg-body"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
-                                <img src="{% static 'images/report_screen.jpg' %}" alt="Financial Reports Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-ink border border-white/10 relative">
+                                <picture>
+                                    <source srcset="{% static 'images/report_screen.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/report_screen.jpg' %}" alt="Reports: spending charts by category and over time" width="922" height="1808" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
-                        <h4 class="text-xs font-bold text-deep-forest text-center">Financial Insights</h4>
-                        <p class="text-[10px] text-on-surface-variant">Charts & Trends</p>
+                        <h3 class="text-sm font-semibold text-ink text-center">Reports</h3>
+                        <p class="text-xs text-body text-center">Charts and trends</p>
                     </div>
-
-                    <!-- Screen 5: Transactions History -->
-                    <div class="bg-surface-lowest border border-outline-variant/70 rounded-3xl p-2.5 shadow-soft flex flex-col items-center group transition-all col-span-2 sm:col-span-1">
-                        <div class="w-full bg-neutral-900 rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
-                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black rounded-full z-30 flex items-center justify-end px-1 shadow-xs">
-                                <div class="w-1 h-1 rounded-full bg-slate-800"></div>
+                    
+                    <!-- Screen 5: History -->
+                    <div class="flex flex-col items-center col-span-2 sm:col-span-1 justify-self-center w-[calc(50%-0.5rem)] sm:w-full">
+                        <div class="w-full bg-ink rounded-[28px] p-1 shadow-md border border-white/20 mb-3 relative overflow-hidden select-none">
+                            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-ink rounded-full z-30 flex items-center justify-end px-1" aria-hidden="true">
+                                <div class="w-1 h-1 rounded-full bg-body"></div>
                             </div>
-                            <div class="w-full rounded-[22px] overflow-hidden bg-black aspect-auto border border-white/10 relative">
-                                <img src="{% static 'images/transactions_screen.jpg' %}" alt="Transactions Screen" class="w-full h-auto object-contain object-top block" />
+                            <div class="w-full rounded-[22px] overflow-hidden bg-ink border border-white/10 relative">
+                                <picture>
+                                    <source srcset="{% static 'images/transactions_screen.webp' %}" type="image/webp">
+                                    <img src="{% static 'images/transactions_screen.jpg' %}" alt="History: every transaction with filters and search" width="922" height="1804" loading="lazy" decoding="async" class="w-full h-auto object-contain object-top block" />
+                                </picture>
                             </div>
                         </div>
-                        <h4 class="text-xs font-bold text-deep-forest text-center">Transaction History</h4>
-                        <p class="text-[10px] text-on-surface-variant">Filters & Search</p>
+                        <h3 class="text-sm font-semibold text-ink text-center">History</h3>
+                        <p class="text-xs text-body text-center">Filter and search</p>
                     </div>
 
                 </div>
@@ -796,17 +818,17 @@
         <!-- ═══════════════════════════════════════════ -->
         <section class="py-14 sm:py-24 bg-deep-forest text-white text-center relative overflow-hidden">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 relative z-10">
-                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-                    Ready to master your personal budget?
+                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+                    See what's left of this month's budget.
                 </h2>
-                <p class="text-sm sm:text-base lg:text-lg text-white/80 max-w-xl mx-auto font-medium leading-relaxed">
-                    Start tracking expenses, scanning receipts, and monitoring monthly budgets — 100% free with no credit card required.
+                <p class="text-base lg:text-lg text-white/80 max-w-xl mx-auto leading-relaxed">
+                    Track expenses, scan receipts, and keep every category under its limit. Free, with no credit card required.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 py-3.5 min-h-[48px] rounded-xl bg-primary text-on-primary text-sm font-bold hover:bg-primary-hover transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>Open AntTipid App</span>
-                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Open AntTipid</span>
+                        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_forward</span>
                     </a>
                 </div>
             </div>
@@ -817,57 +839,52 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- 11. FOOTER                                  -->
     <!-- ═══════════════════════════════════════════ -->
-    <footer class="bg-surface-lowest border-t border-outline-variant/70 py-10 sm:py-14">
+    <footer class="bg-surface-container-lowest border-t border-outline-variant/70 py-10 sm:py-14">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-soft-green text-primary flex items-center justify-center p-0.5 border border-primary/30 overflow-hidden">
-                            <img src="{% static 'images/AntTipidLogo.png' %}" alt="AntTipid Logo" loading="lazy" class="w-full h-full object-cover rounded-full" />
+                        <div class="w-8 h-8 rounded-full bg-soft-green flex items-center justify-center p-0.5 overflow-hidden">
+                            <img src="{% static 'images/AntTipidLogo-128.png' %}" alt="" width="32" height="32" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-full" />
                         </div>
-                        <span class="text-lg font-extrabold text-deep-forest">AntTipid</span>
+                        <span class="text-lg font-bold text-ink">AntTipid</span>
                     </div>
-                    <p class="text-xs text-on-surface-variant font-medium leading-relaxed">
-                        A Personal Expense and Budget Tracker.
+                    <p class="text-sm text-body leading-relaxed">
+                        A personal expense and budget tracker.
                     </p>
                 </div>
 
-                <div>
-                    <h4 class="text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Product Pages</h4>
-                    <ul class="space-y-2 text-xs text-on-surface-variant font-medium">
-                        <li><a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard Overview</a></li>
-                        <li><a href="{% url 'scan_receipt' %}" class="hover:text-primary transition-colors">OCR Receipt Scanner</a></li>
-                        <li><a href="{% url 'budget' %}" class="hover:text-primary transition-colors">Budget Planner</a></li>
-                        <li><a href="{% url 'reports' %}" class="hover:text-primary transition-colors">Financial Insights</a></li>
+                <nav aria-labelledby="footer-app-title">
+                    <h2 id="footer-app-title" class="text-sm font-semibold text-ink mb-1">App</h2>
+                    <ul class="text-sm text-body">
+                        <li><a href="{% url 'dashboard' %}" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">Dashboard</a></li>
+                        <li><a href="{% url 'scan_receipt' %}" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">Receipt Scanner</a></li>
+                        <li><a href="{% url 'budget' %}" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">Budgets</a></li>
+                        <li><a href="{% url 'reports' %}" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">Reports</a></li>
                     </ul>
-                </div>
+                </nav>
+
+                <nav aria-labelledby="footer-about-title">
+                    <h2 id="footer-about-title" class="text-sm font-semibold text-ink mb-1">About</h2>
+                    <ul class="text-sm text-body">
+                        <li><a href="#about" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">About AntTipid</a></li>
+                        <li><a href="#how-it-works" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">How It Works</a></li>
+                        <li><a href="#features" class="inline-flex items-center min-h-[44px] hover:text-ink hover:underline underline-offset-4">Features</a></li>
+                    </ul>
+                </nav>
 
                 <div>
-                    <h4 class="text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Information</h4>
-                    <ul class="space-y-2 text-xs text-on-surface-variant font-medium">
-                        <li><a href="#about" class="hover:text-primary transition-colors">About AntTipid</a></li>
-                        <li><a href="#how-it-works" class="hover:text-primary transition-colors">How It Works</a></li>
-                        <li><a href="#features" class="hover:text-primary transition-colors">Key Features</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold text-deep-forest uppercase tracking-wider mb-3">Tech & Architecture</h4>
-                    <p class="text-xs text-on-surface-variant font-medium leading-relaxed">
-                        PWA & Mobile Enabled.<br />Built with Python, Django & Tailwind CSS.
+                    <h2 class="text-sm font-semibold text-ink mb-3">Built with</h2>
+                    <p class="text-sm text-body leading-relaxed">
+                        Python, Django, and Tailwind CSS.<br />Installable on your phone's home screen.
                     </p>
                 </div>
 
             </div>
 
-            <div class="border-t border-outline-variant/60 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-on-surface-variant font-medium gap-3">
+            <div class="border-t border-outline-variant/60 pt-6 flex flex-col sm:flex-row items-center justify-between text-sm text-body gap-3">
                 <p>© 2026 AntTipid. All rights reserved.</p>
-                <div class="flex gap-4">
-                    <span>Privacy Policy</span>
-                    <span>•</span>
-                    <span>Terms of Service</span>
-                </div>
             </div>
         </div>
     </footer>
@@ -875,8 +892,8 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- FLOATING SCROLL UP BUTTON                   -->
     <!-- ═══════════════════════════════════════════ -->
-    <button type="button" id="btn-back-to-top" aria-label="Scroll to top" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary text-on-primary shadow-elevated border border-primary/30 flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all opacity-0 pointer-events-none cursor-pointer">
-        <span class="material-symbols-outlined text-[26px]">keyboard_arrow_up</span>
+    <button type="button" id="btn-back-to-top" aria-label="Back to top" tabindex="-1" aria-hidden="true" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary text-on-primary shadow-elevated flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all opacity-0 pointer-events-none cursor-pointer">
+        <span class="material-symbols-outlined text-[26px]" aria-hidden="true">keyboard_arrow_up</span>
     </button>
 
     <!-- JavaScript logic for Menu Drawer & Scroll Handler -->
@@ -897,12 +914,14 @@
                 const closeMenu = () => {
                     drawer.classList.add('hidden');
                     menuBtn.setAttribute('aria-expanded', 'false');
+                    menuBtn.setAttribute('aria-label', 'Open menu');
                     menuIcon.textContent = 'menu';
                 };
 
                 menuBtn.addEventListener('click', () => {
                     const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-                    menuBtn.setAttribute('aria-expanded', !isExpanded);
+                    menuBtn.setAttribute('aria-expanded', String(!isExpanded));
+                    menuBtn.setAttribute('aria-label', isExpanded ? 'Open menu' : 'Close menu');
                     drawer.classList.toggle('hidden');
                     menuIcon.textContent = isExpanded ? 'menu' : 'close';
                 });
@@ -933,12 +952,17 @@
             const backToTopBtn = document.getElementById('btn-back-to-top');
             if (backToTopBtn) {
                 const toggleBackToTop = () => {
+                    // While invisible, keep it out of the tab order and the accessibility tree.
                     if (window.scrollY > 250) {
                         backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
                         backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+                        backToTopBtn.removeAttribute('tabindex');
+                        backToTopBtn.removeAttribute('aria-hidden');
                     } else {
                         backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
                         backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+                        backToTopBtn.setAttribute('tabindex', '-1');
+                        backToTopBtn.setAttribute('aria-hidden', 'true');
                     }
                 };
 
@@ -946,7 +970,11 @@
                 toggleBackToTop();
 
                 backToTopBtn.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+                    // Move focus to the top so keyboard users don't stay on a now-hidden button.
+                    const logoLink = document.querySelector('header a');
+                    if (logoLink) logoLink.focus({ preventScroll: true });
                 });
             }
         });

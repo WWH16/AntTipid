@@ -1,22 +1,27 @@
 {% comment %}
-Reusable Sticky Floating Action Bar Component for Forms, Reviews & Scanners
+Form action bar: Cancel (secondary) + primary submit.
+Mobile (<md): sticks to the bottom of the viewport, just above the fixed bottom nav, full-bleed
+across its card with a white surface and a top hairline. md+: a plain inline row at the end of the form.
+Place it as the LAST child of the <form>. The parent card should use p-4 sm:p-6 (override with `bleed`).
+
 Usage:
-  {% include 'dashboard/components/form_action_bar.html' with cancel_url=cancel_url cancel_label="Cancel" submit_label="Save Entry" submit_id="btn-save-transaction" %}
+  {% include 'dashboard/components/form_action_bar.html' with cancel_id="btn-discard" submit_id="btn-save-transaction" submit_label="Save transaction" %}
+Options: cancel_url (Cancel becomes a link), cancel_label, cancel_id, submit_label, submit_id, submit_type, icon_name, bleed.
 {% endcomment %}
 
-<div class="sticky bottom-0 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-t border-surface-variant/40 pt-4 pb-2 sm:pb-3 {{ card_margin|default:'-mx-5 -mb-5 sm:-mx-6 sm:-mb-6' }} {{ card_padding|default:'px-5 sm:px-6 rounded-b-2xl' }} flex items-center justify-end gap-2.5 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+<div class="form-action-bar sticky z-30 bottom-[calc(56px+max(0.5rem,env(safe-area-inset-bottom)))] {{ bleed|default:'-mx-4 px-4 sm:-mx-6 sm:px-6' }} py-3 bg-canvas border-t border-outline-variant flex items-center gap-3 md:static md:mx-0 md:px-0 md:pt-2 md:pb-0 md:border-t-0 md:justify-end">
     {% if cancel_url %}
-    <a href="{{ cancel_url }}" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
+    <a href="{{ cancel_url }}" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center min-h-[48px] px-5 rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">
         {{ cancel_label|default:"Cancel" }}
     </a>
     {% else %}
-    <button type="button" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-semibold transition-all cursor-pointer shadow-xs">
+    <button type="button" id="{{ cancel_id|default:'btn-cancel' }}" class="inline-flex items-center justify-center min-h-[48px] px-5 rounded-xl bg-canvas-soft text-ink text-base font-semibold hover:bg-surface-container-high transition-colors cursor-pointer">
         {{ cancel_label|default:"Cancel" }}
     </button>
     {% endif %}
 
-    <button type="{{ submit_type|default:'submit' }}" id="{{ submit_id|default:'btn-save-transaction' }}" class="inline-flex items-center justify-center gap-1.5 px-6 py-2 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-xs active:scale-[0.98] transition-all cursor-pointer">
-        {% if icon_name %}<span class="material-symbols-outlined text-[18px]">{{ icon_name }}</span>{% endif %}
-        <span>{{ submit_label|default:"Save Entry" }}</span>
+    <button type="{{ submit_type|default:'submit' }}" id="{{ submit_id|default:'btn-save' }}" class="flex-1 md:flex-none md:min-w-[220px] inline-flex items-center justify-center gap-1.5 min-h-[48px] px-6 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover active:scale-[0.98] transition-all cursor-pointer disabled:opacity-70 disabled:cursor-wait">
+        {% if icon_name %}<span class="material-symbols-outlined text-[20px]" aria-hidden="true">{{ icon_name }}</span>{% endif %}
+        <span data-submit-label>{{ submit_label|default:"Save" }}</span>
     </button>
 </div>

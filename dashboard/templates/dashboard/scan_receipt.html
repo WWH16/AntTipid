@@ -16,11 +16,18 @@
         50% { opacity: 0.85; }
         100% { top: 88%; opacity: 0.4; }
     }
+    @media (prefers-reduced-motion: reduce) {
+        .scanning-line-quiet {
+            animation: none !important;
+            top: 50%;
+            opacity: 0.6;
+        }
+    }
 
-    /* Drag over state for dropzone */
+    /* Drag over state for dropzone (deep-forest ring on primary-pale) */
     .drag-over {
-        border-color: #5C8F3A !important;
-        background-color: rgba(92, 143, 58, 0.04) !important;
+        box-shadow: 0 0 0 2px #163300;
+        background-color: #E2F6D5 !important;
     }
 </style>
 {% endblock %}
@@ -32,49 +39,57 @@
         <!-- ─── Top Header & Navigation ─── -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <a href="{% url 'transactions' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-back-header" aria-label="Back to transactions" class="w-9 h-9 rounded-xl border border-surface-variant/60 bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all active:scale-95 shadow-xs shrink-0 cursor-pointer">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                <a href="{% url 'transactions' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-back-header" aria-label="Back to History" class="w-9 h-9 rounded-xl bg-surface-container-lowest flex items-center justify-center text-body hover:bg-surface-container-low hover:text-ink transition-all active:scale-95 shrink-0 cursor-pointer tap">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_back</span>
                 </a>
                 <div class="min-w-0">
-                    <h1 class="font-headline-lg text-lg sm:text-xl font-bold text-deep-forest tracking-tight truncate" id="header-page-title">Scan Receipt</h1>
-                    <p class="font-body-sm text-[11px] sm:text-xs text-on-surface-variant mt-0.5 truncate" id="header-page-desc">Extract merchant, line items, and totals with AI</p>
+                    <h2 class="text-lg sm:text-xl font-bold text-deep-forest tracking-tight truncate" id="header-page-title">Scan Receipt</h2>
+                    <p class="text-xs sm:text-sm text-body mt-0.5 truncate" id="header-page-desc">Pull the store, items, and totals from a photo</p>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-switch-manual" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 h-8.5 rounded-xl bg-surface-container-low text-deep-forest border border-outline-variant/60 hover:bg-primary-pale hover:text-positive-deep transition-all font-label-md text-xs font-semibold cursor-pointer shadow-xs">
-                    <span class="material-symbols-outlined text-[16px] text-positive-deep">edit_note</span>
-                    <span>Manual Entry</span>
+                <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" id="btn-switch-manual" class="inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl bg-surface-container-lowest text-deep-forest hover:bg-primary-pale transition-all text-sm font-semibold cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">edit_note</span>
+                    <span>Manual entry</span>
                 </a>
             </div>
         </div>
 
         <!-- ─── ERROR & QUOTA EXCEEDED ALERT BANNER ─── -->
-        <div id="ocr-error-banner" role="alert" aria-live="assertive" class="hidden w-full bg-expense/10 border border-expense/25 rounded-xl p-2.5 sm:p-3 shadow-xs transition-all duration-300">
+        <div id="ocr-error-banner" role="alert" aria-live="assertive" class="hidden w-full bg-negative/10 border border-negative/25 rounded-xl p-3 transition-all duration-300">
             <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
-                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]" id="ocr-error-icon">error</span>
+                <div class="w-8 h-8 rounded-lg bg-negative/15 text-negative-deep flex items-center justify-center shrink-0 mt-0.5" id="ocr-error-icon-box">
+                    <span class="material-symbols-outlined text-[18px]" id="ocr-error-icon" aria-hidden="true">error</span>
                 </div>
-                <div class="flex-1 flex flex-col gap-0.5 min-w-0">
+                <div class="flex-1 flex flex-col gap-1 min-w-0">
                     <div class="flex items-center justify-between gap-2">
-                        <h3 id="ocr-error-title" class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest tracking-tight">
-                            Receipt Scan Failed
+                        <h3 id="ocr-error-title" class="text-sm font-semibold text-ink">
+                            Couldn't scan this receipt
                         </h3>
-                        <button type="button" id="btn-dismiss-error" aria-label="Dismiss error message" class="w-6 h-6 rounded-md text-on-surface-variant/70 hover:text-deep-forest hover:bg-expense/15 flex items-center justify-center transition-all cursor-pointer shrink-0 -mr-0.5 active:scale-95">
-                            <span class="material-symbols-outlined text-[16px]">close</span>
+                        <button type="button" id="btn-dismiss-error" aria-label="Dismiss error message" class="w-6 h-6 rounded-md text-body hover:text-ink hover:bg-negative/15 flex items-center justify-center transition-all cursor-pointer shrink-0 -mr-0.5 active:scale-95 tap">
+                            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">close</span>
                         </button>
                     </div>
-                    <p id="ocr-error-message" class="font-body-sm text-[11px] sm:text-xs text-body leading-snug">
-                        Unable to process receipt image automatically.
+                    <p id="ocr-error-message" class="text-sm text-body leading-snug">
+                        We couldn't read this receipt automatically.
                     </p>
+                    <div id="ocr-error-actions" class="hidden flex-wrap items-center gap-2 pt-1.5">
+                        <button type="button" id="btn-error-fill-manual" class="min-h-[44px] px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover active:scale-[0.98] transition-all cursor-pointer">
+                            Fill it in myself
+                        </button>
+                        <button type="button" id="btn-error-retry" class="min-h-[44px] px-4 rounded-xl bg-surface-container-lowest text-ink text-sm font-semibold hover:bg-surface-container-low active:scale-[0.98] transition-all cursor-pointer">
+                            Try again
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Hidden File Inputs -->
         <!-- 1. Gallery / File Upload (No capture attribute so mobile opens file/photo picker) -->
-        <input type="file" id="input-receipt-file" accept="image/jpeg,image/png,image/webp,image/heic" class="hidden" />
+        <input type="file" id="input-receipt-file" aria-label="Choose a receipt photo" accept="image/jpeg,image/png,image/webp,image/heic" class="hidden" />
         <!-- 2. Live Camera Capture (capture="environment" forces camera on mobile) -->
-        <input type="file" id="input-receipt-camera" accept="image/*" capture="environment" class="hidden" />
+        <input type="file" id="input-receipt-camera" aria-label="Take a receipt photo" accept="image/*" capture="environment" class="hidden" />
 
         <!-- ═══════════════════════════════════════════ -->
         <!-- STEP 1: QUIET UPLOAD DROPZONE               -->
@@ -83,46 +98,46 @@
             <div class="flex flex-col gap-3">
                 
                 <!-- Main Upload Surface Card -->
-                <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-4 bg-surface-container-lowest p-6 sm:p-9 rounded-2xl shadow-soft border border-outline-variant/60 hover:border-primary/50 transition-all cursor-pointer text-center group">
+                <div id="drop-zone-container" class="relative w-full flex flex-col items-center justify-center gap-4 bg-surface-container-lowest p-6 sm:p-9 rounded-2xl transition-all cursor-pointer text-center group">
 
                     <!-- Icon Container -->
-                    <div class="w-12 h-12 rounded-xl bg-surface-container-low text-deep-forest border border-outline-variant/40 flex items-center justify-center transition-colors group-hover:bg-primary-pale group-hover:text-positive-deep">
+                    <div class="w-12 h-12 rounded-xl bg-surface-container-low text-deep-forest flex items-center justify-center transition-colors group-hover:bg-primary-pale" aria-hidden="true">
                         <span class="material-symbols-outlined text-[24px]">receipt_long</span>
                     </div>
 
                     <!-- Typography -->
                     <div class="space-y-1 max-w-sm">
-                        <h2 class="font-headline-md text-base sm:text-lg font-bold text-deep-forest tracking-tight">
-                            Scan Paper Receipt
-                        </h2>
-                        <p class="font-body-sm text-xs text-body leading-relaxed font-normal">
-                            Upload a saved image or take a photo to automatically extract merchant, line items, date, and totals.
+                        <h3 class="text-base sm:text-lg font-bold text-deep-forest tracking-tight">
+                            Scan a paper receipt
+                        </h3>
+                        <p class="text-sm text-body leading-relaxed">
+                            Upload a photo or take one now. We'll fill in the store, items, date, and total for you to check.
                         </p>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full sm:w-auto pt-1">
                         <!-- Primary Action: Upload Image (Gallery / File Picker) -->
-                        <button type="button" id="btn-select-file" class="w-full sm:w-auto px-5 py-2.5 h-10 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[19px]">upload_file</span>
-                            <span class="whitespace-nowrap">Upload Image</span>
+                        <button type="button" id="btn-select-file" class="w-full sm:w-auto px-5 min-h-[48px] rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">upload_file</span>
+                            <span class="whitespace-nowrap">Upload photo</span>
                         </button>
 
                         <!-- Secondary Action: Take Photo (Live Camera) -->
-                        <button type="button" id="btn-take-camera" class="w-full sm:w-auto px-5 py-2.5 h-10 rounded-xl border border-outline-variant bg-surface-container-low text-deep-forest hover:bg-primary-pale hover:text-positive-deep font-label-md text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[19px]">photo_camera</span>
-                            <span class="whitespace-nowrap">Take Photo</span>
+                        <button type="button" id="btn-take-camera" class="w-full sm:w-auto px-5 min-h-[48px] rounded-xl bg-canvas-soft text-ink hover:bg-surface-container-high text-base font-semibold transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">photo_camera</span>
+                            <span class="whitespace-nowrap">Take photo</span>
                         </button>
 
                         <!-- Tertiary Action: Try Demo -->
-                        <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-4 py-2.5 h-10 rounded-xl border border-outline-variant/70 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low hover:text-deep-forest font-label-md text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 cursor-pointer">
-                            <span class="material-symbols-outlined text-[16px] text-positive-deep">auto_awesome</span>
-                            <span class="whitespace-nowrap">Try Demo</span>
+                        <button type="button" id="btn-try-demo" class="w-full sm:w-auto px-4 min-h-[48px] rounded-xl bg-transparent text-body hover:bg-surface-container-low hover:text-ink text-sm font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">auto_awesome</span>
+                            <span class="whitespace-nowrap">Try a sample</span>
                         </button>
                     </div>
 
                     <!-- Format & Privacy Note -->
-                    <span class="text-[11px] text-on-surface-variant font-medium">Supports JPG, PNG, WebP • Fully editable before saving</span>
+                    <span class="text-xs text-body">JPG, PNG, or WebP · You can edit everything before saving</span>
                 </div>
 
             </div>
@@ -134,16 +149,16 @@
         <div id="section-processing-canvas" class="hidden w-full max-w-sm mx-auto flex flex-col items-center justify-center py-6 sm:py-10 my-auto flex-1 gap-4">
             
             <!-- Quiet Container Card -->
-            <div class="w-full bg-surface-container-lowest rounded-2xl p-5 sm:p-6 border border-outline-variant/60 shadow-soft flex flex-col items-center justify-center space-y-4 text-center">
-                
+            <div class="w-full bg-surface-container-lowest rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center space-y-4 text-center">
+
                 <!-- Minimal Scanning Viewport -->
-                <div class="relative w-36 h-48 sm:w-40 sm:h-52 bg-surface-container-low rounded-xl border border-outline-variant/40 flex items-center justify-center overflow-hidden transition-all shrink-0">
-                    <img id="img-scanning-thumb" alt="Uploaded Receipt" class="hidden absolute inset-0 w-full h-full object-cover opacity-40" />
+                <div class="relative w-36 h-48 sm:w-40 sm:h-52 bg-surface-container-low rounded-xl border border-outline-variant/40 flex items-center justify-center overflow-hidden transition-all shrink-0" aria-hidden="true">
+                    <img id="img-scanning-thumb" alt="" class="hidden absolute inset-0 w-full h-full object-cover opacity-40" />
                     
                     <!-- Paper Texture Wireframe -->
                     <div id="skeleton-doc" class="absolute inset-3 border border-dashed border-outline-variant/30 rounded-lg flex flex-col gap-2 p-2.5 bg-surface-container-lowest/50">
                         <div class="h-2 bg-deep-forest/10 rounded w-2/3 mx-auto"></div>
-                        <div class="h-1.5 bg-deep-forest/8 rounded w-1/3 mx-auto"></div>
+                        <div class="h-1.5 bg-deep-forest/5 rounded w-1/3 mx-auto"></div>
                         <div class="mt-2.5 space-y-1.5 border-t border-outline-variant/20 pt-2">
                             <div class="flex justify-between items-center">
                                 <div class="h-1 bg-deep-forest/10 rounded w-1/2"></div>
@@ -161,39 +176,32 @@
                     </div>
 
                     <!-- Quiet Scanning Line -->
-                    <div class="scanning-line-quiet absolute left-0 w-full h-0.5 bg-primary z-10"></div>
+                    <div class="scanning-line-quiet absolute left-0 w-full h-0.5 bg-deep-forest z-10"></div>
 
                     <!-- Subtle Icon -->
                     <div class="relative z-20">
-                        <div class="w-11 h-11 bg-surface-container-lowest/90 backdrop-blur-xs text-deep-forest border border-outline-variant/40 rounded-xl flex items-center justify-center shadow-xs">
-                            <span class="material-symbols-outlined text-[20px] text-positive-deep">
+                        <div class="w-11 h-11 bg-surface-container-lowest/90 backdrop-blur-xs text-deep-forest border border-outline-variant/40 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[20px]">
                                 document_scanner
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Status & Step Text -->
-                <div class="space-y-1 text-center w-full">
-                    <h2 class="font-headline-md text-sm sm:text-base text-deep-forest font-bold tracking-tight" id="status-text">
-                        Reading receipt...
-                    </h2>
-                    <p class="font-body-sm text-[11px] text-on-surface-variant font-medium" id="step-count-text">
-                        Step 1 of 4 • Analyzing text
+                <!-- Status Text (announced to screen readers; honest, indeterminate states only) -->
+                <div class="space-y-1 text-center w-full" role="status" aria-live="polite" aria-atomic="true">
+                    <p class="text-base text-deep-forest font-semibold" id="status-text">
+                        Uploading…
                     </p>
-                </div>
-
-                <!-- Quiet Progress Bar -->
-                <div class="w-full max-w-xs space-y-1">
-                    <div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden border border-outline-variant/30">
-                        <div id="scanning-progress" class="bg-primary h-full w-1/4 transition-all duration-300 rounded-full"></div>
-                    </div>
+                    <p class="text-sm text-body" id="step-count-text">
+                        Sending your photo.
+                    </p>
                 </div>
 
                 <!-- Cancel Button -->
                 <div class="w-full pt-1">
-                    <button type="button" id="btn-cancel-processing" class="w-full py-2 text-on-surface-variant hover:text-expense font-label-md text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                        <span class="material-symbols-outlined text-[15px]">close</span>
+                    <button type="button" id="btn-cancel-processing" class="w-full min-h-[44px] text-body hover:text-negative-deep text-sm font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer rounded-xl">
+                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">close</span>
                         <span>Cancel scan</span>
                     </button>
                 </div>
@@ -207,24 +215,25 @@
         <div id="section-ocr-review" class="hidden flex-col gap-3.5 sm:gap-5 w-full">
 
             <!-- Compact Mobile Receipt Photo Bar (< lg screens) -->
-            <div class="lg:hidden w-full bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-2 sm:p-2.5 shadow-xs flex items-center justify-between gap-2.5">
-                <div class="flex items-center gap-2.5 min-w-0 cursor-pointer group flex-1" id="btn-zoom-image-mobile">
-                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-surface-container-low overflow-hidden border border-outline-variant/40 relative shrink-0">
-                        <img id="img-review-preview-mobile" class="object-cover w-full h-full" alt="Receipt thumbnail" src=""/>
-                        <div class="absolute inset-0 bg-black/25 flex items-center justify-center text-white opacity-90 group-hover:opacity-100 transition-opacity">
-                            <span class="material-symbols-outlined text-[15px]">zoom_in</span>
-                        </div>
-                    </div>
-                    <div class="flex flex-col min-w-0">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-label-sm text-xs font-bold text-deep-forest truncate">Receipt Photo</span>
-                            <span class="px-1.5 py-0.2 rounded bg-primary-pale text-positive-deep font-label-sm text-[9px] font-bold">AI Scanned</span>
-                        </div>
-                        <span class="text-[10px] sm:text-[11px] text-on-surface-variant group-hover:text-primary font-medium transition-colors">Tap photo to enlarge full view</span>
-                    </div>
-                </div>
-                <button type="button" id="btn-reupload-mobile-bar" class="h-8 px-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 font-label-sm text-xs font-bold active:scale-95 transition-all flex items-center gap-1 shrink-0 shadow-xs cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px] text-positive-deep">sync</span>
+            <div class="lg:hidden w-full bg-surface-container-lowest rounded-2xl p-2 sm:p-2.5 flex items-center justify-between gap-2.5">
+                <button type="button" class="flex items-center gap-2.5 min-w-0 cursor-pointer group flex-1 text-left rounded-xl disabled:cursor-default" id="btn-zoom-image-mobile" aria-label="Enlarge receipt photo" disabled>
+                    <span class="block w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-surface-container-low overflow-hidden border border-outline-variant/40 relative shrink-0">
+                        <span class="material-symbols-outlined text-[20px] text-mute absolute inset-0 flex items-center justify-center" aria-hidden="true">receipt_long</span>
+                        <img id="img-review-preview-mobile" class="hidden relative object-cover w-full h-full" alt="" />
+                        <span data-flex class="js-zoom-hint hidden absolute inset-0 bg-ink/25 items-center justify-center text-white opacity-90 group-hover:opacity-100 transition-opacity" aria-hidden="true">
+                            <span class="material-symbols-outlined text-[16px]">zoom_in</span>
+                        </span>
+                    </span>
+                    <span class="flex flex-col min-w-0">
+                        <span class="flex items-center gap-1.5">
+                            <span class="text-sm font-semibold text-deep-forest truncate">Receipt photo</span>
+                            <span class="js-source-badge px-1.5 py-0.5 rounded bg-primary-pale text-positive-deep text-xs font-semibold">AI scanned</span>
+                        </span>
+                        <span class="js-zoom-caption text-xs text-body transition-colors">No photo attached</span>
+                    </span>
+                </button>
+                <button type="button" id="btn-reupload-mobile-bar" class="min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink hover:bg-surface-container-high text-sm font-semibold active:scale-95 transition-all flex items-center gap-1 shrink-0 cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]" aria-hidden="true">sync</span>
                     <span>Rescan</span>
                 </button>
             </div>
@@ -234,40 +243,44 @@
 
                 <!-- DESKTOP LEFT COLUMN: Sticky Receipt Image (Desktop only: 5 cols) -->
                 <div class="hidden lg:flex lg:col-span-5 flex-col gap-3 lg:sticky lg:top-20">
-                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 shadow-xs flex flex-col gap-3">
+                    <div class="bg-surface-container-lowest rounded-2xl p-4 flex flex-col gap-3">
                         <div class="flex items-center justify-between px-0.5">
                             <div class="flex items-center gap-2">
-                                <span class="font-label-sm text-xs font-bold text-deep-forest">Scanned Receipt</span>
-                                <span class="px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep font-label-sm text-[10px] font-bold border border-positive/30">AI Extracted</span>
+                                <span class="text-sm font-semibold text-deep-forest">Receipt photo</span>
+                                <span class="js-source-badge px-2 py-0.5 rounded-full bg-primary-pale text-positive-deep text-xs font-semibold">AI scanned</span>
                             </div>
-                            <button type="button" id="btn-reupload-desktop" class="px-2.5 py-1 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-deep-forest hover:bg-primary-pale/40 font-label-sm text-xs font-bold active:scale-95 transition-all flex items-center gap-1 shrink-0 shadow-xs cursor-pointer">
-                                <span class="material-symbols-outlined text-[15px] text-positive-deep">sync</span>
+                            <button type="button" id="btn-reupload-desktop" class="min-h-[44px] px-3 rounded-xl bg-canvas-soft text-ink hover:bg-surface-container-high text-sm font-semibold active:scale-95 transition-all flex items-center gap-1 shrink-0 cursor-pointer">
+                                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">sync</span>
                                 <span>Rescan</span>
                             </button>
                         </div>
 
                         <!-- Image Container with Zoom -->
-                        <div class="w-full h-80 sm:h-96 rounded-xl bg-surface-container-low/80 flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group cursor-pointer" id="btn-zoom-image">
-                            <img id="img-review-preview" class="object-contain w-full h-full p-2 transition-transform duration-200" alt="Scanned Receipt Preview" src=""/>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                            <span class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm text-deep-forest px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-xs border border-outline-variant/40">
-                                <span class="material-symbols-outlined text-[14px]">zoom_in</span> Click to Enlarge
+                        <button type="button" class="w-full h-80 sm:h-96 rounded-xl bg-surface-container-low/80 flex items-center justify-center overflow-hidden border border-outline-variant/40 relative group cursor-pointer disabled:cursor-default" id="btn-zoom-image" aria-label="Enlarge receipt photo" disabled>
+                            <span class="js-zoom-placeholder flex flex-col items-center gap-1 text-mute text-sm" aria-hidden="true">
+                                <span class="material-symbols-outlined text-[32px]">receipt_long</span>
+                                No photo attached
                             </span>
-                        </div>
+                            <img id="img-review-preview" class="hidden object-contain w-full h-full p-2 transition-transform duration-200" alt="" />
+                            <span class="js-zoom-hint hidden absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" aria-hidden="true"></span>
+                            <span data-flex class="js-zoom-hint hidden absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm text-deep-forest px-2.5 py-1 rounded-lg text-xs font-semibold items-center gap-1 border border-outline-variant/40" aria-hidden="true">
+                                <span class="material-symbols-outlined text-[14px]">zoom_in</span> Click to enlarge
+                            </span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- RIGHT COLUMN: Extracted Data Editor Form (Desktop: 7 cols, Mobile: full width) -->
-                <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-3.5 sm:p-5 md:p-6 shadow-xs flex flex-col gap-3.5 sm:gap-5">
+                <div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 md:p-6 flex flex-col gap-3.5 sm:gap-5">
 
                     <!-- Merchant Name & Store -->
                     <div class="flex flex-col gap-1">
-                        <label for="input-review-merchant" class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold text-on-surface-variant">
-                            Merchant / Store Name
+                        <label for="input-review-merchant" class="text-sm font-medium text-body">
+                            Store or merchant
                         </label>
                         <div class="relative flex items-center">
-                            <span class="material-symbols-outlined text-[17px] sm:text-[18px] text-on-surface-variant/60 absolute left-3 pointer-events-none">storefront</span>
-                            <input type="text" id="input-review-merchant" class="w-full font-headline-md text-sm sm:text-base font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-9 sm:pl-10 pr-3.5 py-2 sm:py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value="" placeholder="e.g. Store or Merchant Name" />
+                            <span class="material-symbols-outlined text-[18px] text-mute absolute left-3 pointer-events-none" aria-hidden="true">storefront</span>
+                            <input type="text" id="input-review-merchant" class="w-full text-base font-semibold text-ink bg-surface-container-low/50 border border-outline-variant rounded-xl pl-10 pr-3.5 py-2.5 focus:ring-2 focus:ring-deep-forest/15 focus:border-deep-forest outline-none transition-all min-h-[44px]" value="" placeholder="e.g. SM Supermarket" autocomplete="off" />
                         </div>
                     </div>
 
@@ -277,29 +290,29 @@
                         <div class="grid grid-cols-2 gap-2 sm:gap-3">
                             <!-- Date (col-span-1) -->
                             <div class="flex flex-col gap-1 col-span-1">
-                                <div class="flex items-center justify-between">
-                                    <label for="input-review-date" class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-on-surface-variant">
+                                <div class="flex items-center justify-between gap-1">
+                                    <label for="input-review-date" class="text-sm font-medium text-body">
                                         Date
                                     </label>
-                                    <span id="label-date-source" class="text-[9px] sm:text-[10px] font-bold text-positive-deep">Detected</span>
+                                    <span id="label-date-source" class="text-xs font-semibold text-positive-deep">Detected</span>
                                 </div>
                                 <div class="relative flex items-center">
-                                    <span class="material-symbols-outlined text-[15px] text-on-surface-variant/60 absolute left-2.5 pointer-events-none">calendar_today</span>
-                                    <input type="date" id="input-review-date" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8 sm:pl-9 pr-1.5 py-1.5 sm:py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer min-h-[36px]" value="" />
+                                    <span class="material-symbols-outlined text-[16px] text-mute absolute left-2.5 pointer-events-none" aria-hidden="true">calendar_today</span>
+                                    <input type="date" id="input-review-date" aria-describedby="label-date-source" class="w-full text-sm font-medium text-ink bg-surface-container-low/50 border border-outline-variant rounded-xl pl-8 sm:pl-9 pr-1.5 py-2 focus:ring-2 focus:ring-deep-forest/15 focus:border-deep-forest outline-none transition-all cursor-pointer min-h-[44px]" value="" />
                                 </div>
                             </div>
 
                             <!-- Time (col-span-1) -->
                             <div class="flex flex-col gap-1 col-span-1">
-                                <div class="flex items-center justify-between">
-                                    <label for="input-review-time" class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-on-surface-variant">
+                                <div class="flex items-center justify-between gap-1">
+                                    <label for="input-review-time" class="text-sm font-medium text-body">
                                         Time
                                     </label>
-                                    <span id="label-time-source" class="text-[9px] sm:text-[10px] font-bold text-positive-deep">Detected</span>
+                                    <span id="label-time-source" class="text-xs font-semibold text-positive-deep">Detected</span>
                                 </div>
                                 <div class="relative flex items-center">
-                                    <span class="material-symbols-outlined text-[15px] text-on-surface-variant/60 absolute left-2.5 pointer-events-none">schedule</span>
-                                    <input type="time" id="input-review-time" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8 sm:pl-9 pr-1.5 py-1.5 sm:py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer min-h-[36px]" value="" />
+                                    <span class="material-symbols-outlined text-[16px] text-mute absolute left-2.5 pointer-events-none" aria-hidden="true">schedule</span>
+                                    <input type="time" id="input-review-time" aria-describedby="label-time-source" class="w-full text-sm font-medium text-ink bg-surface-container-low/50 border border-outline-variant rounded-xl pl-8 sm:pl-9 pr-1.5 py-2 focus:ring-2 focus:ring-deep-forest/15 focus:border-deep-forest outline-none transition-all cursor-pointer min-h-[44px]" value="" />
                                 </div>
                             </div>
                         </div>
@@ -309,46 +322,56 @@
                             <!-- Category -->
                             <div class="flex flex-col gap-1">
                                 <div class="flex items-center justify-between">
-                                    <label for="select-review-category" class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-on-surface-variant">
+                                    <label for="select-review-category" class="text-sm font-medium text-body">
                                         Category
                                     </label>
                                 </div>
                                 <div class="relative flex items-center">
-                                    <span class="material-symbols-outlined text-[15px] text-on-surface-variant/60 absolute left-2.5 pointer-events-none">category</span>
-                                    <select id="select-review-category" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8 sm:pl-9 pr-7 py-1.5 sm:py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none min-h-[36px]">
+                                    <span class="material-symbols-outlined text-[16px] text-mute absolute left-2.5 pointer-events-none" aria-hidden="true">category</span>
+                                    <select id="select-review-category" class="w-full text-sm font-medium text-ink bg-surface-container-low/50 border border-outline-variant rounded-xl pl-8 sm:pl-9 pr-7 py-2 focus:ring-2 focus:ring-deep-forest/15 focus:border-deep-forest outline-none transition-all cursor-pointer appearance-none min-h-[44px]">
                                         {% for cat in categories %}
                                         <option value="{{ cat.name }}">{{ cat.name }}</option>
                                         {% empty %}
-                                        <option value="General">General</option>
+                                        <option value="">Uncategorized</option>
                                         {% endfor %}
                                     </select>
-                                    <span class="material-symbols-outlined text-on-surface-variant/60 text-[15px] absolute right-2.5 pointer-events-none">unfold_more</span>
+                                    <span class="material-symbols-outlined text-mute text-[16px] absolute right-2.5 pointer-events-none" aria-hidden="true">unfold_more</span>
                                 </div>
                             </div>
 
                             <!-- Payment Method -->
                             <div class="flex flex-col gap-1">
-                                <div class="flex items-center justify-between">
-                                    <label for="select-review-account" class="font-label-sm text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-on-surface-variant">
-                                        Payment Method
+                                <div class="flex items-center justify-between gap-1">
+                                    {% if accounts %}
+                                    <label for="select-review-account" class="text-sm font-medium text-body">
+                                        Payment method
                                     </label>
-                                    <span id="label-payment-source" class="text-[9px] sm:text-[10px] font-bold text-positive-deep">Detected</span>
+                                    <span id="label-payment-source" class="text-xs font-semibold text-positive-deep">Detected</span>
+                                    {% else %}
+                                    <span class="text-sm font-medium text-body">Payment method</span>
+                                    {% endif %}
                                 </div>
+                                {% if accounts %}
                                 <div class="relative flex items-center">
-                                    <span class="material-symbols-outlined text-[15px] text-on-surface-variant/60 absolute left-2.5 pointer-events-none">account_balance_wallet</span>
-                                    <select id="select-review-account" class="w-full font-body-md text-xs sm:text-sm font-bold text-deep-forest bg-surface-container-low/50 border border-outline-variant/60 rounded-xl pl-8 sm:pl-9 pr-7 py-1.5 sm:py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer appearance-none min-h-[36px]">
+                                    <span class="material-symbols-outlined text-[16px] text-mute absolute left-2.5 pointer-events-none" aria-hidden="true">account_balance_wallet</span>
+                                    <select id="select-review-account" aria-describedby="label-payment-source" class="w-full text-sm font-medium text-ink bg-surface-container-low/50 border border-outline-variant rounded-xl pl-8 sm:pl-9 pr-7 py-2 focus:ring-2 focus:ring-deep-forest/15 focus:border-deep-forest outline-none transition-all cursor-pointer appearance-none min-h-[44px]">
                                         {% for acc in accounts %}
                                         <option value="{{ acc.name }}" data-type="{{ acc.account_type }}">{{ acc.name }}</option>
-                                        {% empty %}
-                                        <option value="Cash" data-type="CASH">Cash</option>
-                                        <option value="GCash" data-type="E_WALLET">GCash</option>
-                                        <option value="Maya" data-type="E_WALLET">Maya</option>
-                                        <option value="Credit Card" data-type="CREDIT_CARD">Credit Card</option>
-                                        <option value="Debit Card" data-type="BANK">Debit Card</option>
                                         {% endfor %}
                                     </select>
-                                    <span class="material-symbols-outlined text-on-surface-variant/60 text-[15px] absolute right-2.5 pointer-events-none">unfold_more</span>
+                                    <span class="material-symbols-outlined text-mute text-[16px] absolute right-2.5 pointer-events-none" aria-hidden="true">unfold_more</span>
                                 </div>
+                                {% else %}
+                                <!-- Empty state: no payment methods yet (no fabricated wallets) -->
+                                <div id="account-empty-state" class="flex flex-col gap-1 rounded-xl bg-surface-container-low/60 border border-dashed border-outline-variant px-3 pt-2.5 pb-1">
+                                    <p class="text-sm text-ink">You haven't added a payment method yet.</p>
+                                    <p id="account-empty-note" class="text-xs text-body">Saving now files this under a new Cash Wallet.</p>
+                                    <a href="{% url 'add_transaction' %}{% if request.GET.preview %}?preview=true{% endif %}" class="self-start inline-flex items-center gap-1 min-h-[44px] text-sm font-semibold text-deep-forest underline underline-offset-2 hover:text-ink">
+                                        Add a payment method
+                                        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+                                    </a>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -357,23 +380,23 @@
                     <div class="flex flex-col gap-2 pt-2 border-t border-outline-variant/40">
                         <div class="flex justify-between items-center px-0.5">
                             <div class="flex items-center gap-1.5 sm:gap-2">
-                                <h3 class="font-label-md text-xs font-extrabold text-deep-forest uppercase tracking-wider">
-                                    Line Items
+                                <h3 class="text-base font-semibold text-deep-forest">
+                                    Items
                                 </h3>
-                                <span id="badge-items-pill" class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-bold">3 items</span>
+                                <span id="badge-items-pill" class="px-2 py-0.5 rounded-full bg-surface-container-high text-body text-xs font-medium tabular-nums">0 items</span>
                             </div>
-                            <button type="button" id="btn-add-review-item" class="text-positive-deep font-label-md text-xs font-bold flex items-center gap-1 hover:bg-primary-pale/40 transition-colors px-2.5 py-1 rounded-lg border border-positive/30 active:scale-95 shadow-xs cursor-pointer">
-                                <span class="material-symbols-outlined text-[15px]">add</span>
-                                <span>Add Item</span>
+                            <button type="button" id="btn-add-review-item" class="min-h-[44px] text-deep-forest text-sm font-semibold flex items-center gap-1 hover:bg-primary-pale transition-colors px-3 rounded-xl bg-canvas-soft active:scale-95 cursor-pointer">
+                                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">add</span>
+                                <span>Add item</span>
                             </button>
                         </div>
 
                         <!-- Column Headers (Desktop/Tablet) -->
-                        <div class="hidden sm:flex items-center gap-2 px-2 font-label-sm text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">
+                        <div class="hidden sm:flex items-center gap-2 px-2 text-xs text-body font-medium" aria-hidden="true">
                             <span class="flex-1">Description</span>
                             <span class="w-14 text-center shrink-0">Qty</span>
                             <span class="w-24 text-right shrink-0">Price</span>
-                            <span class="w-8 shrink-0"></span>
+                            <span class="w-11 shrink-0"></span>
                         </div>
 
                         <!-- Items Container -->
@@ -383,62 +406,68 @@
                     </div>
 
                     <!-- Totals & Payment Summary -->
-                    <div class="flex flex-col gap-2 pt-2.5 border-t border-surface-variant/40">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-body-md text-body font-medium">Subtotal</span>
-                            <span id="label-review-subtotal" class="font-body-md text-deep-forest font-bold tabular-nums">₱0.00</span>
+                    <div class="flex flex-col gap-2 pt-2.5 border-t border-outline-variant/40">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-body">Subtotal</span>
+                            <span id="label-review-subtotal" class="text-ink font-semibold tabular-nums">₱0.00</span>
                         </div>
 
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-body-md text-body font-medium">Tax / VAT</span>
+                        <div class="flex justify-between items-center text-sm">
+                            <label for="input-review-tax" class="text-body">Tax / VAT</label>
                             <div class="flex items-center gap-1">
-                                <span class="text-xs text-body font-semibold">₱</span>
-                                <input type="number" step="0.01" min="0" id="input-review-tax" class="w-20 sm:w-24 text-right font-body-md text-xs sm:text-sm text-deep-forest font-semibold bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" />
+                                <span class="text-sm text-body" aria-hidden="true">₱</span>
+                                <input type="number" inputmode="decimal" step="0.01" min="0" id="input-review-tax" class="w-24 min-h-[44px] text-right text-sm text-ink font-medium bg-surface-container-low/50 border border-outline-variant rounded-lg px-2 py-1 focus:border-deep-forest outline-none tabular-nums" value="0.00" />
                             </div>
                         </div>
 
                         <!-- Grand Total Banner -->
-                        <div class="flex justify-between items-center bg-expense/5 p-2.5 sm:p-3.5 rounded-xl border border-expense/20">
-                            <span class="font-headline-md text-xs sm:text-sm font-bold text-deep-forest">Total Amount</span>
-                            <div class="flex items-center gap-1">
-                                <span class="text-sm sm:text-base text-expense font-bold">₱</span>
-                                <input type="number" step="0.01" min="0" id="input-review-total" class="w-24 sm:w-28 text-right font-headline-md text-sm sm:text-lg font-extrabold text-expense bg-surface-container-lowest border border-expense/40 rounded-lg px-2 sm:px-2.5 py-1 focus:border-expense outline-none tabular-nums shadow-xs" value="0.00" />
+                        <div class="flex flex-col gap-1 bg-negative/5 p-2.5 sm:p-3.5 rounded-xl border border-negative/20">
+                            <div class="flex justify-between items-center">
+                                <label for="input-review-total" class="text-sm font-semibold text-ink">Total amount</label>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-base text-negative-deep font-bold" aria-hidden="true">₱</span>
+                                    <input type="number" inputmode="decimal" step="0.01" min="0" id="input-review-total" aria-describedby="total-error" class="w-28 min-h-[44px] text-right text-lg font-bold text-negative-deep bg-surface-container-lowest border border-negative/40 rounded-lg px-2.5 py-1 focus:border-negative outline-none tabular-nums" value="0.00" />
+                                </div>
                             </div>
+                            <p id="total-error" class="empty:hidden text-xs font-medium text-negative-deep text-right"></p>
                         </div>
 
                         <!-- Cash & Change Disclosure -->
-                        <button type="button" id="btn-toggle-cash" class="self-start text-deep-forest hover:text-positive-deep font-label-sm text-xs font-bold flex items-center gap-1 hover:underline cursor-pointer">
-                            <span class="material-symbols-outlined text-[15px]" id="icon-toggle-cash">add</span>
+                        <button type="button" id="btn-toggle-cash" aria-expanded="false" aria-controls="section-cash-breakdown" class="self-start min-h-[44px] text-deep-forest hover:text-ink text-sm font-semibold flex items-center gap-1 hover:underline cursor-pointer">
+                            <span class="material-symbols-outlined text-[16px]" id="icon-toggle-cash" aria-hidden="true">add</span>
                             <span id="label-toggle-cash">Add cash payment details</span>
                         </button>
-                        <div id="section-cash-breakdown" class="hidden flex-col gap-2 pt-1 border-t border-dashed border-surface-variant/80">
-                            <div class="flex justify-between items-center font-body-sm text-xs text-body">
-                                <span class="font-medium text-deep-forest">Cash Tendered</span>
+                        <div id="section-cash-breakdown" class="hidden flex-col gap-2 pt-1 border-t border-dashed border-outline-variant">
+                            <div class="flex justify-between items-center text-sm text-body">
+                                <label for="input-cash-tendered" class="text-ink">Cash given</label>
                                 <div class="flex items-center gap-1">
-                                    <span class="text-xs text-body font-medium">₱</span>
-                                    <input type="number" step="0.01" min="0" id="input-cash-tendered" class="w-20 sm:w-24 text-right font-semibold text-xs text-deep-forest bg-surface-container-low/50 border border-outline-variant/70 rounded-lg px-2 py-1 focus:border-primary outline-none tabular-nums" value="0.00" placeholder="0.00" />
+                                    <span class="text-sm text-body" aria-hidden="true">₱</span>
+                                    <input type="number" inputmode="decimal" step="0.01" min="0" id="input-cash-tendered" class="w-24 min-h-[44px] text-right font-medium text-sm text-ink bg-surface-container-low/50 border border-outline-variant rounded-lg px-2 py-1 focus:border-deep-forest outline-none tabular-nums" value="0.00" placeholder="0.00" />
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center font-body-sm text-xs text-body">
-                                <span class="font-medium text-deep-forest">Change</span>
+                            <div class="flex justify-between items-center text-sm text-body">
+                                <label for="input-cash-change" class="text-ink">Change</label>
                                 <div class="flex items-center gap-1">
-                                    <span class="text-xs text-body font-medium">₱</span>
-                                    <input type="number" step="0.01" min="0" id="input-cash-change" class="w-20 sm:w-24 text-right font-bold text-xs text-positive-deep bg-primary-pale/30 border border-positive/30 rounded-lg px-2 py-1 focus:border-positive outline-none tabular-nums" value="0.00" placeholder="0.00" />
+                                    <span class="text-sm text-body" aria-hidden="true">₱</span>
+                                    <input type="number" inputmode="decimal" step="0.01" min="0" id="input-cash-change" class="w-24 min-h-[44px] text-right font-medium text-sm text-ink bg-surface-container-low/50 border border-outline-variant rounded-lg px-2 py-1 focus:border-deep-forest outline-none tabular-nums" value="0.00" placeholder="0.00" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- ACTION BUTTONS BAR (Sticky at bottom on mobile) -->
-                    <div class="sticky bottom-0 z-20 bg-surface-container-lowest/95 backdrop-blur-md -mx-3.5 -mb-3.5 sm:mx-0 sm:mb-0 p-3 sm:p-0 sm:bg-transparent sm:backdrop-blur-none border-t border-outline-variant/40 sm:border-t-0 flex items-center gap-2.5 sm:gap-3 sm:pt-2.5">
-                        <button type="button" id="btn-cancel-ocr" class="h-11 sm:h-12 px-4 rounded-xl border border-outline-variant/60 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-label-md text-xs sm:text-sm font-bold transition-all cursor-pointer text-center active:scale-[0.98] shrink-0 sm:flex-1">
-                            Cancel
-                        </button>
-                        <button type="button" id="btn-save-ocr-expense" class="h-11 sm:h-12 flex-1 py-2.5 sm:py-3 px-4 rounded-xl bg-primary text-on-primary font-label-md text-xs sm:text-sm font-bold hover:bg-primary-hover shadow-xs active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                            <span class="material-symbols-outlined text-[18px]">check</span>
-                            <span>Save Expense</span>
-                        </button>
+                    <div class="sticky bottom-0 z-20 bg-surface-container-lowest/95 backdrop-blur-md -mx-3.5 -mb-3.5 sm:mx-0 sm:mb-0 px-3 pt-3 pb-safe sm:p-0 sm:bg-transparent sm:backdrop-blur-none border-t border-outline-variant/40 sm:border-t-0 flex flex-col gap-2 sm:pt-2.5">
+                        <p id="save-inline-error" role="alert" class="empty:hidden text-sm font-medium text-negative-deep"></p>
+                        <div class="flex items-center gap-2.5 sm:gap-3">
+                            <button type="button" id="btn-cancel-ocr" class="min-h-[48px] px-4 rounded-xl bg-canvas-soft text-ink hover:bg-surface-container-high text-base font-semibold transition-all cursor-pointer text-center active:scale-[0.98] shrink-0 sm:flex-1">
+                                Cancel
+                            </button>
+                            <button type="button" id="btn-save-ocr-expense" class="min-h-[48px] flex-1 px-4 rounded-xl bg-primary text-on-primary text-base font-semibold hover:bg-primary-hover active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-70 disabled:cursor-wait">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">check</span>
+                                <span>Save expense</span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -450,35 +479,35 @@
 </div>
 
 <!-- Full Image Zoom Lightbox Modal (matches receipt detail page's image viewer) -->
-<div id="modal-image-zoom" role="dialog" aria-modal="true" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <button type="button" id="btn-close-zoom" aria-label="Close image modal" class="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-expense/20 hover:text-expense transition-all z-10 shadow-md active:scale-95 cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+<div id="modal-image-zoom" role="dialog" aria-modal="true" aria-label="Receipt photo" class="fixed inset-0 z-[100] bg-deep-forest/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <button type="button" id="btn-close-zoom" aria-label="Close receipt photo" class="absolute top-3 right-3 sm:top-4 sm:right-4 w-11 h-11 rounded-xl bg-surface-container-lowest text-deep-forest flex items-center justify-center hover:bg-surface-container-low transition-all z-10 shadow-elevated active:scale-95 cursor-pointer tap">
+        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
     </button>
-    <img id="img-full-zoom" alt="Full Receipt Image" class="max-w-[95vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl scale-95 transition-transform duration-200" src="" />
+    <img id="img-full-zoom" alt="Receipt photo, enlarged" class="max-w-[95vw] max-h-[85vh] object-contain rounded-2xl shadow-elevated scale-95 transition-transform duration-200" />
 </div>
 
-<!-- Leave / Discard Confirmation Modal -->
-<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[110] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-confirm-content" class="w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-3.5 sm:gap-4 relative z-[115]">
-        
+<!-- Leave / Discard Confirmation Modal (copy is set per step in JS: scanning vs reviewing) -->
+<div id="modal-confirm-discard" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-discard-body" class="fixed inset-0 z-[110] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-confirm-content" class="w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-elevated transform scale-95 transition-all duration-200 flex flex-col gap-3.5 sm:gap-4 relative z-[115]">
+
         <!-- Header -->
         <div class="flex items-start gap-3">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">drafts</span>
+            <div class="w-10 h-10 rounded-xl bg-negative/10 text-negative-deep flex items-center justify-center shrink-0 mt-0.5" aria-hidden="true">
+                <span class="material-symbols-outlined text-[22px]">drafts</span>
             </div>
             <div class="flex flex-col gap-1">
-                <h3 id="modal-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Discard receipt scan?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">Extracted line items and receipt details will not be saved.</p>
+                <h2 id="modal-title" class="text-base font-bold text-deep-forest">Discard this receipt?</h2>
+                <p id="modal-discard-body" class="text-sm text-body leading-normal">Your edits and the items we found won't be saved.</p>
             </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
-            <button type="button" id="btn-confirm-discard" class="px-3.5 py-2 rounded-xl text-expense hover:bg-expense/10 font-label-md text-xs font-bold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer">
-                Discard Scan
+            <button type="button" id="btn-confirm-discard" class="min-h-[44px] px-3.5 rounded-xl text-negative-deep hover:bg-negative/10 text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer">
+                Discard
             </button>
-            <button type="button" id="btn-keep-editing" class="px-4 py-2 rounded-xl bg-primary text-on-primary hover:bg-primary-hover font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
-                Keep Scanning
+            <button type="button" id="btn-keep-editing" class="min-h-[44px] px-4 rounded-xl bg-primary text-on-primary hover:bg-primary-hover text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer">
+                Keep editing
             </button>
         </div>
 
@@ -486,30 +515,30 @@
 </div>
 
 <!-- Delete Single Line Item Confirmation Modal -->
-<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" class="fixed inset-0 z-[115] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
-    <div id="modal-delete-item-content" class="w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-2xl transform scale-95 transition-all duration-200 flex flex-col gap-3.5 sm:gap-4 relative z-[120]">
-        
+<div id="modal-confirm-delete-item" role="dialog" aria-modal="true" aria-labelledby="modal-delete-item-title" aria-describedby="modal-delete-item-body" class="fixed inset-0 z-[115] bg-deep-forest/40 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4 hidden opacity-0 transition-opacity duration-200 pointer-events-auto">
+    <div id="modal-delete-item-content" class="w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-4 sm:p-6 shadow-elevated transform scale-95 transition-all duration-200 flex flex-col gap-3.5 sm:gap-4 relative z-[120]">
+
         <!-- Header -->
         <div class="flex items-start gap-3">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-expense/15 text-expense flex items-center justify-center shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">delete</span>
+            <div class="w-10 h-10 rounded-xl bg-negative/10 text-negative-deep flex items-center justify-center shrink-0 mt-0.5" aria-hidden="true">
+                <span class="material-symbols-outlined text-[22px]">delete</span>
             </div>
             <div class="flex flex-col gap-1 min-w-0">
-                <h3 id="modal-delete-item-title" class="font-headline-md text-sm sm:text-base font-bold text-deep-forest tracking-tight">Remove line item?</h3>
-                <p class="font-body-sm text-xs text-on-surface-variant leading-normal">
-                    Are you sure you want to remove <span id="label-delete-item-name" class="font-bold text-deep-forest">this item</span> from the scanned list?
+                <h2 id="modal-delete-item-title" class="text-base font-bold text-deep-forest">Remove item?</h2>
+                <p id="modal-delete-item-body" class="text-sm text-body leading-normal break-words">
+                    Remove <span id="label-delete-item-name" class="font-semibold text-ink">this item</span> from this receipt?
                 </p>
             </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
-            <button type="button" id="btn-cancel-delete-item" class="px-3.5 sm:px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer">
-                Keep Item
+            <button type="button" id="btn-cancel-delete-item" class="min-h-[44px] px-4 rounded-xl bg-canvas-soft hover:bg-surface-container-high text-ink text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer">
+                Keep item
             </button>
-            <button type="button" id="btn-confirm-delete-item" class="px-3.5 sm:px-4 py-2 rounded-xl bg-expense text-white hover:bg-expense/90 font-label-md text-xs font-bold transition-all shadow-xs active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-expense cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined text-[16px]" id="btn-confirm-delete-item-icon">delete</span>
-                <span id="btn-confirm-delete-item-text">Remove Item</span>
+            <button type="button" id="btn-confirm-delete-item" class="min-h-[44px] px-4 rounded-xl bg-negative text-on-error hover:bg-negative-deep text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
+                <span>Remove item</span>
             </button>
         </div>
 
@@ -520,6 +549,11 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const PREVIEW_PARAM = window.location.search.includes('preview=true') ? '?preview=true' : '';
+        const TRANSACTIONS_URL = "{% url 'transactions' %}";
+        const SCAN_URL = "{% url 'api_scan_receipt' %}";
+        const OFFLINE_SAVE_MESSAGE = "You're offline. Your receipt is still here — save again when you're back online.";
+
         const uploadZone = document.getElementById('section-upload-trigger');
         const processingCanvas = document.getElementById('section-processing-canvas');
         const ocrReviewScreen = document.getElementById('section-ocr-review');
@@ -532,6 +566,7 @@
         const errorBanner = document.getElementById('ocr-error-banner');
         const errorTitle = document.getElementById('ocr-error-title');
         const errorMessage = document.getElementById('ocr-error-message');
+        const errorActions = document.getElementById('ocr-error-actions');
         const dismissErrorBtn = document.getElementById('btn-dismiss-error');
         const errorFillManualBtn = document.getElementById('btn-error-fill-manual');
         const errorRetryBtn = document.getElementById('btn-error-retry');
@@ -548,8 +583,11 @@
         const imgReviewPreviewMobile = document.getElementById('img-review-preview-mobile');
         const imgFullZoom = document.getElementById('img-full-zoom');
         const skeletonDoc = document.getElementById('skeleton-doc');
-        
-        const progressEl = document.getElementById('scanning-progress');
+        const sourceBadges = document.querySelectorAll('.js-source-badge');
+        const zoomHints = document.querySelectorAll('.js-zoom-hint');
+        const zoomPlaceholders = document.querySelectorAll('.js-zoom-placeholder');
+        const zoomCaptions = document.querySelectorAll('.js-zoom-caption');
+
         const statusElement = document.getElementById('status-text');
         const stepCountText = document.getElementById('step-count-text');
 
@@ -560,13 +598,16 @@
         const timeSourceLabel = document.getElementById('label-time-source');
         const categorySelect = document.getElementById('select-review-category');
         const accountSelect = document.getElementById('select-review-account');
+        const accountEmptyNote = document.getElementById('account-empty-note');
         const paymentSourceLabel = document.getElementById('label-payment-source');
         const subtotalLabel = document.getElementById('label-review-subtotal');
         const taxInput = document.getElementById('input-review-tax');
         const totalInput = document.getElementById('input-review-total');
+        const totalError = document.getElementById('total-error');
         const cashInput = document.getElementById('input-cash-tendered');
         const changeInput = document.getElementById('input-cash-change');
-        
+        const saveInlineError = document.getElementById('save-inline-error');
+
         const badgeItemsPill = document.getElementById('badge-items-pill');
 
         const cashToggleBtn = document.getElementById('btn-toggle-cash');
@@ -583,8 +624,39 @@
         const zoomModal = document.getElementById('modal-image-zoom');
         const closeZoomBtn = document.getElementById('btn-close-zoom');
 
+        const backHeaderBtn = document.getElementById('btn-back-header');
+        const discardModal = document.getElementById('modal-confirm-discard');
+        const discardTitle = document.getElementById('modal-title');
+        const discardBody = document.getElementById('modal-discard-body');
+        const keepEditingBtn = document.getElementById('btn-keep-editing');
+        const confirmDiscardBtn = document.getElementById('btn-confirm-discard');
+
         let lastUploadedFile = null;
         let currentReceiptImageBase64 = '';
+        let hasPreviewImage = false;
+        let detectedPaymentMethod = '';
+        let currentView = 'upload'; // 'upload' | 'processing' | 'review'
+        let activeScanXhr = null;
+        let isSaving = false;
+
+        function toast(message, options) {
+            if (typeof window.antToast === 'function') window.antToast(message, options);
+        }
+
+        function trapFocus(container, initial) {
+            return typeof window.antFocusTrap === 'function' ? window.antFocusTrap(container, initial) : null;
+        }
+
+        function num(value) {
+            const n = parseFloat(value);
+            return Number.isFinite(n) ? n : 0;
+        }
+
+        function formatPeso(value) {
+            const n = num(value);
+            const abs = Math.abs(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return (n < 0 ? '-₱' : '₱') + abs;
+        }
 
         // Client-side image compression using Canvas (shrinks 5MB-15MB phone photos to ~80KB)
         function compressImageToDataUrl(file, maxDimension = 1200, quality = 0.70) {
@@ -638,62 +710,80 @@
         }
 
         let reviewData = {
-            merchant: '',
-            date: getNowIsoDate(),
-            time: getNowIsoTime(),
-            category: '',
-            payment_method: 'Cash',
-            tax: 0.00,
-            total: 0.00,
-            cash_tendered: 0.00,
-            change: 0.00,
             items: []
         };
 
-        const backHeaderBtn = document.getElementById('btn-back-header');
-        const discardModal = document.getElementById('modal-confirm-discard');
-        const keepEditingBtn = document.getElementById('btn-keep-editing');
-        const confirmDiscardBtn = document.getElementById('btn-confirm-discard');
-
-        const scanSteps = [
-            { text: "Reading receipt...", stepText: "Step 1 of 4 • Analyzing text", percent: 25 },
-            { text: "Extracting details...", stepText: "Step 2 of 4 • Detecting store & date", percent: 50 },
-            { text: "Itemizing receipt...", stepText: "Step 3 of 4 • Parsing line items", percent: 75 },
-            { text: "Computing totals...", stepText: "Step 4 of 4 • Calculating totals", percent: 95 }
-        ];
-
-        // Transition views cleanly
-        function switchToReviewView() {
-            uploadZone.classList.add('hidden');
-            processingCanvas.classList.add('hidden');
-            ocrReviewScreen.classList.remove('hidden');
-            ocrReviewScreen.classList.add('flex');
-
-            if (headerPageTitle) headerPageTitle.textContent = "Review Receipt";
-            if (headerPageDesc) headerPageDesc.textContent = "Verify and edit extracted fields before saving";
+        // ─── Receipt photo previews (no empty src until a photo exists) ───
+        function setPreviewImage(dataUrl) {
+            hasPreviewImage = !!dataUrl;
+            [imgThumb, imgReviewPreview, imgReviewPreviewMobile, imgFullZoom].forEach(img => {
+                if (!img) return;
+                if (hasPreviewImage) {
+                    img.src = dataUrl;
+                } else {
+                    img.removeAttribute('src');
+                }
+            });
+            [imgThumb, imgReviewPreview, imgReviewPreviewMobile].forEach(img => {
+                if (img) img.classList.toggle('hidden', !hasPreviewImage);
+            });
+            if (skeletonDoc) skeletonDoc.classList.toggle('hidden', hasPreviewImage);
+            zoomHints.forEach(el => {
+                el.classList.toggle('hidden', !hasPreviewImage);
+                if (el.hasAttribute('data-flex')) el.classList.toggle('flex', hasPreviewImage);
+            });
+            zoomPlaceholders.forEach(el => {
+                el.classList.toggle('hidden', hasPreviewImage);
+                el.classList.toggle('flex', !hasPreviewImage);
+            });
+            zoomCaptions.forEach(el => {
+                el.textContent = hasPreviewImage ? 'Tap to see the full photo' : 'No photo attached';
+            });
+            [zoomBtn, zoomBtnMobile].forEach(btn => {
+                if (btn) btn.disabled = !hasPreviewImage;
+            });
         }
 
-        function switchToUploadView() {
-            uploadZone.classList.remove('hidden');
-            processingCanvas.classList.add('hidden');
-            ocrReviewScreen.classList.add('hidden');
-            ocrReviewScreen.classList.remove('flex');
-
-            if (headerPageTitle) headerPageTitle.textContent = "Scan Receipt";
-            if (headerPageDesc) headerPageDesc.textContent = "Extract merchant, line items, and totals with AI";
+        function setSourceBadges(source) {
+            sourceBadges.forEach(badge => {
+                badge.classList.toggle('hidden', source === 'manual');
+                badge.textContent = source === 'sample' ? 'Sample' : 'AI scanned';
+            });
         }
 
-        // Error Banner Functions
-        function showErrorBanner(title, message, isQuota = false) {
+        // ─── View switching ───
+        function showView(view) {
+            currentView = view;
+            uploadZone.classList.toggle('hidden', view !== 'upload');
+            processingCanvas.classList.toggle('hidden', view !== 'processing');
+            ocrReviewScreen.classList.toggle('hidden', view !== 'review');
+            ocrReviewScreen.classList.toggle('flex', view === 'review');
+
+            const headers = {
+                upload: ['Scan Receipt', 'Pull the store, items, and totals from a photo'],
+                processing: ['Scanning Receipt', 'Keep this page open while we read your photo'],
+                review: ['Review Receipt', 'Check the details, then save']
+            };
+            if (headerPageTitle) headerPageTitle.textContent = headers[view][0];
+            if (headerPageDesc) headerPageDesc.textContent = headers[view][1];
+        }
+
+        function switchToReviewView() { showView('review'); }
+        function switchToUploadView() { showView('upload'); }
+        function switchToProcessingView() { showView('processing'); }
+
+        // ─── Error banner ───
+        function showErrorBanner(title, message, opts = {}) {
             if (!errorBanner) return;
+            const showRetry = !!opts.retry;
+            const showManual = !!opts.manual;
             if (errorTitle) errorTitle.textContent = title;
             if (errorMessage) errorMessage.textContent = message;
-            if (errorRetryBtn) {
-                if (isQuota) {
-                    errorRetryBtn.classList.add('hidden');
-                } else {
-                    errorRetryBtn.classList.remove('hidden');
-                }
+            if (errorRetryBtn) errorRetryBtn.classList.toggle('hidden', !showRetry);
+            if (errorFillManualBtn) errorFillManualBtn.classList.toggle('hidden', !showManual);
+            if (errorActions) {
+                errorActions.classList.toggle('hidden', !(showRetry || showManual));
+                errorActions.classList.toggle('flex', showRetry || showManual);
             }
             errorBanner.classList.remove('hidden');
             errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -704,28 +794,63 @@
             errorBanner.classList.add('hidden');
         }
 
+        function showSaveInlineError(message) {
+            if (saveInlineError) saveInlineError.textContent = message;
+        }
+
+        function clearSaveInlineError() {
+            if (saveInlineError) saveInlineError.textContent = '';
+        }
+
+        function showTotalError(message) {
+            if (totalError) totalError.textContent = message;
+            if (totalInput) {
+                totalInput.setAttribute('aria-invalid', 'true');
+                totalInput.classList.add('ring-2', 'ring-negative/30');
+            }
+        }
+
+        function clearTotalError() {
+            if (totalError) totalError.textContent = '';
+            if (totalInput) {
+                totalInput.removeAttribute('aria-invalid');
+                totalInput.classList.remove('ring-2', 'ring-negative/30');
+            }
+        }
+
         if (dismissErrorBtn) dismissErrorBtn.addEventListener('click', hideErrorBanner);
         if (errorRetryBtn) {
             errorRetryBtn.addEventListener('click', () => {
                 hideErrorBanner();
                 if (lastUploadedFile) {
-                    startScanningProcess(lastUploadedFile);
-                } else if (fileInput) {
-                    fileInput.click();
+                    processSelectedFile(lastUploadedFile);
+                } else if (fileInputFile) {
+                    fileInputFile.click();
                 }
             });
         }
         if (errorFillManualBtn) {
             errorFillManualBtn.addEventListener('click', () => {
                 hideErrorBanner();
+                populateReviewData({}, 'manual');
                 switchToReviewView();
-                populateReviewData({});
+                if (merchantInput) merchantInput.focus();
             });
         }
 
-        // Discard Modal
+        // ─── Discard dialog (copy depends on the step) ───
+        let releaseDiscardTrap = null;
+
         function showDiscardModal() {
             if (!discardModal) return;
+            const reviewing = currentView === 'review';
+            if (discardTitle) discardTitle.textContent = reviewing ? 'Discard this receipt?' : 'Stop scanning?';
+            if (discardBody) discardBody.textContent = reviewing
+                ? "Your edits and the items we found won't be saved."
+                : "Your photo won't be scanned or saved.";
+            if (keepEditingBtn) keepEditingBtn.textContent = reviewing ? 'Keep editing' : 'Keep scanning';
+            if (confirmDiscardBtn) confirmDiscardBtn.textContent = reviewing ? 'Discard receipt' : 'Stop scanning';
+
             discardModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 discardModal.classList.remove('opacity-0');
@@ -736,6 +861,7 @@
                     modalCard.classList.add('scale-100');
                 }
             });
+            releaseDiscardTrap = trapFocus(discardModal, keepEditingBtn);
         }
 
         function hideDiscardModal() {
@@ -750,6 +876,10 @@
             setTimeout(() => {
                 discardModal.classList.add('hidden');
             }, 200);
+            if (releaseDiscardTrap) {
+                releaseDiscardTrap();
+                releaseDiscardTrap = null;
+            }
         }
 
         // Cash payment details disclosure
@@ -757,6 +887,7 @@
             if (!cashSection) return;
             cashSection.classList.toggle('hidden', !isOpen);
             cashSection.classList.toggle('flex', isOpen);
+            if (cashToggleBtn) cashToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             if (cashToggleIcon) cashToggleIcon.textContent = isOpen ? 'remove' : 'add';
             if (cashToggleLabel) cashToggleLabel.textContent = isOpen ? 'Hide cash payment details' : 'Add cash payment details';
         }
@@ -777,12 +908,16 @@
 
         if (confirmDiscardBtn) {
             confirmDiscardBtn.addEventListener('click', () => {
-                sessionStorage.removeItem('active_ocr_review_data');
-                const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
+                if (activeScanXhr) {
+                    const xhr = activeScanXhr;
+                    activeScanXhr = null;
+                    xhr.abort();
+                }
+                try { sessionStorage.removeItem('active_ocr_review_data'); } catch (e) { /* storage blocked */ }
                 if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
                     window.history.back();
                 } else {
-                    window.location.href = "{% url 'transactions' %}" + previewParam;
+                    window.location.href = TRANSACTIONS_URL + PREVIEW_PARAM;
                 }
             });
         }
@@ -802,9 +937,7 @@
 
         if (backHeaderBtn) {
             backHeaderBtn.addEventListener('click', (e) => {
-                const isProcessing = processingCanvas && !processingCanvas.classList.contains('hidden');
-                const isReviewing = ocrReviewScreen && !ocrReviewScreen.classList.contains('hidden');
-                if (isProcessing || isReviewing) {
+                if (currentView === 'processing' || currentView === 'review') {
                     e.preventDefault();
                     showDiscardModal();
                 } else if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host) && document.referrer !== window.location.href) {
@@ -850,65 +983,31 @@
             });
         }
 
-        function runScanningAnimation(onComplete) {
-            let currentIndex = 0;
-            if (statusElement) statusElement.textContent = scanSteps[0].text;
-            if (stepCountText) stepCountText.textContent = scanSteps[0].stepText;
-            if (progressEl) progressEl.style.width = `${scanSteps[0].percent}%`;
-
-            const interval = setInterval(() => {
-                currentIndex = (currentIndex + 1) % scanSteps.length;
-                const nextStep = scanSteps[currentIndex];
-                setTimeout(() => {
-                    if (statusElement) statusElement.textContent = nextStep.text;
-                    if (stepCountText) stepCountText.textContent = nextStep.stepText;
-                    if (progressEl) progressEl.style.width = `${nextStep.percent}%`;
-                }, 200);
-            }, 2400);
-
-            return {
-                finish: () => {
-                    clearInterval(interval);
-                    if (statusElement) statusElement.textContent = "Scan complete!";
-                    if (stepCountText) stepCountText.textContent = "Step 4 of 4 • Complete";
-                    if (progressEl) progressEl.style.width = '100%';
-                    if (onComplete) setTimeout(onComplete, 250);
-                },
-                cancel: () => {
-                    clearInterval(interval);
-                }
-            };
-        }
-
+        // ─── Sample receipt (no fake scanning progress) ───
         if (tryDemoBtn) {
             tryDemoBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 hideErrorBanner();
-                uploadZone.classList.add('hidden');
-                processingCanvas.classList.remove('hidden');
-                ocrReviewScreen.classList.add('hidden');
-                ocrReviewScreen.classList.remove('flex');
-
-                const anim = runScanningAnimation(() => {
-                    switchToReviewView();
-                    populateReviewData({
-                        merchant: 'SM Supermarket Manila',
-                        date: '2026-08-23',
-                        time: '14:28',
-                        category: 'Groceries',
-                        tax: 48.50,
-                        total: 452.50,
-                        cash_tendered: 500.00,
-                        change: 47.50,
-                        items: [
-                            { description: 'Magnolia Milk 1L', quantity: 2, price: 95.00 },
-                            { description: 'Gardenia Wheat Bread', quantity: 1, price: 78.00 },
-                            { description: 'San Miguel Coffee Mix x10', quantity: 1, price: 136.00 }
-                        ]
-                    });
-                });
-
-                setTimeout(() => anim.finish(), 3000);
+                lastUploadedFile = null;
+                currentReceiptImageBase64 = '';
+                setPreviewImage('');
+                populateReviewData({
+                    merchant: 'SM Supermarket Manila',
+                    date: '2026-08-23',
+                    time: '14:28',
+                    category: 'Groceries',
+                    tax: 48.50,
+                    total: 452.50,
+                    cash_tendered: 500.00,
+                    change: 47.50,
+                    items: [
+                        { description: 'Magnolia Milk 1L', quantity: 2, price: 95.00 },
+                        { description: 'Gardenia Wheat Bread', quantity: 1, price: 78.00 },
+                        { description: 'San Miguel Coffee Mix x10', quantity: 1, price: 136.00 }
+                    ]
+                }, 'sample');
+                switchToReviewView();
+                toast('This is a sample receipt. Edit anything, or tap Rescan to use your own photo.', { type: 'info' });
             });
         }
 
@@ -916,116 +1015,168 @@
             if (!file) return;
             lastUploadedFile = file;
             hideErrorBanner();
+            let uploadBlob = file;
             try {
                 // Compress image using HTML5 Canvas before uploading (shrinks ~10MB photo to ~80KB)
                 const compressed = await compressImageToDataUrl(file, 1200, 0.70);
                 currentReceiptImageBase64 = compressed.dataUrl;
-
-                if (imgThumb) {
-                    imgThumb.src = compressed.dataUrl;
-                    imgThumb.classList.remove('hidden');
-                }
-                if (imgReviewPreview) imgReviewPreview.src = compressed.dataUrl;
-                if (imgReviewPreviewMobile) imgReviewPreviewMobile.src = compressed.dataUrl;
-                if (imgFullZoom) imgFullZoom.src = compressed.dataUrl;
-                if (skeletonDoc) skeletonDoc.classList.add('hidden');
-
-                uploadZone.classList.add('hidden');
-                processingCanvas.classList.remove('hidden');
-                ocrReviewScreen.classList.add('hidden');
-                ocrReviewScreen.classList.remove('flex');
-
-                startScanningProcess(compressed.blob);
+                setPreviewImage(compressed.dataUrl);
+                uploadBlob = compressed.blob;
             } catch (err) {
                 console.error("Image processing error, falling back:", err);
-                startScanningProcess(file);
+                currentReceiptImageBase64 = '';
+                setPreviewImage('');
             }
+            startScanningProcess(uploadBlob);
         }
 
         [fileInputFile, fileInputCamera].forEach(input => {
             if (input) {
                 input.addEventListener('change', (e) => {
                     const file = e.target.files[0];
+                    // Reset so picking the same photo again still fires "change"
+                    e.target.value = '';
                     if (file) processSelectedFile(file);
                 });
             }
         });
 
+        // ─── Scanning: honest, indeterminate status driven by the real request ───
+        function setScanStatus(text, detail) {
+            if (statusElement) statusElement.textContent = text;
+            if (stepCountText) stepCountText.textContent = detail;
+        }
+
         function startScanningProcess(file) {
-            const anim = runScanningAnimation();
+            hideErrorBanner();
+
+            if (navigator.onLine === false) {
+                switchToUploadView();
+                showErrorBanner("You're offline", "Scanning needs an internet connection. Fill in the receipt yourself, or try again when you're back online.", { retry: true, manual: true });
+                return;
+            }
+
+            switchToProcessingView();
+            setScanStatus('Uploading…', 'Sending your photo.');
 
             const formData = new FormData();
             formData.append('receipt_image', file);
 
-            fetch("{% url 'api_scan_receipt' %}", {
-                method: 'POST',
-                body: formData
-            })
-            .then(async res => {
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) {
-                    throw { status: res.status, data: data };
-                }
-                return data;
-            })
-            .then(data => {
-                anim.finish();
-                setTimeout(() => {
-                    hideErrorBanner();
-                    switchToReviewView();
-                    populateReviewData(data);
-                }, 400);
-            })
-            .catch(err => {
-                console.error("OCR scanning error:", err);
-                anim.cancel();
-                switchToUploadView();
+            const xhr = new XMLHttpRequest();
+            activeScanXhr = xhr;
+            xhr.open('POST', SCAN_URL);
 
-                let title = "AI Scan Unavailable";
-                let message = "Unable to process receipt image automatically. Please enter details manually below or try scanning again.";
-                let isQuota = false;
-
-                if (err && err.data) {
-                    if (err.data.error_type === 'quota_exceeded' || err.status === 429) {
-                        title = "AI Quota Limit Reached";
-                        message = err.data.error || "The daily AI receipt scanning quota has been reached. Please enter details manually below.";
-                        isQuota = true;
-                    } else if (err.data.error_type === 'missing_api_key' || err.data.error_type === 'auth_error' || err.status === 401) {
-                        title = "API Configuration Required";
-                        message = err.data.error || "Gemini API key is not configured or authorized. You can enter details manually below.";
-                    } else if (err.data.error) {
-                        message = err.data.error;
-                    }
-                } else if (err && err.message) {
-                    message = err.message;
-                }
-
-                showErrorBanner(title, message, isQuota);
+            // Upload finished: the server is now reading the receipt
+            xhr.upload.addEventListener('load', () => {
+                if (activeScanXhr === xhr) setScanStatus('Reading your receipt…', 'Finding the store, items, and totals.');
             });
+
+            xhr.addEventListener('load', () => {
+                if (activeScanXhr !== xhr) return;
+                activeScanXhr = null;
+                let data = {};
+                try {
+                    data = JSON.parse(xhr.responseText || '{}') || {};
+                } catch (e) {
+                    data = {};
+                }
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    hideErrorBanner();
+                    populateReviewData(data, 'ai');
+                    switchToReviewView();
+                    toast('Receipt read. Check the details, then save.', { type: 'info' });
+                } else {
+                    handleScanError({ status: xhr.status, data: data });
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                if (activeScanXhr !== xhr) return;
+                activeScanXhr = null;
+                handleScanError({ network: true });
+            });
+
+            xhr.send(formData);
         }
 
-        function populateReviewData(data) {
-            // Merchant
-            if (data.merchant) merchantInput.value = data.merchant;
+        function handleScanError(err) {
+            console.error("OCR scanning error:", err);
+            switchToUploadView();
 
-            // Date: detect from receipt or fallback to current date (editable)
-            if (data.date && data.date.trim()) {
-                dateInput.value = data.date.trim();
-                if (dateSourceLabel) {
-                    dateSourceLabel.textContent = "From Receipt";
-                    dateSourceLabel.className = "text-[9px] sm:text-[10px] font-bold text-positive-deep";
-                }
-            } else {
-                dateInput.value = getNowIsoDate();
-                if (dateSourceLabel) {
-                    dateSourceLabel.textContent = "Auto-filled";
-                    dateSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-on-surface-variant";
+            let title = "Couldn't scan this receipt";
+            let message = "We couldn't read this photo. Fill in the details yourself, or try again with a clearer photo.";
+            let retry = true;
+
+            if (err && err.network) {
+                message = "We couldn't reach the scanner. Check your connection and try again, or fill in the details yourself.";
+            } else if (err && err.data) {
+                if (err.data.error_type === 'quota_exceeded' || err.status === 429) {
+                    title = "Daily scan limit reached";
+                    message = err.data.error || "You've used today's receipt scans. Fill in this one yourself.";
+                    retry = false;
+                } else if (err.data.error_type === 'missing_api_key' || err.data.error_type === 'auth_error' || err.status === 401) {
+                    title = "Scanning isn't available";
+                    message = err.data.error || "Receipt scanning isn't set up right now. Fill in this one yourself.";
+                    retry = false;
+                } else if (err.data.error) {
+                    message = err.data.error;
                 }
             }
 
-            // Time: detect from receipt or fallback to current time (editable)
-            if (data.time && data.time.trim()) {
-                let t = data.time.trim();
+            showErrorBanner(title, message, { retry: retry, manual: true });
+        }
+
+        // ─── Review form ───
+        const SOURCE_TAG_CLASSES = {
+            receipt: 'text-xs font-semibold text-positive-deep',
+            auto: 'text-xs font-medium text-body',
+            edited: 'text-xs font-medium text-deep-forest'
+        };
+        const SOURCE_TAG_TEXT = { receipt: 'From receipt', auto: 'Auto-filled', edited: 'Edited' };
+
+        function setSourceTag(el, kind) {
+            if (!el) return;
+            el.textContent = SOURCE_TAG_TEXT[kind];
+            el.className = SOURCE_TAG_CLASSES[kind];
+        }
+
+        function normalizeItems(items) {
+            if (!Array.isArray(items)) return [];
+            return items.map(item => ({
+                description: item && item.description != null ? String(item.description) : '',
+                quantity: Math.max(1, parseInt(item && item.quantity, 10) || 1),
+                price: num(item && item.price)
+            }));
+        }
+
+        function isUsablePaymentMethod(value) {
+            const pm = String(value || '').trim();
+            return pm !== '' && !['OTHER', 'UNKNOWN'].includes(pm.toUpperCase());
+        }
+
+        function populateReviewData(data, source) {
+            data = data || {};
+            setSourceBadges(source);
+            clearTotalError();
+            clearSaveInlineError();
+
+            // Merchant
+            if (merchantInput) merchantInput.value = data.merchant ? String(data.merchant) : '';
+
+            // Date: detect from receipt or fall back to today (editable)
+            const rawDate = data.date ? String(data.date).trim() : '';
+            if (rawDate) {
+                dateInput.value = rawDate;
+                setSourceTag(dateSourceLabel, 'receipt');
+            } else {
+                dateInput.value = getNowIsoDate();
+                setSourceTag(dateSourceLabel, 'auto');
+            }
+
+            // Time: detect from receipt or fall back to now (editable)
+            const rawTime = data.time ? String(data.time).trim() : '';
+            if (rawTime) {
+                let t = rawTime;
                 if (/am|pm/i.test(t)) {
                     const parts = t.match(/(\d+):(\d+)\s*(am|pm)/i);
                     if (parts) {
@@ -1038,22 +1189,17 @@
                     }
                 }
                 timeInput.value = t.slice(0, 5);
-                if (timeSourceLabel) {
-                    timeSourceLabel.textContent = "From Receipt";
-                    timeSourceLabel.className = "text-[9px] sm:text-[10px] font-bold text-positive-deep";
-                }
+                setSourceTag(timeSourceLabel, 'receipt');
             } else {
                 timeInput.value = getNowIsoTime();
-                if (timeSourceLabel) {
-                    timeSourceLabel.textContent = "Auto-filled";
-                    timeSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-on-surface-variant";
-                }
+                setSourceTag(timeSourceLabel, 'auto');
             }
 
-            if (data.category) {
+            if (data.category && categorySelect) {
+                const cat = String(data.category);
                 let matched = false;
                 for (let opt of categorySelect.options) {
-                    if (opt.value.toLowerCase() === data.category.toLowerCase()) {
+                    if (opt.value.toLowerCase() === cat.toLowerCase()) {
                         categorySelect.value = opt.value;
                         matched = true;
                         break;
@@ -1061,84 +1207,74 @@
                 }
                 if (!matched) {
                     const newOpt = document.createElement('option');
-                    newOpt.value = data.category;
-                    newOpt.textContent = `✨ ${data.category} (New)`;
+                    newOpt.value = cat;
+                    newOpt.textContent = `${cat} (new)`;
                     categorySelect.appendChild(newOpt);
-                    categorySelect.value = data.category;
+                    categorySelect.value = cat;
                 }
             }
 
             // Payment Method matching & detection
-            if (data.payment_method && accountSelect) {
-                const pm = data.payment_method.trim().toLowerCase();
-                let matched = false;
-                for (let opt of accountSelect.options) {
-                    const optVal = opt.value.toLowerCase();
-                    const optType = (opt.dataset.type || '').toLowerCase();
-                    if (optVal.includes(pm) || pm.includes(optVal) || (optType && pm.includes(optType))) {
-                        accountSelect.value = opt.value;
-                        matched = true;
-                        break;
+            const pmRaw = isUsablePaymentMethod(data.payment_method) ? String(data.payment_method).trim() : '';
+            detectedPaymentMethod = pmRaw;
+            if (accountSelect) {
+                if (pmRaw) {
+                    const pm = pmRaw.toLowerCase();
+                    let matched = false;
+                    for (let opt of accountSelect.options) {
+                        const optVal = opt.value.toLowerCase();
+                        const optType = (opt.dataset.type || '').toLowerCase();
+                        if (optVal.includes(pm) || pm.includes(optVal) || (optType && pm.includes(optType))) {
+                            accountSelect.value = opt.value;
+                            matched = true;
+                            break;
+                        }
                     }
+                    if (!matched) {
+                        const newOpt = document.createElement('option');
+                        newOpt.value = pmRaw;
+                        newOpt.textContent = `${pmRaw} (new)`;
+                        accountSelect.appendChild(newOpt);
+                        accountSelect.value = pmRaw;
+                    }
+                    setSourceTag(paymentSourceLabel, 'receipt');
+                } else {
+                    setSourceTag(paymentSourceLabel, 'auto');
                 }
-                if (!matched) {
-                    const newOpt = document.createElement('option');
-                    newOpt.value = data.payment_method;
-                    newOpt.textContent = `✨ ${data.payment_method} (Detected)`;
-                    accountSelect.appendChild(newOpt);
-                    accountSelect.value = data.payment_method;
-                }
-                if (paymentSourceLabel) {
-                    paymentSourceLabel.textContent = "From Receipt";
-                    paymentSourceLabel.className = "text-[9px] sm:text-[10px] font-bold text-positive-deep";
-                }
-            } else if (paymentSourceLabel) {
-                paymentSourceLabel.textContent = "Auto-filled";
-                paymentSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-on-surface-variant";
+            } else if (accountEmptyNote) {
+                // No payment methods yet: say honestly where the expense will go
+                accountEmptyNote.textContent = pmRaw
+                    ? `Saving adds “${pmRaw}” as a payment method.`
+                    : 'Saving now files this under a new Cash Wallet.';
             }
 
-            taxInput.value = (data.tax || 0.00).toFixed(2);
-            if (data.total) totalInput.value = parseFloat(data.total).toFixed(2);
-            if (data.cash_tendered) cashInput.value = parseFloat(data.cash_tendered).toFixed(2);
-            if (data.change) changeInput.value = parseFloat(data.change).toFixed(2);
+            taxInput.value = num(data.tax).toFixed(2);
+            totalInput.value = num(data.total).toFixed(2);
+            cashInput.value = num(data.cash_tendered).toFixed(2);
+            changeInput.value = num(data.change).toFixed(2);
 
-            reviewData.items = data.items || [
-                { description: 'Magnolia Milk 1L', quantity: 2, price: 95.00 },
-                { description: 'Gardenia Wheat Bread', quantity: 1, price: 78.00 },
-                { description: 'San Miguel Coffee Mix x10', quantity: 1, price: 136.00 }
-            ];
+            reviewData.items = normalizeItems(data.items);
 
-            reviewData.merchant = merchantInput.value;
-            reviewData.date = dateInput.value;
-            reviewData.time = timeInput.value;
-            reviewData.category = categorySelect.value;
-            reviewData.payment_method = accountSelect ? accountSelect.value : 'Cash';
-            reviewData.tax = parseFloat(taxInput.value) || 0;
-            reviewData.total = parseFloat(totalInput.value) || 0;
-            reviewData.cash_tendered = parseFloat(cashInput.value) || 0;
-            reviewData.change = parseFloat(changeInput.value) || 0;
+            setCashSectionOpen(num(cashInput.value) > 0 || num(changeInput.value) > 0);
 
-            if (reviewData.cash_tendered > 0 || reviewData.change > 0) {
-                setCashSectionOpen(true);
-            }
-
-            saveActiveState();
             renderItems();
         }
 
         function saveActiveState() {
-            sessionStorage.setItem('active_ocr_review_data', JSON.stringify({
-                merchant: merchantInput.value,
-                date: dateInput.value,
-                time: timeInput.value,
-                category: categorySelect.value,
-                payment_method: accountSelect ? accountSelect.value : 'Cash',
-                tax: parseFloat(taxInput.value) || 0.00,
-                total: parseFloat(totalInput.value) || 0.00,
-                cash_tendered: parseFloat(cashInput.value) || 0.00,
-                change: parseFloat(changeInput.value) || 0.00,
-                items: reviewData.items
-            }));
+            try {
+                sessionStorage.setItem('active_ocr_review_data', JSON.stringify({
+                    merchant: merchantInput.value,
+                    date: dateInput.value,
+                    time: timeInput.value,
+                    category: categorySelect ? categorySelect.value : '',
+                    payment_method: accountSelect ? accountSelect.value : detectedPaymentMethod,
+                    tax: num(taxInput.value),
+                    total: num(totalInput.value),
+                    cash_tendered: num(cashInput.value),
+                    change: num(changeInput.value),
+                    items: reviewData.items
+                }));
+            } catch (e) { /* storage blocked or full: the form still works */ }
 
             const itemCountLabel = `${reviewData.items.length} item${reviewData.items.length === 1 ? '' : 's'}`;
             if (badgeItemsPill) badgeItemsPill.textContent = itemCountLabel;
@@ -1151,33 +1287,10 @@
             }
         });
 
-        // Update labels on user manual edit
-        if (dateInput) {
-            dateInput.addEventListener('input', () => {
-                if (dateSourceLabel) {
-                    dateSourceLabel.textContent = "Edited";
-                    dateSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-deep-forest";
-                }
-            });
-        }
-
-        if (timeInput) {
-            timeInput.addEventListener('input', () => {
-                if (timeSourceLabel) {
-                    timeSourceLabel.textContent = "Edited";
-                    timeSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-deep-forest";
-                }
-            });
-        }
-
-        if (accountSelect) {
-            accountSelect.addEventListener('change', () => {
-                if (paymentSourceLabel) {
-                    paymentSourceLabel.textContent = "Edited";
-                    paymentSourceLabel.className = "text-[9px] sm:text-[10px] font-medium text-deep-forest";
-                }
-            });
-        }
+        // Update source tags on user manual edit
+        if (dateInput) dateInput.addEventListener('input', () => setSourceTag(dateSourceLabel, 'edited'));
+        if (timeInput) timeInput.addEventListener('input', () => setSourceTag(timeSourceLabel, 'edited'));
+        if (accountSelect) accountSelect.addEventListener('change', () => setSourceTag(paymentSourceLabel, 'edited'));
 
         async function ensureCompactImageDataUrl(dataUrl, maxDim = 1000, quality = 0.65) {
             if (!dataUrl || dataUrl.length < 250000) return dataUrl;
@@ -1207,69 +1320,89 @@
             });
         }
 
+        function setSaving(saving) {
+            isSaving = saving;
+            if (!saveExpenseBtn) return;
+            saveExpenseBtn.disabled = saving;
+            saveExpenseBtn.setAttribute('aria-busy', saving ? 'true' : 'false');
+            saveExpenseBtn.innerHTML = saving
+                ? `<span class="material-symbols-outlined animate-spin text-[18px]" aria-hidden="true">progress_activity</span><span>Saving…</span>`
+                : `<span class="material-symbols-outlined text-[18px]" aria-hidden="true">check</span><span>Save expense</span>`;
+        }
+
         async function handleSaveExpense() {
+            if (isSaving) return;
+            clearSaveInlineError();
+
+            if (num(totalInput.value) <= 0) {
+                showTotalError('Enter the total from the receipt to save.');
+                totalInput.focus();
+                return;
+            }
+
+            // Offline: keep everything on screen and say so inline (no offline queue)
+            if (navigator.onLine === false) {
+                showSaveInlineError(OFFLINE_SAVE_MESSAGE);
+                return;
+            }
+
+            setSaving(true);
+
             let compactImageData = currentReceiptImageBase64 || '';
             if (compactImageData.length > 250000) {
                 compactImageData = await ensureCompactImageDataUrl(compactImageData, 1000, 0.65);
             }
 
             const finalData = {
-                merchant: merchantInput ? merchantInput.value.trim() : 'Receipt Expense',
-                date: dateInput ? dateInput.value : getNowIsoDate(),
-                time: timeInput ? timeInput.value : getNowIsoTime(),
-                category: categorySelect ? categorySelect.value : 'General',
-                payment_method: accountSelect ? accountSelect.value : 'CASH',
-                tax: parseFloat(taxInput ? taxInput.value : 0) || 0.00,
-                total: parseFloat(totalInput ? totalInput.value : 0) || 0.00,
-                cash_tendered: parseFloat(cashInput ? cashInput.value : 0) || 0.00,
-                change: parseFloat(changeInput ? changeInput.value : 0) || 0.00,
-                items: reviewData.items || [],
+                merchant: merchantInput.value.trim(),
+                date: dateInput.value || getNowIsoDate(),
+                time: timeInput.value || getNowIsoTime(),
+                category: categorySelect ? categorySelect.value : '',
+                payment_method: accountSelect ? accountSelect.value : detectedPaymentMethod,
+                tax: num(taxInput.value),
+                total: num(totalInput.value),
+                cash_tendered: num(cashInput.value),
+                change: num(changeInput.value),
+                items: reviewData.items.map(item => ({
+                    description: item.description,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
                 image_data: compactImageData
             };
 
-            if (finalData.total <= 0) {
-                if (totalInput) {
-                    totalInput.focus();
-                    totalInput.classList.add('border-expense', 'ring-2', 'ring-expense/20');
-                    setTimeout(() => totalInput.classList.remove('border-expense', 'ring-2', 'ring-expense/20'), 2000);
-                }
-                return;
-            }
-
             try {
-                if (saveExpenseBtn) {
-                    saveExpenseBtn.disabled = true;
-                    saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span><span>Saving Expense...</span>`;
-                }
-
                 const res = await fetch('/api/receipts/save/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(finalData)
                 });
 
-                const data = await res.json();
+                const data = await res.json().catch(() => ({}));
 
-                if (data.success) {
-                    sessionStorage.removeItem('scanned_receipt_data');
-                    sessionStorage.removeItem('active_ocr_review_data');
-                    const previewParam = window.location.search.includes('preview=true') ? '?preview=true' : '';
-                    window.location.href = (data.redirect_url || "{% url 'transactions' %}") + previewParam;
-                } else {
-                    showErrorBanner('Failed to Save Expense', data.error || 'Failed to save scanned expense.', false);
-                    if (saveExpenseBtn) {
-                        saveExpenseBtn.disabled = false;
-                        saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check</span><span>Save Expense</span>`;
+                if (res.ok && data.success) {
+                    try {
+                        sessionStorage.removeItem('scanned_receipt_data');
+                        sessionStorage.removeItem('active_ocr_review_data');
+                    } catch (e) { /* storage blocked */ }
+                    if (typeof window.antToastAfterRedirect === 'function') {
+                        window.antToastAfterRedirect('Receipt saved', { type: 'success' });
                     }
+                    window.location.href = (data.redirect_url || TRANSACTIONS_URL) + PREVIEW_PARAM;
+                    return;
                 }
+
+                const detail = data.error ? String(data.error) : 'Something went wrong on our side.';
+                showErrorBanner("Couldn't save receipt", `${detail} Your edits are still here, so try saving again.`);
+                toast("Couldn't save receipt. Your edits are still here. Try again.", { type: 'error' });
             } catch (err) {
                 console.error("Save error:", err);
-                showErrorBanner('Save Error', 'Network error occurred while saving scanned receipt. Please check connection and try again.', false);
-                if (saveExpenseBtn) {
-                    saveExpenseBtn.disabled = false;
-                    saveExpenseBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">check</span><span>Save Expense</span>`;
-                }
+                if (navigator.onLine === false) showSaveInlineError(OFFLINE_SAVE_MESSAGE);
+                showErrorBanner("Couldn't save receipt", "We couldn't reach AntTipid. Check your connection and try again. Your edits are still here.");
+                toast("Couldn't save receipt. Check your connection and try again.", { type: 'error' });
             }
+
+            setSaving(false);
         }
 
         if (saveExpenseBtn) saveExpenseBtn.addEventListener('click', handleSaveExpense);
@@ -1278,8 +1411,8 @@
             itemsContainer.innerHTML = '';
             if (reviewData.items.length === 0) {
                 itemsContainer.innerHTML = `
-                    <div class="py-3 sm:py-4 text-center text-on-surface-variant font-body-sm text-xs bg-surface-container-low/40 rounded-xl border border-outline-variant/40">
-                        No line items extracted. Tap "+ Add Item" to add manually.
+                    <div class="py-3 sm:py-4 px-3 text-center text-body text-sm bg-surface-container-low/40 rounded-xl border border-outline-variant/40">
+                        No items found on this receipt. Tap “Add item” to list them, or just save the total.
                     </div>
                 `;
             } else {
@@ -1289,34 +1422,36 @@
 
                     let priceVal = '';
                     if (item.isNew) {
-                        priceVal = (item.price && parseFloat(item.price) > 0) ? parseFloat(item.price).toFixed(2) : '';
+                        priceVal = num(item.price) > 0 ? num(item.price).toFixed(2) : '';
                     } else {
-                        priceVal = parseFloat(item.price || 0).toFixed(2);
+                        priceVal = num(item.price).toFixed(2);
                     }
+                    const qtyVal = Math.max(1, parseInt(item.quantity, 10) || 1);
+                    const itemNumber = idx + 1;
 
                     row.innerHTML = `
                         <!-- Item Description (Full width on mobile, flex-1 on tablet/desktop) -->
-                        <div class="w-full sm:flex-1 min-w-0 flex items-center bg-surface-container-lowest rounded-lg px-2.5 py-1.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                            <input type="text" class="input-item-desc w-full font-body-md text-xs sm:text-sm font-semibold sm:font-medium text-deep-forest bg-transparent border-none outline-none p-0 placeholder:text-on-surface-variant/50 placeholder:font-normal min-h-[22px] sm:min-h-[24px]" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item name (e.g. Milk 1L)" title="${escapeHtml(item.description || 'Item name')}" />
+                        <div class="w-full sm:flex-1 min-w-0 min-h-[44px] flex items-center bg-surface-container-lowest rounded-lg px-2.5 border border-outline-variant focus-within:border-deep-forest focus-within:ring-2 focus-within:ring-deep-forest/15 transition-all">
+                            <input type="text" class="input-item-desc w-full text-sm font-medium text-ink bg-transparent border-none outline-none p-0 placeholder:text-mute placeholder:font-normal" value="${escapeHtml(item.description)}" data-idx="${idx}" placeholder="Item name (e.g. Milk 1L)" aria-label="Item ${itemNumber} description" autocomplete="off" />
                         </div>
 
                         <!-- Controls Row (Qty + Price + Delete) -->
                         <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto">
                             <!-- Quantity -->
-                            <div class="flex items-center gap-1 bg-surface-container-lowest rounded-lg px-2 sm:px-1 py-1 sm:py-1.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 sm:w-14 sm:justify-center">
-                                <span class="text-[10px] uppercase font-bold text-on-surface-variant sm:hidden">Qty</span>
-                                <input type="number" min="1" step="1" class="input-item-qty w-9 sm:w-full text-center font-body-md text-xs sm:text-sm font-medium text-deep-forest bg-transparent border-none outline-none p-0 tabular-nums min-h-[20px] sm:min-h-[24px]" value="${item.quantity}" data-idx="${idx}" aria-label="Quantity" />
+                            <div class="min-h-[44px] flex items-center gap-1 bg-surface-container-lowest rounded-lg px-2 sm:px-1 border border-outline-variant focus-within:border-deep-forest focus-within:ring-2 focus-within:ring-deep-forest/15 sm:w-14 sm:justify-center">
+                                <span class="text-xs font-medium text-body sm:hidden" aria-hidden="true">Qty</span>
+                                <input type="number" inputmode="numeric" min="1" step="1" class="input-item-qty w-9 sm:w-full text-center text-sm font-medium text-ink bg-transparent border-none outline-none p-0 tabular-nums" value="${qtyVal}" data-idx="${idx}" aria-label="Item ${itemNumber} quantity" />
                             </div>
 
                             <!-- Price -->
-                            <div class="flex-1 sm:flex-initial flex items-center justify-end gap-0.5 bg-surface-container-lowest rounded-lg px-2 py-1 sm:py-1.5 border border-outline-variant/60 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 sm:w-24">
-                                <span class="text-[11px] sm:text-xs text-on-surface-variant font-medium">₱</span>
-                                <input type="number" step="0.01" min="0" class="input-item-price w-full text-right font-body-md text-xs sm:text-sm font-medium text-deep-forest bg-transparent border-none outline-none p-0 tabular-nums min-h-[20px] sm:min-h-[24px]" value="${priceVal}" placeholder="0.00" data-idx="${idx}" aria-label="Price" />
+                            <div class="flex-1 sm:flex-initial min-h-[44px] flex items-center justify-end gap-0.5 bg-surface-container-lowest rounded-lg px-2 border border-outline-variant focus-within:border-deep-forest focus-within:ring-2 focus-within:ring-deep-forest/15 sm:w-24">
+                                <span class="text-sm text-body" aria-hidden="true">₱</span>
+                                <input type="number" inputmode="decimal" step="0.01" min="0" class="input-item-price w-full text-right text-sm font-medium text-ink bg-transparent border-none outline-none p-0 tabular-nums" value="${escapeHtml(priceVal)}" placeholder="0.00" data-idx="${idx}" aria-label="Item ${itemNumber} price in pesos" />
                             </div>
 
-                            <!-- Delete button -->
-                            <button type="button" class="btn-delete-item w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-on-surface-variant/70 hover:text-expense transition-colors rounded-lg hover:bg-expense/10 active:scale-95 flex items-center justify-center cursor-pointer" data-idx="${idx}" title="Remove item" aria-label="Remove item">
-                                <span class="material-symbols-outlined text-[16px] sm:text-[17px]">delete</span>
+                            <!-- Delete button (44px target) -->
+                            <button type="button" class="btn-delete-item w-11 h-11 shrink-0 text-body hover:text-negative-deep transition-colors rounded-lg hover:bg-negative/10 active:scale-95 flex items-center justify-center cursor-pointer" data-idx="${idx}" aria-label="Remove item ${itemNumber}">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                             </button>
                         </div>
                     `;
@@ -1330,29 +1465,21 @@
 
         // Delete Single Line Item Modal logic
         let pendingDeleteItemIndex = null;
+        let releaseDeleteTrap = null;
         const deleteItemModal = document.getElementById('modal-confirm-delete-item');
         const deleteItemNameLabel = document.getElementById('label-delete-item-name');
         const confirmDeleteItemBtn = document.getElementById('btn-confirm-delete-item');
         const cancelDeleteItemBtn = document.getElementById('btn-cancel-delete-item');
 
+        function describeItem(item, index) {
+            const desc = item && item.description && item.description.trim() ? item.description.trim() : `Item ${index + 1}`;
+            const lineTotal = item ? num(item.quantity) * num(item.price) : 0;
+            return `“${desc}” · ${formatPeso(lineTotal)}`;
+        }
+
         function showDeleteItemModal(index) {
             pendingDeleteItemIndex = index;
-            const item = reviewData.items[index];
-            const desc = item && item.description && item.description.trim() ? item.description.trim() : 'this item';
-            if (deleteItemNameLabel) {
-                deleteItemNameLabel.textContent = `"${desc}"`;
-            }
-            if (confirmDeleteItemBtn) {
-                confirmDeleteItemBtn.disabled = false;
-                const icon = document.getElementById('btn-confirm-delete-item-icon');
-                const text = document.getElementById('btn-confirm-delete-item-text');
-                if (icon) {
-                    icon.textContent = 'delete';
-                    icon.classList.remove('animate-spin');
-                }
-                if (text) text.textContent = 'Remove Item';
-            }
-            if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = false;
+            if (deleteItemNameLabel) deleteItemNameLabel.textContent = describeItem(reviewData.items[index], index);
 
             if (!deleteItemModal) return;
             deleteItemModal.classList.remove('hidden');
@@ -1365,6 +1492,7 @@
                     modalCard.classList.add('scale-100');
                 }
             });
+            releaseDeleteTrap = trapFocus(deleteItemModal, cancelDeleteItemBtn);
         }
 
         function hideDeleteItemModal() {
@@ -1378,31 +1506,38 @@
             }
             setTimeout(() => {
                 deleteItemModal.classList.add('hidden');
-                pendingDeleteItemIndex = null;
             }, 200);
+            pendingDeleteItemIndex = null;
+            if (releaseDeleteTrap) {
+                releaseDeleteTrap();
+                releaseDeleteTrap = null;
+            }
         }
 
         if (cancelDeleteItemBtn) cancelDeleteItemBtn.addEventListener('click', hideDeleteItemModal);
         if (confirmDeleteItemBtn) {
             confirmDeleteItemBtn.addEventListener('click', () => {
-                const icon = document.getElementById('btn-confirm-delete-item-icon');
-                const text = document.getElementById('btn-confirm-delete-item-text');
-                confirmDeleteItemBtn.disabled = true;
-                if (cancelDeleteItemBtn) cancelDeleteItemBtn.disabled = true;
-                if (icon) {
-                    icon.textContent = 'progress_activity';
-                    icon.classList.add('animate-spin');
-                }
-                if (text) text.textContent = 'Removing...';
-
-                setTimeout(() => {
-                    if (pendingDeleteItemIndex !== null && pendingDeleteItemIndex >= 0 && pendingDeleteItemIndex < reviewData.items.length) {
-                        reviewData.items.splice(pendingDeleteItemIndex, 1);
-                        renderItems();
-                        saveActiveState();
-                    }
+                const index = pendingDeleteItemIndex;
+                if (index === null || index < 0 || index >= reviewData.items.length) {
                     hideDeleteItemModal();
-                }, 150);
+                    return;
+                }
+                const label = describeItem(reviewData.items[index], index);
+                const removed = reviewData.items.splice(index, 1)[0];
+                renderItems();
+                hideDeleteItemModal();
+                // The row's button no longer exists; keep focus in the items area
+                if (addItemBtn) addItemBtn.focus({ preventScroll: true });
+                toast(`Removed ${label}`, {
+                    type: 'info',
+                    action: {
+                        label: 'Undo',
+                        onClick: () => {
+                            reviewData.items.splice(Math.min(index, reviewData.items.length), 0, removed);
+                            renderItems();
+                        }
+                    }
+                });
             });
         }
 
@@ -1413,9 +1548,9 @@
         }
 
         function attachItemListeners() {
-            document.querySelectorAll('.input-item-desc').forEach(input => {
+            itemsContainer.querySelectorAll('.input-item-desc').forEach(input => {
                 input.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.dataset.idx);
+                    const idx = parseInt(e.target.dataset.idx, 10);
                     if (reviewData.items[idx]) {
                         reviewData.items[idx].description = e.target.value;
                         saveActiveState();
@@ -1423,38 +1558,36 @@
                 });
             });
 
-            document.querySelectorAll('.input-item-qty').forEach(input => {
+            itemsContainer.querySelectorAll('.input-item-qty').forEach(input => {
                 input.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.dataset.idx);
+                    const idx = parseInt(e.target.dataset.idx, 10);
                     if (reviewData.items[idx]) {
-                        reviewData.items[idx].quantity = parseInt(e.target.value) || 1;
+                        reviewData.items[idx].quantity = Math.max(1, parseInt(e.target.value, 10) || 1);
                         recalculateReviewTotals();
-                        saveActiveState();
                     }
                 });
             });
 
-            document.querySelectorAll('.input-item-price').forEach(input => {
+            itemsContainer.querySelectorAll('.input-item-price').forEach(input => {
                 input.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.dataset.idx);
+                    const idx = parseInt(e.target.dataset.idx, 10);
                     if (reviewData.items[idx]) {
-                        reviewData.items[idx].price = parseFloat(e.target.value) || 0;
+                        reviewData.items[idx].price = num(e.target.value);
                         reviewData.items[idx].isNew = false;
                         recalculateReviewTotals();
-                        saveActiveState();
                     }
                 });
             });
 
-            document.querySelectorAll('.btn-delete-item').forEach(btn => {
+            itemsContainer.querySelectorAll('.btn-delete-item').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const idx = parseInt(btn.dataset.idx);
+                    const idx = parseInt(btn.dataset.idx, 10);
                     showDeleteItemModal(idx);
                 });
             });
 
             // Enter key navigation across line item inputs
-            document.querySelectorAll('#container-review-items input').forEach(input => {
+            itemsContainer.querySelectorAll('input').forEach(input => {
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -1492,7 +1625,6 @@
             addItemBtn.addEventListener('click', () => {
                 reviewData.items.push({ description: '', quantity: 1, price: 0, isNew: true });
                 renderItems();
-                saveActiveState();
 
                 setTimeout(() => {
                     const allDescInputs = itemsContainer.querySelectorAll('.input-item-desc');
@@ -1506,11 +1638,16 @@
         }
 
         if (taxInput) taxInput.addEventListener('input', recalculateReviewTotals);
-        if (totalInput) totalInput.addEventListener('input', recalculateReviewTotals);
+        if (totalInput) {
+            totalInput.addEventListener('input', () => {
+                clearTotalError();
+                recalculateReviewTotals();
+            });
+        }
         if (cashInput) {
             cashInput.addEventListener('input', () => {
-                const cash = parseFloat(cashInput.value) || 0;
-                const total = parseFloat(totalInput.value) || 0;
+                const cash = num(cashInput.value);
+                const total = num(totalInput.value);
                 if (changeInput && cash >= total) {
                     changeInput.value = (cash - total).toFixed(2);
                 }
@@ -1521,19 +1658,19 @@
         function recalculateReviewTotals() {
             let subtotal = 0;
             reviewData.items.forEach((item) => {
-                subtotal += (item.quantity * item.price);
+                subtotal += num(item.quantity) * num(item.price);
             });
 
-            if (subtotalLabel) subtotalLabel.textContent = `₱${subtotal.toFixed(2)}`;
-            
-            const tax = parseFloat(taxInput ? taxInput.value : 0) || 0;
-            const currentTotal = parseFloat(totalInput ? totalInput.value : 0) || 0;
+            if (subtotalLabel) subtotalLabel.textContent = formatPeso(subtotal);
+
+            const tax = num(taxInput ? taxInput.value : 0);
+            const currentTotal = num(totalInput ? totalInput.value : 0);
             if (currentTotal === 0 && totalInput) {
                 totalInput.value = (subtotal + tax).toFixed(2);
             }
 
-            const cash = parseFloat(cashInput ? cashInput.value : 0) || 0;
-            const finalTotal = parseFloat(totalInput ? totalInput.value : 0) || (subtotal + tax);
+            const cash = num(cashInput ? cashInput.value : 0);
+            const finalTotal = num(totalInput ? totalInput.value : 0) || (subtotal + tax);
             if (changeInput && cash > 0) {
                 changeInput.value = Math.max(0, cash - finalTotal).toFixed(2);
             }
@@ -1541,8 +1678,11 @@
             saveActiveState();
         }
 
+        // ─── Image zoom dialog ───
+        let releaseZoomTrap = null;
+
         function openZoomModal() {
-            if (!zoomModal) return;
+            if (!zoomModal || !hasPreviewImage) return;
             document.body.style.overflow = 'hidden';
             zoomModal.classList.remove('hidden');
             requestAnimationFrame(() => {
@@ -1553,6 +1693,7 @@
                     imgFullZoom.classList.add('scale-100');
                 }
             });
+            releaseZoomTrap = trapFocus(zoomModal, closeZoomBtn);
         }
 
         function closeZoomModal() {
@@ -1567,6 +1708,10 @@
                 zoomModal.classList.add('hidden');
                 document.body.style.overflow = '';
             }, 200);
+            if (releaseZoomTrap) {
+                releaseZoomTrap();
+                releaseZoomTrap = null;
+            }
         }
 
         if (zoomBtn) zoomBtn.addEventListener('click', openZoomModal);
@@ -1588,10 +1733,11 @@
                 }
             }
         });
+
+        setPreviewImage('');
     });
 
-    function escapeHtml(str) {
-        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
+    // Called only after DOMContentLoaded, when the deferred ui.js has run.
+    function escapeHtml(str) { return window.antEscape(str); }
 </script>
 {% endblock %}
